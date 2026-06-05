@@ -1550,17 +1550,20 @@ function buildSystemPrompt() {
     ).join('\n');
   }
 
-  // 今日信息：统一调全局函数，确保所有用户看到相同日期
+  // 今日信息（统一来源）
   const _today = getTodayInfo();
-  const _todayStr = _today.dateStr;
-  const _weekStr = `星期${_today.weekStr}`;
-  let _todayGZ = '';
+  let _todayGZ = _today.gz + '日';
   try {
     const _star = getStar(bazi.dayMaster.stem, _today.gan);
-    _todayGZ = `${_today.gz}日，与日主${bazi.dayMaster.stem}${bazi.dayMaster.element}的十神关系：${_star}`;
-  } catch(e) { _todayGZ = `${_today.gz}日`; }
+    _todayGZ = `${_today.gz}日（${_star}）`;
+  } catch(e) {}
 
-  return `你是一位精通中国传统命理的大师，精通八字、易经、六爻、神煞等体系。
+  return `===今日日期（最高优先级，绝对权威）===
+今天：${_todayStr}（${_weekStr}），干支：${_today.gz}日
+规则：所有涉及今日/今天/当前日期的回答，必须严格使用上述日期，不得使用任何其他日期。
+===========================
+
+你是一位精通中国传统命理的大师，精通八字、易经、六爻、神煞等体系。
 
 当前命主：【${name}】
 
@@ -1568,11 +1571,7 @@ function buildSystemPrompt() {
 - 阳历：${bazi.solar}（${bazi.hourName||''}）
 - 性别：${bazi.gender}（${bazi.gender==='男'?'乾':'坤'}造）
 - 日主：${bazi.dayMaster.stem}${bazi.dayMaster.element}${strengthInfo}${yunInfo}
-
-【⚠️ 今日真实日期（系统注入，绝对权威，禁止质疑或覆盖）】
-今天是：${_todayStr}（${_weekStr}）
-今日干支：${_todayGZ}
-注意：你的训练数据截止日期与今日无关。请务必以此处提供的日期为准回答所有涉及"今日""今天""当前"的问题，绝对不可自行推算或使用其他日期。
+- 今日（${_todayStr}）日干支 ${_todayGZ}
 
 【四柱命盘】
 ${pillarDesc}${profileSection}${historySection}
@@ -1753,9 +1752,15 @@ async function callAI() {
     return;
   }
 
+  // 构造发给 API 的消息列表
+  // 在最后一条 user 消息前插入一条 system 日期强制声明
+  const _t = getTodayInfo();
+  const _dateDecl = `[系统强制声明] 今天的真实日期是 ${_t.dateStr}（星期${_t.weekStr}），今日干支是 ${_t.gz}日。你必须使用这个日期，不得使用任何其他日期或自行推算。`;
+  const historySlice = messages.slice(-10);
   const apiMessages = [
     { role: 'system', content: buildSystemPrompt() },
-    ...messages.slice(-10)
+    { role: 'system', content: _dateDecl },
+    ...historySlice
   ];
 
   try {
