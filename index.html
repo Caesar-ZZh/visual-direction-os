@@ -1558,12 +1558,8 @@ function buildSystemPrompt() {
     _todayGZ = `${_today.gz}日（${_star}）`;
   } catch(e) {}
 
-  return `===今日日期（最高优先级，绝对权威）===
-今天：${_todayStr}（${_weekStr}），干支：${_today.gz}日
-规则：所有涉及今日/今天/当前日期的回答，必须严格使用上述日期，不得使用任何其他日期。
-===========================
-
-你是一位精通中国传统命理的大师，精通八字、易经、六爻、神煞等体系。
+  return `你是一位精通中国传统命理的大师，精通八字、易经、六爻、神煞等体系。
+注意：对话中已通过消息确认今天的日期，直接使用即可，不要自行推算，不要反问用户。
 
 当前命主：【${name}】
 
@@ -1693,12 +1689,12 @@ async function sendMessage() {
   if (!text || isLoading) return;
   inp.value = ''; inp.style.height='auto';
   addMessage('user', text);
-  // 发给 API 的内容：若用户问到"今日/今天"相关，自动在消息开头注入日期
+  // 发给 API 时，把"今天/今日"替换为具体日期+干支，彻底消除 AI 需要推算日期的机会
   const _t = getTodayInfo();
-  const _needDate = /今日|今天|当前|现在|最近|这几天|运势/.test(text);
-  const apiContent = _needDate
-    ? `[今天是${_t.dateStr}，${_t.gz}日] ${text}`
-    : text;
+  const dateLabel = `${_t.dateStr}（${_t.gz}日）`;
+  const apiContent = text
+    .replace(/今天|今日/g, dateLabel)
+    .replace(/当前日期|现在是哪天|今天是哪天/g, dateLabel);
   messages.push({role:'user', content: apiContent});
   if (messages.length > 100) messages = messages.slice(-60);
   await callAI();
@@ -1763,13 +1759,16 @@ async function callAI() {
   }
 
   // 构造发给 API 的消息列表
-  // 在最后一条 user 消息前插入一条 system 日期强制声明
   const _t = getTodayInfo();
-  const _dateDecl = `[系统强制声明] 今天的真实日期是 ${_t.dateStr}（星期${_t.weekStr}），今日干支是 ${_t.gz}日。你必须使用这个日期，不得使用任何其他日期或自行推算。`;
   const historySlice = messages.slice(-10);
+  // 用 user+assistant 对话对的方式"预热"日期认知，比 system 声明更有效
+  const datePreload = [
+    { role: 'user', content: `今天是${_t.dateStr}，${_t.gz}日，${_t.dateStr}星期${_t.weekStr}。记住这个日期，后续所有问题都基于这个日期回答。` },
+    { role: 'assistant', content: `好的，我已记下：今天是${_t.dateStr}（${_t.gz}日），我会以此日期为准回答所有涉及今日的问题。` }
+  ];
   const apiMessages = [
     { role: 'system', content: buildSystemPrompt() },
-    { role: 'system', content: _dateDecl },
+    ...datePreload,
     ...historySlice
   ];
 
