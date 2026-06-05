@@ -1508,8 +1508,8 @@ function buildSystemPrompt() {
   const name = u.name || '命主';
   const ps = bazi.pillars;
   const pillarDesc = ps.map(p =>
-    `${p.label}：${p.stem.char}${p.branch.char}（${p.mainStar}）\n  天干：${p.stem.char}${p.stem.element} | 地支：${p.branch.char}${p.branch.element}\n  藏干：${p.hiddenStems.join('、')}\n  副星：${p.subStars.filter(Boolean).join('、')}\n  星运：${p.yunCheng} | 自坐：${p.ziZuo} | 空亡：${p.kongWang} | 纳音：${p.naYin}${p.shenSha&&p.shenSha.length?'\n  神煞：'+p.shenSha.join('、'):''}`
-  ).join('\n\n');
+    `${p.label}${p.stem.char}${p.branch.char}（${p.mainStar}）藏${p.hiddenStems.join('')} 副${p.subStars.filter(Boolean).join('/')} 神煞${p.shenSha&&p.shenSha.length?p.shenSha.join('/'):'-'}`
+  ).join('；');
 
   // 五行强弱
   let strengthInfo = '';
@@ -1555,41 +1555,22 @@ function buildSystemPrompt() {
     ).join('\n');
   }
 
-  // 今日信息（统一来源）
+  // 今日黄历（合并进 prompt，不再用预热对话）
   const _today = getTodayInfo();
-  let _todayGZ = _today.gz + '日';
-  try {
-    const _star = getStar(bazi.dayMaster.stem, _today.gan);
-    _todayGZ = `${_today.gz}日（${_star}）`;
-  } catch(e) {}
+  const _hl = calcHuangli(_today);
+  let _todayStar = '';
+  try { _todayStar = `（与日主${getStar(bazi.dayMaster.stem, _today.gan)}）`; } catch(e) {}
 
-  return `你是一位精通中国传统命理的大师，精通八字、易经、六爻、神煞等体系。
-注意：对话中已通过消息确认今天的日期，直接使用即可，不要自行推算，不要反问用户。
+  return `你是精通八字命理的大师。禁止向用户询问日期，禁止自行推算日期，直接使用下方提供的今日数据作答。
 
-当前命主：【${name}】
+命主：${name} | ${bazi.gender} | 日主${bazi.dayMaster.stem}${bazi.dayMaster.element}${strengthInfo}${yunInfo}
+生辰：${bazi.solar}
+四柱：${pillarDesc}
 
-【基本信息】
-- 阳历：${bazi.solar}（${bazi.hourName||''}）
-- 性别：${bazi.gender}（${bazi.gender==='男'?'乾':'坤'}造）
-- 日主：${bazi.dayMaster.stem}${bazi.dayMaster.element}${strengthInfo}${yunInfo}
-- 今日（${_todayStr}）日干支 ${_todayGZ}
+今日：${_today.dateStr} ${_today.gz}日${_todayStar} ${_hl.zhiRiName}日 ${_hl.nayin}
+宜：${_hl.yi.join('、')||'无'} | 忌：${_hl.ji.join('、')||'无'} | 冲${_hl.chong}煞${_hl.sha}${profileSection}${historySection}
 
-【四柱命盘】
-${pillarDesc}${profileSection}${historySection}
-
-【重要规则——违反即为错误】
-- 今天的日期已在顶部声明，禁止向用户询问日期，禁止说"请告诉我今天是哪天"，直接使用声明的日期作答
-- 今日干支已提供，禁止自行推算或质疑，直接使用
-
-【回复风格要求】
-- 语气温和智慧，如一位熟悉命主的老师，带传统文化韵味
-- 适当使用表情符号增强可读性（如 ✦ 🌙 ⚡ 🔥 💫 ☯ 等，每条回复1-3个即可，不要滥用）
-- 关键术语用**粗体**（如 **用神**、**七杀**、**食神制杀**）
-- 分段清晰，重要结论单独成行
-- 用「」标注具体建议或引用经典
-- 禁止使用 # ## ### 标题符号
-- 每次回复控制在 200-300 字，观点具体，避免泛泛而谈
-- 结尾可给出1条简短的行动建议`;
+回复要求：200字内，语气温和，关键词加**粗体**，可用1-2个表情，禁用#标题，结尾给1条行动建议。`;
 }
 
 let messages = [];
@@ -1834,25 +1815,10 @@ async function callAI() {
     return;
   }
 
-  // 构造发给 API 的消息列表
-  const _t = getTodayInfo();
-  const _hl = calcHuangli(_t);
-  const historySlice = messages.slice(-10);
-  // 黄历数据文本
-  const hlText = `今日黄历数据（本地算法计算，请直接使用，不要自行推算）：
-- 日期：${_t.dateStr}（${_t.gz}日，${_hl.zhiRiName}日，${_hl.nayin}）
-- 宜：${_hl.yi.join('、') || '无'}
-- 忌：${_hl.ji.join('、') || '无'}
-- 冲：${_hl.chong}（煞${_hl.sha}）
-- 彭祖百忌：${_hl.pengGan}；${_hl.pengZhi}`;
-  // 用 user+assistant 预热对话，注入黄历
-  const datePreload = [
-    { role: 'user', content: hlText },
-    { role: 'assistant', content: `收到。今天是${_t.dateStr}，${_t.gz}日，${_hl.zhiRiName}日。宜${_hl.yi.slice(0,3).join('、')}，忌${_hl.ji.slice(0,3).join('、')}，冲${_hl.chong}。我将以这份黄历数据为准分析今日运势。` }
-  ];
+  // 构造发给 API 的消息列表（精简，减少 token 消耗）
+  const historySlice = messages.slice(-6); // 只保留最近6条，减少 token
   const apiMessages = [
     { role: 'system', content: buildSystemPrompt() },
-    ...datePreload,
     ...historySlice
   ];
 
