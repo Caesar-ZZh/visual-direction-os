@@ -1852,7 +1852,17 @@ function quickAsk(q) {
 }
 
 function castHexagram() {
-  openHexagramModal();
+  try {
+    openHexagramModal();
+  } catch(err) {
+    // 起卦失败时降级：直接用随机卦名问AI
+    console.error('起卦动画出错:', err);
+    const _g = GUA_LIST[Math.floor(Math.random() * GUA_LIST.length)];
+    const bazi = getActiveBazi();
+    const u = users[activeUserIdx] || {};
+    const _t = getTodayInfo();
+    quickAsk(`今天是${_t.dateStr}，${_t.gz}日，请为【${u.name||'命主'}】解读${_g.name}卦（${_g.pinyin}），结合八字日主${bazi.dayMaster.stem}${bazi.dayMaster.element}给出指引。`);
+  }
 }
 
 // 动态渲染快捷按钮（随命主切换更新日主文字）
@@ -2919,15 +2929,16 @@ let hexagramState = {
 function openHexagramModal() {
   hexagramState = {yaos: [], step: 0, shaking: false, mainGua: null, changeGua: null};
   const overlay = document.getElementById('hexagramOverlay');
+  if (!overlay) { console.error('hexagramOverlay 元素不存在'); return; }
   // 强制移到 body 最末尾确保不被父元素遮挡
   document.body.appendChild(overlay);
   overlay.classList.add('show');
-  renderYaoLines();
-  updateHexagramStep();
-  // 重置摇卦按钮
+  const guaResult = document.getElementById('guaResult');
+  if (guaResult) guaResult.style.display = 'none';
   const btn = document.getElementById('shakeBtn');
   if (btn) { btn.disabled = false; btn.textContent = '摇卦'; }
-  document.getElementById('guaResult').style.display = 'none';
+  renderYaoLines();
+  updateHexagramStep();
 }
 
 function closeHexagramModal() {
