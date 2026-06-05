@@ -1452,13 +1452,13 @@ function getDailyGua() {
 
 function renderDailyCard() {
   const gua = getDailyGua();
-  const now = new Date();
-  const dateStr = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
+  const _t = getTodayInfo();
+  const _hl = calcHuangli(_t);
   const todayEl = document.getElementById('todayDate');
-  if (todayEl) todayEl.textContent = dateStr;
+  if (todayEl) todayEl.textContent = _t.dateStr;
   const card = document.getElementById('dailyCard');
   card.innerHTML = `
-    <div class="daily-date">${dateStr} · 今日卦象</div>
+    <div class="daily-date">${_t.dateStr} · ${_t.gz}日 · ${_hl.zhiRiName}日</div>
     <div class="daily-gua">
       <div class="gua-lines">${renderLines(gua.lines)}</div>
       <div>
@@ -1468,6 +1468,11 @@ function renderDailyCard() {
     </div>
     <div class="daily-sub">${gua.ci}</div>
     <div class="daily-advice">${gua.zhi}</div>
+    <div style="margin-top:10px;padding:8px 10px;background:rgba(0,0,0,.2);border-radius:6px;font-size:11px;line-height:1.9">
+      <span style="color:var(--green)">✦ 宜：</span><span style="color:var(--text2)">${_hl.yi.join('　')}</span><br>
+      <span style="color:var(--red)">✦ 忌：</span><span style="color:var(--text2)">${_hl.ji.join('　')}</span><br>
+      <span style="color:var(--text3)">冲${_hl.chong}（煞${_hl.sha}）· ${_hl.nayin}</span>
+    </div>
   `;
 }
 
@@ -1610,6 +1615,77 @@ function getTodayInfo() {
   const zhi = BRANCHES[zhiIdx];
 
   return { y, m, d, dateStr, weekStr, gan, zhi, gz: gan + zhi, diff };
+}
+
+// ─────────────────────────────────────────
+// 黄历计算（本地算法，无需联网）
+// ─────────────────────────────────────────
+function calcHuangli(t) {
+  // t = getTodayInfo() 的返回值
+  const { gan, zhi, diff, m, d } = t;
+
+  // 1. 十二值日（建除十二神）：以月支和日支的关系推算
+  // 子月建子，丑月建丑... 以月支为"建"，日支顺数
+  // 月支索引：寅月=2（农历正月），依次推进
+  // 简化：用日支在十二值中的位置（以年月节气正式算法太复杂，用简化版）
+  const SHI_ER_ZHI_RI = ['建','除','满','平','定','执','破','危','成','收','开','闭'];
+  // 每月月建（寅=2）开始，日支相对月支的差值
+  // 简化版：直接用日干支序号 diff mod 12 对应十二值
+  const zhiRiName = SHI_ER_ZHI_RI[((diff % 12) + 12) % 12];
+
+  // 2. 宜忌（基于十二值日的传统对照表）
+  const ZHIRI_YI = {
+    建: ['祭祀','祈福','出行','上任','动土'],
+    除: ['求医','理发','搬迁','解除','清扫'],
+    满: ['婚嫁','开业','入宅','纳财'],
+    平: ['修造','出行','购物'],
+    定: ['签约','谈判','会友','祭祀'],
+    执: ['捕捉','求财','纳畜'],
+    破: ['坏垣','余事勿取'],
+    危: ['安床','余事勿取'],
+    成: ['婚嫁','开业','移徙','求财','签约'],
+    收: ['纳财','收购','入库'],
+    开: ['开业','动土','出行','婚嫁','求财'],
+    闭: ['安葬','入殓','合寿木'],
+  };
+  const ZHIRI_JI = {
+    建: ['开仓','出货','破土'],
+    除: ['动土','嫁娶','结婚'],
+    满: ['出行','开仓','破土'],
+    平: ['动土','安葬','嫁娶'],
+    定: ['出行','动土','破土'],
+    执: ['开仓','安门','嫁娶'],
+    破: ['嫁娶','开业','动土','安门'],
+    危: ['登高','出行'],
+    成: ['诉讼','开仓'],
+    收: ['出行','开仓','嫁娶'],
+    开: ['安葬','出货'],
+    闭: ['开业','开仓','出行','嫁娶'],
+  };
+
+  // 3. 冲煞（日支相冲的属相）
+  const CHONG_MAP = {子:'马',丑:'羊',寅:'猴',卯:'鸡',辰:'狗',巳:'猪',午:'鼠',未:'牛',申:'虎',酉:'兔',戌:'龙',亥:'蛇'};
+  const SHA_MAP   = {子:'南',丑:'东',寅:'北',卯:'西',辰:'南',巳:'东',午:'北',未:'西',申:'南',酉:'东',戌:'北',亥:'西'};
+
+  // 4. 五行纳音（已在排盘用，这里快速查）
+  const NAYIN_TABLE = ['海中金','炉中火','大林木','路旁土','剑锋金','山头火','涧下水','城头土','白蜡金','杨柳木','泉中水','屋上土','霹雳火','松柏木','长流水','沙中金','山下火','平地木','壁上土','金箔金','覆灯火','天河水','大驿土','钗钏金','桑柘木','大溪水','沙中土','天上火','石榴木','大海水'];
+  const nayin = NAYIN_TABLE[Math.floor(((diff % 60) + 60) % 60 / 2)] || '';
+
+  // 5. 日五行（日干的五行）
+  const ganEl = STEM_EL[STEMS.indexOf(gan)];
+
+  // 6. 彭祖百忌（日干忌）
+  const PENG_GAN = {甲:'不开仓，财物耗散',乙:'不栽植，千株不长',丙:'不修灶，必见灾殃',丁:'不剃头，头必生疮',戊:'不受田，田主不祥',己:'不破券，二比并亡',庚:'不经络，织机虚张',辛:'不合酱，主人不尝',壬:'不决水，难更堤防',癸:'不词讼，理弱敌强'};
+  const PENG_ZHI = {子:'不问卜，自惹祸殃',丑:'不冠带，主不还乡',寅:'不祭祀，神鬼不尝',卯:'不穿井，水泉不香',辰:'不哭泣，必主重丧',巳:'不远行，蛇虎伤人',午:'不苫盖，屋主更张',未:'不服药，毒气入肠',申:'不安床，鬼祟入房',酉:'不会客，醉坐颠狂',戌:'不吃犬，作怪上床',亥:'不嫁娶，与鬼为邻'};
+
+  const yi  = ZHIRI_YI[zhiRiName]  || [];
+  const ji  = ZHIRI_JI[zhiRiName]  || [];
+  const chong = CHONG_MAP[zhi] || '';
+  const sha   = SHA_MAP[zhi]   || '';
+  const pengGan = PENG_GAN[gan] || '';
+  const pengZhi = PENG_ZHI[zhi] || '';
+
+  return { zhiRiName, yi, ji, chong, sha, nayin, ganEl, pengGan, pengZhi };
 }
 
 function addMessage(role, content, isTyping=false) {
@@ -1760,11 +1836,19 @@ async function callAI() {
 
   // 构造发给 API 的消息列表
   const _t = getTodayInfo();
+  const _hl = calcHuangli(_t);
   const historySlice = messages.slice(-10);
-  // 用 user+assistant 对话对的方式"预热"日期认知，比 system 声明更有效
+  // 黄历数据文本
+  const hlText = `今日黄历数据（本地算法计算，请直接使用，不要自行推算）：
+- 日期：${_t.dateStr}（${_t.gz}日，${_hl.zhiRiName}日，${_hl.nayin}）
+- 宜：${_hl.yi.join('、') || '无'}
+- 忌：${_hl.ji.join('、') || '无'}
+- 冲：${_hl.chong}（煞${_hl.sha}）
+- 彭祖百忌：${_hl.pengGan}；${_hl.pengZhi}`;
+  // 用 user+assistant 预热对话，注入黄历
   const datePreload = [
-    { role: 'user', content: `今天是${_t.dateStr}，${_t.gz}日，${_t.dateStr}星期${_t.weekStr}。记住这个日期，后续所有问题都基于这个日期回答。` },
-    { role: 'assistant', content: `好的，我已记下：今天是${_t.dateStr}（${_t.gz}日），我会以此日期为准回答所有涉及今日的问题。` }
+    { role: 'user', content: hlText },
+    { role: 'assistant', content: `收到。今天是${_t.dateStr}，${_t.gz}日，${_hl.zhiRiName}日。宜${_hl.yi.slice(0,3).join('、')}，忌${_hl.ji.slice(0,3).join('、')}，冲${_hl.chong}。我将以这份黄历数据为准分析今日运势。` }
   ];
   const apiMessages = [
     { role: 'system', content: buildSystemPrompt() },
