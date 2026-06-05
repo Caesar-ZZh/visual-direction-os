@@ -1550,20 +1550,15 @@ function buildSystemPrompt() {
     ).join('\n');
   }
 
-  // 今日日期和日干支（实时计算，注入给AI，防止AI自己乱猜）
-  const _now = new Date();
-  const _todayStr = `${_now.getFullYear()}年${_now.getMonth()+1}月${_now.getDate()}日`;
-  const _weekNames = ['日','一','二','三','四','五','六'];
-  const _weekStr = `星期${_weekNames[_now.getDay()]}`;
+  // 今日信息：统一调全局函数，确保所有用户看到相同日期
+  const _today = getTodayInfo();
+  const _todayStr = _today.dateStr;
+  const _weekStr = `星期${_today.weekStr}`;
   let _todayGZ = '';
   try {
-    const _base = new Date(2000, 0, 7); // 甲子日基准
-    const _diff = Math.round((_now - _base) / 86400000);
-    const _gs = STEMS[(((_diff) % 10) + 10) % 10];
-    const _gb = BRANCHES[(((_diff) % 12) + 12) % 12];
-    const _star = getStar(bazi.dayMaster.stem, _gs);
-    _todayGZ = `${_gs}${_gb}日，与日主${bazi.dayMaster.stem}${bazi.dayMaster.element}的关系：${_star}`;
-  } catch(e) { _todayGZ = '（计算失败）'; }
+    const _star = getStar(bazi.dayMaster.stem, _today.gan);
+    _todayGZ = `${_today.gz}日，与日主${bazi.dayMaster.stem}${bazi.dayMaster.element}的十神关系：${_star}`;
+  } catch(e) { _todayGZ = `${_today.gz}日`; }
 
   return `你是一位精通中国传统命理的大师，精通八字、易经、六爻、神煞等体系。
 
@@ -1595,6 +1590,28 @@ ${pillarDesc}${profileSection}${historySection}
 
 let messages = [];
 let isLoading = false;
+
+// ─────────────────────────────────────────
+// 全局今日日期（唯一计算来源，所有地方都调这个）
+// ─────────────────────────────────────────
+function getTodayInfo() {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = now.getMonth() + 1;
+  const d = now.getDate();
+  const dateStr = `${y}年${m}月${d}日`;
+  const weekStr = '日一二三四五六'[now.getDay()];
+
+  // 日干支：以 2000-01-07 甲子日为基准
+  const base = new Date(2000, 0, 7);
+  const diff = Math.round((new Date(y, m-1, d) - base) / 86400000);
+  const ganIdx = ((diff % 10) + 10) % 10;
+  const zhiIdx = ((diff % 12) + 12) % 12;
+  const gan = STEMS[ganIdx];
+  const zhi = BRANCHES[zhiIdx];
+
+  return { y, m, d, dateStr, weekStr, gan, zhi, gz: gan + zhi, diff };
+}
 
 function addMessage(role, content, isTyping=false) {
   const wrap = document.getElementById('chatMessages');
@@ -1700,15 +1717,9 @@ let _quickQuestions = [];
 function renderQuickBtns() {
   const bazi = getActiveBazi();
   const dm = bazi.dayMaster.stem + bazi.dayMaster.element;
-  const _qNow = new Date();
-  const _qDate = `${_qNow.getFullYear()}年${_qNow.getMonth()+1}月${_qNow.getDate()}日`;
-  let _qGZ = '';
-  try {
-    const _qd = Math.round((_qNow - new Date(2000,0,7))/86400000);
-    _qGZ = STEMS[((_qd%10)+10)%10] + BRANCHES[((_qd%12)+12)%12];
-  } catch(e){}
+  const _qt = getTodayInfo();
   _quickQuestions = [
-    `今天是${_qDate}${_qGZ?'，'+_qGZ+'日':''}，请结合我的八字分析今日运势，给出具体建议。`,
+    `今天是${_qt.dateStr}，${_qt.gz}日，请结合我的八字分析今日运势，给出具体建议。`,
     '我的感情运势如何？有什么建议？',
     '事业上有什么建议？',
     `请分析日主${dm}的强弱，以及对整体命局的影响。`,
@@ -1836,11 +1847,8 @@ function fireReminder() {
   setTimeout(() => {
     const bazi = getActiveBazi();
     const u = users[activeUserIdx] || {};
-    const _n = new Date();
-    const _ds = `${_n.getFullYear()}年${_n.getMonth()+1}月${_n.getDate()}日`;
-    let _gz = '';
-    try { const _d=Math.round((_n-new Date(2000,0,7))/86400000); _gz=`（${STEMS[((_d%10)+10)%10]}${BRANCHES[((_d%12)+12)%12]}日）`; } catch(e){}
-    quickAsk(`今天是${_ds}${_gz}，请结合命主【${u.name||'本人'}】的八字（日主${bazi.dayMaster.stem}${bazi.dayMaster.element}）和今日${gua.name}卦，给出简短的早安提醒和今日重点建议。`);
+    const _ft = getTodayInfo();
+    quickAsk(`今天是${_ft.dateStr}，${_ft.gz}日，请结合命主【${u.name||'本人'}】的八字（日主${bazi.dayMaster.stem}${bazi.dayMaster.element}）和今日${gua.name}卦，给出简短的早安提醒和今日重点建议。`);
   }, 1000);
 }
 
@@ -1974,11 +1982,8 @@ function switchTab(tab) {
   if (tab === 'daily') {
     const bazi = getActiveBazi();
     const u = users[activeUserIdx] || {};
-    const _n2 = new Date();
-    const _ds2 = `${_n2.getFullYear()}年${_n2.getMonth()+1}月${_n2.getDate()}日`;
-    let _gz2 = '';
-    try { const _d2=Math.round((_n2-new Date(2000,0,7))/86400000); _gz2=`（${STEMS[((_d2%10)+10)%10]}${BRANCHES[((_d2%12)+12)%12]}日）`; } catch(e){}
-    quickAsk(`今天是${_ds2}${_gz2}，请结合命主【${u.name||'本人'}】的八字（日主${bazi.dayMaster.stem}${bazi.dayMaster.element}，${bazi.solar}生）和今日卦象给出详细日课解读：① 今日整体运势 ② 需要注意的事项 ③ 适合做的事情 ④ 一句今日格言。`);
+    const _st = getTodayInfo();
+    quickAsk(`今天是${_st.dateStr}，${_st.gz}日，请结合命主【${u.name||'本人'}】的八字（日主${bazi.dayMaster.stem}${bazi.dayMaster.element}，${bazi.solar}生）和今日卦象给出详细日课解读：① 今日整体运势 ② 需要注意的事项 ③ 适合做的事情 ④ 一句今日格言。`);
   }
 }
 
@@ -2067,14 +2072,13 @@ function renderOverview(bazi, u) {
     }
   } catch(e) {}
 
-  // 今日日干
+  // 今日日干（统一调全局函数）
   let todayStr = '—', todayColor = 'var(--text2)';
   try {
-    const diff = Math.round((new Date()-new Date(2000,0,7))/86400000);
-    const g = STEMS[((diff%10)+10)%10];
-    const star = getStar(dm.stem, g);
+    const _t = getTodayInfo();
+    const star = getStar(dm.stem, _t.gan);
     todayColor = ['正财','正官','食神','正印','比肩'].includes(star) ? 'var(--green)' : 'var(--red)';
-    todayStr = `${g}日・${star}`;
+    todayStr = `${_t.gz}日・${star}`;
   } catch(e) {}
 
   card.innerHTML = `
