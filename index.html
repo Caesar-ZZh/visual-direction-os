@@ -1550,6 +1550,21 @@ function buildSystemPrompt() {
     ).join('\n');
   }
 
+  // 今日日期和日干支（实时计算，注入给AI，防止AI自己乱猜）
+  const _now = new Date();
+  const _todayStr = `${_now.getFullYear()}年${_now.getMonth()+1}月${_now.getDate()}日`;
+  const _weekNames = ['日','一','二','三','四','五','六'];
+  const _weekStr = `星期${_weekNames[_now.getDay()]}`;
+  let _todayGZ = '';
+  try {
+    const _base = new Date(2000, 0, 7); // 甲子日基准
+    const _diff = Math.round((_now - _base) / 86400000);
+    const _gs = STEMS[(((_diff) % 10) + 10) % 10];
+    const _gb = BRANCHES[(((_diff) % 12) + 12) % 12];
+    const _star = getStar(bazi.dayMaster.stem, _gs);
+    _todayGZ = `${_gs}${_gb}日，与日主${bazi.dayMaster.stem}${bazi.dayMaster.element}的关系：${_star}`;
+  } catch(e) { _todayGZ = '（计算失败）'; }
+
   return `你是一位精通中国传统命理的大师，精通八字、易经、六爻、神煞等体系。
 
 当前命主：【${name}】
@@ -1558,6 +1573,10 @@ function buildSystemPrompt() {
 - 阳历：${bazi.solar}（${bazi.hourName||''}）
 - 性别：${bazi.gender}（${bazi.gender==='男'?'乾':'坤'}造）
 - 日主：${bazi.dayMaster.stem}${bazi.dayMaster.element}${strengthInfo}${yunInfo}
+
+【今日信息（当前真实日期，必须严格使用，禁止自行推断）】
+- 今日日期：${_todayStr}（${_weekStr}）
+- 今日日干支：${_todayGZ}
 
 【四柱命盘】
 ${pillarDesc}${profileSection}${historySection}
