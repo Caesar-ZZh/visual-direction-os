@@ -1576,6 +1576,10 @@ function buildSystemPrompt() {
 【四柱命盘】
 ${pillarDesc}${profileSection}${historySection}
 
+【重要规则——违反即为错误】
+- 今天的日期已在顶部声明，禁止向用户询问日期，禁止说"请告诉我今天是哪天"，直接使用声明的日期作答
+- 今日干支已提供，禁止自行推算或质疑，直接使用
+
 【回复风格要求】
 - 语气温和智慧，如一位熟悉命主的老师，带传统文化韵味
 - 适当使用表情符号增强可读性（如 ✦ 🌙 ⚡ 🔥 💫 ☯ 等，每条回复1-3个即可，不要滥用）
@@ -1689,7 +1693,13 @@ async function sendMessage() {
   if (!text || isLoading) return;
   inp.value = ''; inp.style.height='auto';
   addMessage('user', text);
-  messages.push({role:'user', content:text});
+  // 发给 API 的内容：若用户问到"今日/今天"相关，自动在消息开头注入日期
+  const _t = getTodayInfo();
+  const _needDate = /今日|今天|当前|现在|最近|这几天|运势/.test(text);
+  const apiContent = _needDate
+    ? `[今天是${_t.dateStr}，${_t.gz}日] ${text}`
+    : text;
+  messages.push({role:'user', content: apiContent});
   if (messages.length > 100) messages = messages.slice(-60);
   await callAI();
 }
