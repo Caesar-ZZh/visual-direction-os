@@ -281,7 +281,7 @@ textarea#chatInput::placeholder{color:var(--text3)}
 .ov-val.gold{color:var(--gold)}
 
 /* ── 六爻铜钱起卦模态框 ── */
-.hexagram-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity .3s}
+.hexagram-modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:9999;opacity:0;pointer-events:none;transition:opacity .3s}
 .hexagram-modal-overlay.show{opacity:1;pointer-events:all}
 .hexagram-modal{background:var(--bg2);border:1px solid var(--gold);border-radius:14px;padding:28px;width:520px;max-width:90vw;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(196,163,98,.2)}
 .hexagram-header{text-align:center;margin-bottom:24px}
@@ -2919,9 +2919,15 @@ let hexagramState = {
 function openHexagramModal() {
   hexagramState = {yaos: [], step: 0, shaking: false, mainGua: null, changeGua: null};
   const overlay = document.getElementById('hexagramOverlay');
+  // 强制移到 body 最末尾确保不被父元素遮挡
+  document.body.appendChild(overlay);
   overlay.classList.add('show');
   renderYaoLines();
   updateHexagramStep();
+  // 重置摇卦按钮
+  const btn = document.getElementById('shakeBtn');
+  if (btn) { btn.disabled = false; btn.textContent = '摇卦'; }
+  document.getElementById('guaResult').style.display = 'none';
 }
 
 function closeHexagramModal() {
