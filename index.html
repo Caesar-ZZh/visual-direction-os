@@ -1508,8 +1508,8 @@ function buildSystemPrompt() {
   const name = u.name || '命主';
   const ps = bazi.pillars;
   const pillarDesc = ps.map(p =>
-    `${p.label}${p.stem.char}${p.branch.char}（${p.mainStar}）藏${p.hiddenStems.join('')} 副${p.subStars.filter(Boolean).join('/')} 神煞${p.shenSha&&p.shenSha.length?p.shenSha.join('/'):'-'}`
-  ).join('；');
+    `${p.label}：${p.stem.char}${p.branch.char}（${p.mainStar}）天干${p.stem.char}${p.stem.element}｜地支${p.branch.char}${p.branch.element}｜藏干${p.hiddenStems.join('、')}｜副星${p.subStars.filter(Boolean).join('、')}｜${p.yunCheng}｜空亡${p.kongWang}｜纳音${p.naYin}${p.shenSha&&p.shenSha.length?'｜神煞'+p.shenSha.join('、'):''}`
+  ).join('\n');
 
   // 五行强弱
   let strengthInfo = '';
@@ -1561,16 +1561,25 @@ function buildSystemPrompt() {
   let _todayStar = '';
   try { _todayStar = `（与日主${getStar(bazi.dayMaster.stem, _today.gan)}）`; } catch(e) {}
 
-  return `你是精通八字命理的大师。禁止向用户询问日期，禁止自行推算日期，直接使用下方提供的今日数据作答。
+  return `你是一位精通中国传统命理的大师，精通八字、易经、六爻、神煞等体系，解读深入且接地气。
+禁止向用户询问日期，禁止自行推算日期，直接使用下方提供的今日数据作答。
 
-命主：${name} | ${bazi.gender} | 日主${bazi.dayMaster.stem}${bazi.dayMaster.element}${strengthInfo}${yunInfo}
-生辰：${bazi.solar}
-四柱：${pillarDesc}
+【命主】${name} | ${bazi.gender} | 日主${bazi.dayMaster.stem}${bazi.dayMaster.element}
+生辰：${bazi.solar}（${bazi.hourName||''}）${strengthInfo}${yunInfo}
 
-今日：${_today.dateStr} ${_today.gz}日${_todayStar} ${_hl.zhiRiName}日 ${_hl.nayin}
-宜：${_hl.yi.join('、')||'无'} | 忌：${_hl.ji.join('、')||'无'} | 冲${_hl.chong}煞${_hl.sha}${profileSection}${historySection}
+【四柱命盘】
+${pillarDesc}
 
-回复要求：200字内，语气温和，关键词加**粗体**，可用1-2个表情，禁用#标题，结尾给1条行动建议。`;
+【今日黄历（${_today.dateStr} ${_today.gz}日 ${_hl.zhiRiName}日 ${_hl.nayin}）】
+宜：${_hl.yi.join('、')||'无'} | 忌：${_hl.ji.join('、')||'无'} | 冲${_hl.chong}（煞${_hl.sha}）
+彭祖百忌：${_hl.pengGan}；${_hl.pengZhi}
+今日干支与命主关系：${_todayStar}${profileSection}${historySection}
+
+【回复风格】
+- 语气温和智慧，带传统文化韵味，如熟悉命主的老师
+- 关键命理术语加**粗体**，适当用1-2个表情（✦ 🌙 ⚡ 🔥 💫 ☯）
+- 分段清晰，结合命主具体命盘数据分析，避免泛泛而谈
+- 禁用 # ## ### 标题符号，结尾给1条具体行动建议`;
 }
 
 let messages = [];
@@ -1805,18 +1814,18 @@ async function callAI() {
   const apiKey = localStorage.getItem(`apiKey_${provider}`) || '';
   const model = localStorage.getItem(`model_${provider}`) || cfg.models[0];
   const typingEl = addMessage('ai', '', true);
+  const bubble = typingEl.querySelector('.msg-bubble');
   isLoading = true;
   document.getElementById('sendBtn').disabled = true;
 
   if (!apiKey) {
-    typingEl.querySelector('.msg-bubble').innerHTML = renderMarkdown(`请先点击右上角「⚙ 设置」配置 API Key。\n\n当前服务商：${cfg.name}\n${cfg.keyHint}`);
+    bubble.innerHTML = renderMarkdown(`请先点击右上角「⚙ 设置」配置 API Key。\n\n当前服务商：${cfg.name}\n${cfg.keyHint}`);
     isLoading = false;
     document.getElementById('sendBtn').disabled = false;
     return;
   }
 
-  // 构造发给 API 的消息列表（精简，减少 token 消耗）
-  const historySlice = messages.slice(-6); // 只保留最近6条，减少 token
+  const historySlice = messages.slice(-8);
   const apiMessages = [
     { role: 'system', content: buildSystemPrompt() },
     ...historySlice
@@ -1829,7 +1838,7 @@ async function callAI() {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`
       },
-      body: JSON.stringify({ model, max_tokens: 4096, messages: apiMessages })
+      body: JSON.stringify({ model, max_tokens: 4096, stream: true, messages: apiMessages })
     });
 
     if (!resp.ok) {
@@ -1837,13 +1846,41 @@ async function callAI() {
       throw new Error(err.error?.message || `HTTP ${resp.status}`);
     }
 
-    const data = await resp.json();
-    const reply = data.choices?.[0]?.message?.content || '（无回应）';
-    typingEl.querySelector('.msg-bubble').innerHTML = renderMarkdown(reply);
-    messages.push({role:'assistant', content:reply});
+    // 流式读取
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let fullText = '';
+    bubble.innerHTML = ''; // 清除 typing 动画
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = decoder.decode(value, { stream: true });
+      // SSE 格式：每行 "data: {...}" 或 "data: [DONE]"
+      const lines = chunk.split('\n');
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed.startsWith('data:')) continue;
+        const data = trimmed.slice(5).trim();
+        if (data === '[DONE]') continue;
+        try {
+          const json = JSON.parse(data);
+          const delta = json.choices?.[0]?.delta?.content || '';
+          if (delta) {
+            fullText += delta;
+            bubble.innerHTML = renderMarkdown(fullText);
+            // 自动滚到底部
+            const msgs = document.getElementById('chatMessages');
+            msgs.scrollTop = msgs.scrollHeight;
+          }
+        } catch(e) { /* 忽略解析错误的行 */ }
+      }
+    }
+
+    messages.push({role:'assistant', content: fullText});
     saveConversationHistory();
   } catch(e) {
-    typingEl.querySelector('.msg-bubble').innerHTML = `<span style="color:#e07070">解读失败：${e.message}</span>\n\n服务商：${cfg.name}，请检查 Key 或网络。`;
+    bubble.innerHTML = `<span style="color:#e07070">解读失败：${e.message}</span>\n\n服务商：${cfg.name}，请检查 Key 或网络。`;
   }
 
   isLoading = false;
