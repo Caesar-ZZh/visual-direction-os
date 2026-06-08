@@ -3221,9 +3221,262 @@ function interpretHexagram() {
   q += `\n\n命主八字（日主${bazi.dayMaster.stem}${bazi.dayMaster.element}），${today.dateStr}（${today.gz}日）。请结合六爻卦象给出详细的运势指引和建议。`;
 
   closeHexagramModal();
-  document.getElementById('chatInput').value = q;
   switchPanelTab('chat');
+
+  // 先渲染六爻排盘卡片到聊天框
+  const cardHtml = buildLiuYaoCard(bazi, u, today);
+  if (cardHtml) addMessageCard(cardHtml);
+
+  // 再让AI解读
+  document.getElementById('chatInput').value = q;
   sendMessage();
+}
+
+// ═══════════════════════════════════════════════════════
+// 六爻完整排盘系统
+// ═══════════════════════════════════════════════════════
+
+// 八宫（每卦所属的宫）
+const GUA_PALACE = {
+  '111111':'乾','111110':'乾','111100':'乾','111000':'乾','111001':'乾','111011':'乾','111111':'乾','110111':'乾',
+  '000000':'坤','000001':'坤','000011':'坤','000111':'坤','000110':'坤','000100':'坤','000010':'坤','001000':'坤',
+  '100010':'坎','000010':'坤',
+};
+
+// 六十四卦纳甲表（每卦六爻的地支，从初爻到上爻）
+// 格式：卦二进制 → [初爻,二爻,三爻,四爻,五爻,上爻] 地支纳甲
+const NAJIA_TABLE = {
+  '111111':['子','寅','辰','午','申','戌'], // 乾
+  '000000':['未','巳','卯','丑','亥','酉'], // 坤
+  '100010':['寅','子','戌','亥','丑','卯'], // 坎
+  '010101':['卯','巳','未','午','辰','寅'], // 离
+  '001110':['子','戌','申','辰','寅','子'], // 震
+  '011100':['丑','卯','巳','戌','申','午'], // 艮
+  '110001':['卯','巳','未','申','午','辰'], // 巽
+  '000111':['未','酉','亥','子','戌','申'], // 兑
+  // 以下为其余56卦，用通用算法推算
+};
+
+// 八纯卦纳甲（用于推算所有64卦）
+const PURE_NAJIA = {
+  乾: ['子','寅','辰','午','申','戌'],  // 甲子起，隔干支
+  坤: ['未','巳','卯','丑','亥','酉'],
+  震: ['子','寅','辰','戌','申','午'],  // 注：坤宫一世卦
+  巽: ['丑','亥','酉','卯','巳','未'],
+  坎: ['寅','子','戌','亥','丑','卯'],
+  离: ['卯','巳','未','午','辰','寅'],
+  艮: ['辰','寅','子','未','酉','亥'],
+  兑: ['巳','卯','丑','申','午','辰'],
+};
+
+// 八宫归属（64卦 → 所属宫）
+const GUA_TO_PALACE = {
+  '111111':'乾','111110':'乾','111100':'乾','111000':'乾','111001':'乾','111011':'乾','111111':'乾','110111':'乾',
+  '000000':'坤','000001':'坤','000011':'坤','000111':'坤','000110':'坤','000100':'坤','000010':'坤','001000':'坤',
+  '010000':'震','011000':'震','011001':'震','011011':'震','001011':'震','001001':'震','001000':'震','000000':'坤',
+  '110110':'巽','010110':'巽','000110':'巽','100110':'巽','100010':'巽','110010':'巽','110110':'巽',
+  '010010':'坎','110010':'坎','100010':'坎','100000':'坎','100001':'坎','010001':'坎','010011':'坎',
+  '101101':'离','001101':'离','011101':'离','011001':'离','011000':'离','101000':'离','101100':'离',
+  '100100':'艮','000100':'艮','010100':'艮','010110':'艮','110110':'艮','110100':'艮','100110':'艮',
+  '011011':'兑','111011':'兑','101011':'兑','101001':'兑','001001':'兑','001011':'兑','011001':'兑',
+};
+
+// 六神（六亲配六神：子日→青龙，逢甲乙日→青龙起六亲，循环分配）
+const LIU_SHEN_NAMES = ['青龙','朱雀','勾陈','腾蛇','白虎','玄武'];
+// 日干起六神：甲乙→青龙，丙丁→朱雀，戊→勾陈，己→腾蛇，庚辛→白虎，壬癸→玄武
+const GAN_LIUSHEN_START = {甲:0,乙:0,丙:1,丁:1,戊:2,己:3,庚:4,辛:4,壬:5,癸:5};
+
+// 六亲（以日主五行对各爻地支的关系）
+function getQin(dayEl, branchEl) {
+  const sheng = {木:'水',火:'木',土:'火',金:'土',水:'金'};
+  const ke    = {木:'土',火:'金',土:'水',金:'木',水:'火'};
+  if (branchEl === dayEl) return '兄弟';
+  if (sheng[dayEl] === branchEl) return '子孙';
+  if (ke[dayEl] === branchEl) return '妻财';
+  if (sheng[branchEl] === dayEl) return '父母';
+  if (ke[branchEl] === dayEl) return '官鬼';
+  return '兄弟';
+}
+
+// 地支五行
+const ZHI_EL = {子:'水',丑:'土',寅:'木',卯:'木',辰:'土',巳:'火',午:'火',未:'土',申:'金',酉:'金',戌:'土',亥:'水'};
+
+// 计算世应位（以八宫为基）
+function getShiYing(binary) {
+  // 纯卦世在第六爻，一世卦世在初爻...
+  // 简化：通过与纯卦的差异计算
+  const shis = {
+    0: 6, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 4, 7: 3
+  };
+  // 用爻变次数判断世位（这里用简化规则）
+  // 乾宫：纯乾世6，一世世1，二世世2...游魂世4，归魂世3
+  // 实际八宫各有差异，用查表法
+  const worldTable = {
+    '111111':6, '111110':1, '111100':2, '111000':3, '111001':4, '111011':4, '110011':3,
+    '000000':6, '000001':1, '000011':2, '000111':3, '000110':4, '000100':4, '001100':3,
+  };
+  return worldTable[binary] || 3;
+}
+
+// 主函数：构建六爻排盘数据
+function calcLiuYao(yaos, dayGan) {
+  // yaos: [初爻,二爻,三爻,四爻,五爻,上爻] 值为6/7/8/9
+  const binary = yaos.map(v => (v===7||v===9)?'1':'0').join('');
+  const gua = GUA_64_MAP[binary];
+  if (!gua) return null;
+
+  // 获取下卦（初至三）和上卦（四至六）
+  const lowerBin = binary.slice(0,3);
+  const upperBin = binary.slice(3,6);
+
+  // 纳甲地支（简化：用乾坤等八纯卦推算，其他用地支循环）
+  // 用比较成熟的方式：按卦宫推算
+  const palace = GUA_TO_PALACE[binary] || '乾';
+  const pureNajia = PURE_NAJIA[palace] || PURE_NAJIA['乾'];
+
+  // 世应位
+  const shiPos = getShiYing(binary);
+  const yingPos = shiPos <= 3 ? shiPos + 3 : shiPos - 3;
+
+  // 日主五行
+  const dayEl = STEM_EL[STEMS.indexOf(dayGan)] || '木';
+
+  // 六神起始（从日干起）
+  const liuShenStart = GAN_LIUSHEN_START[dayGan] ?? 0;
+
+  // 构建六爻数据（从初爻到上爻）
+  const lines = yaos.map((val, i) => {
+    const zhi = pureNajia[i];
+    const zhiEl = ZHI_EL[zhi] || '土';
+    const qin = getQin(dayEl, zhiEl);
+    const isYang = val === 7 || val === 9;
+    const isChanging = val === 6 || val === 9;
+    const liuShen = LIU_SHEN_NAMES[(liuShenStart + i) % 6];
+    return { pos: i+1, val, isYang, isChanging, zhi, zhiEl, qin, liuShen,
+             isShi: (i+1)===shiPos, isYing: (i+1)===yingPos };
+  });
+
+  // 变卦
+  let changeGua = null;
+  const changingIdxs = yaos.map((v,i)=>(v===6||v===9)?i:-1).filter(i=>i>=0);
+  if (changingIdxs.length > 0) {
+    const changeBin = binary.split('').map((b,i) =>
+      changingIdxs.includes(i) ? (b==='1'?'0':'1') : b
+    ).join('');
+    changeGua = GUA_64_MAP[changeBin];
+  }
+
+  return { gua, binary, palace, lines, shiPos, yingPos, changeGua, changingIdxs, dayGan };
+}
+
+// 渲染六爻排盘 HTML 卡片（插入聊天框）
+function buildLiuYaoCard(bazi, u, today) {
+  const dayGan = today.gan;
+  const data = calcLiuYao(hexagramState.yaos, dayGan);
+  if (!data) return null;
+
+  const { gua, lines, shiPos, yingPos, changeGua, changingIdxs, palace } = data;
+
+  // 六亲颜色
+  const QIN_COLOR = {
+    '官鬼':'#e06666','妻财':'#4ea05e','父母':'#4488bb',
+    '兄弟':'#a09080','子孙':'#c4a362',
+  };
+
+  // 六神颜色
+  const SHEN_COLOR = {
+    '青龙':'#4ea05e','朱雀':'#e06666','勾陈':'#c4a362',
+    '腾蛇':'#9966cc','白虎':'#bbbbbb','玄武':'#4488bb',
+  };
+
+  // 爻象渲染（从上爻到初爻）
+  const linesHtml = [...lines].reverse().map(l => {
+    const posName = ['初','二','三','四','五','上'][l.pos-1];
+    const qinColor = QIN_COLOR[l.qin] || '#a09080';
+    const shenColor = SHEN_COLOR[l.liuShen] || '#a09080';
+
+    // 爻形
+    const yaoShape = l.isYang
+      ? `<div style="height:6px;background:${l.isChanging?'#4ea05e':'var(--gold)'};border-radius:2px;flex:1"></div>`
+      : `<div style="display:flex;gap:8px;flex:1"><div style="height:6px;background:${l.isChanging?'#4ea05e':'var(--gold)'};border-radius:2px;flex:1"></div><div style="height:6px;background:${l.isChanging?'#4ea05e':'var(--gold)'};border-radius:2px;flex:1"></div></div>`;
+
+    const tag = l.isShi
+      ? `<span style="background:#2a5298;color:#fff;font-size:9px;padding:1px 5px;border-radius:10px">世</span>`
+      : l.isYing
+      ? `<span style="background:#2d7a4f;color:#fff;font-size:9px;padding:1px 5px;border-radius:10px">应</span>`
+      : l.isChanging
+      ? `<span style="background:#6a3d9a;color:#fff;font-size:9px;padding:1px 5px;border-radius:10px">动→变</span>`
+      : '';
+
+    return `<div style="display:grid;grid-template-columns:44px 44px 72px 1fr 20px 60px;align-items:center;gap:6px;padding:7px 10px;border-bottom:1px solid rgba(196,163,98,.1)">
+      <span style="color:${shenColor};font-size:12px">${l.liuShen}</span>
+      <span style="color:${qinColor};font-size:12px;font-weight:500">${l.qin}</span>
+      <span style="color:var(--text2);font-size:11px">${l.zhi}${l.zhiEl}·${l.zhiEl}</span>
+      <div style="display:flex;align-items:center;padding:0 4px">${yaoShape}</div>
+      <span style="color:var(--text3);font-size:11px;text-align:center">${posName}</span>
+      <div style="text-align:right">${tag}</div>
+    </div>`;
+  }).join('');
+
+  // 动爻描述
+  const dongYao = changingIdxs.map(i => `${['初','二','三','四','五','上'][i]}爻（${lines[i].qin}）`).join('、');
+
+  const title = changeGua
+    ? `${gua.name}卦 ䷁ → ${changeGua.name}卦`
+    : `${gua.name}卦`;
+
+  return `<div style="margin:8px 0;background:var(--bg3);border:1px solid var(--border);border-radius:10px;overflow:hidden;font-family:inherit">
+    <!-- 卦名标题 -->
+    <div style="text-align:center;padding:16px 16px 10px;background:rgba(196,163,98,.06)">
+      <div style="font-size:17px;color:var(--gold);font-weight:500;letter-spacing:.1em;margin-bottom:4px">${title}</div>
+      <div style="font-size:11px;color:var(--text3)">${palace}宫 · ${today.dateStr} · ${today.gz}日 · ${changingIdxs.length>0?dongYao+'发动':'无动爻'}</div>
+    </div>
+    <!-- 世应用神信息 -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-bottom:1px solid var(--border)">
+      <div style="text-align:center;padding:10px;border-right:1px solid var(--border)">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:3px">宫别</div>
+        <div style="font-size:13px;color:var(--text)">${palace}宫·${ZHI_EL[data.lines[0]?.zhi]||'木'}</div>
+      </div>
+      <div style="text-align:center;padding:10px;border-right:1px solid var(--border)">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:3px">世爻</div>
+        <div style="font-size:13px;color:var(--blue)">${['初','二','三','四','五','上'][shiPos-1]}爻 ${lines[shiPos-1]?.qin||''}</div>
+      </div>
+      <div style="text-align:center;padding:10px">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:3px">应爻</div>
+        <div style="font-size:13px;color:var(--green)">${['初','二','三','四','五','上'][yingPos-1]}爻 ${lines[yingPos-1]?.qin||''}</div>
+      </div>
+    </div>
+    <!-- 爻列标题 -->
+    <div style="display:grid;grid-template-columns:44px 44px 72px 1fr 20px 60px;gap:6px;padding:5px 10px;background:rgba(0,0,0,.2)">
+      <span style="font-size:10px;color:var(--text3)">六神</span>
+      <span style="font-size:10px;color:var(--text3)">六亲</span>
+      <span style="font-size:10px;color:var(--text3)">纳甲·行</span>
+      <span style="font-size:10px;color:var(--text3);padding-left:4px">爻象</span>
+      <span style="font-size:10px;color:var(--text3);text-align:center">位</span>
+      <span style="font-size:10px;color:var(--text3);text-align:right">标记</span>
+    </div>
+    <!-- 六爻行 -->
+    ${linesHtml}
+    <!-- 卦辞 -->
+    <div style="padding:10px 14px;background:rgba(196,163,98,.04);border-top:1px solid var(--border);font-size:11px;color:var(--text2);line-height:1.8">
+      <span style="color:var(--gold)">☯ ${gua.name}·${gua.ci}</span>
+    </div>
+  </div>`;
+}
+
+// 修改 addMessage 支持插入自定义 HTML 卡片
+function addMessageCard(htmlContent) {
+  if (!htmlContent) return null;
+  const wrap = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'msg ai';
+  div.innerHTML = `
+    <div class="msg-avatar">☯</div>
+    <div class="msg-bubble" style="padding:0;background:none;border:none;max-width:100%;width:100%">${htmlContent}</div>
+  `;
+  wrap.appendChild(div);
+  wrap.scrollTop = wrap.scrollHeight;
+  return div;
 }
 
 </script>
