@@ -2244,9 +2244,15 @@ function calcDayMasterStrength(bazi) {
   });
 
   const score = (gotSeason ? 2 : 0) - (loseSeason ? 2 : 0) + support;
-  if (score >= 3) return {label:'身强', cls:'strong', advice:'喜用：食神、财星、官星'};
-  if (score >= 1) return {label:'中和', cls:'medium', advice:'喜用：根据格局而定'};
-  return {label:'身弱', cls:'weak', advice:'喜用：印星、比劫'};
+  const el5 = dayEl;
+  const adviceMap = {
+    强: {木:'喜金官杀泄秀，喜火食伤',火:'喜水官杀，喜土食伤',土:'喜木官杀，喜金食伤',金:'喜火官杀，喜水食伤',水:'喜土官杀，喜木食伤'},
+    中: {木:'宜守中，忌金水过旺',火:'宜守中，忌水金过旺',土:'宜守中，忌木水过旺',金:'宜守中，忌火木过旺',水:'宜守中，忌土火过旺'},
+    弱: {木:'喜水印绶，喜木比劫',火:'喜木印绶，喜火比劫',土:'喜火印绶，喜土比劫',金:'喜土印绶，喜金比劫',水:'喜金印绶，喜水比劫'},
+  };
+  if (score >= 3) return {label:'身强', cls:'strong', advice: adviceMap.强[el5] || '喜用：官杀食伤'};
+  if (score >= 1) return {label:'中和', cls:'medium', advice: adviceMap.中[el5] || '宜守中平衡'};
+  return {label:'身弱', cls:'weak', advice: adviceMap.弱[el5] || '喜用：印星比劫'};
 }
 
 function renderOverview(bazi, u) {
@@ -2278,9 +2284,17 @@ function renderOverview(bazi, u) {
       if(el===dayEl) score++;
       if(sheng[dayEl]===el) score+=0.5;
     });
-    if (score>=3) { strLabel='身强'; strCls='strong'; strAdvice='喜：食财官'; }
-    else if (score>=1) { strLabel='中和'; strCls='medium'; strAdvice='据格局而定'; }
-    else { strLabel='身弱'; strCls='weak'; strAdvice='喜：印星比劫'; }
+    const el5 = dm.element;
+    if (score>=3) {
+      strLabel='身强';strCls='strong';
+      strAdvice=`喜${el5==='木'?'金（官杀）、火（食伤）':el5==='火'?'水（官杀）、土（食伤）':el5==='土'?'木（官杀）、金（食伤）':el5==='金'?'火（官杀）、水（食伤）':'土（官杀）、木（食伤）'}`;
+    } else if (score>=1) {
+      strLabel='中和';strCls='medium';
+      strAdvice=`宜守中，${el5==='木'?'忌金过旺':el5==='火'?'忌水过旺':el5==='土'?'忌木过旺':el5==='金'?'忌火过旺':'忌土过旺'}`;
+    } else {
+      strLabel='身弱';strCls='weak';
+      strAdvice=`喜${el5==='木'?'水（印）、木（比劫）':el5==='火'?'木（印）、火（比劫）':el5==='土'?'火（印）、土（比劫）':el5==='金'?'土（印）、金（比劫）':'金（印）、水（比劫）'}`;
+    }
   } catch(e) {}
 
   // 当前大运
