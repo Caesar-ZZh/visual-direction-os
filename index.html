@@ -824,19 +824,40 @@ function getYearGanZhi(year) {
 }
 
 // 月干推算（年干 + 月支 → 月干）
-function getMonthStem(yearStem, monthBranchIdx) {
-  // 甲己年：寅月从丙起
-  const startMap = {甲:2,己:2, 乙:4,庚:4, 丙:6,辛:6, 丁:8,壬:8, 戊:0,癸:0};
-  const base = startMap[yearStem] ?? 0;
-  return STEMS[(base + monthBranchIdx) % 10];
+// 月支（以节气为准，比粗暴+1更准确）
+// 节气日期近似值（每年相差不超过1-2天，适合命理排盘精度）
+const SOLAR_TERMS = [
+  [1,  6,  1],  // 小寒后 → 丑月(1)
+  [2,  4,  2],  // 立春后 → 寅月(2)
+  [3,  6,  3],  // 惊蛰后 → 卯月(3)
+  [4,  5,  4],  // 清明后 → 辰月(4)
+  [5,  6,  5],  // 立夏后 → 巳月(5)
+  [6,  6,  6],  // 芒种后 → 午月(6)
+  [7,  7,  7],  // 小暑后 → 未月(7)
+  [8,  7,  8],  // 立秋后 → 申月(8)
+  [9,  8,  9],  // 白露后 → 酉月(9)
+  [10, 8,  10], // 寒露后 → 戌月(10)
+  [11, 7,  11], // 立冬后 → 亥月(11)
+  [12, 7,  0],  // 大雪后 → 子月(0)
+];
+function getMonthBranchIdx(month, day) {
+  // 默认子月(0)：1月小寒前属于上年大雪后的子月
+  let result = 0;
+  for (const [jm, jd, bi] of SOLAR_TERMS) {
+    if (month > jm || (month === jm && day >= jd)) result = bi;
+  }
+  return result;
 }
 
-// 月支（节气简化：用月份近似）
-const MONTH_BRANCH = [11,0,1,2,3,4,5,6,7,8,9,10]; // Jan=寅(2)…实际以节气为准，这里用月份近似
-function getMonthBranchIdx(month, day) {
-  // 简化：1月上旬前为丑，之后为寅；按月份粗略
-  const base = [11,11,0,1,2,3,4,5,6,7,8,9]; // 0=子，以月份-1为索引（Jan前半=丑，后半=寅，取后半）
-  return (month + 1) % 12; // 粗略：1月→寅(2)→idx=2
+function getMonthStem(yearStem, monthBranchIdx) {
+  // 五虎遁年起月法：甲己年寅月起丙，乙庚年寅月起戊，丙辛年寅月起庚，丁壬年寅月起壬，戊癸年寅月起甲
+  // 寅月(2)对应的天干起始索引
+  const startMap = {甲:2,己:2, 乙:4,庚:4, 丙:6,辛:6, 丁:8,壬:8, 戊:0,癸:0};
+  const base = startMap[yearStem] ?? 0;
+  // monthBranchIdx: 寅=2，从寅月开始顺数
+  // 寅月 monthBranchIdx=2，与 base 对应；每月+1
+  const offset = (monthBranchIdx - 2 + 12) % 12;
+  return STEMS[(base + offset) % 10];
 }
 
 // 时支
@@ -1129,8 +1150,8 @@ function calcShenSha(dayStem, dayBranch, yearBranch, monthBranch, yearStem, pill
 function calcBazi(year, month, day, hour, gender) {
   // 年柱
   const yearGZ = getYearGanZhi(year);
-  // 月柱（以公历月份近似月支，寅月=1月下旬/2月上旬，这里用月份直接近似）
-  const monthBranchIdx = (month + 1) % 12;
+  // 月柱（以节气为准，精确计算月支）
+  const monthBranchIdx = getMonthBranchIdx(month, day);
   const monthBranch = BRANCHES[monthBranchIdx];
   const monthStem = getMonthStem(yearGZ.stem, monthBranchIdx);
   // 日柱（以 2000-01-07 = 甲子日 为基准，甲=0，子=0）
