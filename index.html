@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>玄机 · 八字命盘 v20260604</title>
+<title>玄机 · 八字命盘 v20260607</title>
+<!-- lunar-javascript: 1541★ 精确八字/黄历/节气库 -->
+<script src="https://cdn.jsdelivr.net/npm/lunar-javascript/lunar.js"></script>
 <style>
 :root {
   --bg: #0d0d12;
@@ -1145,64 +1147,98 @@ function calcShenSha(dayStem, dayBranch, yearBranch, monthBranch, yearStem, pill
 }
 
 // ─────────────────────────────────────────
-// 主排盘函数
+// 主排盘函数（使用 lunar-javascript 精确算法）
 // ─────────────────────────────────────────
 function calcBazi(year, month, day, hour, gender) {
-  // 年柱
-  const yearGZ = getYearGanZhi(year);
-  // 月柱（以节气为准，精确计算月支）
-  const monthBranchIdx = getMonthBranchIdx(month, day);
-  const monthBranch = BRANCHES[monthBranchIdx];
-  const monthStem = getMonthStem(yearGZ.stem, monthBranchIdx);
-  // 日柱（以 2000-01-07 = 甲子日 为基准，甲=0，子=0）
-  const BASE = new Date(2000, 0, 7);
-  const target = new Date(year, month - 1, day);
-  const diffDays = Math.round((target - BASE) / 86400000);
-  const dayStemIdx = ((diffDays % 10) + 10) % 10;
-  const dayBranchIdx = ((diffDays % 12) + 12) % 12;
-  const dayStem = STEMS[dayStemIdx];
-  const dayBranch = BRANCHES[dayBranchIdx];
-  // 时柱
-  const hourBranchIdx = getHourBranchIdx(hour);
-  const hourBranch = BRANCHES[hourBranchIdx];
-  const hourStem = getHourStem(dayStem, hourBranchIdx);
+  // 优先使用 lunar-javascript 库（精确节气时间）
+  let yearStemChar, yearBranchChar, monthStemChar, monthBranchChar,
+      dayStemChar, dayBranchChar, hourStemChar, hourBranchChar,
+      lunarStr, hourBranchName;
 
-  // 农历
-  let lunarStr = '';
-  try { lunarStr = solarToLunar(year, month, day); } catch(e) { lunarStr = ''; }
+  try {
+    if (typeof Solar !== 'undefined') {
+      // 用 lunar-javascript 精确计算
+      const sol = Solar.fromYmdHms(year, month, day, hour, 0, 0);
+      const lun = sol.getLunar();
+      const ec = lun.getEightChar();
 
-  // 构建四柱
-  const pillars = [
-    { label:'年柱', stem:{char:yearGZ.stem, element:STEM_EL[STEMS.indexOf(yearGZ.stem)]}, branch:{char:yearGZ.branch, element:BRANCH_EL[BRANCHES.indexOf(yearGZ.branch)]} },
-    { label:'月柱', stem:{char:monthStem, element:STEM_EL[STEMS.indexOf(monthStem)]}, branch:{char:monthBranch, element:BRANCH_EL[BRANCHES.indexOf(monthBranch)]} },
-    { label:'日柱', stem:{char:dayStem, element:STEM_EL[dayStemIdx]}, branch:{char:dayBranch, element:BRANCH_EL[dayBranchIdx]} },
-    { label:'时柱', stem:{char:hourStem, element:STEM_EL[STEMS.indexOf(hourStem)]}, branch:{char:hourBranch, element:BRANCH_EL[BRANCHES.indexOf(hourBranch)]} },
+      yearStemChar  = ec.getYearGan();
+      yearBranchChar= ec.getYearZhi();
+      monthStemChar = ec.getMonthGan();
+      monthBranchChar=ec.getMonthZhi();
+      dayStemChar   = ec.getDayGan();
+      dayBranchChar = ec.getDayZhi();
+      hourStemChar  = ec.getTimeGan();
+      hourBranchChar= ec.getTimeZhi();
+
+      // 农历字符串
+      const lunarYear  = lun.getYearInGanZhiByLiChun();
+      const lunarMonth = lun.getMonthInChinese() + '月';
+      const lunarDay   = lun.getDayInChinese();
+      lunarStr = `${lunarYear}年${lunarMonth}${lunarDay}`;
+    } else {
+      throw new Error('lunar-javascript 未加载');
+    }
+  } catch(e) {
+    // 降级：使用原有节气算法
+    console.warn('lunar-javascript 不可用，降级排盘:', e.message);
+    const yearGZ = getYearGanZhi(year);
+    const monthBranchIdx_ = getMonthBranchIdx(month, day);
+    yearStemChar   = yearGZ.stem;
+    yearBranchChar = yearGZ.branch;
+    monthBranchChar= BRANCHES[monthBranchIdx_];
+    monthStemChar  = getMonthStem(yearGZ.stem, monthBranchIdx_);
+    const BASE_ = new Date(2000, 0, 7);
+    const diff_ = Math.round((new Date(year, month-1, day) - BASE_) / 86400000);
+    dayStemChar  = STEMS[((diff_%10)+10)%10];
+    dayBranchChar= BRANCHES[((diff_%12)+12)%12];
+    const hbi_ = getHourBranchIdx(hour);
+    hourBranchChar = BRANCHES[hbi_];
+    hourStemChar   = getHourStem(dayStemChar, hbi_);
+    try { lunarStr = solarToLunar(year, month, day); } catch(e2) { lunarStr = ''; }
+  }
+
+  hourBranchName = hourBranchChar + '时';
+
+  const dayStemIdx_   = STEMS.indexOf(dayStemChar);
+  const dayBranchIdx_ = BRANCHES.indexOf(dayBranchChar);
+  const yearStemIdx_  = STEMS.indexOf(yearStemChar);
+
+  // 构建四柱结构
+  const pillarsRaw = [
+    { label:'年柱', sc: yearStemChar,   bc: yearBranchChar },
+    { label:'月柱', sc: monthStemChar,  bc: monthBranchChar },
+    { label:'日柱', sc: dayStemChar,    bc: dayBranchChar },
+    { label:'时柱', sc: hourStemChar,   bc: hourBranchChar },
   ];
 
-  // 填充各柱基础数据
-  pillars.forEach((p, i) => {
-    const hs = HIDDEN[p.branch.char] || [];
-    p.hiddenStems = hs.map(s => s + STEM_EL[STEMS.indexOf(s)]);
-    p.subStars = hs.map(s => getStar(dayStem, s));
-    p.mainStar = i === 2 ? (gender==='男'?'元男':'元女') : getStar(dayStem, p.stem.char);
-    p.yunCheng = getChangSheng(dayStem, p.branch.char);
-    p.ziZuo = getChangSheng(dayStem, p.branch.char);
-    p.kongWang = getKongWang(dayStem);
-    p.naYin = getNaYin(p.stem.char, p.branch.char);
-    p.shenSha = [];
+  const pillars = pillarsRaw.map((p, i) => {
+    const hs = HIDDEN[p.bc] || [];
+    return {
+      label: p.label,
+      stem:   { char: p.sc, element: STEM_EL[STEMS.indexOf(p.sc)] },
+      branch: { char: p.bc, element: BRANCH_EL[BRANCHES.indexOf(p.bc)] },
+      hiddenStems: hs.map(s => s + STEM_EL[STEMS.indexOf(s)]),
+      subStars:    hs.map(s => getStar(dayStemChar, s)),
+      mainStar:    i === 2 ? (gender==='男'?'元男':'元女') : getStar(dayStemChar, p.sc),
+      yunCheng:    getChangSheng(dayStemChar, p.bc),
+      ziZuo:       getChangSheng(dayStemChar, p.bc),
+      kongWang:    getKongWang(dayStemChar),
+      naYin:       getNaYin(p.sc, p.bc),
+      shenSha:     [],
+    };
   });
 
-  // 神煞计算
-  const shenShaResult = calcShenSha(dayStem, dayBranch, yearGZ.branch, monthBranch, yearGZ.stem, pillars);
+  // 神煞
+  const shenShaResult = calcShenSha(dayStemChar, dayBranchChar, yearBranchChar, monthBranchChar, yearStemChar, pillars);
   pillars.forEach((p, i) => { p.shenSha = shenShaResult[i]; });
 
-  const hourBranchName = BRANCHES[hourBranchIdx];
   return {
-    dayMaster: { stem: dayStem, element: STEM_EL[dayStemIdx], desc: `${dayStem}${STEM_EL[dayStemIdx]}日主` },
+    dayMaster: { stem: dayStemChar, element: STEM_EL[dayStemIdx_], desc: `${dayStemChar}${STEM_EL[dayStemIdx_]}日主` },
     pillars, gender,
     solar: `${year}年${String(month).padStart(2,'0')}月${String(day).padStart(2,'0')}日 ${String(hour).padStart(2,'0')}:00`,
     lunar: lunarStr,
-    hourName: hourBranchName + '时',
+    hourName: hourBranchName,
   };
 }
 
@@ -1711,72 +1747,52 @@ function getTodayInfo() {
 // ─────────────────────────────────────────
 // 黄历计算（本地算法，无需联网）
 // ─────────────────────────────────────────
+// 彭祖百忌（备用）
+const PENG_GAN = {甲:'不开仓，财物耗散',乙:'不栽植，千株不长',丙:'不修灶，必见灾殃',丁:'不剃头，头必生疮',戊:'不受田，田主不祥',己:'不破券，二比并亡',庚:'不经络，织机虚张',辛:'不合酱，主人不尝',壬:'不决水，难更堤防',癸:'不词讼，理弱敌强'};
+const PENG_ZHI = {子:'不问卜，自惹祸殃',丑:'不冠带，主不还乡',寅:'不祭祀，神鬼不尝',卯:'不穿井，水泉不香',辰:'不哭泣，必主重丧',巳:'不远行，蛇虎伤人',午:'不苫盖，屋主更张',未:'不服药，毒气入肠',申:'不安床，鬼祟入房',酉:'不会客，醉坐颠狂',戌:'不吃犬，作怪上床',亥:'不嫁娶，与鬼为邻'};
+const CHONG_MAP = {子:'马',丑:'羊',寅:'猴',卯:'鸡',辰:'狗',巳:'猪',午:'鼠',未:'牛',申:'虎',酉:'兔',戌:'龙',亥:'蛇'};
+const SHA_MAP   = {子:'南',丑:'东',寅:'北',卯:'西',辰:'南',巳:'东',午:'北',未:'西',申:'南',酉:'东',戌:'北',亥:'西'};
+
 function calcHuangli(t) {
-  // t = getTodayInfo() 的返回值
-  const { gan, zhi, diff, m, d } = t;
+  const { y, m, d, gan, zhi } = t;
 
-  // 1. 十二值日（建除十二神）：以月支和日支的关系推算
-  // 子月建子，丑月建丑... 以月支为"建"，日支顺数
-  // 月支索引：寅月=2（农历正月），依次推进
-  // 简化：用日支在十二值中的位置（以年月节气正式算法太复杂，用简化版）
-  const SHI_ER_ZHI_RI = ['建','除','满','平','定','执','破','危','成','收','开','闭'];
-  // 每月月建（寅=2）开始，日支相对月支的差值
-  // 简化版：直接用日干支序号 diff mod 12 对应十二值
-  const zhiRiName = SHI_ER_ZHI_RI[((diff % 12) + 12) % 12];
+  // 优先使用 lunar-javascript（真实黄历数据）
+  try {
+    if (typeof Solar !== 'undefined') {
+      const sol = Solar.fromYmd(y, m, d);
+      const lun = sol.getLunar();
 
-  // 2. 宜忌（基于十二值日的传统对照表）
-  const ZHIRI_YI = {
-    建: ['祭祀','祈福','出行','上任','动土'],
-    除: ['求医','理发','搬迁','解除','清扫'],
-    满: ['婚嫁','开业','入宅','纳财'],
-    平: ['修造','出行','购物'],
-    定: ['签约','谈判','会友','祭祀'],
-    执: ['捕捉','求财','纳畜'],
-    破: ['坏垣','余事勿取'],
-    危: ['安床','余事勿取'],
-    成: ['婚嫁','开业','移徙','求财','签约'],
-    收: ['纳财','收购','入库'],
-    开: ['开业','动土','出行','婚嫁','求财'],
-    闭: ['安葬','入殓','合寿木'],
-  };
-  const ZHIRI_JI = {
-    建: ['开仓','出货','破土'],
-    除: ['动土','嫁娶','结婚'],
-    满: ['出行','开仓','破土'],
-    平: ['动土','安葬','嫁娶'],
-    定: ['出行','动土','破土'],
-    执: ['开仓','安门','嫁娶'],
-    破: ['嫁娶','开业','动土','安门'],
-    危: ['登高','出行'],
-    成: ['诉讼','开仓'],
-    收: ['出行','开仓','嫁娶'],
-    开: ['安葬','出货'],
-    闭: ['开业','开仓','出行','嫁娶'],
-  };
+      const yi  = lun.getDayYi()  || [];  // 宜
+      const ji  = lun.getDayJi()  || [];  // 忌
+      const zhiRiName = lun.getDayPositionTai ? (lun.getDayChongDesc?.() || '') : '';
+      // 建除十二神
+      const jianChu = lun.getDayZhiXing?.() || '';
+      const nayin   = lun.getDayNaYin?.()   || '';
+      const pengGan = PENG_GAN[gan] || '';
+      const pengZhi = PENG_ZHI[zhi] || '';
+      const chong   = CHONG_MAP[zhi] || '';
+      const sha     = SHA_MAP[zhi]   || '';
 
-  // 3. 冲煞（日支相冲的属相）
-  const CHONG_MAP = {子:'马',丑:'羊',寅:'猴',卯:'鸡',辰:'狗',巳:'猪',午:'鼠',未:'牛',申:'虎',酉:'兔',戌:'龙',亥:'蛇'};
-  const SHA_MAP   = {子:'南',丑:'东',寅:'北',卯:'西',辰:'南',巳:'东',午:'北',未:'西',申:'南',酉:'东',戌:'北',亥:'西'};
+      return { zhiRiName: jianChu, yi, ji, chong, sha, nayin, ganEl: STEM_EL[STEMS.indexOf(gan)], pengGan, pengZhi };
+    }
+  } catch(e) {
+    console.warn('lunar-javascript 黄历获取失败，降级:', e.message);
+  }
 
-  // 4. 五行纳音（已在排盘用，这里快速查）
+  // 降级：自建简化算法
+  const { diff } = t;
+  const SHI_ER = ['建','除','满','平','定','执','破','危','成','收','开','闭'];
+  const zhiRiName = SHI_ER[((diff % 12) + 12) % 12];
+  const ZHIRI_YI = {建:['祭祀','祈福','出行','上任'],除:['求医','理发','搬迁','解除'],满:['婚嫁','开业','入宅','纳财'],平:['修造','出行','购物'],定:['签约','谈判','会友'],执:['捕捉','求财','纳畜'],破:['余事勿取'],危:['安床'],成:['婚嫁','开业','移徙','求财'],收:['纳财','收购','入库'],开:['开业','动土','出行','婚嫁'],闭:['安葬','入殓']};
+  const ZHIRI_JI = {建:['开仓','出货','破土'],除:['动土','嫁娶'],满:['出行','开仓'],平:['动土','安葬'],定:['出行','动土'],执:['开仓','嫁娶'],破:['嫁娶','开业','动土'],危:['登高','出行'],成:['诉讼','开仓'],收:['出行','嫁娶'],开:['安葬'],闭:['开业','出行','嫁娶']};
   const NAYIN_TABLE = ['海中金','炉中火','大林木','路旁土','剑锋金','山头火','涧下水','城头土','白蜡金','杨柳木','泉中水','屋上土','霹雳火','松柏木','长流水','沙中金','山下火','平地木','壁上土','金箔金','覆灯火','天河水','大驿土','钗钏金','桑柘木','大溪水','沙中土','天上火','石榴木','大海水'];
   const nayin = NAYIN_TABLE[Math.floor(((diff % 60) + 60) % 60 / 2)] || '';
-
-  // 5. 日五行（日干的五行）
-  const ganEl = STEM_EL[STEMS.indexOf(gan)];
-
-  // 6. 彭祖百忌（日干忌）
-  const PENG_GAN = {甲:'不开仓，财物耗散',乙:'不栽植，千株不长',丙:'不修灶，必见灾殃',丁:'不剃头，头必生疮',戊:'不受田，田主不祥',己:'不破券，二比并亡',庚:'不经络，织机虚张',辛:'不合酱，主人不尝',壬:'不决水，难更堤防',癸:'不词讼，理弱敌强'};
-  const PENG_ZHI = {子:'不问卜，自惹祸殃',丑:'不冠带，主不还乡',寅:'不祭祀，神鬼不尝',卯:'不穿井，水泉不香',辰:'不哭泣，必主重丧',巳:'不远行，蛇虎伤人',午:'不苫盖，屋主更张',未:'不服药，毒气入肠',申:'不安床，鬼祟入房',酉:'不会客，醉坐颠狂',戌:'不吃犬，作怪上床',亥:'不嫁娶，与鬼为邻'};
-
-  const yi  = ZHIRI_YI[zhiRiName]  || [];
-  const ji  = ZHIRI_JI[zhiRiName]  || [];
-  const chong = CHONG_MAP[zhi] || '';
-  const sha   = SHA_MAP[zhi]   || '';
-  const pengGan = PENG_GAN[gan] || '';
-  const pengZhi = PENG_ZHI[zhi] || '';
-
-  return { zhiRiName, yi, ji, chong, sha, nayin, ganEl, pengGan, pengZhi };
+  return {
+    zhiRiName, yi: ZHIRI_YI[zhiRiName]||[], ji: ZHIRI_JI[zhiRiName]||[],
+    chong: CHONG_MAP[zhi]||'', sha: SHA_MAP[zhi]||'', nayin,
+    ganEl: STEM_EL[STEMS.indexOf(gan)],
+    pengGan: PENG_GAN[gan]||'', pengZhi: PENG_ZHI[zhi]||'',
+  };
 }
 
 function addMessage(role, content, isTyping=false) {
