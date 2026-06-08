@@ -637,7 +637,7 @@ textarea#chatInput::placeholder{color:var(--text3)}
 
     <!-- 按钮 -->
     <div class="hexagram-actions">
-      <button class="hexagram-btn primary" id="shakeBtn" onclick="shakeCoins()">摇卦</button>
+      <button class="hexagram-btn primary" id="shakeBtn" onclick="handleShakeBtn()">摇卦</button>
       <button class="hexagram-btn secondary" onclick="closeHexagramModal()">关闭</button>
     </div>
   </div>
@@ -1693,7 +1693,7 @@ function buildSystemPrompt() {
   }
 
   // 今日黄历（合并进 prompt，不再用预热对话）
-  const _today = getTodayInfo();
+  const _today = getTodayInfoCached();
   const _hl = calcHuangli(_today);
   let _todayStar = '';
   try { _todayStar = `（与日主${getStar(bazi.dayMaster.stem, _today.gan)}）`; } catch(e) {}
@@ -1723,6 +1723,17 @@ let messages = [];
 let isLoading = false;
 
 // ─────────────────────────────────────────
+// 日期缓存机制
+// ─────────────────────────────────────────
+let _todayCache = null;
+function getTodayInfoCached() {
+  if (!_todayCache || _todayCache.date !== new Date().toDateString()) {
+    _todayCache = {...getTodayInfo(), date: new Date().toDateString()};
+  }
+  return _todayCache;
+}
+
+// ─────────────────────────────────────────
 // 全局今日日期（唯一计算来源，所有地方都调这个）
 // ─────────────────────────────────────────
 function getTodayInfo() {
@@ -1733,13 +1744,29 @@ function getTodayInfo() {
   const dateStr = `${y}年${m}月${d}日`;
   const weekStr = '日一二三四五六'[now.getDay()];
 
-  // 日干支：以 2000-01-07 甲子日为基准
+  let gan, zhi;
+  try {
+    if (typeof Solar !== 'undefined') {
+      const lun = Solar.fromYmd(y, m, d).getLunar();
+      const ec = lun.getEightChar();
+      gan = ec.getDayGan();
+      zhi = ec.getDayZhi();
+    } else {
+      throw new Error('fallback');
+    }
+  } catch(e) {
+    // 降级：以 2000-01-07 甲子日为基准
+    const base = new Date(2000, 0, 7);
+    const diff = Math.round((new Date(y, m-1, d) - base) / 86400000);
+    const ganIdx = ((diff % 10) + 10) % 10;
+    const zhiIdx = ((diff % 12) + 12) % 12;
+    gan = STEMS[ganIdx];
+    zhi = BRANCHES[zhiIdx];
+  }
+
+  // 计算距离基准日期的天数（用于 diff）
   const base = new Date(2000, 0, 7);
   const diff = Math.round((new Date(y, m-1, d) - base) / 86400000);
-  const ganIdx = ((diff % 10) + 10) % 10;
-  const zhiIdx = ((diff % 12) + 12) % 12;
-  const gan = STEMS[ganIdx];
-  const zhi = BRANCHES[zhiIdx];
 
   return { y, m, d, dateStr, weekStr, gan, zhi, gz: gan + zhi, diff };
 }
@@ -1762,18 +1789,16 @@ function calcHuangli(t) {
       const sol = Solar.fromYmd(y, m, d);
       const lun = sol.getLunar();
 
-      const yi  = lun.getDayYi()  || [];  // 宜
-      const ji  = lun.getDayJi()  || [];  // 忌
-      const zhiRiName = lun.getDayPositionTai ? (lun.getDayChongDesc?.() || '') : '';
-      // 建除十二神
-      const jianChu = lun.getDayZhiXing?.() || '';
+      const yi  = lun.getDayYi?.() || [];  // 宜
+      const ji  = lun.getDayJi?.() || [];  // 忌
+      const zhiRiName = lun.getDayZhiXing?.() || '';  // 建除十二神
       const nayin   = lun.getDayNaYin?.()   || '';
       const pengGan = PENG_GAN[gan] || '';
       const pengZhi = PENG_ZHI[zhi] || '';
       const chong   = CHONG_MAP[zhi] || '';
       const sha     = SHA_MAP[zhi]   || '';
 
-      return { zhiRiName: jianChu, yi, ji, chong, sha, nayin, ganEl: STEM_EL[STEMS.indexOf(gan)], pengGan, pengZhi };
+      return { zhiRiName, yi, ji, chong, sha, nayin, ganEl: STEM_EL[STEMS.indexOf(gan)], pengGan, pengZhi };
     }
   } catch(e) {
     console.warn('lunar-javascript 黄历获取失败，降级:', e.message);
@@ -1873,7 +1898,7 @@ async function sendMessage() {
   inp.value = ''; inp.style.height='auto';
   addMessage('user', text);
   // 发给 API 时，把"今天/今日"替换为具体日期+干支，彻底消除 AI 需要推算日期的机会
-  const _t = getTodayInfo();
+  const _t = getTodayInfoCached();
   const dateLabel = `${_t.dateStr}（${_t.gz}日）`;
   const apiContent = text
     .replace(/今天|今日/g, dateLabel)
@@ -1909,7 +1934,7 @@ let _quickQuestions = [];
 function renderQuickBtns() {
   const bazi = getActiveBazi();
   const dm = bazi.dayMaster.stem + bazi.dayMaster.element;
-  const _qt = getTodayInfo();
+  const _qt = getTodayInfoCached();
   _quickQuestions = [
     `今天是${_qt.dateStr}，${_qt.gz}日，请结合我的八字分析今日运势，给出具体建议。`,
     '我的感情运势如何？有什么建议？',
@@ -2069,7 +2094,7 @@ function fireReminder() {
   setTimeout(() => {
     const bazi = getActiveBazi();
     const u = users[activeUserIdx] || {};
-    const _ft = getTodayInfo();
+    const _ft = getTodayInfoCached();
     quickAsk(`今天是${_ft.dateStr}，${_ft.gz}日，请结合命主【${u.name||'本人'}】的八字（日主${bazi.dayMaster.stem}${bazi.dayMaster.element}）和今日${gua.name}卦，给出简短的早安提醒和今日重点建议。`);
   }, 1000);
 }
@@ -2997,6 +3022,14 @@ function closeHexagramModal() {
   overlay.classList.remove('show');
 }
 
+function handleShakeBtn() {
+  if (hexagramState.step < 6) {
+    shakeCoins();
+  } else {
+    interpretHexagram();
+  }
+}
+
 function shakeCoins() {
   if (hexagramState.shaking || hexagramState.step >= 6) return;
   hexagramState.shaking = true;
@@ -3044,7 +3077,6 @@ function shakeCoins() {
       // 6爻完成，生成本卦和变卦
       generateHexagrams();
       btn.textContent = '解卦';
-      btn.onclick = function() { interpretHexagram(); };
     }
 
     hexagramState.shaking = false;
