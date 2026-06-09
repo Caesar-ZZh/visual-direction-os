@@ -1914,17 +1914,7 @@ function quickAsk(q) {
 }
 
 function castHexagram() {
-  try {
-    openHexagramModal();
-  } catch(err) {
-    // 起卦失败时降级：直接用随机卦名问AI
-    console.error('起卦动画出错:', err);
-    const _g = GUA_LIST[Math.floor(Math.random() * GUA_LIST.length)];
-    const bazi = getActiveBazi();
-    const u = users[activeUserIdx] || {};
-    const _t = getTodayInfo();
-    quickAsk(`今天是${_t.dateStr}，${_t.gz}日，请为【${u.name||'命主'}】解读${_g.name}卦（${_g.pinyin}），结合八字日主${bazi.dayMaster.stem}${bazi.dayMaster.element}给出指引。`);
-  }
+  openHexagramModal();
 }
 
 // 动态渲染快捷按钮（随命主切换更新日主文字）
@@ -3086,6 +3076,7 @@ function shakeCoins() {
 
 function renderYaoLines() {
   const container = document.getElementById('yaoLines');
+  if (!container) return;
   container.innerHTML = '';
 
   // 从上到下显示（上爻在上，初爻在下）
