@@ -2069,13 +2069,16 @@ function quickAsk(q) {
 }
 
 async function castHexagram() {
-  // 1. 创建全宽容器（不受 .msg 的 max-width:85% 限制）
+  // 1. 创建卡片容器（固定宽度，不受父容器 flex 拉伸影响）
   const wrap = document.getElementById('chatMessages');
   const animEl = document.createElement('div');
-  animEl.style.cssText = 'display:flex;gap:10px;align-items:flex-start;width:100%;max-width:100%';
+  // 用 inline-block 让容器收缩到内容宽度，padding-left 模拟头像偏移
+  animEl.style.cssText = 'display:block;padding-left:42px;padding-right:8px;margin:2px 0';
   animEl.innerHTML = `
-    <div style="flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;background:rgba(196,163,98,.2);border:1px solid rgba(196,163,98,.3);color:var(--gold);margin-top:2px">☯</div>
-    <div class="liuyao-card-wrap" style="flex:1;min-width:0"></div>
+    <div style="display:flex;gap:10px;align-items:flex-start">
+      <div style="flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;background:rgba(196,163,98,.2);border:1px solid rgba(196,163,98,.3);color:var(--gold);margin-top:2px">☯</div>
+      <div class="liuyao-card-wrap" style="display:inline-block;vertical-align:top"></div>
+    </div>
   `;
   wrap.appendChild(animEl);
   const bubble = animEl.querySelector('.liuyao-card-wrap');
@@ -3542,9 +3545,7 @@ function buildLiuYaoCard(bazi, u, today) {
     ? `${['初','二','三','四','五','上'][changingIdxs[0]]}爻 ${lines[changingIdxs[0]]?.qin||''}·动`
     : '无动爻';
 
-  // 列宽固定：52+48+80+160+28+56 = 424px 内容 + 32px padding×2 = 约488px
-  const CARD_W = '490px';
-  return `<div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;font-family:inherit;margin:4px 0;width:${CARD_W};max-width:100%">
+  return `<div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;font-family:inherit;margin:4px 0;display:inline-block;vertical-align:top;min-width:420px">
 
     <!-- ① 卦名大标题 -->
     <div style="text-align:center;padding:20px 20px 14px;background:var(--bg3);border-bottom:1px solid var(--border)">
@@ -3588,11 +3589,12 @@ function addMessageCard(htmlContent) {
   if (!htmlContent) return null;
   const wrap = document.getElementById('chatMessages');
   const div = document.createElement('div');
-  // 不用 .msg 类，直接全宽排列
-  div.style.cssText = 'display:flex;gap:10px;align-items:flex-start;width:100%;max-width:100%';
+  div.style.cssText = 'display:block;margin:2px 0';
   div.innerHTML = `
-    <div class="msg-avatar" style="flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;background:rgba(196,163,98,.2);border:1px solid rgba(196,163,98,.3);color:var(--gold);margin-top:2px">☯</div>
-    <div style="flex:1;min-width:0">${htmlContent}</div>
+    <div style="display:flex;gap:10px;align-items:flex-start">
+      <div style="flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;background:rgba(196,163,98,.2);border:1px solid rgba(196,163,98,.3);color:var(--gold);margin-top:2px">☯</div>
+      <div style="display:inline-block;vertical-align:top">${htmlContent}</div>
+    </div>
   `;
   wrap.appendChild(div);
   wrap.scrollTop = wrap.scrollHeight;
