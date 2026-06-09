@@ -1721,6 +1721,9 @@ ${pillarDesc}
 
 let messages = [];
 let isLoading = false;
+// 以下常量/变量必须在全局最顶部定义，避免 let/const 的 TDZ 问题
+let hexagramState = {yaos:[], step:0, shaking:false, mainGua:null, changeGua:null};
+const NOTEBOOK_TAGS = ['事业','感情','财运','学业','健康','人际','其他'];
 
 // ─────────────────────────────────────────
 // 日期缓存机制
@@ -2710,7 +2713,7 @@ function nextMonth() {
 }
 
 // ═══ 5. 命理笔记本 ═══
-const NOTEBOOK_TAGS = ['事业','感情','财运','学业','健康','人际','其他'];
+// NOTEBOOK_TAGS 已在全局变量区定义
 
 function renderNotebook() {
   const u = users[activeUserIdx];
@@ -2984,11 +2987,12 @@ const GUA_64_MAP = {
   '000000': {name:'坤',py:'kun',desc:'地顺载'}
 };
 
-let hexagramState = {
-  yaos: [],           // [6,7,8,9,...] 6爻数值
-  step: 0,            // 0-5 当前第几爻（从初爻开始）
+// hexagramState 已在全局变量区定义（见脚本顶部）
+const _hexagramStatePlaceholder = {
+  yaos: [],
+  step: 0,
   shaking: false,
-  mainGua: null,      // 本卦对象
+  mainGua: null,
   changeGua: null     // 变卦对象
 };
 
