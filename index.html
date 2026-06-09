@@ -124,6 +124,7 @@ body{display:flex;flex-direction:column;overflow:hidden}
 .typing-dot:nth-child(2){animation-delay:.2s}
 .typing-dot:nth-child(3){animation-delay:.4s}
 @keyframes pulse{0%,80%,100%{opacity:.2}40%{opacity:1}}
+@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
 
 /* ── CHAT INPUT ── */
 .chat-input-wrap{padding:14px 20px;border-top:1px solid var(--border);background:var(--bg2)}
@@ -1725,6 +1726,157 @@ let isLoading = false;
 let hexagramState = {yaos:[], step:0, shaking:false, mainGua:null, changeGua:null};
 const NOTEBOOK_TAGS = ['事业','感情','财运','学业','健康','人际','其他'];
 
+// ── 前移的 TDZ 常量（避免在 init() 调用时引用未定义的常量）──
+
+// 案例库
+const CASE_LIBRARY = [
+  {
+    id:1, title:'创业困局', desc:'8年创业期待突破',
+    bazi:'甲午 丙子 庚辰 己亥', gender:'男', date:'1990-06-15',
+    story:'32岁，已创办两家公司均不成功，现在迷茫。八字身弱，财星旺，但用神不得力。分析：需要找到适合的合作伙伴（身强者），或改换行业方向。今年流年恰好有转机信号。'
+  },
+  {
+    id:2, title:'感情迷茫', desc:'38岁女性婚姻问题',
+    bazi:'乙卯 己未 丙午 辛未', gender:'女', date:'1986-08-23',
+    story:'结婚12年，婚姻平淡。八字日支午火，与夫配偶宫地支不合。分析：命中感情容易遇冷，需主动改善沟通与陪伴。大运正走官旺段，可考虑共同投资或事业合作重燃热情。'
+  },
+  {
+    id:3, title:'学业突破', desc:'17岁高中生成绩波动',
+    bazi:'壬寅 乙卯 己卯 甲午', gender:'男', date:'2007-04-18',
+    story:'高中阶段成绩忽高忽低，竞争激烈。八字食神透干，学习能力强，但偏印混杂，注意力容易分散。分析：建议强化目标意识，减少诱惑。大运即将进入印运，有利于深度学习。'
+  },
+  {
+    id:4, title:'财运起伏', desc:'45岁中年商人求财',
+    bazi:'丙寅 癸卯 甲午 壬午', gender:'男', date:'1979-04-10',
+    story:'近5年财运不稳，投资频频失利。八字财星多但杂，身为甲木生于卯月，偏弱。分析：切勿盲目扩张，宜守成。流年恰有官运，可考虑从商转向稳定收入的职位。'
+  },
+  {
+    id:5, title:'健康关注', desc:'56岁女性体检异常',
+    bazi:'戊午 庚戌 丙申 丁酉', gender:'女', date:'1968-09-20',
+    story:'最近体检发现几项指标异常，担忧。八字火旺金弱，五脏中心脏与肺需关注。分析：调理建议：多食清心安神之物，避免过度劳累。大运正走水运，有利于阴阳平衡调理。'
+  }
+];
+
+// 64卦对照表
+const GUA_64_MAP = {
+  '111111': {name:'乾',py:'qian',desc:'天行健'},
+  '110111': {name:'履',py:'lv',desc:'步步为营'},
+  '101111': {name:'同人',py:'tongren',desc:'协力同心'},
+  '100111': {name:'无妄',py:'wuwang',desc:'大畜真'},
+  '011111': {name:'姤',py:'gou',desc:'遇见'},
+  '010111': {name:'讼',py:'song',desc:'争讼'},
+  '001111': {name:'遁',py:'dun',desc:'隐退'},
+  '000111': {name:'否',py:'pi',desc:'不通'},
+
+  '111110': {name:'夬',py:'guai',desc:'决断'},
+  '110110': {name:'兑',py:'dui',desc:'泽泽通'},
+  '101110': {name:'革',py:'ge',desc:'变革'},
+  '100110': {name:'随',py:'sui',desc:'随顺'},
+  '011110': {name:'大过',py:'daguor',desc:'大过'},
+  '010110': {name:'困',py:'kun',desc:'困境'},
+  '001110': {name:'咸',py:'xian',desc:'相感'},
+  '000110': {name:'萃',py:'cui',desc:'聚合'},
+
+  '111101': {name:'大有',py:'dayou',desc:'大拥有'},
+  '110101': {name:'睽',py:'kui',desc:'分离'},
+  '101101': {name:'离',py:'li',desc:'光明'},
+  '100101': {name:'噬嗑',py:'shike',desc:'噬咬'},
+  '011101': {name:'鼎',py:'ding',desc:'鼎'},
+  '010101': {name:'未济',py:'weiji',desc:'未成'},
+  '001101': {name:'旅',py:'lv',desc:'旅'},
+  '000101': {name:'晋',py:'jin',desc:'晋升'},
+
+  '111100': {name:'大壮',py:'dazhuang',desc:'大壮'},
+  '110100': {name:'归妹',py:'guimei',desc:'归妹'},
+  '101100': {name:'丰',py:'feng',desc:'丰盛'},
+  '100100': {name:'震',py:'zhen',desc:'震动'},
+  '011100': {name:'恒',py:'heng',desc:'恒久'},
+  '010100': {name:'解',py:'jie',desc:'解散'},
+  '001100': {name:'小过',py:'xiaoguo',desc:'小过'},
+  '000100': {name:'豫',py:'yu',desc:'豫悦'},
+
+  '111011': {name:'小畜',py:'xiaoxu',desc:'小畜'},
+  '110011': {name:'中孚',py:'zhongfu',desc:'中孚'},
+  '101011': {name:'家人',py:'jiaren',desc:'家庭'},
+  '100011': {name:'益',py:'yi',desc:'增益'},
+  '011011': {name:'巽',py:'xun',desc:'风巽'},
+  '010011': {name:'涣',py:'huan',desc:'涣散'},
+  '001011': {name:'渐',py:'jian',desc:'渐进'},
+  '000011': {name:'观',py:'guan',desc:'观看'},
+
+  '111010': {name:'需',py:'xu',desc:'需要'},
+  '110010': {name:'节',py:'jie',desc:'节制'},
+  '101010': {name:'既济',py:'jiji',desc:'既济'},
+  '100010': {name:'屯',py:'tun',desc:'屯聚'},
+  '011010': {name:'井',py:'jing',desc:'井'},
+  '010010': {name:'坎',py:'kan',desc:'坎险'},
+  '001010': {name:'蹇',py:'jian',desc:'蹇难'},
+  '000010': {name:'比',py:'bi',desc:'比和'},
+
+  '111001': {name:'大畜',py:'daxu',desc:'大畜'},
+  '110001': {name:'损',py:'sun',desc:'损耗'},
+  '101001': {name:'贲',py:'ben',desc:'贲卦'},
+  '100001': {name:'颐',py:'yi',desc:'颐养'},
+  '011001': {name:'蛊',py:'gu',desc:'蛊惑'},
+  '010001': {name:'蒙',py:'meng',desc:'蒙昧'},
+  '001001': {name:'艮',py:'gen',desc:'止止'},
+  '000001': {name:'剥',py:'bo',desc:'剥落'},
+
+  '111000': {name:'泰',py:'tai',desc:'泰通'},
+  '110000': {name:'临',py:'lin',desc:'临近'},
+  '101000': {name:'明夷',py:'mingyi',desc:'明夷'},
+  '100000': {name:'复',py:'fu',desc:'复归'},
+  '011000': {name:'升',py:'sheng',desc:'上升'},
+  '010000': {name:'师',py:'shi',desc:'师团'},
+  '001000': {name:'谦',py:'qian',desc:'谦逊'},
+  '000000': {name:'坤',py:'kun',desc:'地顺载'}
+};
+
+// 纳甲表
+const NAJIA_TABLE = {
+  '111111':['子','寅','辰','午','申','戌'], // 乾
+  '000000':['未','巳','卯','丑','亥','酉'], // 坤
+  '100010':['寅','子','戌','亥','丑','卯'], // 坎
+  '010101':['卯','巳','未','午','辰','寅'], // 离
+  '001110':['子','戌','申','辰','寅','子'], // 震
+  '011100':['丑','卯','巳','戌','申','午'], // 艮
+  '110001':['卯','巳','未','申','午','辰'], // 巽
+  '000111':['未','酉','亥','子','戌','申'], // 兑
+};
+
+// 八纯卦纳甲
+const PURE_NAJIA = {
+  乾: ['子','寅','辰','午','申','戌'],
+  坤: ['未','巳','卯','丑','亥','酉'],
+  震: ['子','寅','辰','戌','申','午'],
+  巽: ['丑','亥','酉','卯','巳','未'],
+  坎: ['寅','子','戌','亥','丑','卯'],
+  离: ['卯','巳','未','午','辰','寅'],
+  艮: ['辰','寅','子','未','酉','亥'],
+  兑: ['巳','卯','丑','申','午','辰'],
+};
+
+// 八宫归属
+const GUA_TO_PALACE = {
+  '111111':'乾','111110':'乾','111100':'乾','111000':'乾','111001':'乾','111011':'乾','111111':'乾','110111':'乾',
+  '000000':'坤','000001':'坤','000011':'坤','000111':'坤','000110':'坤','000100':'坤','000010':'坤','001000':'坤',
+  '010000':'震','011000':'震','011001':'震','011011':'震','001011':'震','001001':'震','001000':'震','000000':'坤',
+  '110110':'巽','010110':'巽','000110':'巽','100110':'巽','100010':'巽','110010':'巽','110110':'巽',
+  '010010':'坎','110010':'坎','100010':'坎','100000':'坎','100001':'坎','010001':'坎','010011':'坎',
+  '101101':'离','001101':'离','011101':'离','011001':'离','011000':'离','101000':'离','101100':'离',
+  '100100':'艮','000100':'艮','010100':'艮','010110':'艮','110110':'艮','110100':'艮','100110':'艮',
+  '011011':'兑','111011':'兑','101011':'兑','101001':'兑','001001':'兑','001011':'兑','011001':'兑',
+};
+
+// 六神名称
+const LIU_SHEN_NAMES = ['青龙','朱雀','勾陈','腾蛇','白虎','玄武'];
+
+// 日干起六神
+const GAN_LIUSHEN_START = {甲:0,乙:0,丙:1,丁:1,戊:2,己:3,庚:4,辛:4,壬:5,癸:5};
+
+// 地支五行
+const ZHI_EL = {子:'水',丑:'土',寅:'木',卯:'木',辰:'土',巳:'火',午:'火',未:'土',申:'金',酉:'金',戌:'土',亥:'水'};
+
 // ─────────────────────────────────────────
 // 日期缓存机制
 // ─────────────────────────────────────────
@@ -1916,8 +2068,88 @@ function quickAsk(q) {
   sendMessage();
 }
 
-function castHexagram() {
-  openHexagramModal();
+async function castHexagram() {
+  // 1. 在聊天框显示「正在起卦…」的动画消息
+  const animEl = addMessage('ai', '');
+  const bubble = animEl.querySelector('.msg-bubble');
+
+  const yaos = [];
+  const YAONAMES = ['初爻','二爻','三爻','四爻','五爻','上爻'];
+
+  // 2. 逐爻抛币动画（每爻0.8s）
+  for (let i = 0; i < 6; i++) {
+    bubble.innerHTML = renderCoinAnimation(i, yaos);
+    document.getElementById('chatMessages').scrollTop = 9999;
+    await sleep(200);
+
+    // 随机生成爻值
+    const c1 = Math.random()<0.5?1:0, c2 = Math.random()<0.5?1:0, c3 = Math.random()<0.5?1:0;
+    const count = c1+c2+c3;
+    const val = count===3?9:count===2?7:count===1?8:6;
+    yaos.push(val);
+
+    bubble.innerHTML = renderCoinAnimation(i+1, yaos);
+    document.getElementById('chatMessages').scrollTop = 9999;
+    await sleep(600);
+  }
+
+  // 3. 显示完整六爻排盘卡片
+  hexagramState.yaos = yaos;
+  hexagramState.step = 6;
+  generateHexagrams();
+
+  const bazi = getActiveBazi();
+  const u = users[activeUserIdx] || {};
+  const today = getTodayInfoCached();
+
+  const cardHtml = buildLiuYaoCard(bazi, u, today);
+  bubble.innerHTML = cardHtml || '起卦完成';
+  document.getElementById('chatMessages').scrollTop = 9999;
+
+  // 4. AI 自动解读
+  await sleep(500);
+  const changingLines = yaos.map((v,i)=>(v===6||v===9)?['初','二','三','四','五','上'][i]:null).filter(Boolean).join('、');
+  const q = `请为【${u.name||'命主'}】解读今日铜钱起得的卦象：本卦${hexagramState.mainGua?.name||''}卦${hexagramState.changeGua?'，变卦'+hexagramState.changeGua.name+'卦':''}${changingLines?'，动爻：'+changingLines:''}。命主八字日主${bazi.dayMaster.stem}${bazi.dayMaster.element}，今日${today.dateStr}（${today.gz}日）。请给出详细运势指引。`;
+  messages.push({role:'user', content:q});
+  await callAI();
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function renderCoinAnimation(doneCount, yaos) {
+  const YAONAMES = ['初','二','三','四','五','上'];
+  const coins = ['🟡','🟡','🟡'].map((_, ci) => {
+    if (doneCount === 0) return `<span style="font-size:28px;animation:spin .4s linear infinite;display:inline-block">🪙</span>`;
+    // 最后一次抛出后显示结果
+    const lastYao = yaos[yaos.length-1];
+    const isYang = lastYao===7||lastYao===9;
+    return `<span style="font-size:24px">${ci===1?(isYang?'正':'背'):(Math.random()<0.5?'正':'背')}</span>`;
+  }).join(' ');
+
+  let html = `<div style="text-align:center;padding:10px">`;
+  if (doneCount < 6) {
+    html += `<div style="color:var(--gold);font-size:13px;margin-bottom:12px">正在起第 ${doneCount+1}/6 爻…</div>`;
+    html += `<div style="margin-bottom:16px">${coins}</div>`;
+  }
+
+  // 已起爻线
+  html += `<div style="display:inline-block;text-align:left;min-width:200px">`;
+  for (let i = Math.min(doneCount, yaos.length)-1; i >= 0; i--) {
+    const v = yaos[i];
+    const isYang = v===7||v===9;
+    const isChange = v===6||v===9;
+    const color = isChange ? '#4ea05e' : 'var(--gold)';
+    const line = isYang
+      ? `<div style="height:5px;background:${color};border-radius:2px;width:120px"></div>`
+      : `<div style="display:flex;gap:10px;width:120px"><div style="height:5px;background:${color};border-radius:2px;flex:1"></div><div style="height:5px;background:${color};border-radius:2px;flex:1"></div></div>`;
+    html += `<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <span style="color:var(--text3);font-size:11px;width:20px;text-align:right">${YAONAMES[i]}</span>
+      ${line}
+      ${isChange?'<span style="color:#4ea05e;font-size:10px">变</span>':'<span style="width:22px"></span>'}
+    </div>`;
+  }
+  html += `</div></div>`;
+  return html;
 }
 
 // 动态渲染快捷按钮（随命主切换更新日主文字）
@@ -2868,6 +3100,8 @@ const CASE_LIBRARY = [
   }
 ];
 
+// CASE_LIBRARY 已前移至全局区域，避免 TDZ 问题（line ~1731）
+
 function renderCases() {
   let btnHtml = '';
   CASE_LIBRARY.forEach(c => {
@@ -2912,80 +3146,7 @@ function askAICaseByDataId(el) {
    六爻铜钱起卦系统
    ═══════════════════════════════════════════════════════════ */
 
-// 64卦对照表（先上卦后下卦，二进制阳=1阴=0，从下到上）
-const GUA_64_MAP = {
-  '111111': {name:'乾',py:'qian',desc:'天行健'},
-  '110111': {name:'履',py:'lv',desc:'步步为营'},
-  '101111': {name:'同人',py:'tongren',desc:'协力同心'},
-  '100111': {name:'无妄',py:'wuwang',desc:'大畜真'},
-  '011111': {name:'姤',py:'gou',desc:'遇见'},
-  '010111': {name:'讼',py:'song',desc:'争讼'},
-  '001111': {name:'遁',py:'dun',desc:'隐退'},
-  '000111': {name:'否',py:'pi',desc:'不通'},
-
-  '111110': {name:'夬',py:'guai',desc:'决断'},
-  '110110': {name:'兑',py:'dui',desc:'泽泽通'},
-  '101110': {name:'革',py:'ge',desc:'变革'},
-  '100110': {name:'随',py:'sui',desc:'随顺'},
-  '011110': {name:'大过',py:'daguor',desc:'大过'},
-  '010110': {name:'困',py:'kun',desc:'困境'},
-  '001110': {name:'咸',py:'xian',desc:'相感'},
-  '000110': {name:'萃',py:'cui',desc:'聚合'},
-
-  '111101': {name:'大有',py:'dayou',desc:'大拥有'},
-  '110101': {name:'睽',py:'kui',desc:'分离'},
-  '101101': {name:'离',py:'li',desc:'光明'},
-  '100101': {name:'噬嗑',py:'shike',desc:'噬咬'},
-  '011101': {name:'鼎',py:'ding',desc:'鼎'},
-  '010101': {name:'未济',py:'weiji',desc:'未成'},
-  '001101': {name:'旅',py:'lv',desc:'旅'},
-  '000101': {name:'晋',py:'jin',desc:'晋升'},
-
-  '111100': {name:'大壮',py:'dazhuang',desc:'大壮'},
-  '110100': {name:'归妹',py:'guimei',desc:'归妹'},
-  '101100': {name:'丰',py:'feng',desc:'丰盛'},
-  '100100': {name:'震',py:'zhen',desc:'震动'},
-  '011100': {name:'恒',py:'heng',desc:'恒久'},
-  '010100': {name:'解',py:'jie',desc:'解散'},
-  '001100': {name:'小过',py:'xiaoguo',desc:'小过'},
-  '000100': {name:'豫',py:'yu',desc:'豫悦'},
-
-  '111011': {name:'小畜',py:'xiaoxu',desc:'小畜'},
-  '110011': {name:'中孚',py:'zhongfu',desc:'中孚'},
-  '101011': {name:'家人',py:'jiaren',desc:'家庭'},
-  '100011': {name:'益',py:'yi',desc:'增益'},
-  '011011': {name:'巽',py:'xun',desc:'风巽'},
-  '010011': {name:'涣',py:'huan',desc:'涣散'},
-  '001011': {name:'渐',py:'jian',desc:'渐进'},
-  '000011': {name:'观',py:'guan',desc:'观看'},
-
-  '111010': {name:'需',py:'xu',desc:'需要'},
-  '110010': {name:'节',py:'jie',desc:'节制'},
-  '101010': {name:'既济',py:'jiji',desc:'既济'},
-  '100010': {name:'屯',py:'tun',desc:'屯聚'},
-  '011010': {name:'井',py:'jing',desc:'井'},
-  '010010': {name:'坎',py:'kan',desc:'坎险'},
-  '001010': {name:'蹇',py:'jian',desc:'蹇难'},
-  '000010': {name:'比',py:'bi',desc:'比和'},
-
-  '111001': {name:'大畜',py:'daxu',desc:'大畜'},
-  '110001': {name:'损',py:'sun',desc:'损耗'},
-  '101001': {name:'贲',py:'ben',desc:'贲卦'},
-  '100001': {name:'颐',py:'yi',desc:'颐养'},
-  '011001': {name:'蛊',py:'gu',desc:'蛊惑'},
-  '010001': {name:'蒙',py:'meng',desc:'蒙昧'},
-  '001001': {name:'艮',py:'gen',desc:'止止'},
-  '000001': {name:'剥',py:'bo',desc:'剥落'},
-
-  '111000': {name:'泰',py:'tai',desc:'泰通'},
-  '110000': {name:'临',py:'lin',desc:'临近'},
-  '101000': {name:'明夷',py:'mingyi',desc:'明夷'},
-  '100000': {name:'复',py:'fu',desc:'复归'},
-  '011000': {name:'升',py:'sheng',desc:'上升'},
-  '010000': {name:'师',py:'shi',desc:'师团'},
-  '001000': {name:'谦',py:'qian',desc:'谦逊'},
-  '000000': {name:'坤',py:'kun',desc:'地顺载'}
-};
+// GUA_64_MAP、NAJIA_TABLE、PURE_NAJIA、GUA_TO_PALACE、LIU_SHEN_NAMES、GAN_LIUSHEN_START、ZHI_EL 已前移至全局区域（line ~1731+）
 
 // hexagramState 已在全局变量区定义（见脚本顶部）
 const _hexagramStatePlaceholder = {
@@ -3240,46 +3401,7 @@ const GUA_PALACE = {
 
 // 六十四卦纳甲表（每卦六爻的地支，从初爻到上爻）
 // 格式：卦二进制 → [初爻,二爻,三爻,四爻,五爻,上爻] 地支纳甲
-const NAJIA_TABLE = {
-  '111111':['子','寅','辰','午','申','戌'], // 乾
-  '000000':['未','巳','卯','丑','亥','酉'], // 坤
-  '100010':['寅','子','戌','亥','丑','卯'], // 坎
-  '010101':['卯','巳','未','午','辰','寅'], // 离
-  '001110':['子','戌','申','辰','寅','子'], // 震
-  '011100':['丑','卯','巳','戌','申','午'], // 艮
-  '110001':['卯','巳','未','申','午','辰'], // 巽
-  '000111':['未','酉','亥','子','戌','申'], // 兑
-  // 以下为其余56卦，用通用算法推算
-};
-
-// 八纯卦纳甲（用于推算所有64卦）
-const PURE_NAJIA = {
-  乾: ['子','寅','辰','午','申','戌'],  // 甲子起，隔干支
-  坤: ['未','巳','卯','丑','亥','酉'],
-  震: ['子','寅','辰','戌','申','午'],  // 注：坤宫一世卦
-  巽: ['丑','亥','酉','卯','巳','未'],
-  坎: ['寅','子','戌','亥','丑','卯'],
-  离: ['卯','巳','未','午','辰','寅'],
-  艮: ['辰','寅','子','未','酉','亥'],
-  兑: ['巳','卯','丑','申','午','辰'],
-};
-
-// 八宫归属（64卦 → 所属宫）
-const GUA_TO_PALACE = {
-  '111111':'乾','111110':'乾','111100':'乾','111000':'乾','111001':'乾','111011':'乾','111111':'乾','110111':'乾',
-  '000000':'坤','000001':'坤','000011':'坤','000111':'坤','000110':'坤','000100':'坤','000010':'坤','001000':'坤',
-  '010000':'震','011000':'震','011001':'震','011011':'震','001011':'震','001001':'震','001000':'震','000000':'坤',
-  '110110':'巽','010110':'巽','000110':'巽','100110':'巽','100010':'巽','110010':'巽','110110':'巽',
-  '010010':'坎','110010':'坎','100010':'坎','100000':'坎','100001':'坎','010001':'坎','010011':'坎',
-  '101101':'离','001101':'离','011101':'离','011001':'离','011000':'离','101000':'离','101100':'离',
-  '100100':'艮','000100':'艮','010100':'艮','010110':'艮','110110':'艮','110100':'艮','100110':'艮',
-  '011011':'兑','111011':'兑','101011':'兑','101001':'兑','001001':'兑','001011':'兑','011001':'兑',
-};
-
-// 六神（六亲配六神：子日→青龙，逢甲乙日→青龙起六亲，循环分配）
-const LIU_SHEN_NAMES = ['青龙','朱雀','勾陈','腾蛇','白虎','玄武'];
-// 日干起六神：甲乙→青龙，丙丁→朱雀，戊→勾陈，己→腾蛇，庚辛→白虎，壬癸→玄武
-const GAN_LIUSHEN_START = {甲:0,乙:0,丙:1,丁:1,戊:2,己:3,庚:4,辛:4,壬:5,癸:5};
+// NAJIA_TABLE、PURE_NAJIA、GUA_TO_PALACE、LIU_SHEN_NAMES、GAN_LIUSHEN_START 已前移至全局区域
 
 // 六亲（以日主五行对各爻地支的关系）
 function getQin(dayEl, branchEl) {
@@ -3293,8 +3415,7 @@ function getQin(dayEl, branchEl) {
   return '兄弟';
 }
 
-// 地支五行
-const ZHI_EL = {子:'水',丑:'土',寅:'木',卯:'木',辰:'土',巳:'火',午:'火',未:'土',申:'金',酉:'金',戌:'土',亥:'水'};
+// ZHI_EL 已前移至全局区域
 
 // 计算世应位（以八宫为基）
 function getShiYing(binary) {
