@@ -3484,34 +3484,51 @@ function buildLiuYaoCard(bazi, u, today) {
     '腾蛇':'#9966cc','白虎':'#bbbbbb','玄武':'#4488bb',
   };
 
-  // 爻象渲染（从上爻到初爻）
-  const linesHtml = [...lines].reverse().map(l => {
-    const posName = ['初','二','三','四','五','上'][l.pos-1];
-    const qinColor = QIN_COLOR[l.qin] || '#a09080';
-    const shenColor = SHEN_COLOR[l.liuShen] || '#a09080';
+  // 爻象渲染 — 用 table 布局，彻底避免 grid/flex 拉伸问题
+  const thead = `<tr style="background:rgba(0,0,0,.25)">
+    <td style="width:52px;padding:6px 8px 6px 14px;font-size:11px;color:var(--text3)">六神</td>
+    <td style="width:48px;padding:6px 4px;font-size:11px;color:var(--text3)">六亲</td>
+    <td style="width:76px;padding:6px 4px;font-size:11px;color:var(--text3)">纳甲·行</td>
+    <td style="width:150px;padding:6px 12px;font-size:11px;color:var(--text3);text-align:center">爻象</td>
+    <td style="width:24px;padding:6px 4px;font-size:11px;color:var(--text3);text-align:center">位</td>
+    <td style="width:56px;padding:6px 14px 6px 4px;font-size:11px;color:var(--text3);text-align:right">标记</td>
+  </tr>`;
 
-    const c = l.isChanging ? '#4ea05e' : 'var(--gold)';
-    const yaoShape = l.isYang
-      ? `<div style="height:5px;background:${c};border-radius:2px;width:140px"></div>`
-      : `<div style="display:flex;gap:20px;width:140px"><div style="height:5px;background:${c};border-radius:2px;flex:1"></div><div style="height:5px;background:${c};border-radius:2px;flex:1"></div></div>`;
-
-    const tag = l.isShi
-      ? `<span style="background:#2a5298;color:#fff;font-size:9px;padding:1px 5px;border-radius:10px">世</span>`
-      : l.isYing
-      ? `<span style="background:#2d7a4f;color:#fff;font-size:9px;padding:1px 5px;border-radius:10px">应</span>`
-      : l.isChanging
-      ? `<span style="background:#6a3d9a;color:#fff;font-size:9px;padding:1px 5px;border-radius:10px">动→变</span>`
-      : '';
-
-    return `<div style="display:grid;grid-template-columns:52px 48px 80px 160px 28px 56px;align-items:center;gap:0;padding:10px 16px;border-bottom:1px solid rgba(196,163,98,.1)">
-      <span style="color:${shenColor};font-size:12px">${l.liuShen}</span>
-      <span style="color:${qinColor};font-size:12px;font-weight:500">${l.qin}</span>
-      <span style="color:var(--text2);font-size:11px">${l.zhi}·${l.zhiEl}</span>
-      <div style="width:160px;flex:none;display:flex;align-items:center">${yaoShape}</div>
-      <span style="color:var(--text3);font-size:12px;text-align:center">${posName}</span>
-      <div style="text-align:right">${tag}</div>
-    </div>`;
-  }).join('');
+  const linesHtml = `<table style="width:100%;border-collapse:collapse;table-layout:fixed">
+    <colgroup>
+      <col style="width:52px">
+      <col style="width:48px">
+      <col style="width:76px">
+      <col style="width:150px">
+      <col style="width:24px">
+      <col style="width:56px">
+    </colgroup>
+    ${thead}
+    ${[...lines].reverse().map(l => {
+      const posName = ['初','二','三','四','五','上'][l.pos-1];
+      const qinColor = QIN_COLOR[l.qin] || '#a09080';
+      const shenColor = SHEN_COLOR[l.liuShen] || '#a09080';
+      const c = l.isChanging ? '#4ea05e' : 'var(--gold)';
+      const yaoShape = l.isYang
+        ? `<div style="height:5px;background:${c};border-radius:2px"></div>`
+        : `<div style="display:flex;gap:18px"><div style="height:5px;background:${c};border-radius:2px;flex:1"></div><div style="height:5px;background:${c};border-radius:2px;flex:1"></div></div>`;
+      const tag = l.isShi
+        ? `<span style="background:#2a5298;color:#fff;font-size:9px;padding:1px 5px;border-radius:10px;white-space:nowrap">世</span>`
+        : l.isYing
+        ? `<span style="background:#2d7a4f;color:#fff;font-size:9px;padding:1px 5px;border-radius:10px;white-space:nowrap">应</span>`
+        : l.isChanging
+        ? `<span style="background:#6a3d9a;color:#fff;font-size:9px;padding:1px 4px;border-radius:10px;white-space:nowrap">动→变</span>`
+        : '';
+      return `<tr style="border-top:1px solid rgba(196,163,98,.1)">
+        <td style="padding:10px 8px 10px 14px;font-size:12px;color:${shenColor}">${l.liuShen}</td>
+        <td style="padding:10px 4px;font-size:12px;color:${qinColor};font-weight:500">${l.qin}</td>
+        <td style="padding:10px 4px;font-size:11px;color:var(--text2)">${l.zhi}·${l.zhiEl}</td>
+        <td style="padding:10px 12px;vertical-align:middle">${yaoShape}</td>
+        <td style="padding:10px 4px;font-size:12px;color:var(--text3);text-align:center">${posName}</td>
+        <td style="padding:10px 14px 10px 4px;text-align:right">${tag}</td>
+      </tr>`;
+    }).join('')}
+  </table>`;
 
   // 动爻描述
   const dongYao = changingIdxs.map(i => `${['初','二','三','四','五','上'][i]}爻（${lines[i].qin}）`).join('、');
@@ -3556,17 +3573,7 @@ function buildLiuYaoCard(bazi, u, today) {
       </div>
     </div>
 
-    <!-- ③ 爻列表头 -->
-    <div style="display:grid;grid-template-columns:52px 48px 80px 160px 28px 56px;align-items:center;gap:0;padding:7px 16px;background:rgba(0,0,0,.25);border-bottom:1px solid var(--border)">
-      <span style="font-size:11px;color:var(--text3)">六神</span>
-      <span style="font-size:11px;color:var(--text3)">六亲</span>
-      <span style="font-size:11px;color:var(--text3)">纳甲·行</span>
-      <span style="font-size:11px;color:var(--text3);text-align:center">爻象</span>
-      <span style="font-size:11px;color:var(--text3);text-align:center">位</span>
-      <span style="font-size:11px;color:var(--text3);text-align:right">标记</span>
-    </div>
-
-    <!-- ④ 六爻行 -->
+    <!-- ③④ 爻列表头 + 六爻行（table布局，固定列宽） -->
     ${linesHtml}
 
     <!-- ⑤ 卦辞 -->
