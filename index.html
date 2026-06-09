@@ -3504,12 +3504,12 @@ function buildLiuYaoCard(bazi, u, today) {
       ? `<span style="background:#6a3d9a;color:#fff;font-size:9px;padding:1px 5px;border-radius:10px">动→变</span>`
       : '';
 
-    return `<div style="display:grid;grid-template-columns:52px 48px 76px 1fr 28px 60px;align-items:center;gap:0;padding:10px 16px;border-bottom:1px solid rgba(196,163,98,.1)">
+    return `<div style="display:grid;grid-template-columns:52px 48px 80px 160px 28px 56px;align-items:center;gap:0;padding:10px 16px;border-bottom:1px solid rgba(196,163,98,.1)">
       <span style="color:${shenColor};font-size:12px">${l.liuShen}</span>
       <span style="color:${qinColor};font-size:12px;font-weight:500">${l.qin}</span>
       <span style="color:var(--text2);font-size:11px">${l.zhi}·${l.zhiEl}</span>
-      <div style="display:flex;align-items:center;padding:0 12px">
-        <div style="width:160px">${yaoShape}</div>
+      <div style="display:flex;align-items:center;justify-content:center">
+        <div style="width:140px">${yaoShape}</div>
       </div>
       <span style="color:var(--text3);font-size:12px;text-align:center">${posName}</span>
       <div style="text-align:right">${tag}</div>
@@ -3528,7 +3528,7 @@ function buildLiuYaoCard(bazi, u, today) {
     ? `${['初','二','三','四','五','上'][changingIdxs[0]]}爻 ${lines[changingIdxs[0]]?.qin||''}·动`
     : '无动爻';
 
-  return `<div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;font-family:inherit;margin:4px 0;width:100%">
+  return `<div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;font-family:inherit;margin:4px 0;width:100%;max-width:560px">
 
     <!-- ① 卦名大标题 -->
     <div style="text-align:center;padding:20px 20px 14px;background:var(--bg3);border-bottom:1px solid var(--border)">
@@ -3558,11 +3558,11 @@ function buildLiuYaoCard(bazi, u, today) {
     </div>
 
     <!-- ③ 爻列表头 -->
-    <div style="display:grid;grid-template-columns:52px 48px 76px 1fr 28px 60px;align-items:center;gap:0;padding:7px 16px;background:rgba(0,0,0,.25);border-bottom:1px solid var(--border)">
+    <div style="display:grid;grid-template-columns:52px 48px 80px 160px 28px 56px;align-items:center;gap:0;padding:7px 16px;background:rgba(0,0,0,.25);border-bottom:1px solid var(--border)">
       <span style="font-size:11px;color:var(--text3)">六神</span>
       <span style="font-size:11px;color:var(--text3)">六亲</span>
       <span style="font-size:11px;color:var(--text3)">纳甲·行</span>
-      <span style="font-size:11px;color:var(--text3);padding-left:12px">爻象</span>
+      <span style="font-size:11px;color:var(--text3);text-align:center">爻象</span>
       <span style="font-size:11px;color:var(--text3);text-align:center">位</span>
       <span style="font-size:11px;color:var(--text3);text-align:right">标记</span>
     </div>
