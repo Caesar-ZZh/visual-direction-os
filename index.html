@@ -3490,10 +3490,11 @@ function buildLiuYaoCard(bazi, u, today) {
     const qinColor = QIN_COLOR[l.qin] || '#a09080';
     const shenColor = SHEN_COLOR[l.liuShen] || '#a09080';
 
-    // 爻形
+    // 爻形（固定160px容器内渲染）
+    const c = l.isChanging ? '#4ea05e' : 'var(--gold)';
     const yaoShape = l.isYang
-      ? `<div style="height:6px;background:${l.isChanging?'#4ea05e':'var(--gold)'};border-radius:2px;flex:1"></div>`
-      : `<div style="display:flex;gap:8px;flex:1"><div style="height:6px;background:${l.isChanging?'#4ea05e':'var(--gold)'};border-radius:2px;flex:1"></div><div style="height:6px;background:${l.isChanging?'#4ea05e':'var(--gold)'};border-radius:2px;flex:1"></div></div>`;
+      ? `<div style="height:5px;background:${c};border-radius:2px;width:100%"></div>`
+      : `<div style="display:flex;gap:16px;width:100%"><div style="height:5px;background:${c};border-radius:2px;flex:1"></div><div style="height:5px;background:${c};border-radius:2px;flex:1"></div></div>`;
 
     const tag = l.isShi
       ? `<span style="background:#2a5298;color:#fff;font-size:9px;padding:1px 5px;border-radius:10px">世</span>`
@@ -3503,11 +3504,13 @@ function buildLiuYaoCard(bazi, u, today) {
       ? `<span style="background:#6a3d9a;color:#fff;font-size:9px;padding:1px 5px;border-radius:10px">动→变</span>`
       : '';
 
-    return `<div style="display:grid;grid-template-columns:52px 52px 80px 1fr 32px 64px;align-items:center;gap:0;padding:11px 16px;border-bottom:1px solid rgba(196,163,98,.1)">
+    return `<div style="display:grid;grid-template-columns:52px 48px 76px 1fr 28px 60px;align-items:center;gap:0;padding:10px 16px;border-bottom:1px solid rgba(196,163,98,.1)">
       <span style="color:${shenColor};font-size:12px">${l.liuShen}</span>
       <span style="color:${qinColor};font-size:12px;font-weight:500">${l.qin}</span>
       <span style="color:var(--text2);font-size:11px">${l.zhi}·${l.zhiEl}</span>
-      <div style="display:flex;align-items:center;padding:0 8px">${yaoShape}</div>
+      <div style="display:flex;align-items:center;padding:0 12px">
+        <div style="width:160px">${yaoShape}</div>
+      </div>
       <span style="color:var(--text3);font-size:12px;text-align:center">${posName}</span>
       <div style="text-align:right">${tag}</div>
     </div>`;
@@ -3555,11 +3558,11 @@ function buildLiuYaoCard(bazi, u, today) {
     </div>
 
     <!-- ③ 爻列表头 -->
-    <div style="display:grid;grid-template-columns:52px 52px 80px 1fr 32px 64px;align-items:center;gap:0;padding:7px 16px;background:rgba(0,0,0,.25);border-bottom:1px solid var(--border)">
+    <div style="display:grid;grid-template-columns:52px 48px 76px 1fr 28px 60px;align-items:center;gap:0;padding:7px 16px;background:rgba(0,0,0,.25);border-bottom:1px solid var(--border)">
       <span style="font-size:11px;color:var(--text3)">六神</span>
       <span style="font-size:11px;color:var(--text3)">六亲</span>
       <span style="font-size:11px;color:var(--text3)">纳甲·行</span>
-      <span style="font-size:11px;color:var(--text3);padding-left:8px">爻象</span>
+      <span style="font-size:11px;color:var(--text3);padding-left:12px">爻象</span>
       <span style="font-size:11px;color:var(--text3);text-align:center">位</span>
       <span style="font-size:11px;color:var(--text3);text-align:right">标记</span>
     </div>
