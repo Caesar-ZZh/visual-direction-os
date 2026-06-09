@@ -3477,117 +3477,106 @@ function buildLiuYaoCard(bazi, u, today) {
   const QIN_COLOR = {'官鬼':'#e06666','妻财':'#4ea05e','父母':'#4488bb','兄弟':'#a09080','子孙':'#c4a362'};
   const SHEN_COLOR = {'青龙':'#4ea05e','朱雀':'#e06666','勾陈':'#c4a362','腾蛇':'#9966cc','白虎':'#bbbbbb','玄武':'#4488bb'};
 
-  const title = changeGua ? `${gua.name}卦  →  ${changeGua.name}卦` : `${gua.name}卦`;
+  const title = changeGua ? `${gua.name}卦 → ${changeGua.name}卦` : `${gua.name}卦`;
   const dongYaoDetail = changingIdxs.length > 0
     ? `${['初','二','三','四','五','上'][changingIdxs[0]]}爻 ${lines[changingIdxs[0]]?.qin||''}·动`
     : '无动爻';
 
-  // 爻行 HTML —— 每行固定结构，爻象线用绝对宽度 div
-  const rowsHtml = [...lines].reverse().map(l => {
+  // 完全固定像素，不用任何 flex:1 / 1fr
+  // 列宽：六神60 + 六亲60 + 纳甲80 + 爻象(居中120px线在200px格) + 位36 + 标记70 = 506
+  // 左右padding各16 → 卡片总宽 506+32 = 538px
+
+  const C = {W:'538px', shen:'60px', qin:'60px', naj:'80px', yao:'200px', pos:'36px', tag:'70px'};
+
+  const rowStyle = `display:table-row`;
+  const cellBase = `display:table-cell;vertical-align:middle;padding:12px 0;border-bottom:1px solid rgba(196,163,98,.08)`;
+
+  const rows = [...lines].reverse().map(l => {
     const pos = ['初','二','三','四','五','上'][l.pos-1];
     const qc = QIN_COLOR[l.qin]||'#a09080', sc = SHEN_COLOR[l.liuShen]||'#a09080';
     const lc = l.isChanging ? '#4ea05e' : '#c4a362';
-    // 爻形：阳爻=实线，阴爻=断线，宽度固定120px
-    const line = l.isYang
+
+    // 爻象线：固定120px，居中
+    const lineInner = l.isYang
       ? `<div style="width:120px;height:5px;background:${lc};border-radius:2px"></div>`
-      : `<div style="width:120px;display:flex;gap:16px"><div style="flex:1;height:5px;background:${lc};border-radius:2px"></div><div style="flex:1;height:5px;background:${lc};border-radius:2px"></div></div>`;
+      : `<div style="width:120px;height:5px;display:flex;gap:18px"><div style="flex:1;background:${lc};border-radius:2px;height:5px"></div><div style="flex:1;background:${lc};border-radius:2px;height:5px"></div></div>`;
+
     const tag = l.isShi
-      ? `<span style="display:inline-block;background:#2a5298;color:#fff;font-size:11px;padding:3px 8px;border-radius:20px">世</span>`
+      ? `<span style="display:inline-block;background:#2a5298;color:#fff;font-size:10px;padding:3px 9px;border-radius:20px">世</span>`
       : l.isYing
-      ? `<span style="display:inline-block;background:#2d7a4f;color:#fff;font-size:11px;padding:3px 8px;border-radius:20px">应</span>`
+      ? `<span style="display:inline-block;background:#2d7a4f;color:#fff;font-size:10px;padding:3px 9px;border-radius:20px">应</span>`
       : l.isChanging
-      ? `<span style="display:inline-block;background:#6a3d9a;color:#fff;font-size:11px;padding:3px 8px;border-radius:20px">动→变</span>`
+      ? `<span style="display:inline-block;background:#6a3d9a;color:#fff;font-size:10px;padding:3px 7px;border-radius:20px;white-space:nowrap">动→变</span>`
       : '';
-    return `<tr>
-      <td style="padding:14px 8px 14px 20px;font-size:13px;color:${sc};white-space:nowrap">${l.liuShen}</td>
-      <td style="padding:14px 12px;font-size:13px;color:${qc};font-weight:500;white-space:nowrap">${l.qin}</td>
-      <td style="padding:14px 12px;font-size:12px;color:#888;white-space:nowrap">${l.zhi}·${l.zhiEl}</td>
-      <td style="padding:14px 32px;text-align:center;width:200px">${line}</td>
-      <td style="padding:14px 12px;font-size:13px;color:#888;white-space:nowrap;text-align:center">${pos}</td>
-      <td style="padding:14px 20px 14px 8px;white-space:nowrap;text-align:right;width:80px">${tag}</td>
-    </tr>`;
+
+    return `<div style="${rowStyle}">
+      <div style="${cellBase};width:${C.shen};padding-left:16px;font-size:13px;color:${sc}">${l.liuShen}</div>
+      <div style="${cellBase};width:${C.qin};font-size:13px;color:${qc};font-weight:500">${l.qin}</div>
+      <div style="${cellBase};width:${C.naj};font-size:12px;color:#888">${l.zhi}·${l.zhiEl}</div>
+      <div style="${cellBase};width:${C.yao};text-align:center">
+        <div style="display:inline-block">${lineInner}</div>
+      </div>
+      <div style="${cellBase};width:${C.pos};font-size:13px;color:#888;text-align:center">${pos}</div>
+      <div style="${cellBase};width:${C.tag};text-align:right;padding-right:16px">${tag}</div>
+    </div>`;
   }).join('');
 
-  return `
-  <div style="
+  return `<div style="
     font-family:'PingFang SC','Microsoft YaHei',sans-serif;
     background:#161820;
     border:1px solid rgba(196,163,98,.25);
     border-radius:12px;
     overflow:hidden;
     margin:6px 0;
-    width:680px;
-    max-width:calc(100vw - 120px);
-    box-shadow:0 4px 24px rgba(0,0,0,.4)
-  ">
+    width:${C.W};
+    box-shadow:0 4px 24px rgba(0,0,0,.4)">
 
-    <!-- 标题区 -->
-    <div style="text-align:center;padding:24px 24px 18px;background:#1a1c24;border-bottom:1px solid rgba(196,163,98,.15)">
-      <div style="font-size:22px;color:#c4a362;font-weight:500;letter-spacing:.1em;margin-bottom:8px">${title}</div>
-      <div style="font-size:12px;color:#888;margin-bottom:4px">${palace}宫 · ${changingIdxs.length > 0 ? changingIdxs.map(i=>'初二三四五上'[i]).join('')+'爻发动变卦' : '无动爻'}</div>
-      <div style="font-size:12px;color:#666">${today.dateStr} · ${today.gz}日</div>
+    <!-- 标题 -->
+    <div style="text-align:center;padding:20px 16px 14px;background:#1a1c24;border-bottom:1px solid rgba(196,163,98,.15)">
+      <div style="font-size:20px;color:#c4a362;font-weight:500;letter-spacing:.08em;margin-bottom:6px">${title}</div>
+      <div style="font-size:12px;color:#888;margin-bottom:3px">${palace}宫·${changingIdxs.length>0?changingIdxs.map(i=>['初','二','三','四','五','上'][i]).join('')+'爻发动变卦':'无动爻'}</div>
+      <div style="font-size:11px;color:#555">${today.dateStr} · ${today.gz}日</div>
     </div>
 
-    <!-- 四格信息 -->
-    <div style="display:flex;border-bottom:1px solid rgba(196,163,98,.15)">
-      <div style="flex:1;text-align:center;padding:14px 8px;border-right:1px solid rgba(196,163,98,.15)">
-        <div style="font-size:11px;color:#666;margin-bottom:6px">宫别</div>
-        <div style="font-size:14px;color:#ccc;font-weight:500">${palace}宫·${ZHI_EL[data.lines[0]?.zhi]||''}</div>
-      </div>
-      <div style="flex:1;text-align:center;padding:14px 8px;border-right:1px solid rgba(196,163,98,.15)">
-        <div style="font-size:11px;color:#666;margin-bottom:6px">世爻</div>
-        <div style="font-size:14px;color:#4a7fa8;font-weight:500">${['初','二','三','四','五','上'][shiPos-1]}爻 ${lines[shiPos-1]?.qin||''}★</div>
-      </div>
-      <div style="flex:1;text-align:center;padding:14px 8px;border-right:1px solid rgba(196,163,98,.15)">
-        <div style="font-size:11px;color:#666;margin-bottom:6px">应爻</div>
-        <div style="font-size:14px;color:#4a9a5a;font-weight:500">${['初','二','三','四','五','上'][yingPos-1]}爻 ${lines[yingPos-1]?.qin||''}★</div>
-      </div>
-      <div style="flex:1;text-align:center;padding:14px 8px">
-        <div style="font-size:11px;color:#666;margin-bottom:6px">用神·动爻</div>
-        <div style="font-size:14px;color:#c4a362;font-weight:500">${dongYaoDetail}</div>
+    <!-- 四格 -->
+    <div style="display:table;width:100%;border-collapse:collapse;border-bottom:1px solid rgba(196,163,98,.15)">
+      <div style="display:table-row">
+        <div style="display:table-cell;text-align:center;padding:12px 6px;border-right:1px solid rgba(196,163,98,.12);width:25%">
+          <div style="font-size:10px;color:#555;margin-bottom:4px">宫别</div>
+          <div style="font-size:13px;color:#ccc;font-weight:500">${palace}宫·${ZHI_EL[data.lines[0]?.zhi]||''}</div>
+        </div>
+        <div style="display:table-cell;text-align:center;padding:12px 6px;border-right:1px solid rgba(196,163,98,.12);width:25%">
+          <div style="font-size:10px;color:#555;margin-bottom:4px">世爻</div>
+          <div style="font-size:13px;color:#4a7fa8;font-weight:500">${['初','二','三','四','五','上'][shiPos-1]}爻 ${lines[shiPos-1]?.qin||''}★</div>
+        </div>
+        <div style="display:table-cell;text-align:center;padding:12px 6px;border-right:1px solid rgba(196,163,98,.12);width:25%">
+          <div style="font-size:10px;color:#555;margin-bottom:4px">应爻</div>
+          <div style="font-size:13px;color:#4a9a5a;font-weight:500">${['初','二','三','四','五','上'][yingPos-1]}爻 ${lines[yingPos-1]?.qin||''}★</div>
+        </div>
+        <div style="display:table-cell;text-align:center;padding:12px 6px;width:25%">
+          <div style="font-size:10px;color:#555;margin-bottom:4px">用神·动爻</div>
+          <div style="font-size:13px;color:#c4a362;font-weight:500">${dongYaoDetail}</div>
+        </div>
       </div>
     </div>
 
-    <!-- 爻行表格 -->
-    <div style="border-bottom:1px solid rgba(196,163,98,.15)">
+    <!-- 表头+爻行 -->
+    <div style="display:table;width:100%;border-collapse:collapse">
       <!-- 表头 -->
-      <div style="display:flex;padding:8px 20px;background:rgba(0,0,0,.2);border-bottom:1px solid rgba(196,163,98,.1)">
-        <span style="width:80px;font-size:12px;color:#555">六神</span>
-        <span style="width:80px;font-size:12px;color:#555">六亲</span>
-        <span style="width:100px;font-size:12px;color:#555">纳甲·行</span>
-        <span style="flex:1;font-size:12px;color:#555;text-align:center">爻象</span>
-        <span style="width:40px;font-size:12px;color:#555;text-align:center">位</span>
-        <span style="width:80px;font-size:12px;color:#555;text-align:right">标记</span>
+      <div style="display:table-row;background:rgba(0,0,0,.2)">
+        <div style="display:table-cell;width:${C.shen};padding:6px 0 6px 16px;font-size:11px;color:#555">六神</div>
+        <div style="display:table-cell;width:${C.qin};padding:6px 0;font-size:11px;color:#555">六亲</div>
+        <div style="display:table-cell;width:${C.naj};padding:6px 0;font-size:11px;color:#555">纳甲·行</div>
+        <div style="display:table-cell;width:${C.yao};padding:6px 0;font-size:11px;color:#555;text-align:center">爻象</div>
+        <div style="display:table-cell;width:${C.pos};padding:6px 0;font-size:11px;color:#555;text-align:center">位</div>
+        <div style="display:table-cell;width:${C.tag};padding:6px 16px 6px 0;font-size:11px;color:#555;text-align:right">标记</div>
       </div>
-      <!-- 爻行 -->
-      ${[...lines].reverse().map(l => {
-        const pos = ['初','二','三','四','五','上'][l.pos-1];
-        const qc = QIN_COLOR[l.qin]||'#a09080', sc = SHEN_COLOR[l.liuShen]||'#a09080';
-        const lc = l.isChanging ? '#4ea05e' : '#c4a362';
-        const line = l.isYang
-          ? `<div style="width:120px;height:5px;background:${lc};border-radius:2px"></div>`
-          : `<div style="width:120px;display:flex;gap:16px"><div style="flex:1;height:5px;background:${lc};border-radius:2px"></div><div style="flex:1;height:5px;background:${lc};border-radius:2px"></div></div>`;
-        const tag = l.isShi
-          ? `<span style="background:#2a5298;color:#fff;font-size:11px;padding:3px 10px;border-radius:20px">世</span>`
-          : l.isYing
-          ? `<span style="background:#2d7a4f;color:#fff;font-size:11px;padding:3px 10px;border-radius:20px">应</span>`
-          : l.isChanging
-          ? `<span style="background:#6a3d9a;color:#fff;font-size:11px;padding:3px 8px;border-radius:20px;white-space:nowrap">动→变</span>`
-          : '';
-        return `<div style="display:flex;align-items:center;padding:12px 20px;border-bottom:1px solid rgba(196,163,98,.07)">
-          <span style="width:80px;font-size:13px;color:${sc}">${l.liuShen}</span>
-          <span style="width:80px;font-size:13px;color:${qc};font-weight:500">${l.qin}</span>
-          <span style="width:100px;font-size:12px;color:#777">${l.zhi}·${l.zhiEl}</span>
-          <div style="flex:1;display:flex;justify-content:center;align-items:center">${line}</div>
-          <span style="width:40px;font-size:13px;color:#666;text-align:center">${pos}</span>
-          <div style="width:80px;text-align:right">${tag}</div>
-        </div>`;
-      }).join('')}
+      ${rows}
     </div>
 
     <!-- 卦辞 -->
-    <div style="padding:12px 20px;font-size:12px;color:#666">
-      <span style="color:#c4a362;margin-right:6px">☯</span>${gua.desc || gua.name}
+    <div style="padding:10px 16px;font-size:12px;color:#555;border-top:1px solid rgba(196,163,98,.1)">
+      <span style="color:#c4a362;margin-right:4px">☯</span>${gua.desc||gua.name}
     </div>
   </div>`;
 }
