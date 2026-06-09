@@ -2069,9 +2069,16 @@ function quickAsk(q) {
 }
 
 async function castHexagram() {
-  // 1. 在聊天框显示「正在起卦…」的动画消息
-  const animEl = addMessage('ai', '');
-  const bubble = animEl.querySelector('.msg-bubble');
+  // 1. 创建全宽容器（不受 .msg 的 max-width:85% 限制）
+  const wrap = document.getElementById('chatMessages');
+  const animEl = document.createElement('div');
+  animEl.style.cssText = 'display:flex;gap:10px;align-items:flex-start;width:100%;max-width:100%';
+  animEl.innerHTML = `
+    <div style="flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;background:rgba(196,163,98,.2);border:1px solid rgba(196,163,98,.3);color:var(--gold);margin-top:2px">☯</div>
+    <div class="liuyao-card-wrap" style="flex:1;min-width:0"></div>
+  `;
+  wrap.appendChild(animEl);
+  const bubble = animEl.querySelector('.liuyao-card-wrap');
 
   const yaos = [];
   const YAONAMES = ['初爻','二爻','三爻','四爻','五爻','上爻'];
@@ -3524,19 +3531,16 @@ function buildLiuYaoCard(bazi, u, today) {
       </div>
       <span style="font-size:10px;color:var(--text3)">${today.gz}日</span>
     </div>
-    <!-- 世应一行 -->
-    <div style="display:flex;gap:0;border-bottom:1px solid var(--border)">
-      <div style="text-align:center;padding:6px 10px;border-right:1px solid var(--border);flex:1">
-        <div style="font-size:9px;color:var(--text3)">宫别</div>
-        <div style="font-size:12px;color:var(--text);font-weight:500">${palace}·${ZHI_EL[data.lines[0]?.zhi]||''}</div>
+    <!-- 世应一行（紧凑） -->
+    <div style="display:flex;border-bottom:1px solid var(--border)">
+      <div style="text-align:center;padding:5px 8px;border-right:1px solid var(--border);flex:1">
+        <span style="font-size:9px;color:var(--text3)">宫 </span><span style="font-size:11px;color:var(--text);font-weight:500">${palace}·${ZHI_EL[data.lines[0]?.zhi]||''}</span>
       </div>
-      <div style="text-align:center;padding:6px 10px;border-right:1px solid var(--border);flex:1">
-        <div style="font-size:9px;color:var(--text3)">世爻</div>
-        <div style="font-size:12px;color:#4a7fa8;font-weight:500">${['初','二','三','四','五','上'][shiPos-1]}·${lines[shiPos-1]?.qin||''}</div>
+      <div style="text-align:center;padding:5px 8px;border-right:1px solid var(--border);flex:1">
+        <span style="font-size:9px;color:var(--text3)">世 </span><span style="font-size:11px;color:#4a7fa8;font-weight:500">${['初','二','三','四','五','上'][shiPos-1]}·${lines[shiPos-1]?.qin||''}</span>
       </div>
-      <div style="text-align:center;padding:6px 10px;flex:1">
-        <div style="font-size:9px;color:var(--text3)">应爻</div>
-        <div style="font-size:12px;color:#4a9a5a;font-weight:500">${['初','二','三','四','五','上'][yingPos-1]}·${lines[yingPos-1]?.qin||''}</div>
+      <div style="text-align:center;padding:5px 8px;flex:1">
+        <span style="font-size:9px;color:var(--text3)">应 </span><span style="font-size:11px;color:#4a9a5a;font-weight:500">${['初','二','三','四','五','上'][yingPos-1]}·${lines[yingPos-1]?.qin||''}</span>
       </div>
     </div>
     <!-- 爻列标题 -->
@@ -3552,7 +3556,7 @@ function buildLiuYaoCard(bazi, u, today) {
     ${linesHtml}
     <!-- 卦辞 -->
     <div style="padding:7px 12px;background:rgba(196,163,98,.03);border-top:1px solid var(--border);font-size:10.5px;color:var(--text2)">
-      <span style="color:var(--gold)">☯</span> ${gua.ci}
+      <span style="color:var(--gold)">☯</span> ${gua.desc || gua.name}
     </div>
   </div>`;
 }
