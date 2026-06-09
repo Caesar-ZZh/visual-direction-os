@@ -3472,114 +3472,122 @@ function buildLiuYaoCard(bazi, u, today) {
   const dayGan = today.gan;
   const data = calcLiuYao(hexagramState.yaos, dayGan);
   if (!data) return null;
-
   const { gua, lines, shiPos, yingPos, changeGua, changingIdxs, palace } = data;
 
-  // 六亲颜色
-  const QIN_COLOR = {
-    '官鬼':'#e06666','妻财':'#4ea05e','父母':'#4488bb',
-    '兄弟':'#a09080','子孙':'#c4a362',
-  };
+  const QIN_COLOR = {'官鬼':'#e06666','妻财':'#4ea05e','父母':'#4488bb','兄弟':'#a09080','子孙':'#c4a362'};
+  const SHEN_COLOR = {'青龙':'#4ea05e','朱雀':'#e06666','勾陈':'#c4a362','腾蛇':'#9966cc','白虎':'#bbbbbb','玄武':'#4488bb'};
 
-  // 六神颜色
-  const SHEN_COLOR = {
-    '青龙':'#4ea05e','朱雀':'#e06666','勾陈':'#c4a362',
-    '腾蛇':'#9966cc','白虎':'#bbbbbb','玄武':'#4488bb',
-  };
-
-  // 爻象渲染 — 用 table 布局，彻底避免 grid/flex 拉伸问题
-  const thead = `<tr style="background:rgba(0,0,0,.25)">
-    <td style="width:52px;padding:6px 8px 6px 14px;font-size:11px;color:var(--text3)">六神</td>
-    <td style="width:48px;padding:6px 4px;font-size:11px;color:var(--text3)">六亲</td>
-    <td style="width:76px;padding:6px 4px;font-size:11px;color:var(--text3)">纳甲·行</td>
-    <td style="width:150px;padding:6px 12px;font-size:11px;color:var(--text3);text-align:center">爻象</td>
-    <td style="width:24px;padding:6px 4px;font-size:11px;color:var(--text3);text-align:center">位</td>
-    <td style="width:56px;padding:6px 14px 6px 4px;font-size:11px;color:var(--text3);text-align:right">标记</td>
-  </tr>`;
-
-  const linesHtml = `<table style="width:100%;border-collapse:collapse;table-layout:fixed">
-    <colgroup>
-      <col style="width:52px">
-      <col style="width:48px">
-      <col style="width:76px">
-      <col style="width:150px">
-      <col style="width:24px">
-      <col style="width:56px">
-    </colgroup>
-    ${thead}
-    ${[...lines].reverse().map(l => {
-      const posName = ['初','二','三','四','五','上'][l.pos-1];
-      const qinColor = QIN_COLOR[l.qin] || '#a09080';
-      const shenColor = SHEN_COLOR[l.liuShen] || '#a09080';
-      const c = l.isChanging ? '#4ea05e' : 'var(--gold)';
-      const yaoShape = l.isYang
-        ? `<div style="height:5px;background:${c};border-radius:2px"></div>`
-        : `<div style="display:flex;gap:18px"><div style="height:5px;background:${c};border-radius:2px;flex:1"></div><div style="height:5px;background:${c};border-radius:2px;flex:1"></div></div>`;
-      const tag = l.isShi
-        ? `<span style="background:#2a5298;color:#fff;font-size:9px;padding:1px 5px;border-radius:10px;white-space:nowrap">世</span>`
-        : l.isYing
-        ? `<span style="background:#2d7a4f;color:#fff;font-size:9px;padding:1px 5px;border-radius:10px;white-space:nowrap">应</span>`
-        : l.isChanging
-        ? `<span style="background:#6a3d9a;color:#fff;font-size:9px;padding:1px 4px;border-radius:10px;white-space:nowrap">动→变</span>`
-        : '';
-      return `<tr style="border-top:1px solid rgba(196,163,98,.1)">
-        <td style="padding:10px 8px 10px 14px;font-size:12px;color:${shenColor}">${l.liuShen}</td>
-        <td style="padding:10px 4px;font-size:12px;color:${qinColor};font-weight:500">${l.qin}</td>
-        <td style="padding:10px 4px;font-size:11px;color:var(--text2)">${l.zhi}·${l.zhiEl}</td>
-        <td style="padding:10px 12px;vertical-align:middle">${yaoShape}</td>
-        <td style="padding:10px 4px;font-size:12px;color:var(--text3);text-align:center">${posName}</td>
-        <td style="padding:10px 14px 10px 4px;text-align:right">${tag}</td>
-      </tr>`;
-    }).join('')}
-  </table>`;
-
-  // 动爻描述
-  const dongYao = changingIdxs.map(i => `${['初','二','三','四','五','上'][i]}爻（${lines[i].qin}）`).join('、');
-
-  const title = changeGua
-    ? `${gua.name}卦 ䷁ → ${changeGua.name}卦`
-    : `${gua.name}卦`;
-
-  // 动爻详情（用神·动爻）
+  const title = changeGua ? `${gua.name}卦  →  ${changeGua.name}卦` : `${gua.name}卦`;
   const dongYaoDetail = changingIdxs.length > 0
     ? `${['初','二','三','四','五','上'][changingIdxs[0]]}爻 ${lines[changingIdxs[0]]?.qin||''}·动`
     : '无动爻';
 
-  return `<div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;font-family:inherit;margin:4px 0;display:inline-block;vertical-align:top;min-width:420px">
+  // 爻行 HTML —— 每行固定结构，爻象线用绝对宽度 div
+  const rowsHtml = [...lines].reverse().map(l => {
+    const pos = ['初','二','三','四','五','上'][l.pos-1];
+    const qc = QIN_COLOR[l.qin]||'#a09080', sc = SHEN_COLOR[l.liuShen]||'#a09080';
+    const lc = l.isChanging ? '#4ea05e' : '#c4a362';
+    // 爻形：阳爻=实线，阴爻=断线，宽度固定120px
+    const line = l.isYang
+      ? `<div style="width:120px;height:5px;background:${lc};border-radius:2px"></div>`
+      : `<div style="width:120px;display:flex;gap:16px"><div style="flex:1;height:5px;background:${lc};border-radius:2px"></div><div style="flex:1;height:5px;background:${lc};border-radius:2px"></div></div>`;
+    const tag = l.isShi
+      ? `<span style="display:inline-block;background:#2a5298;color:#fff;font-size:11px;padding:3px 8px;border-radius:20px">世</span>`
+      : l.isYing
+      ? `<span style="display:inline-block;background:#2d7a4f;color:#fff;font-size:11px;padding:3px 8px;border-radius:20px">应</span>`
+      : l.isChanging
+      ? `<span style="display:inline-block;background:#6a3d9a;color:#fff;font-size:11px;padding:3px 8px;border-radius:20px">动→变</span>`
+      : '';
+    return `<tr>
+      <td style="padding:14px 8px 14px 20px;font-size:13px;color:${sc};white-space:nowrap">${l.liuShen}</td>
+      <td style="padding:14px 12px;font-size:13px;color:${qc};font-weight:500;white-space:nowrap">${l.qin}</td>
+      <td style="padding:14px 12px;font-size:12px;color:#888;white-space:nowrap">${l.zhi}·${l.zhiEl}</td>
+      <td style="padding:14px 32px;text-align:center;width:200px">${line}</td>
+      <td style="padding:14px 12px;font-size:13px;color:#888;white-space:nowrap;text-align:center">${pos}</td>
+      <td style="padding:14px 20px 14px 8px;white-space:nowrap;text-align:right;width:80px">${tag}</td>
+    </tr>`;
+  }).join('');
 
-    <!-- ① 卦名大标题 -->
-    <div style="text-align:center;padding:20px 20px 14px;background:var(--bg3);border-bottom:1px solid var(--border)">
-      <div style="font-size:20px;color:var(--gold);font-weight:500;letter-spacing:.15em;margin-bottom:6px">${title}</div>
-      <div style="font-size:12px;color:var(--text2);letter-spacing:.05em">${palace}宫 · ${changingIdxs.length}爻发动变卦</div>
-      <div style="font-size:11px;color:var(--text3);margin-top:3px">${today.dateStr} · ${today.gz}日</div>
+  return `
+  <div style="
+    font-family:'PingFang SC','Microsoft YaHei',sans-serif;
+    background:#161820;
+    border:1px solid rgba(196,163,98,.25);
+    border-radius:12px;
+    overflow:hidden;
+    margin:6px 0;
+    width:680px;
+    max-width:calc(100vw - 120px);
+    box-shadow:0 4px 24px rgba(0,0,0,.4)
+  ">
+
+    <!-- 标题区 -->
+    <div style="text-align:center;padding:24px 24px 18px;background:#1a1c24;border-bottom:1px solid rgba(196,163,98,.15)">
+      <div style="font-size:22px;color:#c4a362;font-weight:500;letter-spacing:.1em;margin-bottom:8px">${title}</div>
+      <div style="font-size:12px;color:#888;margin-bottom:4px">${palace}宫 · ${changingIdxs.length > 0 ? changingIdxs.map(i=>'初二三四五上'[i]).join('')+'爻发动变卦' : '无动爻'}</div>
+      <div style="font-size:12px;color:#666">${today.dateStr} · ${today.gz}日</div>
     </div>
 
-    <!-- ② 宫别/世爻/应爻/用神 四格 -->
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;border-bottom:1px solid var(--border)">
-      <div style="text-align:center;padding:12px 8px;border-right:1px solid var(--border)">
-        <div style="font-size:11px;color:var(--text3);margin-bottom:5px">宫别</div>
-        <div style="font-size:13px;color:var(--text);font-weight:500">${palace}宫·${ZHI_EL[data.lines[0]?.zhi]||''}</div>
+    <!-- 四格信息 -->
+    <div style="display:flex;border-bottom:1px solid rgba(196,163,98,.15)">
+      <div style="flex:1;text-align:center;padding:14px 8px;border-right:1px solid rgba(196,163,98,.15)">
+        <div style="font-size:11px;color:#666;margin-bottom:6px">宫别</div>
+        <div style="font-size:14px;color:#ccc;font-weight:500">${palace}宫·${ZHI_EL[data.lines[0]?.zhi]||''}</div>
       </div>
-      <div style="text-align:center;padding:12px 8px;border-right:1px solid var(--border)">
-        <div style="font-size:11px;color:var(--text3);margin-bottom:5px">世爻</div>
-        <div style="font-size:13px;color:#4a7fa8;font-weight:500">${['初','二','三','四','五','上'][shiPos-1]}爻 ${lines[shiPos-1]?.qin||''}★</div>
+      <div style="flex:1;text-align:center;padding:14px 8px;border-right:1px solid rgba(196,163,98,.15)">
+        <div style="font-size:11px;color:#666;margin-bottom:6px">世爻</div>
+        <div style="font-size:14px;color:#4a7fa8;font-weight:500">${['初','二','三','四','五','上'][shiPos-1]}爻 ${lines[shiPos-1]?.qin||''}★</div>
       </div>
-      <div style="text-align:center;padding:12px 8px;border-right:1px solid var(--border)">
-        <div style="font-size:11px;color:var(--text3);margin-bottom:5px">应爻</div>
-        <div style="font-size:13px;color:#4a9a5a;font-weight:500">${['初','二','三','四','五','上'][yingPos-1]}爻 ${lines[yingPos-1]?.qin||''}★</div>
+      <div style="flex:1;text-align:center;padding:14px 8px;border-right:1px solid rgba(196,163,98,.15)">
+        <div style="font-size:11px;color:#666;margin-bottom:6px">应爻</div>
+        <div style="font-size:14px;color:#4a9a5a;font-weight:500">${['初','二','三','四','五','上'][yingPos-1]}爻 ${lines[yingPos-1]?.qin||''}★</div>
       </div>
-      <div style="text-align:center;padding:12px 8px">
-        <div style="font-size:11px;color:var(--text3);margin-bottom:5px">用神·动爻</div>
-        <div style="font-size:13px;color:#c4a362;font-weight:500">${dongYaoDetail}</div>
+      <div style="flex:1;text-align:center;padding:14px 8px">
+        <div style="font-size:11px;color:#666;margin-bottom:6px">用神·动爻</div>
+        <div style="font-size:14px;color:#c4a362;font-weight:500">${dongYaoDetail}</div>
       </div>
     </div>
 
-    <!-- ③④ 爻列表头 + 六爻行（table布局，固定列宽） -->
-    ${linesHtml}
+    <!-- 爻行表格 -->
+    <div style="border-bottom:1px solid rgba(196,163,98,.15)">
+      <!-- 表头 -->
+      <div style="display:flex;padding:8px 20px;background:rgba(0,0,0,.2);border-bottom:1px solid rgba(196,163,98,.1)">
+        <span style="width:80px;font-size:12px;color:#555">六神</span>
+        <span style="width:80px;font-size:12px;color:#555">六亲</span>
+        <span style="width:100px;font-size:12px;color:#555">纳甲·行</span>
+        <span style="flex:1;font-size:12px;color:#555;text-align:center">爻象</span>
+        <span style="width:40px;font-size:12px;color:#555;text-align:center">位</span>
+        <span style="width:80px;font-size:12px;color:#555;text-align:right">标记</span>
+      </div>
+      <!-- 爻行 -->
+      ${[...lines].reverse().map(l => {
+        const pos = ['初','二','三','四','五','上'][l.pos-1];
+        const qc = QIN_COLOR[l.qin]||'#a09080', sc = SHEN_COLOR[l.liuShen]||'#a09080';
+        const lc = l.isChanging ? '#4ea05e' : '#c4a362';
+        const line = l.isYang
+          ? `<div style="width:120px;height:5px;background:${lc};border-radius:2px"></div>`
+          : `<div style="width:120px;display:flex;gap:16px"><div style="flex:1;height:5px;background:${lc};border-radius:2px"></div><div style="flex:1;height:5px;background:${lc};border-radius:2px"></div></div>`;
+        const tag = l.isShi
+          ? `<span style="background:#2a5298;color:#fff;font-size:11px;padding:3px 10px;border-radius:20px">世</span>`
+          : l.isYing
+          ? `<span style="background:#2d7a4f;color:#fff;font-size:11px;padding:3px 10px;border-radius:20px">应</span>`
+          : l.isChanging
+          ? `<span style="background:#6a3d9a;color:#fff;font-size:11px;padding:3px 8px;border-radius:20px;white-space:nowrap">动→变</span>`
+          : '';
+        return `<div style="display:flex;align-items:center;padding:12px 20px;border-bottom:1px solid rgba(196,163,98,.07)">
+          <span style="width:80px;font-size:13px;color:${sc}">${l.liuShen}</span>
+          <span style="width:80px;font-size:13px;color:${qc};font-weight:500">${l.qin}</span>
+          <span style="width:100px;font-size:12px;color:#777">${l.zhi}·${l.zhiEl}</span>
+          <div style="flex:1;display:flex;justify-content:center;align-items:center">${line}</div>
+          <span style="width:40px;font-size:13px;color:#666;text-align:center">${pos}</span>
+          <div style="width:80px;text-align:right">${tag}</div>
+        </div>`;
+      }).join('')}
+    </div>
 
-    <!-- ⑤ 卦辞 -->
-    <div style="padding:10px 16px;background:rgba(196,163,98,.04);border-top:1px solid var(--border);font-size:12px;color:var(--text2)">
-      <span style="color:var(--gold);margin-right:6px">☯</span>${gua.desc || gua.name}
+    <!-- 卦辞 -->
+    <div style="padding:12px 20px;font-size:12px;color:#666">
+      <span style="color:#c4a362;margin-right:6px">☯</span>${gua.desc || gua.name}
     </div>
   </div>`;
 }
