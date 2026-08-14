@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Visual Direction OS — 把叙事转译为可执行的角色、世界、序列与色彩规则。">
+  <meta name="theme-color" content="#11120f">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2311120f'/%3E%3Cpath d='M13 16h9l10 32h-8L13 16Zm18 32 10-32h10L39 48h-8Z' fill='%23ef5b48'/%3E%3C/svg%3E">
+  <title>Visual Direction OS · Overview</title>
+  <script>
+    (() => {
+      const saved = localStorage.getItem('vdos-theme');
+      const theme = saved || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      document.documentElement.dataset.theme = theme;
+    })();
+  </script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">跳到主要内容</a>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="mobile-header">
+    <a class="mobile-brand" href="#overview" aria-label="Visual Direction OS 首页">
+      <span class="brand-mark" aria-hidden="true">VD</span>
+      <span>Visual Direction OS</span>
+    </a>
+    <div class="mobile-actions">
+      <button class="icon-button theme-toggle" type="button" aria-label="切换明暗主题">
+        <span class="theme-icon" aria-hidden="true"></span>
+      </button>
+      <button class="icon-button menu-toggle" type="button" aria-label="打开导航" aria-controls="system-rail" aria-expanded="false">
+        <span class="menu-lines" aria-hidden="true"></span>
+      </button>
+    </div>
+  </header>
+
+  <div class="app-shell">
+    <aside class="system-rail" id="system-rail" aria-label="系统导航">
+      <div class="rail-head">
+        <a class="brand" href="#overview" aria-label="Visual Direction OS 首页">
+          <span class="brand-mark" aria-hidden="true">VD</span>
+          <span class="brand-copy"><strong>Visual Direction</strong><small>Operating System · v2.0</small></span>
+        </a>
+        <button class="icon-button rail-theme theme-toggle" type="button" aria-label="切换明暗主题">
+          <span class="theme-icon" aria-hidden="true"></span>
+        </button>
+      </div>
+
+      <div class="rail-status" aria-label="当前系统状态">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span>Framework online</span>
+        <span class="rail-version">12 sources</span>
+      </div>
+
+      <nav class="primary-nav" aria-label="核心章节">
+        <p class="nav-label">System map</p>
+        <button type="button" class="nav-link is-active" data-route="overview" aria-current="page"><span>00</span> Overview <i></i></button>
+        <button type="button" class="nav-link" data-route="character"><span>01</span> Character <i></i></button>
+        <button type="button" class="nav-link" data-route="world"><span>02</span> World <i></i></button>
+        <button type="button" class="nav-link" data-route="sequence"><span>03</span> Sequence <i></i></button>
+        <button type="button" class="nav-link" data-route="color"><span>04</span> Color <i></i></button>
+        <button type="button" class="nav-link" data-route="production"><span>05</span> Production <i></i></button>
+        <button type="button" class="nav-link" data-route="case-study"><span>06</span> Case Study <i></i></button>
+      </nav>
+
+      <nav class="utility-nav" aria-label="工具与参考">
+        <p class="nav-label">Field tools</p>
+        <button type="button" class="nav-link compact" data-route="glossary"><span>G</span> Glossary <i></i></button>
+        <button type="button" class="nav-link compact" data-route="decision-tree"><span>D</span> Decision Tree <i></i></button>
+        <button type="button" class="nav-link compact" data-route="workflow"><span>W</span> Master Workflow <i></i></button>
+        <button type="button" class="nav-link compact" data-route="qa"><span>Q</span> Visual QA <i></i></button>
+      </nav>
+
+      <div class="rail-thesis">
+        <span>Active thesis</span>
+        <p>Who gets to define the image?</p>
+        <div class="ownership-line"><b>World</b><i></i><em>Character</em></div>
+      </div>
+    </aside>
+    <button class="nav-scrim" type="button" aria-label="关闭导航" tabindex="-1"></button>
+
+    <main id="main-content" class="main-stage" tabindex="-1">
+      <div class="chapter-meter" aria-hidden="true"><span></span></div>
+
+      <!-- OVERVIEW -->
+      <section class="view is-visible" id="view-overview" data-view="overview" aria-labelledby="overview-title">
+        <header class="hero editorial-grid">
+          <div class="hero-kicker"><span>Knowledge / System / Production</span><span>Vol. 02 · 2026</span></div>
+          <div class="hero-copy">
+            <p class="eyebrow">Visual Direction OS</p>
+            <h1 id="overview-title">Narrative becomes<br><em>visual behavior.</em></h1>
+            <p class="hero-deck">把角色心理、世界规则、色彩、镜头与时间编排成一套可学习、可分析、可创作、可交付的视觉导演系统。</p>
+            <div class="hero-tags" aria-label="产品能力">
+              <span>Knowledge Base</span><span>Visual Bible</span><span>Sequence System</span>
+            </div>
+          </div>
+          <div class="hero-index" aria-label="系统索引">
+            <div><strong>01</strong><span>Primary<br>Variable</span></div>
+            <div><strong>02</strong><span>World<br>Grammar</span></div>
+            <div><strong>03</strong><span>Ownership<br>Transfer</span></div>
+          </div>
+        </header>
+
+        <section class="system-chain content-band" aria-labelledby="chain-title">
+          <div class="section-intro">
+            <p class="section-no">00.1 / System map</p>
+            <h2 id="chain-title">从故事问题，到画面控制权</h2>
+            <p>视觉风格不是效果集合，而是一套定义“什么能变、何时变、为何变、由谁控制”的规则系统。</p>
+          </div>
+          <div class="chain-diagram" role="img" aria-label="Narrative 经由 Primary Variable、State 和 Sequence 最终抵达 Agency 的系统链路">
+            <button type="button" data-route="decision-tree"><small>INPUT</small><strong>Narrative</strong><span>角色最怕失去什么？</span></button>
+            <i aria-hidden="true"></i>
+            <button type="button" data-route="character"><small>TRANSLATE</small><strong>Primary Variable</strong><span>哪种感知维度承载它？</span></button>
+            <i aria-hidden="true"></i>
+            <button type="button" data-route="character"><small>MODULATE</small><strong>State</strong><span>规则如何承压与失效？</span></button>
+            <i aria-hidden="true"></i>
+            <button type="button" data-route="sequence"><small>ORCHESTRATE</small><strong>Sequence</strong><span>变量如何随时间编排？</span></button>
+            <i aria-hidden="true"></i>
+            <button type="button" class="accent-node" data-route="case-study"><small>TRANSFER</small><strong>Agency</strong><span>谁开始定义画面？</span></button>
+          </div>
+        </section>
+
+        <section class="score-section content-band" aria-labelledby="overview-score-title">
+          <div class="score-heading">
+            <div>
+              <p class="section-no">00.2 / Motion score</p>
+              <h2 id="overview-score-title">Sequence Score</h2>
+            </div>
+            <p>四条视觉轨道不同时到达峰值。真正的高潮发生在控制权转移，而非所有参数一起变吵。</p>
+          </div>
+          <div class="sequence-score-wrap">
+            <svg class="sequence-score" viewBox="0 0 920 350" role="img" aria-labelledby="score-svg-title score-svg-desc">
+              <title id="score-svg-title">视觉序列参数曲线</title>
+              <desc id="score-svg-desc">从 Baseline 到 Rewrite 的七个节拍中，Space、Color、Camera 和 Agency 四条曲线错峰变化；Agency 在 Self-directed Focus 节拍完成 Ownership Shift。</desc>
+              <defs>
+                <pattern id="score-grid" width="120" height="56" patternUnits="userSpaceOnUse"><path d="M 120 0 L 0 0 0 56" fill="none" stroke="currentColor" stroke-opacity=".1" stroke-width="1"/></pattern>
+              </defs>
+              <rect x="112" y="20" width="780" height="264" fill="url(#score-grid)"/>
+              <g class="score-labels" fill="currentColor">
+                <text x="18" y="64">SPACE</text><text x="18" y="126">COLOR</text><text x="18" y="188">CAMERA</text><text x="18" y="250">AGENCY</text>
+              </g>
+              <g class="score-baselines" stroke="currentColor" stroke-opacity=".18"><path d="M112 64H892M112 126H892M112 188H892M112 250H892"/></g>
+              <path class="track track-space" d="M112 64 C190 64 205 40 255 44 S340 84 385 80 S470 36 505 38 S585 90 635 74 S725 28 780 34 S850 42 892 38"/>
+              <path class="track track-color" d="M112 126 C195 126 215 128 255 112 S340 105 385 120 S455 154 505 146 S575 116 635 122 S720 88 780 92 S850 104 892 96"/>
+              <path class="track track-camera" d="M112 188 C180 188 210 180 255 182 S335 156 385 160 S455 212 505 202 S575 164 635 168 S720 142 780 150 S850 162 892 154"/>
+              <path class="track track-agency" d="M112 250 C210 250 215 248 255 246 S345 262 385 258 S470 266 505 258 S570 242 635 226 S712 174 780 176 S850 166 892 166"/>
+              <g class="ownership-shift"><line x1="706" y1="20" x2="706" y2="284"/><circle cx="706" cy="197" r="7"/><text x="720" y="40">OWNERSHIP SHIFT</text></g>
+              <g class="score-beats" fill="currentColor">
+                <text x="112" y="320">Baseline</text><text x="230" y="320">Contact</text><text x="350" y="320">Pressure</text><text x="475" y="320">Crisis</text><text x="590" y="320">Silence</text><text x="690" y="310">Self-directed</text><text x="690" y="327">focus</text><text x="825" y="320">Rewrite</text>
+              </g>
+            </svg>
+            <div class="score-legend" aria-label="曲线图例">
+              <span><i class="legend-space"></i> Space / 压力</span><span><i class="legend-color"></i> Color / 领地</span><span><i class="legend-camera"></i> Camera / 立场</span><span><i class="legend-agency"></i> Agency / 控制权</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="chapter-atlas content-band" aria-labelledby="atlas-title">
+          <div class="section-intro narrow">
+            <p class="section-no">00.3 / Editorial atlas</p>
+            <h2 id="atlas-title">七个章节，一套完整视觉语法</h2>
+          </div>
+          <div class="chapter-list">
+            <button type="button" data-route="character"><span>01</span><strong>Character</strong><em>角色不是固定 Look，而是压力下仍可辨认的一组变化规则。</em><b>Space · Edge · Time · Focus</b></button>
+            <button type="button" data-route="world"><span>02</span><strong>World</strong><em>世界的独特性来自图像的默认行为，而不是换一套 Palette。</em><b>Grammar · Compatibility · Collision</b></button>
+            <button type="button" data-route="sequence"><span>03</span><strong>Sequence</strong><em>把镜头理解为多条视觉参数随时间演奏的 Score。</em><b>Beat · Reserve · Peak Staggering</b></button>
+            <button type="button" data-route="color"><span>04</span><strong>Color</strong><em>不只问“什么颜色”，而要追踪颜色此刻属于谁、占领哪里。</em><b>Ownership · Territory · Migration</b></button>
+            <button type="button" data-route="production"><span>05</span><strong>Production</strong><em>从机制分析到约束重建，让系统跨角色、世界与媒介仍然成立。</em><b>Reverse · Rebuild · Validate</b></button>
+            <button type="button" data-route="case-study"><span>06</span><strong>Case Study</strong><em>Elian / Meridian：一场关于“谁有权决定什么值得被看见”的控制权冲突。</em><b>Focus · Visibility · Rewrite</b></button>
+          </div>
+        </section>
+
+        <footer class="view-footer">
+          <p>Source / <a href="../visual-direction-system/01-master-framework.md">01 — Master Framework ↗</a></p>
+          <button type="button" data-route="character">Next chapter <span>Character →</span></button>
+        </footer>
+      </section>
+
+      <!-- CHARACTER -->
+      <section class="view" id="view-character" data-view="character" aria-labelledby="character-title" hidden>
+        <header class="chapter-header editorial-grid">
+          <p class="chapter-number">01</p>
+          <div><p class="eyebrow">Character Visual System</p><h1 id="character-title">Identity is a <em>controlled range.</em></h1><p class="chapter-deck">不要用服装或色板定义角色。先找到一个承担叙事的 Primary Variable，再定义什么永远不变、何时失效，以及角色如何夺回控制权。</p></div>
+          <blockquote>Character Bible 不回答“长什么样”，而回答“在压力下，哪些变量变化、哪些不变”。</blockquote>
+        </header>
+
+        <section class="state-lab content-band" aria-labelledby="state-title">
+          <div class="section-intro"><p class="section-no">01.1 / State machine</p><h2 id="state-title">压力不是换皮肤，而是规则变形</h2><p>选择一个状态，观察 Focus / Visibility 角色的主变量、摄影机和可读性如何一起变化。</p></div>
+          <div class="state-machine" role="group" aria-label="角色状态选择">
+            <button type="button" data-state="baseline" aria-pressed="true"><span>01</span><strong>Baseline</strong><small>Accept</small></button>
+            <i aria-hidden="true"></i>
+            <button type="button" data-state="pressure" aria-pressed="false"><span>02</span><strong>Pressure</strong><small>Question</small></button>
+            <i aria-hidden="true"></i>
+            <button type="button" data-state="crisis" aria-pressed="false"><span>03</span><strong>Crisis</strong><small>Collapse</small></button>
+            <i aria-hidden="true"></i>
+            <button type="button" data-state="decision" aria-pressed="false"><span>04</span><strong>Decision</strong><small>Choose</small></button>
+            <i aria-hidden="true"></i>
+            <button type="button" data-state="agency" aria-pressed="false"><span>05</span><strong>Agency</strong><small>Control</small></button>
+            <i aria-hidden="true"></i>
+            <button type="button" data-state="resolution" aria-pressed="false"><span>06</span><strong>Resolution</strong><small>Rewrite</small></button>
+          </div>
+          <div class="state-readout" aria-live="polite">
+            <div class="state-gauge" aria-hidden="true"><span></span><b></b></div>
+            <div><small>Primary variable</small><strong id="state-variable">Focus accepts external hierarchy</strong></div>
+            <div><small>Camera allegiance</small><strong id="state-camera">System-led / locked framing</strong></div>
+            <div><small>Readability strategy</small><strong id="state-readability">Assigned object holds hard edge</strong></div>
+            <div><small>Transition trigger</small><strong id="state-trigger">A suppressed detail attracts attention</strong></div>
+            <div class="state-owner"><small>Variable owner</small><strong id="state-owner">WORLD / SYSTEM</strong></div>
+          </div>
+        </section>
+
+        <section class="mechanism-grid content-band" aria-labelledby="mechanism-title">
+          <div class="section-intro narrow"><p class="section-no">01.2 / Character architecture</p><h2 id="mechanism-title">一个角色，四层渲染优先级</h2></div>
+          <ol class="render-stack">
+            <li><span>Level 1</span><strong>Identity Anchor</strong><p>剪影、明度骨架、姿态家族或时间签名。跨世界仍须保留。</p></li>
+            <li><span>Level 2</span><strong>Primary Narrative Variable</strong><p>Space、Edge、Time 或 Focus。只允许一个变量领奏。</p></li>
+            <li><span>Level 3</span><strong>State-sensitive Variables</strong><p>在压力、危机、决定和 Agency 中有条件地变化。</p></li>
+            <li><span>Level 4</span><strong>Surface Enrichment</strong><p>材质、细节与效果必须服从前三层，永远不能遮蔽结构。</p></li>
+          </ol>
+          <div class="character-mechanisms">
+            <article><span>SPACE × SHAPE</span><h3>Miles-type</h3><p>危机是路径选择坍缩；Agency 是创造路线，而非跟随路线。</p></article>
+            <article><span>EDGE × COLOR</span><h3>Gwen-type</h3><p>危机是边缘层级不再对应情感重要性；Agency 是选择边界。</p></article>
+            <article><span>TIME × MEDIUM</span><h3>Hobie-type</h3><p>危机是被迫统一和同步；Agency 是有意选择同步或不同步。</p></article>
+            <article><span>FOCUS × EDGE</span><h3>Elian-type</h3><p>危机是错误对象不断变清楚；Agency 是决定什么值得被看见。</p></article>
+          </div>
+        </section>
+
+        <aside class="principle-strip"><span>Failure test</span><p>移除 Color、Texture、完整剪影或动态中的任一通道。若角色仍能通过至少三个独立通道被识别，身份才是结构性的。</p></aside>
+        <footer class="view-footer"><p>Source / <a href="../visual-direction-system/02-character-system.md">02 — Character System ↗</a></p><button type="button" data-route="world">Next chapter <span>World →</span></button></footer>
+      </section>
+
+      <!-- WORLD -->
+      <section class="view" id="view-world" data-view="world" aria-labelledby="world-title" hidden>
+        <header class="chapter-header editorial-grid">
+          <p class="chapter-number">02</p>
+          <div><p class="eyebrow">World Visual Grammar</p><h1 id="world-title">A world is a set of <em>default behaviors.</em></h1><p class="chapter-deck">先定义图像在这个世界里通常怎样生成，再决定角色在哪些维度顺从、放大、抵抗或改写它。</p></div>
+          <blockquote>Large space does not necessarily mean freedom.</blockquote>
+        </header>
+
+        <section class="world-formula content-band" aria-labelledby="grammar-title">
+          <div class="section-intro narrow"><p class="section-no">02.1 / Grammar</p><h2 id="grammar-title">世界不是 Palette + Architecture</h2></div>
+          <div class="formula-orbit" role="img" aria-label="世界视觉语法由形状、空间、明度、色彩、边缘、媒介、密度、摄影机和时间共同构成">
+            <div class="formula-core"><small>WORLD</small><strong>Visual<br>Grammar</strong></div>
+            <span style="--i:0">Shape</span><span style="--i:1">Space</span><span style="--i:2">Value</span><span style="--i:3">Color</span><span style="--i:4">Edge</span><span style="--i:5">Medium</span><span style="--i:6">Density</span><span style="--i:7">Camera</span><span style="--i:8">Time</span>
+          </div>
+          <div class="grammar-notes"><p><b>World thesis first.</b> 不从“水彩世界”或“赛博朋克世界”开始，而从“现实会被情绪渗透”或“注意力被制度管理”开始。</p><p><b>Selective deviation.</b> 角色只在少数维度显著偏离世界。差异预算越明确，身份越可读。</p><p><b>Hybrid residue.</b> 跨世界归来不是 A → B → A，而是保留旅程痕迹的 Baseline B。</p></div>
+        </section>
+
+        <section class="matrix-section content-band" aria-labelledby="matrix-title">
+          <div class="section-intro"><p class="section-no">02.2 / Compatibility matrix</p><h2 id="matrix-title">World–Character Compatibility</h2><p>选择任一关系，查看世界语法如何与角色的核心机制发生碰撞。状态名称与说明共同编码，不只依赖颜色。</p></div>
+          <div class="compatibility-layout">
+            <div class="matrix-scroll">
+              <table class="compatibility-matrix">
+                <caption class="sr-only">四种角色机制与五种世界关系的兼容性矩阵</caption>
+                <thead><tr><th scope="col">Mechanism</th><th scope="col">Harmonize</th><th scope="col">Amplify</th><th scope="col">Resist</th><th scope="col">Destabilize</th><th scope="col">Rewrite</th></tr></thead>
+                <tbody>
+                  <tr><th scope="row"><strong>Space</strong><small>路径控制</small></th><td><button data-character="Space" data-mode="Harmonize" aria-pressed="true">H</button></td><td><button data-character="Space" data-mode="Amplify" aria-pressed="false">A</button></td><td><button data-character="Space" data-mode="Resist" aria-pressed="false">R</button></td><td><button data-character="Space" data-mode="Destabilize" aria-pressed="false">D</button></td><td><button data-character="Space" data-mode="Rewrite" aria-pressed="false">W</button></td></tr>
+                  <tr><th scope="row"><strong>Boundary</strong><small>边缘选择</small></th><td><button data-character="Boundary" data-mode="Harmonize" aria-pressed="false">H</button></td><td><button data-character="Boundary" data-mode="Amplify" aria-pressed="false">A</button></td><td><button data-character="Boundary" data-mode="Resist" aria-pressed="false">R</button></td><td><button data-character="Boundary" data-mode="Destabilize" aria-pressed="false">D</button></td><td><button data-character="Boundary" data-mode="Rewrite" aria-pressed="false">W</button></td></tr>
+                  <tr><th scope="row"><strong>Time</strong><small>同步选择</small></th><td><button data-character="Time" data-mode="Harmonize" aria-pressed="false">H</button></td><td><button data-character="Time" data-mode="Amplify" aria-pressed="false">A</button></td><td><button data-character="Time" data-mode="Resist" aria-pressed="false">R</button></td><td><button data-character="Time" data-mode="Destabilize" aria-pressed="false">D</button></td><td><button data-character="Time" data-mode="Rewrite" aria-pressed="false">W</button></td></tr>
+                  <tr><th scope="row"><strong>Focus</strong><small>注意力控制</small></th><td><button data-character="Focus" data-mode="Harmonize" aria-pressed="false">H</button></td><td><button data-character="Focus" data-mode="Amplify" aria-pressed="false">A</button></td><td><button data-character="Focus" data-mode="Resist" aria-pressed="false">R</button></td><td><button data-character="Focus" data-mode="Destabilize" aria-pressed="false">D</button></td><td><button data-character="Focus" data-mode="Rewrite" aria-pressed="false">W</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="matrix-readout" aria-live="polite"><p><span id="matrix-character">SPACE</span> × <em id="matrix-mode">HARMONIZE</em></p><h3 id="matrix-headline">世界提供可导航的空间基础设施</h3><p id="matrix-copy">建筑路径、景深与摄影机运动共同支持角色读取并拥有路线。冲突尚未发生，差异通过方向偏好保持。</p><dl><div><dt>World action</dt><dd id="matrix-action">Supports</dd></div><div><dt>Identity risk</dt><dd id="matrix-risk">Low</dd></div></dl></div>
+          </div>
+        </section>
+
+        <section class="transition-model content-band" aria-labelledby="transition-title"><div class="section-intro narrow"><p class="section-no">02.3 / Transition</p><h2 id="transition-title">跨世界不是换背景，而是语法碰撞</h2></div><ol><li><span>01</span>Home grammar</li><li><span>02</span>Contact</li><li><span>03</span>Contamination</li><li><span>04</span>Rule conflict</li><li><span>05</span>Adaptation</li><li><span>06</span>Identity test</li><li><span>07</span>Hybrid / rejection</li></ol><p class="transition-rule">Surface → Edge → Color → Lighting → Shape → Space → Time <small>Identity anchors change last — or not at all.</small></p></section>
+        <footer class="view-footer"><p>Source / <a href="../visual-direction-system/03-world-system.md">03 — World System ↗</a></p><button type="button" data-route="sequence">Next chapter <span>Sequence →</span></button></footer>
+      </section>
+
+      <!-- SEQUENCE -->
+      <section class="view" id="view-sequence" data-view="sequence" aria-labelledby="sequence-title" hidden>
+        <header class="chapter-header editorial-grid"><p class="chapter-number">03</p><div><p class="eyebrow">Sequence Direction</p><h1 id="sequence-title">Orchestrate variables, <em>not noise.</em></h1><p class="chapter-deck">Sequence 的最小单位是 Visual Beat：一个或多个视觉变量发生有意义的改变。高潮不是参数全满，而是叙事在控制权上汇聚。</p></div><blockquote>Before designing a climax, ask: what can still change?</blockquote></header>
+
+        <section class="sequence-console content-band" aria-labelledby="seq-console-title">
+          <div class="section-intro"><p class="section-no">03.1 / Sequence console</p><h2 id="seq-console-title">The Unseen District · REFOCUS</h2><p>点击节拍读取当前的 Lead / Support / Silent 变量。曲线以错峰方式释放视觉储备。</p></div>
+          <div class="beat-tabs" role="tablist" aria-label="序列节拍">
+            <button role="tab" aria-selected="true" data-beat="0">01 Assigned vision</button><button role="tab" aria-selected="false" data-beat="1">02 Forbidden detail</button><button role="tab" aria-selected="false" data-beat="2">03 Correction</button><button role="tab" aria-selected="false" data-beat="3">04 Collapse</button><button role="tab" aria-selected="false" data-beat="4">05 Silence</button><button role="tab" aria-selected="false" data-beat="5">06 Self-directed</button><button role="tab" aria-selected="false" data-beat="6">07 Rewrite</button>
+          </div>
+          <div class="sequence-stage">
+            <div class="sequence-bars" aria-label="当前节拍参数强度">
+              <div><span>Spatial pressure</span><i><b data-bar="space" style="--value:26%"></b></i><em data-value="space">26</em></div>
+              <div><span>Color territory</span><i><b data-bar="color" style="--value:38%"></b></i><em data-value="color">38</em></div>
+              <div><span>Camera energy</span><i><b data-bar="camera" style="--value:20%"></b></i><em data-value="camera">20</em></div>
+              <div><span>Information load</span><i><b data-bar="load" style="--value:34%"></b></i><em data-value="load">34</em></div>
+              <div class="agency-bar"><span>Character agency</span><i><b data-bar="agency" style="--value:12%"></b></i><em data-value="agency">12</em></div>
+            </div>
+            <div class="beat-readout" aria-live="polite"><small id="beat-phase">BASELINE / SYSTEM POV</small><h3 id="beat-verb">ACCEPT</h3><dl><div><dt>Lead</dt><dd id="beat-lead">Focal hierarchy</dd></div><div><dt>Support</dt><dd id="beat-support">Stable camera · Amber marker</dd></div><div><dt>Silent</dt><dd id="beat-silent">Texture · Edge activity</dd></div><div><dt>Ownership</dt><dd id="beat-owner">System</dd></div></dl></div>
+          </div>
+        </section>
+
+        <section class="reserve-section content-band" aria-labelledby="reserve-title"><div class="section-intro narrow"><p class="section-no">03.2 / Visual reserve</p><h2 id="reserve-title">把尚未使用的能力留给后来</h2></div><div class="reserve-ledger"><article><strong>Camera</strong><span>Predictive framing</span><i style="--reserve:72%"></i><small>72% reserve</small></article><article><strong>Saturation</strong><span>Relationship color</span><i style="--reserve:58%"></i><small>58% reserve</small></article><article><strong>Abstraction</strong><span>Perceptual silence</span><i style="--reserve:83%"></i><small>83% reserve</small></article><article><strong>Density</strong><span>Clustered complexity</span><i style="--reserve:46%"></i><small>46% reserve</small></article></div><p class="reserve-note">Visual Silence 是主动移除信息，让一个小动作或单一色彩事件获得重量。<b>Low information ≠ Low importance.</b></p></section>
+
+        <section class="climax-types content-band" aria-labelledby="climax-title"><div class="section-intro narrow"><p class="section-no">03.3 / Climax</p><h2 id="climax-title">三种高潮机制</h2></div><div><article><span>↑</span><h3>Expansion</h3><p>压缩释放为空间、姿态与方向的扩张。</p></article><article><span>−</span><h3>Reduction</h3><p>剥离再现信息，直到核心关系清晰可见。</p></article><article><span>↺</span><h3>Rule</h3><p>熟悉规则反转：习惯性不同步变成主动同步。</p></article></div></section>
+        <footer class="view-footer"><p>Source / <a href="../visual-direction-system/04-sequence-color.md">04 — Sequence & Color ↗</a></p><button type="button" data-route="color">Next chapter <span>Color →</span></button></footer>
+      </section>
+
+      <!-- COLOR -->
+      <section class="view" id="view-color" data-view="color" aria-labelledby="color-title" hidden>
+        <header class="chapter-header editorial-grid"><p class="chapter-number">04</p><div><p class="eyebrow">Color Direction</p><h1 id="color-title">Color is <em>behavior,</em> not hue.</h1><p class="chapter-deck">追踪颜色属于谁、占据多大区域、如何越过边界、何时靠近身份核心，以及事件结束后留下什么残余。</p></div><blockquote>Physical boundary ≠ Color boundary.</blockquote></header>
+
+        <section class="territory-lab content-band" aria-labelledby="territory-title">
+          <div class="section-intro"><p class="section-no">04.1 / Ownership territory</p><h2 id="territory-title">颜色在画面中争夺领地</h2><p>选择节拍，观察 Amber 从制度分配色迁移为角色主动注意的标记。面积、位置、边界和标签共同表达状态。</p></div>
+          <div class="territory-controls" role="group" aria-label="色彩领地节拍"><button type="button" data-territory="0" aria-pressed="true">01 Assigned</button><button type="button" data-territory="1" aria-pressed="false">02 Invade</button><button type="button" data-territory="2" aria-pressed="false">03 Collapse</button><button type="button" data-territory="3" aria-pressed="false">04 Claim</button><button type="button" data-territory="4" aria-pressed="false">05 Residue</button></div>
+          <div class="territory-layout">
+            <div class="territory-frame" data-territory-frame="0" role="img" aria-labelledby="territory-frame-title territory-frame-desc">
+              <span id="territory-frame-title" class="sr-only">色彩所有权领地图</span><span id="territory-frame-desc" class="sr-only">当前制度拥有大部分 Amber 色域，角色只占据一个小的冷白区域。</span>
+              <div class="territory-system"><small>SYSTEM</small></div><div class="territory-character"><small>CHARACTER</small></div><div class="territory-relation"><small>RELATION</small></div><div class="territory-residue"><small>RESIDUE</small></div><div class="focus-mark" aria-hidden="true"></div>
+            </div>
+            <div class="territory-readout" aria-live="polite"><p class="territory-index" id="territory-index">BEAT 01 / ASSIGNED VISION</p><h3 id="territory-verb">Occupy</h3><p id="territory-copy">Amber 由制度拥有，以硬边界框定被指定的观看对象。角色的视觉存在被限制在低对比冷色区域。</p><dl><div><dt>Owner</dt><dd id="territory-owner">Institution / System</dd></div><div><dt>Boundary</dt><dd id="territory-boundary">Hard · architectural</dd></div><div><dt>Migration</dt><dd id="territory-migration">Background → object</dd></div><div><dt>Residue</dt><dd id="territory-residue">None</dd></div></dl></div>
+          </div>
+          <div class="territory-legend"><span><i class="system-swatch"></i>System / institution</span><span><i class="character-swatch"></i>Character attention</span><span><i class="relation-swatch"></i>Relationship field</span><span><i class="residue-swatch"></i>Baseline B residue</span></div>
+        </section>
+
+        <section class="color-event content-band" aria-labelledby="event-title"><div class="section-intro narrow"><p class="section-no">04.2 / Color event</p><h2 id="event-title">颜色事件的八个维度</h2></div><div class="event-formula" role="img" aria-label="颜色事件由 Hue、Value、Saturation、Area、Position、Boundary、Ownership、Timing 八个维度相乘构成"><span>Hue</span><i>×</i><span>Value</span><i>×</i><span>Saturation</span><i>×</i><span>Area</span><i>×</i><span>Position</span><i>×</i><span>Boundary</span><i>×</i><span class="accent-word">Ownership</span><i>×</i><span>Timing</span></div></section>
+
+        <section class="color-pov content-band" aria-labelledby="pov-title"><div class="section-intro narrow"><p class="section-no">04.3 / Color authority</p><h2 id="pov-title">从物理颜色到纯叙事颜色</h2></div><ol><li><span>C0</span><strong>Physical color</strong><small>物理光照</small></li><li><span>C1</span><strong>Stylized physical</strong><small>风格化现实</small></li><li><span>C2</span><strong>Emotionally biased</strong><small>情绪偏置</small></li><li><span>C3</span><strong>Psychological field</strong><small>心理场</small></li><li><span>C4</span><strong>Pure narrative</strong><small>纯叙事色</small></li></ol></section>
+        <footer class="view-footer"><p>Source / <a href="../visual-direction-system/04-sequence-color.md">04 — Sequence & Color ↗</a></p><button type="button" data-route="production">Next chapter <span>Production →</span></button></footer>
+      </section>
+
+      <!-- PRODUCTION -->
+      <section class="view" id="view-production" data-view="production" aria-labelledby="production-title" hidden>
+        <header class="chapter-header editorial-grid"><p class="chapter-number">05</p><div><p class="eyebrow">Production System</p><h1 id="production-title">Keep the mechanism. <em>Remove the surface.</em></h1><p class="chapter-deck">真正理解一个视觉系统，意味着换掉角色、世界、色板和媒介后，Narrative Verb、Hierarchy 与 Ownership Arc 仍然成立。</p></div><blockquote>Structure before Surface. Value before Hue. Mechanism before Medium.</blockquote></header>
+
+        <section class="reverse-chain content-band" aria-labelledby="reverse-title"><div class="section-intro narrow"><p class="section-no">05.1 / Reverse engineering</p><h2 id="reverse-title">从看见，到可以重建</h2></div><ol><li><span>01</span><strong>WHAT</strong><small>画面发生了什么</small></li><li><span>02</span><strong>HOW</strong><small>变量如何组织</small></li><li><span>03</span><strong>WHY</strong><small>服务什么叙事</small></li><li><span>04</span><strong>RULE</strong><small>提炼可迁移机制</small></li><li><span>05</span><strong>REBUILD</strong><small>约束条件下重建</small></li></ol></section>
+
+        <section class="reconstruction-test content-band" aria-labelledby="recon-title"><div class="section-intro"><p class="section-no">05.2 / Constraint reconstruction</p><h2 id="recon-title">低表面相似，高机制相似</h2><p>依次移除对原作的依赖。最后一关禁止所有可识别表面特征，只保留结构。</p></div><div class="recon-layout"><ol><li><span>1</span>Change character</li><li><span>2</span>Change world</li><li><span>3</span>Change palette</li><li><span>4</span>Change medium</li><li><span>5</span>Ban surface identity</li></ol><div class="similarity-plot" role="img" aria-label="约束重建目标为低表面相似度和高机制相似度"><span class="axis-y">Mechanism similarity ↑</span><span class="axis-x">Surface similarity →</span><i class="plot-grid"></i><b class="target-zone">TARGET<br><small>transferable system</small></b><em class="copy-zone">IMITATION</em></div></div></section>
+
+        <section class="pipeline content-band" aria-labelledby="pipeline-title"><div class="section-intro narrow"><p class="section-no">05.3 / Concept pipeline</p><h2 id="pipeline-title">十步概念重建</h2></div><ol><li>Brief</li><li>Narrative Verb</li><li>Primary Variable</li><li>Composition</li><li>Shape Map</li><li>Value Structure</li><li>Visual Traffic</li><li>Color Function</li><li>Medium Behavior</li><li>Polish + QA</li></ol><p>Edge 告诉眼睛在哪里停；Direction 告诉眼睛往哪里走；Negative Space 告诉眼睛在哪里呼吸。</p></section>
+
+        <section class="production-sources content-band"><div><p class="section-no">05.4 / Working documents</p><h2>把系统带进项目</h2></div><a href="../visual-direction-system/05-production-system.md"><span>Production System</span><small>Reverse engineering · prompt architecture · style stack</small>↗</a><a href="../visual-direction-system/06-project-worksheets.md"><span>Project Worksheets</span><small>Character · World · Sequence · QA templates</small>↗</a></section>
+        <footer class="view-footer"><p>Sources / <a href="../visual-direction-system/05-production-system.md">05</a> + <a href="../visual-direction-system/06-project-worksheets.md">06</a></p><button type="button" data-route="case-study">Next chapter <span>Case Study →</span></button></footer>
+      </section>
+
+      <!-- CASE STUDY -->
+      <section class="view case-view" id="view-case-study" data-view="case-study" aria-labelledby="case-title" hidden>
+        <header class="case-hero">
+          <div class="case-label"><span>Original transfer test</span><b>06 / Case Study</b></div>
+          <div class="case-title-wrap"><p>ELIAN / MERIDIAN</p><h1 id="case-title">Who decides what<br><em>deserves to be seen?</em></h1></div>
+          <div class="case-signal" aria-hidden="true"><span></span><i></i><b></b></div>
+          <p class="case-deck">一个不依赖 Spider-Man、黑红、水彩或朋克拼贴的原创案例。只保留生成机制：Focus / Visibility 与 Ownership Conflict。</p>
+        </header>
+
+        <section class="case-profile content-band" aria-labelledby="profile-title"><div class="section-intro narrow"><p class="section-no">06.1 / Character thesis</p><h2 id="profile-title">Elian is an Attention Character.</h2></div><div class="profile-spec"><div><small>PRIMARY VARIABLE</small><strong>Focus / Visibility</strong></div><div><small>COUPLED PAIR</small><strong>Focus × Edge</strong></div><div><small>TEMPORAL SIGNATURE</small><strong>Directed pull focus</strong></div><div><small>CORE AGENCY</small><strong>Choose what matters</strong></div></div><p class="profile-copy">Elian 的核心问题不是移动自由，而是感知自主。三角肩部轮廓、右眼浅色 Mark 和持续前倾的 Search Wedge 构成跨世界稳定锚点。</p></section>
+
+        <section class="meridian content-band" aria-labelledby="meridian-title"><div class="meridian-map" role="img" aria-label="Meridian 世界用漏斗形道路与制度化焦点把注意力导向指定目标"><span class="meridian-grid"></span><i class="road r1"></i><i class="road r2"></i><i class="road r3"></i><b class="assigned-target">ASSIGNED<br>ATTENTION</b><em class="unseen-zone">UNSEEN<br>DISTRICT</em></div><div><p class="section-no">06.2 / World thesis</p><h2 id="meridian-title">Meridian manages attention to preserve order.</h2><p>漏斗式 Shape Grammar 把道路、建筑、灯光和标识导向预定目标。几何空间很深，但感知深度被人为排序。</p><blockquote>Geometric Depth ≠ Perceptual Depth</blockquote></div></section>
+
+        <section class="case-arc content-band" aria-labelledby="arc-title"><div class="section-intro narrow"><p class="section-no">06.3 / Ownership arc</p><h2 id="arc-title">从 Assigned Vision 到 Rewrite</h2></div><ol><li><span>01</span><strong>Assigned vision</strong><small>接受系统焦点</small></li><li><span>02</span><strong>Forbidden detail</strong><small>注意未被突出之物</small></li><li><span>03</span><strong>System correction</strong><small>制度重新分配清晰度</small></li><li><span>04</span><strong>Perceptual collapse</strong><small>焦点逻辑失效</small></li><li class="silence"><span>05</span><strong>Visual silence</strong><small>停止试图看清一切</small></li><li class="shift"><span>06</span><strong>Self-directed focus</strong><small>清晰度沿意图传播</small></li><li class="shift"><span>07</span><strong>Rewrite</strong><small>被压制区域恢复存在</small></li></ol></section>
+
+        <section class="case-tests content-band" aria-labelledby="tests-title"><div class="section-intro narrow"><p class="section-no">06.4 / Constraint tests</p><h2 id="tests-title">效果被禁用，机制仍成立</h2></div><div><article><span>NO BLUR</span><p>用 Contrast、Occlusion、Scale、Density 和 Framing 表达 Attention。</p></article><article><span>NO AMBER</span><p>用 Hierarchy 和 Contrast Assignment 继续表达所有权。</p></article><article><span>MONOCHROME</span><p>用边缘与明度优先级表达被看见与被压制。</p></article><article><span>MOTION ONLY</span><p>身体从外部牵引转向主动锁定，仍可读出 Agency。</p></article></div></section>
+        <footer class="view-footer"><p>Source / <a href="../visual-direction-system/07-original-case-study.md">07 — Elian / Meridian ↗</a></p><button type="button" data-route="glossary">Open field tools <span>Glossary →</span></button></footer>
+      </section>
+
+      <!-- GLOSSARY -->
+      <section class="view utility-view" id="view-glossary" data-view="glossary" aria-labelledby="glossary-title" hidden>
+        <header class="utility-header"><p class="eyebrow">Field Tool / G</p><h1 id="glossary-title">Glossary</h1><p>统一视觉导演系统的中英文工作词汇。搜索术语或定义，快速回到同一套语言。</p></header>
+        <div class="glossary-search"><label for="glossary-input">Search the system</label><input id="glossary-input" type="search" placeholder="例如：Ownership / 控制权 / Camera…" autocomplete="off"><span id="glossary-count">16 terms</span></div>
+        <div class="glossary-list" id="glossary-list">
+          <article data-search="primary visual variable 主要视觉变量 叙事"><h2>Primary Visual Variable</h2><p>角色或世界承担主要叙事工作的视觉维度。</p><span>CORE</span></article>
+          <article data-search="identity anchor 身份锚点 识别"><h2>Identity Anchor</h2><p>大幅风格变化中仍必须保留的识别锚点。</p><span>CHARACTER</span></article>
+          <article data-search="controlled range 受控范围 状态"><h2>Controlled Range</h2><p>角色不是固定 Look，而是在有规则的视觉范围内变化。</p><span>CHARACTER</span></article>
+          <article data-search="visual ownership 控制权 变量"><h2>Visual Ownership</h2><p>谁拥有并决定某个视觉变量。</p><span>CORE</span></article>
+          <article data-search="visual authorship 画面定义权"><h2>Visual Authorship</h2><p>谁最终有权定义画面的组织规则。</p><span>CORE</span></article>
+          <article data-search="camera allegiance 摄影机立场"><h2>Camera Allegiance</h2><p>摄影机在视觉上更服从角色、系统还是第三方。</p><span>CAMERA</span></article>
+          <article data-search="predictive framing 预测构图 摄影机"><h2>Predictive Framing</h2><p>角色行动前，构图已经为其意图预留空间。</p><span>CAMERA</span></article>
+          <article data-search="visual silence 视觉静默 信息"><h2>Visual Silence</h2><p>主动降低多个视觉轨道，为关键 Beat 释放注意力。</p><span>SEQUENCE</span></article>
+          <article data-search="visual reserve 视觉储备 高潮"><h2>Visual Reserve</h2><p>为高潮预留尚未使用的强度、色彩、密度、运动或媒介能力。</p><span>SEQUENCE</span></article>
+          <article data-search="sequence score 序列谱 参数"><h2>Sequence Score</h2><p>多个视觉参数随时间变化的轨道化设计。</p><span>SEQUENCE</span></article>
+          <article data-search="color ownership 颜色所有权"><h2>Color Ownership</h2><p>某一颜色在叙事上属于角色、世界、关系、制度或记忆。</p><span>COLOR</span></article>
+          <article data-search="color territory 色彩领地 面积"><h2>Color Territory</h2><p>某颜色占据的画面面积与空间控制范围。</p><span>COLOR</span></article>
+          <article data-search="color migration 颜色迁移"><h2>Color Migration</h2><p>颜色从背景、物体等区域逐步靠近人物身份核心。</p><span>COLOR</span></article>
+          <article data-search="temporal signature 时间签名"><h2>Temporal Signature</h2><p>视觉变化进入时间的角色特有方式。</p><span>TIME</span></article>
+          <article data-search="world visual grammar 世界视觉语法"><h2>World Visual Grammar</h2><p>世界默认生成图像的 Shape、Space、Value、Color、Edge、Medium、Density、Camera 和 Time 规则。</p><span>WORLD</span></article>
+          <article data-search="mechanism similarity 机制相似 表面相似"><h2>Mechanism Similarity</h2><p>重建作品时底层视觉机制的相似程度。</p><span>PRODUCTION</span></article>
+          <p class="empty-state" hidden>没有匹配术语。尝试搜索更短的关键词。</p>
+        </div>
+        <footer class="view-footer"><p>Source / <a href="../visual-direction-system/08-glossary.md">08 — Full Glossary ↗</a></p><button type="button" data-route="decision-tree">Next tool <span>Decision Tree →</span></button></footer>
+      </section>
+
+      <!-- DECISION TREE -->
+      <section class="view utility-view" id="view-decision-tree" data-view="decision-tree" aria-labelledby="decision-title" hidden>
+        <header class="utility-header"><p class="eyebrow">Field Tool / D</p><h1 id="decision-title">Narrative → Visual</h1><p>从角色真正害怕失去的东西开始，而不是从色板或媒介标签开始。</p></header>
+        <section class="decision-lab" aria-labelledby="decision-lab-title"><div class="decision-question"><small>STEP 01 / NARRATIVE CORE</small><h2 id="decision-lab-title">角色最怕失去什么？</h2><div role="group" aria-label="叙事核心选择"><button type="button" data-decision="freedom" aria-pressed="true">Freedom</button><button type="button" data-decision="intimacy" aria-pressed="false">Intimacy</button><button type="button" data-decision="identity" aria-pressed="false">Identity</button><button type="button" data-decision="visibility" aria-pressed="false">Visibility</button><button type="button" data-decision="order" aria-pressed="false">Order</button><button type="button" data-decision="memory" aria-pressed="false">Memory</button></div></div><div class="decision-output" aria-live="polite"><span>RECOMMENDED PATH</span><h3 id="decision-primary">SPACE / DIRECTION</h3><p id="decision-reason">自由与束缚优先映射为空间可用范围、路径选择与运动方向。</p><ol id="decision-steps"><li><b>01</b>定义角色可拥有的路径范围</li><li><b>02</b>选择 Shape / Camera 作为支持变量</li><li><b>03</b>让危机压缩路线选择</li><li><b>04</b>让 Agency 创造新路径</li></ol><button type="button" data-route="character">Build the Character System →</button></div></section>
+        <section class="master-formula"><p>Narrative</p><i>→</i><p>Character</p><i>→</i><p>Primary Variable</p><i>→</i><p>World Grammar</p><i>→</i><p>State</p><i>→</i><p>Sequence</p><i>→</i><p>Ownership</p><i>→</i><p>Resolution</p></section>
+        <footer class="view-footer"><p>Source / <a href="../visual-direction-system/09-decision-tree.md">09 — Decision Tree ↗</a></p><button type="button" data-route="workflow">Next tool <span>Workflow →</span></button></footer>
+      </section>
+
+      <!-- WORKFLOW -->
+      <section class="view utility-view" id="view-workflow" data-view="workflow" aria-labelledby="workflow-title" hidden>
+        <header class="utility-header"><p class="eyebrow">Field Tool / W</p><h1 id="workflow-title">Master Workflow</h1><p>从 Brief 到 Final Sequence 的 20 步生产路径，按四个阶段组织。选择阶段查看工作目标与交付门槛。</p></header>
+        <div class="workflow-phases" role="tablist" aria-label="制作流程阶段"><button role="tab" aria-selected="true" data-phase="0"><span>01—05</span>Define</button><button role="tab" aria-selected="false" data-phase="1"><span>06—10</span>Systemize</button><button role="tab" aria-selected="false" data-phase="2"><span>11—15</span>Visualize</button><button role="tab" aria-selected="false" data-phase="3"><span>16—20</span>Validate</button></div>
+        <section class="workflow-board" aria-live="polite"><header><div><small id="workflow-range">PHASE 01 / STEPS 01—05</small><h2 id="workflow-name">Define the narrative engine</h2></div><p id="workflow-goal">先把故事问题压缩成一个可视化的行动逻辑，不讨论风格标签。</p></header><ol id="workflow-steps"><li><span>01</span><div><strong>Narrative Situation</strong><p>写发生什么，而不是画面长什么样。</p></div></li><li><span>02</span><div><strong>Character State</strong><p>定义人物现在处于什么心理位置。</p></div></li><li><span>03</span><div><strong>Viewer Response</strong><p>观众第一时间应该感受到什么。</p></div></li><li><span>04</span><div><strong>Narrative Verb</strong><p>压缩成 CLAIM、WITHDRAW、DIVIDE 或 REFOCUS。</p></div></li><li><span>05</span><div><strong>Core Loss</strong><p>找到角色最怕失去的能力或关系。</p></div></li></ol><footer><span id="workflow-deliverable">DELIVERABLE / Project Visual Thesis</span><button type="button" id="workflow-next">Next phase →</button></footer></section>
+        <aside class="workflow-discipline"><span>Working discipline</span><p>Structure before Surface <i>·</i> Value before Hue <i>·</i> Hierarchy before Texture <i>·</i> Agency before Spectacle</p></aside>
+        <footer class="view-footer"><p>Source / <a href="../visual-direction-system/10-master-workflow.md">10 — Master Workflow ↗</a></p><button type="button" data-route="qa">Final tool <span>Visual QA →</span></button></footer>
+      </section>
+
+      <!-- QA -->
+      <section class="view utility-view" id="view-qa" data-view="qa" aria-labelledby="qa-title" hidden>
+        <header class="utility-header qa-header"><div><p class="eyebrow">Field Tool / Q</p><h1 id="qa-title">Visual QA</h1><p>不是“好不好看”的主观清单，而是检查叙事、层级、可读性与规则是否真正闭合。</p></div><div class="qa-score" aria-live="polite"><strong id="qa-percent">0%</strong><span>System confidence</span><i><b id="qa-progress"></b></i></div></header>
+        <div class="qa-groups">
+          <fieldset><legend><span>01</span> Narrative</legend><label><input type="checkbox">Narrative Verb 能否用一个动作词说清？</label><label><input type="checkbox">视觉变化是否来自角色状态，而非单纯追求效果？</label><label><input type="checkbox">当前 Beat 在 State Machine 中的位置是否明确？</label></fieldset>
+          <fieldset><legend><span>02</span> Hierarchy</legend><label><input type="checkbox">0.5 秒内第一、第二、第三读取符合叙事优先级？</label><label><input type="checkbox">缩小或眯眼后，大形和明度关系仍成立？</label><label><input type="checkbox">背景细节没有抢夺 Hero Readability？</label></fieldset>
+          <fieldset><legend><span>03</span> Character / World</legend><label><input type="checkbox">Stable Identity Anchor 在状态和世界变化中保留？</label><label><input type="checkbox">Primary Variable 仍是主要叙事通道？</label><label><input type="checkbox">Character–World 模式已明确命名？</label></fieldset>
+          <fieldset><legend><span>04</span> Color / Camera</legend><label><input type="checkbox">每个重要颜色都有 Function 与 Owner？</label><label><input type="checkbox">Camera Allegiance 站在正确一侧？</label><label><input type="checkbox">没有过早消耗 Saturation / Camera Reserve？</label></fieldset>
+          <fieldset><legend><span>05</span> Sequence / Rules</legend><label><input type="checkbox">Lead、Support、Silent 变量明确且错峰？</label><label><input type="checkbox">高潮发生 Ownership Shift，而非 Maximum Noise？</label><label><input type="checkbox">Break 有触发条件，Resolution 形成 Baseline B？</label></fieldset>
+        </div>
+        <div class="qa-final"><span>FINAL TEST</span><p>删除 Color、Texture 或标志性 Surface FX 后，核心机制是否仍然成立？</p><button type="button" id="qa-reset">Reset checklist</button></div>
+        <footer class="view-footer"><p>Source / <a href="../visual-direction-system/11-visual-qa.md">11 — Visual QA ↗</a></p><button type="button" data-route="overview">Return to system <span>Overview →</span></button></footer>
+      </section>
+    </main>
+  </div>
+
+  <noscript><div class="noscript">本系统需要 JavaScript 来切换章节与可视化状态。Markdown 原始知识库仍可在 <a href="../visual-direction-system/README.md">这里阅读</a>。</div></noscript>
+  <script src="app.js" defer></script>
+</body>
+</html>
