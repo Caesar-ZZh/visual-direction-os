@@ -52,11 +52,13 @@ try {
   check('JavaScript syntax', false, String(error.stderr || error.message));
 }
 
+check('legacy root index removed', !fs.existsSync(path.join(root, 'index.html')));
+
 try {
-  execFileSync('git', ['diff', '--quiet', '--', 'index.html', 'visual-direction-system'], { cwd: root, stdio: 'pipe' });
-  check('protected inputs unchanged', true);
+  execFileSync('git', ['diff', '--quiet', '--', 'visual-direction-system'], { cwd: root, stdio: 'pipe' });
+  check('Markdown source library unchanged', true);
 } catch {
-  check('protected inputs unchanged', false, 'root index.html or Markdown source library changed');
+  check('Markdown source library unchanged', false, 'visual-direction-system source files changed');
 }
 
 const passed = results.filter((result) => result.pass).length;
