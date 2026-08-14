@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "narrative-visual-director-input.schema.json",
+  "title": "Narrative Visual Director Input",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "mode": {
+      "type": "string",
+      "enum": ["auto_director", "emotion_first", "archetype_first", "advanced_director"],
+      "default": "auto_director"
+    },
+    "emotion": {
+      "type": ["string", "null"],
+      "enum": [null, "calm", "hopeful", "curious", "lonely", "vulnerable", "tense", "pressured", "overwhelmed", "rebellious", "determined", "awakened", "intimate", "conflicted"]
+    },
+    "state": {
+      "type": ["string", "null"],
+      "enum": [null, "baseline", "pressure", "crisis", "decision", "agency", "resolution"]
+    },
+    "archetype": {
+      "type": ["string", "null"],
+      "enum": [null, "path_space", "boundary_emotion", "rebellion_time", "focus_attention"]
+    },
+    "output_format": {
+      "type": "string",
+      "enum": ["single_portrait", "cinematic_frame", "poster", "comic_panel", "four_state_sheet"],
+      "default": "single_portrait"
+    },
+    "intensity": {
+      "type": "string",
+      "enum": ["low", "medium", "high", "extreme"],
+      "default": "high"
+    },
+    "background_treatment": {
+      "type": "string",
+      "enum": ["preserve", "simplify", "stylize", "abstract"],
+      "default": "stylize"
+    },
+    "relationship_mode": {
+      "type": "string",
+      "enum": ["auto", "duo_intimacy", "duo_conflict", "team", "protagonist_vs_system"],
+      "default": "auto"
+    },
+    "camera_intent": {
+      "type": ["string", "null"],
+      "enum": [null, "intimate_close", "observational", "heroic", "kinetic", "distant", "confrontational"]
+    },
+    "rendering_family": {
+      "type": "string",
+      "enum": ["multiverse_comic_cinematic"],
+      "default": "multiverse_comic_cinematic"
+    },
+    "preserve_pose": {
+      "type": "boolean",
+      "default": true
+    },
+    "preserve_background_semantics": {
+      "type": "boolean",
+      "default": true
+    },
+    "user_notes": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "required": ["mode", "output_format", "intensity", "background_treatment", "relationship_mode", "rendering_family"]
+}
