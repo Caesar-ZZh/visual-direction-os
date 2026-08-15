@@ -12,6 +12,7 @@ Recent generation tests exposed several systematic errors:
 4. **Palette before mechanism** — pink/blue/purple could be applied without correct territory/ownership behavior.
 5. **Global texture filter** — halftone/paint/grain were treated as whole-image style rather than surface assignments.
 6. **Rendering Deconstruction missing** — the system described what to add but not what realism to remove.
+7. **Automatic style escalation** — stronger emotion tended to trigger more blur, color, texture and effects even when the reference sequence holds its visual grammar.
 
 ## New mandatory planning stages
 
@@ -23,6 +24,8 @@ Narrative State
 Character × World Relation
 ↓
 Composition Re-Authoring
+↓
+Emotional Carrier Selection
 ↓
 Rendering Deconstruction
 ↓
@@ -50,7 +53,37 @@ The Skill must distinguish:
 - **camera geometry that may change**;
 - **background information that may be suppressed/reconstructed**.
 
-Evidence from Batch 001 shows that relational meaning may depend on foreground scale, occlusion and plane separation. Therefore preserving a source photograph's framing can be incompatible with the target visual mechanism.
+Evidence from Batch 001 shows that relational meaning may depend on foreground scale, occlusion and plane separation. Batch 002 strengthens this with a cleaner two-plane example where Gwen fills the cool foreground while George is reduced into a warm doorway plane. Therefore preserving a source photograph's framing can be incompatible with the target visual mechanism.
+
+## Emotional Carrier Selection — added after Batch 002
+
+The Skill must not assume that every emotional beat should be expressed through the same variables.
+
+Before rendering, choose one or more **lead emotional carriers**:
+
+- composition / subject scale;
+- foreground-background depth;
+- architectural boundary;
+- color territory;
+- edge redistribution;
+- subject detail suppression;
+- environment detail suppression;
+- character presence / absence;
+- gaze / micro-expression;
+- motion / temporal irregularity.
+
+Then explicitly mark other channels as **held** or **suppressed**.
+
+### Why
+
+Batch 002 shows several emotional frames where:
+
+- facial detail stays crisp;
+- camera remains locked;
+- palette architecture remains stable;
+- only gaze or expression changes.
+
+The system therefore needs **Variable Substitution**, not one-direction escalation.
 
 ## New Visual Plan fields
 
@@ -70,6 +103,12 @@ Add or promote:
 - `edge_script_regions`
 - `composition_reauthoring`
 - `protected_readability_channels`
+- `lead_emotional_carriers`
+- `held_visual_channels`
+- `character_presence_strategy`
+- `relationship_plane_assignments`
+- `architectural_boundary_role`
+- `visual_grammar_hold`
 
 ## Gwen / Earth-65 correction
 
@@ -79,19 +118,70 @@ Do **not** encode Earth-65 as:
 pink + purple + blue + watercolor + soft edges
 ```
 
+And do **not** encode emotional escalation as:
+
+```text
+more emotion → softer face → more watercolor → more color
+```
+
 Instead plan:
 
 ```text
 Relationship / Emotional Authority
 → Composition Territory
+→ choose Emotional Carrier(s)
 → Color Ownership + Territory
-→ Physical Description Suppression
+→ decide which physical-description channels are suppressed
 → Selective Edge Redistribution
 → Readability Substitution
 → local medium behavior
 ```
 
 Hue comes later.
+
+### Batch 002 counterexample
+
+George and Gwen close-ups remain comparatively crisp while the emotional load is carried by:
+
+- violet/cool/warm relationship fields;
+- environment flattening;
+- foreground/background scale contrast;
+- doorway separation;
+- gaze and micro-expression.
+
+Therefore the Skill must not penalize a crisp face merely because the requested state is emotional.
+
+## Visual Silence correction
+
+Visual silence is not equivalent to:
+
+- desaturation;
+- white emptiness;
+- low contrast;
+- no color.
+
+Batch 002 shows a saturated/painterly room becoming quiet when Gwen exits and the camera holds.
+
+Add a `character-removal hold` option:
+
+```text
+establish visual field
+→ remove character
+→ keep camera + color field stable
+→ let negative space / color memory carry residue
+```
+
+## Relationship color correction
+
+The Skill must support **spatial color ownership**:
+
+```text
+Character A / plane A → cool field
+Character B / plane B → warm field
+Architecture → boundary between territories
+```
+
+This is different from applying one palette to the whole image.
 
 ## Brooklyn / Miles correction
 
@@ -126,14 +216,23 @@ Generation QA must independently score:
 8. Edge Script
 9. Surface-specific Medium Coherence
 10. Readability Substitution
+11. Emotional Carrier Fidelity
+12. Held-Channel Discipline
 
 ### Hard failure
 
 If `Rendering Deconstruction < pass` or the image still reads as generic semi-realistic 3D after mentally removing color/texture, retry from the structural plan rather than adding more effects.
 
+Also fail when:
+
+- every emotional increase automatically increases saturation/texture/blur;
+- all surfaces receive the same treatment;
+- a relationship scene preserves weak source framing instead of building the required scale/plane geometry;
+- a crisp face is softened without evidence that facial-detail suppression is the intended carrier.
+
 ## Revision timing
 
-Do **not** lock a final v2 Skill from Batch 001 alone. Update the Skill after representative evidence exists for at minimum:
+Do **not** lock a final v2 Skill from Earth-65 alone. Update the Skill after representative evidence exists for at minimum:
 
 - Miles / Brooklyn daily
 - Miles / Brooklyn action
