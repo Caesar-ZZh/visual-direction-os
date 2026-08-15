@@ -111,6 +111,16 @@ A claim is **not** a whole-film rule merely because it appears here. Scope and p
 
 The earlier open dossier/live-Vulture hypothesis is now **resolved positively within this sequence**: live Vulture retains the previewed rough etched/sketched medium while the Earth-65 host field remains materially distinct. Jess is still not yet observed through `01:43:47`.
 
+## BATCH-011 — event-layer rupture / silhouette threat / recovery
+
+| ID | Evidence claim | Status / scope |
+|---|---|---|
+| `EV-E65-056` | A localized event-render layer can temporarily override a persistent entity-owned medium without becoming a frame-wide style filter. | REVISES EV-E65-053; Vulture dimensional-instability event |
+| `EV-E65-057` | Antagonist threat identity can survive near-total internal-detail loss when distinctive serrated silhouette and spatial occlusion carry the information. | PROVISIONAL; threat/readability mechanism |
+| `EV-E65-058` | After a high-density rendering-instability peak, readability can recover through a strong description-density drop, expanded negative space and one compact high-value hero anchor. | VALIDATES / broadens EV-E65-055; post-event recovery |
+
+BATCH-011 narrows Entity-medium Ownership into a **layer-precedence model**: `base world grammar < entity medium < event override`. Vulture's brown etched medium is stable through ordinary pose/scale changes, but at `01:43:55–56` a localized multicolor fragmentation layer ruptures it while the Earth-65 host field remains materially distinct. The following `01:43:57–59` frames then restore Gwen/space through a low-description recovery plateau.
+
 ## Current production consequences
 
 The evidence now requires the system to support, at minimum:
@@ -131,6 +141,8 @@ World-field / Role-color / Color Memory
 Lighting Ownership Handoff
 Surface-specific Medium Assignment
 Entity-medium Ownership + Medium Boundary Persistence
+Rendering-layer Precedence: Base World < Entity Medium < Event Override
+Localized Event-override Masking
 Nested Medium Foreshadowing → Live Medium Payoff
 Screen-space Editorial Layer
 Nested Media / Evidence Media
@@ -141,7 +153,8 @@ Source-owned Bloom
 Event Render Override with Base Recovery
 Graphic Explosion / Smoke Shape Grammar
 Force-vector Alignment + Landing Compression
-Post-impact Description-density Reset / Visual Silence
+Threat Occlusion + Silhouette Identity Preservation
+Post-impact / Post-event Description-density Reset / Visual Silence
 World Authority Scale Transfer
 ```
 
