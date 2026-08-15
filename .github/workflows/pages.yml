@@ -13,9 +13,6 @@ permissions:
   pages: write
   id-token: write
 
-actions:
-  read
-
 concurrency:
   group: "pages"
   cancel-in-progress: false
