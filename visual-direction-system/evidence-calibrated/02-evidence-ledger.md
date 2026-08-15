@@ -147,7 +147,7 @@ George's back and shoulders occupy a large part of the frame yet carry comparati
 
 **Revised inference:** Reality Suppression is functional and focal, not just environmental.
 
-**Generative rule:** treat a non-focal foreground body as `Shape + Value + Occlusion` before anatomy or texture. Do not give every visible person equal detail.
+**Generative rule:** treat a non-focal foreground body as `Shape + Value + Occlusion + Temperature` before anatomy or texture. Do not give every visible person equal detail.
 
 ---
 
@@ -201,6 +201,81 @@ face / gaze
 Camera, palette and rendering often remain stable. This is direct evidence for **Parameter Dominance Rotation / Visual Orchestration**.
 
 **Generative rule:** assign one `lead_emotional_carrier` per beat and explicitly hold the other channels. Automatic effect escalation is a failure mode.
+
+---
+
+## EV-E65-015 — Gesture can carry relational opening inside a held image
+
+**Type:** INFERRED  
+**Scope:** shot-local performance mechanism  
+**Support:** B004-001–B004-005  
+**Confidence:** 0.95
+
+Across the held two-plane shot, camera, depth, role-color, environment treatment and subject scale remain nearly fixed. George's hand moves from a more compact gesture to an open palm while Gwen stays downcast.
+
+**Revised inference:** a small gesture can become the primary emotional carrier precisely because the rest of the visual grammar is held.
+
+**Generative rule:** when gesture already carries the relational change, preserve camera/color/texture and increase only local gesture readability. Do not add global FX.
+
+---
+
+## EV-E65-016 — Established color territory can persist as off-screen relational residue
+
+**Type:** INFERRED  
+**Scope:** scene-local candidate mechanism  
+**Support:** B004-006, B004-007, B004-010  
+**Confidence:** 0.88
+
+After George is no longer visible, a bounded pale warm field remains near/behind Gwen while her cool cyan/blue identity mass continues to dominate.
+
+**Revised inference:** established color territories may behave as scene memory rather than being recomputed independently at every cut. The interpretation as off-screen relational presence remains provisional until independent Earth-65 scenes are checked.
+
+**Generative rule:** support `offscreen_presence_color_residue` and `color_memory_hold`; do not reset palette logic on every shot.
+
+---
+
+## EV-E65-017 — Environmental simplification can preserve object count through hierarchical compression
+
+**Type:** INFERRED  
+**Scope:** scene-local rendering mechanism with broad generative value  
+**Support:** B004-006, B004-010, B004-011  
+**Confidence:** 0.96
+
+The bedroom retains books, posters, shelves, drum, clothes, furniture and personal material, but most non-focal props are grouped into subdued teal/violet masses with reduced contrast, softer edges and sparse contour information.
+
+**Revised inference:** Detail Suppression is not synonymous with object deletion. A frame can be object-rich and perceptually simple.
+
+**Generative rule:** use `environment_detail_strategy = compress | delete | retain`. For lived-in worlds, try value/chroma/edge compression before sterilizing the environment.
+
+---
+
+## EV-E65-018 — Character role-color scales from close staging into wide chromatic islands
+
+**Type:** INFERRED  
+**Scope:** scene-cluster relationship mechanism  
+**Support:** B004-001, B004-005, B004-011  
+**Confidence:** 0.96
+
+The close shot separates cool Gwen from warm George by depth and doorway. In the wide room, George remains a warm left island and Gwen a bright cool right island while the room between them becomes a lower-energy teal/violet field.
+
+**Revised inference:** character-relative color ownership can survive a major change in camera distance by becoming spatialized territory.
+
+**Generative rule:** build wide relationship staging as `Character A territory → low-energy middle field → Character B territory`; track `middle_field_energy` and `chromatic_island_roles`.
+
+---
+
+## EV-E65-019 — Facial landmark precision and facial surface realism are independent controls
+
+**Type:** INFERRED / VALIDATION  
+**Scope:** scene-local facial rendering rule  
+**Support:** B004-008, B004-009, B002-006, B002-007  
+**Confidence:** 0.98
+
+George's brows, eyes, nose, mouth, jaw and hand remain selectively crisp, while face/torso volume is simplified into broad warm planes and the doorway behind becomes a flat painterly field.
+
+**Revised inference:** stylized specificity does not require either photorealistic continuous skin shading or globally softened watercolor faces. Landmark geometry and surface realism can be tuned separately.
+
+**Generative rule:** independently control `facial_landmark_precision`, `facial_plane_abstraction`, `skin_surface_detail` and continuous-gradient suppression. A face may stay highly recognizable while realistic skin modeling is aggressively reduced.
 
 ---
 
