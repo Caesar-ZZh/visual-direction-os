@@ -9,21 +9,9 @@ This file is a human-readable counterpart to the Google Drive `Evidence_Ledger` 
 **Support:** B001-001, B001-004, B001-008, B001-011  
 **Confidence:** 0.82
 
-### Observed
-
 Across the sampled sequence, rose/lilac/peach frequently occupy large environmental territories while Gwen remains readable through a much smaller cobalt/indigo mass. Local object color and realistic lighting are repeatedly subordinated to broad scene fields.
 
-### Previous theory risk
-
-`Gwen = Boundary × Color` could be misread in production as “Gwen = pink/purple/blue + watercolor”.
-
-### Revised inference
-
-Earth-65 color should be modeled as **redistribution of Color Ownership and Color Territory**. Hue selection is secondary to the question of *what narrative force is allowed to reorganize the frame*.
-
-### Generative rule
-
-Choose `Color Ownership → Territory → Boundary behavior` before choosing hues. Palette-only Gwen stylization is a failure mode.
+**Generative rule:** choose `Color Ownership → Territory → Boundary behavior` before choosing hues. Palette-only Gwen stylization is a failure mode.
 
 ---
 
@@ -34,17 +22,9 @@ Choose `Color Ownership → Territory → Boundary behavior` before choosing hue
 **Support:** B001-004–B001-007  
 **Confidence:** 0.90
 
-### Observed
-
 A dominant foreground father mass occupies a large portion of the frame while Gwen is compressed into a smaller, brighter rear plane. Scale, occlusion and depth partition make the relationship readable before painterly texture is considered.
 
-### Revised inference
-
-Gwen's relational visual logic is **multi-channel**. Edge and color matter, but foreground scale, occlusion, plane separation and subject territory can carry boundary/authority more directly.
-
-### Generative rule
-
-Solve relational staging in composition first. Image transformation systems must be allowed to **re-author source framing** instead of preserving the photograph and adding effects.
+**Generative rule:** solve relational staging in composition first. Image transformation systems must be allowed to re-author source framing.
 
 ---
 
@@ -55,27 +35,11 @@ Solve relational staging in composition first. Image transformation systems must
 **Support:** B001-001, B001-008, B001-010, B001-011  
 **Confidence:** 0.88
 
-### Observed
-
 Furniture, skyline, walls and architectural detail are repeatedly reduced to large low-frequency painterly masses while emotionally important character anchors survive.
 
-### Revised inference
+The earlier hypothesis `Emotion ↑ → Physical Description ↓` has direct support in some environmental frames, but Batch 002 provides a strong counterexample to treating it as universal.
 
-The earlier generative hypothesis:
-
-```text
-Emotion ↑ → Physical Description ↓
-```
-
-has direct support in some wide/environmental frames, but Batch 002 provides a strong counterexample to treating it as universal.
-
-### Generative rule
-
-`Reality Suppression`, `Controlled Flattening` and `Detail Suppression` must be explicit production controls, but the system must choose **where** suppression occurs rather than globally dissolving the image.
-
-### Counterexample
-
-`B002-006` and `B002-008–011` retain comparatively crisp facial planes under strong emotional load while the environment/color/depth system carries the stylization.
+**Generative rule:** `Reality Suppression`, `Controlled Flattening` and `Detail Suppression` must be explicit controls, but the system must choose where suppression occurs rather than globally dissolving the image.
 
 ---
 
@@ -86,17 +50,9 @@ has direct support in some wide/environmental frames, but Batch 002 provides a s
 **Support:** B001-001, B001-004, B001-008, B001-011  
 **Confidence:** 0.91
 
-### Observed
-
 As surrounding architecture loses edge/detail, Gwen remains identifiable through concentrated cool hue mass, silhouette and selected face/profile landmarks.
 
-### Existing theory validated
-
-This strongly supports **Readability Substitution**: if one recognition channel is weakened, another is strengthened.
-
-### Generative rule
-
-Lost edges are allowed only when at least 2–3 independent identity/readability channels remain protected. QA should not use global sharpness as the readability metric.
+**Generative rule:** lost edges are allowed only when at least 2–3 independent identity/readability channels remain protected.
 
 ---
 
@@ -107,25 +63,9 @@ Lost edges are allowed only when at least 2–3 independent identity/readability
 **Support:** B002-001–B002-005  
 **Confidence:** 0.94
 
-### Observed
-
 Gwen crosses the warm painterly room and leaves. At `B002-005`, the camera continues to hold on the same environment with essentially the same chromatic field but no visible character.
 
-### Revised inference
-
-Visual silence does not require desaturation, white space, or an abstract void. It can be created by **holding an established visual field while removing the character/event that previously organized it**.
-
-### Generative rule
-
-For withdrawal/exit beats, consider:
-
-```text
-establish character + field
-→ cross a boundary
-→ remove character
-→ hold camera and field
-→ let negative space + color memory carry residue
-```
+**Generative rule:** an exit beat may work as `establish character + field → cross boundary → remove character → hold camera/field → let negative space and color memory carry residue`.
 
 ---
 
@@ -136,34 +76,11 @@ establish character + field
 **Support:** B002-006, B002-007, B002-008–B002-011  
 **Confidence:** 0.97
 
-### Observed
+George and Gwen retain crisp eyes, brows, mouth shapes and face-plane boundaries while the environment remains painterly and the palette strongly non-physical.
 
-George and Gwen retain crisp eyes, brows, mouth shapes, face-plane boundaries and recognizable local detail while the environment remains painterly and the palette strongly non-physical.
+**Revised inference:** emotion may suppress physical description, but suppression is channel-selective. Emotional load can move into environment flattening, color ownership, spatial separation, edge redistribution, depth-plane contrast, gaze or micro-expression.
 
-### Previous theory risk
-
-The earlier shorthand:
-
-```text
-Emotion ↑ → Physical Description ↓
-```
-
-could cause a generator to soften faces automatically.
-
-### Revised inference
-
-Emotion may suppress physical description, but **suppression is channel-selective**. Earth-65 can keep facial description crisp while moving emotional stylization into:
-
-- environment flattening;
-- color ownership;
-- spatial separation;
-- edge redistribution;
-- depth-plane contrast;
-- gaze / micro-expression.
-
-### Generative rule
-
-Do not equate emotional intensity with blur, watercolor faces or lost facial edges. Choose which descriptive channel yields.
+**Generative rule:** do not equate emotional intensity with blur, watercolor faces or lost facial edges.
 
 ---
 
@@ -174,17 +91,9 @@ Do not equate emotional intensity with blur, watercolor faces or lost facial edg
 **Support:** B002-008–B002-011  
 **Confidence:** 0.98
 
-### Observed
-
 Gwen dominates a blue-violet/teal foreground while George is smaller and contained inside a warm yellow-orange doorway field.
 
-### Revised inference
-
-Color is not only a global emotional tint. It can be **spatially owned by separate relationship planes**.
-
-### Generative rule
-
-Assign color territories per character/plane before selecting local object color. Use bounded warm/cool regions to stage relational distance.
+**Generative rule:** assign color territories per character/plane before selecting local object color.
 
 ---
 
@@ -195,24 +104,9 @@ Assign color territories per character/plane before selecting local object color
 **Support:** B002-009–B002-011  
 **Confidence:** 0.99
 
-### Observed
+The relationship is simultaneously encoded by foreground scale, reduced background scale, doorway frame-within-frame, depth separation, cool/warm temperature territories and stable camera.
 
-The same emotional relationship is simultaneously encoded by:
-
-- Gwen's extreme foreground scale;
-- George's reduced background scale;
-- doorway frame-within-frame;
-- depth-plane separation;
-- cool/warm temperature territories;
-- stable camera.
-
-### Revised inference
-
-Strong relational pressure does not require more texture, more effects or more camera energy. **Geometry and territory can carry the entire beat.**
-
-### Generative rule
-
-Solve `Scale → Plane → Architectural Boundary → Color Territory` before surface treatment.
+**Generative rule:** solve `Scale → Plane → Architectural Boundary → Color Territory` before surface treatment.
 
 ---
 
@@ -223,17 +117,90 @@ Solve `Scale → Plane → Architectural Boundary → Color Territory` before su
 **Support:** B002-006, B002-007, B002-009–B002-011  
 **Confidence:** 0.93
 
-### Observed
-
 Consecutive frames keep camera, medium and color architecture almost fixed while emotion progresses through eye opening, gaze direction, mouth tension and head angle.
 
-### Revised inference
+**Generative rule:** add a `hold visual grammar` option to sequence planning. Do not spend visual reserve when performance already carries the beat.
 
-A sequence does not need continuous visual escalation. Stable style can act as a **container that increases the perceptual value of micro-performance**.
+---
 
-### Generative rule
+## EV-E65-010 — Shot/reverse-shot can invert scale dominance while preserving relational polarity
 
-Add a `hold visual grammar` option to sequence planning. Do not spend visual reserve when performance already carries the beat.
+**Type:** INFERRED  
+**Scope:** Earth-65 domestic scene cluster  
+**Support:** B002-009, B003-001, B003-004  
+**Confidence:** 0.97
+
+The camera first gives Gwen the dominant cool foreground and George the small warm rear plane. The reverse angle then makes George a dominant foreground mass while Gwen becomes the smaller cool figure. Hierarchy changes; relational polarity does not.
+
+**Generative rule:** preserve relational roles rather than source framing. A camera reversal may invert foreground dominance if depth, architecture and role-color preserve the relationship.
+
+---
+
+## EV-E65-011 — A non-focal foreground person can become a graphic occluder mass
+
+**Type:** INFERRED  
+**Scope:** shot-local rendering mechanism  
+**Support:** B003-004–B003-007  
+**Confidence:** 0.96
+
+George's back and shoulders occupy a large part of the frame yet carry comparatively little descriptive information. His function is pressure, framing and scale. Detail is allocated to Gwen and to the active gesture.
+
+**Revised inference:** Reality Suppression is functional and focal, not just environmental.
+
+**Generative rule:** treat a non-focal foreground body as `Shape + Value + Occlusion` before anatomy or texture. Do not give every visible person equal detail.
+
+---
+
+## EV-E65-012 — Character-relative temperature ownership can persist across camera changes
+
+**Type:** INFERRED  
+**Scope:** scene-local candidate character/relationship rule  
+**Support:** B003-001, B003-004, B003-008, B003-011  
+**Confidence:** 0.94
+
+Within this segment, Gwen remains predominantly cool blue/violet while George remains warm peach/orange across close-up, reverse OTS and reaction shots.
+
+**Revised inference:** global scene field and subject role-color are separate layers.
+
+**Generative rule:** track `world_field_color` and `subject_temperature_role` independently. Do not compress both into one palette string.
+
+---
+
+## EV-E65-013 — Facial visibility is not required for emotional or identity continuity
+
+**Type:** INFERRED  
+**Scope:** scene-local readability mechanism  
+**Support:** B003-004, B003-010, B003-011  
+**Confidence:** 0.93
+
+Gwen remains identifiable while back-facing through hair/neck silhouette, posture, cool chromatic identity and hand interaction with the closet.
+
+**Revised inference:** identity preservation must be multi-channel rather than face-centric.
+
+**Generative rule:** allow a hidden, simplified or absent face when at least 2–3 stronger identity channels are protected.
+
+---
+
+## EV-E65-014 — Lead expressive channels rotate while the base grammar holds
+
+**Type:** INFERRED  
+**Scope:** scene-cluster sequence principle  
+**Support:** B003-001, B003-004, B003-007, B003-008, B003-010, B003-011  
+**Confidence:** 0.95
+
+Across the sequence, the lead channel rotates:
+
+```text
+face / gaze
+→ spatial staging + scale
+→ hand gesture
+→ facial reaction
+→ back silhouette + object interaction
+```
+
+Camera, palette and rendering often remain stable. This is direct evidence for **Parameter Dominance Rotation / Visual Orchestration**.
+
+**Generative rule:** assign one `lead_emotional_carrier` per beat and explicitly hold the other channels. Automatic effect escalation is a failure mode.
 
 ---
 
