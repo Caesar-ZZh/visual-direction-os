@@ -8,7 +8,7 @@
 - Exact total: **not yet verified**.
 - Research corpus / manifest: created.
 - Full-corpus status: **in progress**.
-- Existing v1 methodology remains available but Spider-Verse-specific rules are now treated as provisional until evidence-calibrated.
+- Existing v1 methodology remains available but Spider-Verse-specific rules are treated as provisional until evidence-calibrated.
 - **Cumulative frames actually viewed:** 33.
 - **Cumulative frames with at least L1 annotation:** 33.
 - **Next unreviewed extraction boundary:** `01:41:11`.
@@ -19,7 +19,7 @@
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | BATCH-001 | extraction 01:40:38–01:40:48 | 11 | 11 | 11 | 4 | 4 | 1 | 4 | complete first-pass |
 | BATCH-002 | extraction 01:40:49–01:40:59 | 11 | 11 | 11 | 7 | 4 | 1 continuation | 4 | complete first-pass |
-| BATCH-003 | extraction 01:41:00–01:41:10 | 11 | 11 | 11 | 6 | 3 | 1 continuation | 3 | complete first-pass |
+| BATCH-003 | extraction 01:41:00–01:41:10 | 11 | 11 | 11 | 7 | 4 | 1 continuation | 4 | complete first-pass |
 
 ## BATCH-001 outputs
 
@@ -31,7 +31,7 @@
 ## BATCH-002 outputs
 
 - Continued `SCN-E65-001` through extraction `01:40:59`.
-- Four additional diagnostic references curated.
+- Four diagnostic references curated.
 - Evidence claims `EV-E65-005` through `EV-E65-009`.
 - Major correction: **Emotion ↑ does not universally imply Face/Physical Detail ↓.** Emotional load can migrate into color territory, environmental flattening, depth-plane separation, scale contrast or micro-performance while facial detail remains crisp.
 - New Skill requirement: **Emotional Carrier Selection / Variable Substitution**.
@@ -40,12 +40,15 @@
 ## BATCH-003 outputs
 
 - Continued `SCN-E65-001` through extraction `01:41:10`.
-- 11 images individually opened and reviewed; shot clusters `F–J` tracked.
-- Contact sheet uploaded to Drive; three new curated references added.
-- Evidence claims `EV-E65-010` through `EV-E65-012`.
-- New mechanism: **Body Orientation as Boundary Variable** — a profile turn can redistribute relational territory without palette/camera escalation.
-- New mechanism: **Static Observer / Moving Subject** — quiet tension can be sustained by locking camera, foreground observer and environment while only the active subject moves.
-- Readability Substitution expanded: **Gwen remains identifiable with no visible face** through hair silhouette, body proportion, color ownership and selective edges.
+- 11 images individually opened and reviewed.
+- Shot clusters `F–I` tracked.
+- Contact sheet uploaded to Drive.
+- Four new diagnostic references curated.
+- Evidence claims `EV-E65-010` through `EV-E65-014`.
+- New mechanism: **shot/reverse-shot role continuity** — foreground dominance may invert while relational polarity survives through depth, architecture and character-relative temperature ownership.
+- New mechanism: **foreground occluder mass** — a visible person can be simplified aggressively when functioning mainly as pressure/framing.
+- New evidence for **multi-channel identity preservation** — Gwen remains identifiable while back-facing and without a visible face.
+- Existing theory **Parameter Dominance Rotation / Visual Orchestration** receives direct sequence evidence: face/gaze → staging/scale → hand gesture → reaction → object interaction.
 
 ## Coverage target
 
