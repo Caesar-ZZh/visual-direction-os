@@ -88,6 +88,20 @@ A claim is **not** a whole-film rule merely because it appears here. Scope and p
 | `EV-E65-043` | A major impact can temporarily override the base rendering through `base → attack → hold → recovery`. | PROVISIONAL; event-local temporal mechanism |
 | `EV-E65-044` | Explosion/smoke can be authored as discrete nested/scalloped shape groups instead of continuous photoreal volumetric shading. | PROVISIONAL; event-specific rendering |
 
+## BATCH-009 — action-signature entrance / persistent material / search space
+
+| ID | Evidence claim | Status / scope |
+|---|---|---|
+| `EV-E65-045` | Post-event recovery restores structure/detail/choreography while source-owned emergency lighting may persist; recovery is not a palette reset. | VALIDATES EV-E65-043; event-local |
+| `EV-E65-046` | A recognizable action signature can enter off-screen and alter the scene before the character's body is revealed. | PROVISIONAL; character-entrance mechanism |
+| `EV-E65-047` | Web linework can be persistent diegetic graphic material: trajectory + attachment + accumulation + occlusion + depth-spanning constraint geometry. | PROVISIONAL; material/sequence mechanism |
+| `EV-E65-048` | Character entrance can be carried by inverted orientation + extreme foreground scale + non-face identity anchors. | PROVISIONAL; entrance/camera mechanism |
+| `EV-E65-049` | Environmental description can be suppressed by search-state/perceptual uncertainty, not only emotion or velocity. | REVISES PRIOR; perceptual-detail mechanism |
+| `EV-E65-050` | A spatial threshold can hand color/light ownership from explicit sources to atmosphere/world field without a style-motivated palette reset. | PROVISIONAL; threshold mechanism |
+| `EV-E65-051` | Subject-scale collapse can transfer visual authority from character to unknown world while minimum silhouette/value anchors preserve identity. | PROVISIONAL; spatial-authority mechanism |
+
+**Open hypothesis:** `EV-E65-042` remains unvalidated through BATCH-009 because live Vulture is not yet visible; Jess is also not yet observed in this window.
+
 ## Current production consequences
 
 The evidence now requires the system to support, at minimum:
@@ -97,18 +111,25 @@ Composition Re-Authoring
 Carrier Selection + Carrier Handoff
 Reality Suppression / Controlled Flattening
 Hierarchical Detail Compression
+Narrative/Perceptual Detail Budget
 Motion-state Detail Budget + Re-entry
+Search-state Information Withholding
 Multi-channel Identity Preservation
+Action Signature Before Body Reveal
+Orientation / Foreground Scale Reveal
 Facial Landmark Precision ≠ Surface Realism
 World-field / Role-color / Color Memory
+Lighting Ownership Handoff
 Surface-specific Medium Assignment
 Screen-space Editorial Layer
 Nested Media / Evidence Media
-Local Graphic FX with Attack/Hold/Decay
+Transient Local Graphic FX
+Persistent Diegetic Graphic Material / Constraint Geometry
 Diegetic Vector Light
 Source-owned Bloom
 Event Render Override with Base Recovery
 Graphic Explosion / Smoke Shape Grammar
+World Authority Scale Transfer
 ```
 
 Detailed frame support and parameter implications are stored in the Drive ledger and the corresponding batch files.
