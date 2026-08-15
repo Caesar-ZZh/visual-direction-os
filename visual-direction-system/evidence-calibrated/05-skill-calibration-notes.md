@@ -2,35 +2,37 @@
 
 These notes define how the evidence-calibrated corpus should change `skills/narrative-visual-director/`.
 
-## Current v1 Skill failure modes
+The Skill must model **causal visual mechanisms**, not a surface style recipe. Spider-Verse evidence is promoted only when it changes an actual planning decision, parameter, constraint or QA test.
 
-1. **Style-family shortcut** — “Spider-Verse / Brooklyn” collapsed into neon, graffiti, sunset, water towers and halftone.
-2. **Identity preservation too literal** — realistic face/body construction survived underneath stylization.
-3. **Source framing over-preserved** — relationship and world grammar could not re-author the camera/composition.
-4. **Palette before mechanism** — pink/blue/purple could be applied without correct territory/ownership behavior.
-5. **Global texture filter** — halftone/paint/grain were treated as whole-image style rather than surface assignments.
-6. **Rendering Deconstruction missing** — the system described what to add but not what realism to remove.
-7. **Automatic style escalation** — stronger emotion tended to trigger more blur, color, texture and effects even when the reference sequence holds its visual grammar.
-8. **Face-centric identity** — the Skill over-protected facial similarity even when the reference beat communicates identity through silhouette, posture, color or gesture.
-9. **Equal-detail rendering** — every visible person tended to receive similar rendering detail instead of focal/function-based allocation.
-10. **Simplification by deletion** — environments tended to become empty/generic instead of preserving lived-in specificity through hierarchy compression.
-11. **Cartoonization by softness** — reducing realism often meant softening the face instead of separating landmark precision from skin-surface realism.
-12. **Shot-local palette reset** — cuts could lose established character/world color memory instead of carrying role-color and residue forward.
+## Current failure modes
 
-## New mandatory planning stages
+1. **Style-family shortcut** — reducing a world/character to palette, graffiti, halftone, watercolor or collage keywords.
+2. **Identity preservation too literal** — realistic face/body construction survives under a style filter.
+3. **Source framing over-preserved** — composition cannot be re-authored to express relationship/state.
+4. **Palette before mechanism** — hue is chosen before color ownership, territory and role.
+5. **Global texture filter** — material/pattern/marks leak across unrelated surfaces.
+6. **Rendering Deconstruction missing** — the system knows what to add but not what realism to suppress.
+7. **Automatic escalation** — stronger emotion/action automatically means more saturation, blur, texture and FX.
+8. **Face-centric identity** — the face is protected even when silhouette/posture/gesture is the real carrier.
+9. **Equal-detail rendering** — every visible surface/person receives similar descriptive authority.
+10. **Simplification by deletion** — lived-in environments become empty instead of hierarchically compressed.
+11. **Cartoonization by softness** — realism is reduced by blurring faces instead of redesigning planes/gradients.
+12. **Shot-local palette reset** — cuts forget established color roles/residue.
+13. **Single-medium assumption** — diegetic scene, editorial overlay, nested media and local notation are collapsed into one render layer.
+14. **Action-detail rigidity** — environment detail stays constant regardless of velocity/readability demand.
+15. **Global glow shortcut** — cyan/magenta bloom becomes a world filter instead of belonging to sources.
+16. **Event-as-particle-layer** — explosions/major events are added on top of an unchanged base render with no attack/hold/recovery logic.
+
+## Mandatory planning chain
 
 ```text
-Photo / Brief Reading
-↓
 Narrative State
 ↓
 Character × World Relation
 ↓
 Composition Re-Authoring
 ↓
-Shot / Reverse-shot Role Continuity
-↓
-Emotional Carrier Selection
+Carrier Selection / Handoff
 ↓
 Rendering Deconstruction + Focal Detail Assignment
 ↓
@@ -44,126 +46,99 @@ Edge Script
 ↓
 Surface-specific Medium Assignment
 ↓
-Temporal / Motion behavior if applicable
+Representational Layer Assignment
+↓
+Motion-state Detail Budget
+↓
+Source-owned Light / FX Assignment
+↓
+Event Render Mode if needed
 ↓
 Generation
 ↓
 Mechanism QA
 ```
 
+---
+
 ## Composition Re-Authoring
 
-The Skill must distinguish:
+Preserve meaning, not weak source framing. Track:
 
 - identity anchors to preserve;
-- pose information to preserve;
-- camera geometry that may change;
-- subject scale that may change;
-- foreground occluders that may be introduced or simplified;
-- background information that may be suppressed/reconstructed.
+- pose/body orientation;
+- subject scale;
+- foreground dominance/occlusion;
+- depth-plane roles;
+- architectural partitions;
+- negative-space pressure;
+- camera geometry that may be changed.
 
-Evidence across Batches 001–004 shows that relational meaning may depend on foreground scale, occlusion, plane separation, frame-within-frame architecture, camera reversal and the energy of the space between characters. Preserving a source photograph's framing can therefore be incompatible with the target mechanism.
+### Fields
 
-## Emotional Carrier Selection
-
-Before rendering, choose one or more **lead emotional carriers**:
-
-- face / gaze / micro-expression;
-- composition / subject scale;
-- foreground-background depth;
-- architectural boundary;
-- body orientation;
-- hand gesture;
-- object interaction;
-- color territory / temperature ownership;
-- color residue / off-screen presence;
-- edge redistribution;
-- subject detail suppression;
-- environment hierarchy compression;
-- character presence / absence;
-- motion / temporal irregularity.
-
-Then explicitly mark other channels as **held** or **suppressed**.
-
-Batches 003–004 provide direct evidence for **Parameter Dominance Rotation** and held-channel discipline:
-
-```text
-face / gaze
-→ spatial staging + scale
-→ hand gesture
-→ facial reaction
-→ back silhouette + object interaction
-```
-
-At `B004-005`, a single open-palm change carries the relational beat while camera, depth, palette and texture remain stable. The Skill should not intensify every channel just because the emotional state becomes stronger.
-
-### Gesture-led beat fields — added after Batch 004
-
-- `gesture_role`
-- `gesture_salience`
-- `gesture_shape_change`
-- `held_visual_channels`
-
-A small hand/body change may be more faithful than adding global color or texture intensity.
-
-## Shot / Reverse-shot Role Continuity
-
-A scene's visual grammar should preserve **relational roles**, not exact camera placement.
-
-Evidence:
-
-- one shot gives Gwen the dominant cool foreground and George the small warm rear plane;
-- the reverse angle gives George the dominant foreground mass and Gwen the smaller cool closet plane;
-- the later wide shot preserves George as a warm island and Gwen as a cool/bright island across a subdued middle field.
-
-Add planning fields:
-
-- `shot_reverse_shot_role_continuity`
+- `composition_reauthoring`
 - `foreground_dominance_owner`
 - `relationship_depth_role`
 - `architectural_partition_role`
+- `foreground_occluder_mass`
 - `middle_field_energy`
 - `chromatic_island_roles`
+- `shot_reverse_shot_role_continuity`
 
-A camera reversal or widening is allowed to change subject scale and foreground ownership while keeping the relationship legible.
+---
 
-## Focal Detail Assignment
+## Emotional / Narrative Carrier Selection
 
-Reality Suppression is not only an environment operation.
+Choose a lead carrier per beat and mark competing channels held/suppressed.
 
-A foreground person may be simplified into:
+Possible carriers include:
+
+- face / gaze / micro-expression;
+- composition / scale / depth;
+- boundary / architecture;
+- body orientation;
+- hand gesture;
+- object interaction;
+- object memory / nested media;
+- color territory / residue;
+- edge redistribution;
+- environment hierarchy;
+- presence / absence;
+- silhouette / trajectory;
+- diegetic light;
+- event-specific rendering.
+
+### Fields
+
+- `lead_emotional_carriers`
+- `held_visual_channels`
+- `gesture_role`
+- `gesture_salience`
+- `object_interaction_salience`
+- `carrier_handoff_sequence`
+- `prior_carrier_residue`
+- `next_carrier_activation`
+- `memory_object_to_action_handoff`
+- `carrier_causality`
+
+---
+
+## Focal Detail / Environment Detail
+
+Detail is assigned by narrative function, not visibility.
+
+### Environment strategy
 
 ```text
-Shape + Value + Occlusion + Temperature
+retain specificity
+→ compress value bandwidth
+→ compress chroma bandwidth
+→ reduce local contrast
+→ lose non-essential contours
+→ preserve focal separation
 ```
 
-if their function is mainly framing or pressure. Detail should be allocated according to **narrative/focal function**, not visibility or screen size.
-
-Add:
-
-- `foreground_occluder_mass`
-- `focal_detail_assignment`
-- `non_focal_character_suppression`
-
-Do not force equal facial/anatomical detail on all visible people.
-
-## Environment Detail Strategy — added after Batch 004
-
-Detail Suppression must not mean automatic object removal.
-
-`B004-011` retains a lived-in bedroom full of books, posters, shelves, a drum, clothes and furniture. Perceptual simplicity is achieved by **hierarchical compression**:
-
-```text
-retain object specificity
-→ group non-focal props by value
-→ compress chroma range
-→ lower local contrast
-→ soften / lose non-essential edges
-→ reduce contour density
-→ reserve strong separation for focal subjects
-```
-
-Add:
+Use:
 
 - `environment_detail_strategy: compress | delete | retain`
 - `environment_object_density`
@@ -171,41 +146,76 @@ Add:
 - `non_focal_chroma_bandwidth`
 - `environment_edge_authority`
 - `lived_in_specificity_required`
+- `focal_detail_assignment`
+- `non_focal_character_suppression`
 
-This is critical for future Brooklyn/Miles calibration. A lived-in city or bedroom must not become generic simply because the image is graphic.
+### Motion-state extension — BATCH-007/008
 
-## Multi-channel Identity Preservation
+B007 proves that high-speed readability may require **less** environment; B008 proves that description can return as motion pressure drops.
 
-Identity preservation must not mean “keep the face visible and realistic.”
+```text
+velocity/readability pressure ↑
+→ environment detail ↓
+→ silhouette / trajectory authority ↑
 
-Protected identity channels may include:
-
-- face landmarks;
-- hair silhouette;
-- head/neck shape;
-- body proportion;
-- posture;
-- garment mass;
-- hand gesture;
-- motion signature;
-- color anchor;
-- negative-space relationship.
-
-A back-facing subject is valid when 2–3 or more non-face anchors remain strong.
+velocity/readability pressure ↓
+→ location/object/institution detail may re-enter
+```
 
 Add:
 
+- `motion_readability_substitution`
+- `trajectory_line_priority`
+- `environment_suppression_for_velocity`
+- `directional_world_field`
+- `world_streak_orientation`
+- `silhouette_complexity_budget`
+- `city_detail_reentry`
+- `detail_reentry_trigger`
+- `velocity_detail_budget`
+- `world_detail_recovery`
+
+---
+
+## Multi-channel Identity Preservation
+
+Identity may survive through:
+
+- face landmarks;
+- hair/head silhouette;
+- body proportion/posture;
+- garment mass;
+- hand gesture;
+- motion signature;
+- costume accent/pattern;
+- color anchor;
+- negative-space relation.
+
+A hidden/back-facing face is valid when enough stronger anchors remain.
+
+### Fields
+
+- `protected_readability_channels`
 - `non_face_identity_anchors`
 - `identity_channel_count`
-- `face_visibility_required: true/false`
+- `face_visibility_required`
+- `identity_anchor_persistence`
 
-## Facial landmark precision vs surface realism — added after Batch 004
+### Identity Activation — BATCH-007
 
-Do not cartoonize a face by globally softening it.
+Gwen's suit-up peak is readable through direct eyes, symmetry, hood/hand framing and costume closure without global transformation FX.
 
-`B004-008–009` show a stronger model: George retains crisp brows, eyes, nose, mouth, jaw and hand geometry while continuous skin description is simplified into broad warm planes.
+Add:
 
-Separate these controls:
+- `identity_activation_transition`
+- `activation_geometry`
+- `activation_fx_budget`
+
+---
+
+## Facial Landmark Precision ≠ Surface Realism
+
+Separate:
 
 - `facial_landmark_precision`
 - `facial_plane_abstraction`
@@ -219,184 +229,274 @@ Preferred construction:
 ```text
 identity landmarks
 → graphic facial geometry
-→ broad value/color planes
-→ reduce continuous skin gradients
+→ broad color/value planes
+→ suppress continuous skin gradients
 → preserve selected crisp landmarks
-→ allow environment/surfaces to use different medium behavior
 ```
 
-A successful stylized face may be **more precise in landmarks and less realistic in surface modeling at the same time**.
+B008 adds a useful non-Gwen confirmation: an institutional officer remains highly specific under strong magenta/cool-blue source lighting because landmarks stay crisp while surface modeling is broad.
 
-## Color Memory / Off-screen Presence — added after Batch 004
+---
 
-Do not recompute color independently for every shot.
+## Color Ownership / Memory
 
-After a relationship territory is established, a color field may persist when its associated character leaves frame. Batch 004 suggests a pale warm field remains near Gwen after George is off-screen; this interpretation is still provisional, but the system should be capable of representing it.
+Do not encode Earth-65 as `pink + purple + blue + watercolor`.
 
-Add:
-
-- `offscreen_presence_color_residue`
-- `color_memory_hold`
-- `prior_shot_color_roles`
-- `residual_color_territory`
-
-Planning model:
+Plan:
 
 ```text
-establish character/world color role
-→ cut / remove character
-→ decide whether role-color persists, migrates, decays or disappears
-→ preserve scene memory intentionally
+Narrative / Relationship State
+→ World Field Color
+→ Subject Role Color
+→ Territory / Boundary
+→ Memory / Migration / Merge
+→ Hue
 ```
 
-## New Visual Plan fields
+Add/retain:
 
-Add or promote:
-
-- `reality_suppression`
-- `controlled_flattening`
-- `detail_suppression_subject`
-- `detail_suppression_environment`
-- `environment_detail_strategy`
-- `environment_object_density`
-- `lived_in_specificity_required`
-- `facial_plane_abstraction`
-- `facial_landmark_precision`
-- `facial_surface_realism`
-- `skin_surface_detail`
-- `continuous_skin_gradient_suppression`
-- `value_massing`
-- `depth_treatment`
-- `line_strategy`
-- `surface_assignments`
 - `world_field_color`
 - `subject_temperature_role`
 - `color_ownership`
 - `color_territory`
 - `color_memory_hold`
 - `offscreen_presence_color_residue`
-- `edge_script_regions`
-- `composition_reauthoring`
-- `protected_readability_channels`
-- `non_face_identity_anchors`
-- `lead_emotional_carriers`
-- `held_visual_channels`
-- `gesture_role`
-- `gesture_salience`
-- `character_presence_strategy`
-- `relationship_plane_assignments`
-- `architectural_boundary_role`
-- `middle_field_energy`
-- `chromatic_island_roles`
-- `visual_grammar_hold`
-- `foreground_occluder_mass`
-- `focal_detail_assignment`
-- `shot_reverse_shot_role_continuity`
+- `prior_shot_color_roles`
+- `residual_color_territory`
+- `relational_color_merge`
+- `color_territory_state`
 
-## Gwen / Earth-65 correction
+Painterly bloom is event-driven, not constant:
 
-Do **not** encode Earth-65 as:
+- `painterly_bloom_trigger`
+- `bloom_intensity`
+- `bloom_target`
+- `bloom_decay`
+- `post_event_structure_recovery`
+- `color_memory_after_bloom`
+
+---
+
+## Surface-specific Medium Assignment
+
+Pattern and texture belong to surfaces/functions, not to the whole frame.
+
+Add:
+
+- `surface_assignments`
+- `costume_surface_pattern_assignment`
+- `pattern_region_mask`
+- `pattern_density_by_surface`
+
+**Hard failure:** costume motifs/halftone/hatching leaking indiscriminately into skin, sky, architecture or unrelated props.
+
+---
+
+## Representational Layers — BATCH-006 onward
+
+The Skill must separate:
+
+1. **Diegetic Camera Layer**
+2. **Screen-space Editorial Layer**
+3. **Local Graphic FX Layer**
+4. **Nested Media / Object-memory Layer**
+5. **Event Render Layer**
+
+### Editorial / nested fields
+
+- `editorial_overlay_panels`
+- `screen_space_attention_layer`
+- `inset_scale_ratio`
+- `panel_border_medium`
+- `diegetic_view_hold`
+- `memory_object_anchor`
+- `nested_media_role`
+- `absent_character_reference`
+- `object_detail_priority`
+- `nested_medium_foreshadowing`
+- `evidence_object_medium`
+- `identity_medium_preview`
+
+B008 shows that a rough illustrated Vulture dossier image can coexist inside crisp typed police paperwork. Embedded media must remain independently controllable from the host material.
+
+---
+
+## Local Graphic FX: Spatial + Temporal Envelope
+
+Local marks need explicit target, radius and time behavior.
+
+Add:
+
+- `local_graphic_fx_target`
+- `fx_spatial_scope`
+- `fx_trigger_event`
+- `fx_decay`
+- `local_fx_attack`
+- `local_fx_hold`
+- `local_fx_decay`
+- `base_grammar_persistence`
+
+B006 fingertip punctuation, B007 police-radio signal rays and B008 hand-contact zigzags all argue against global comic notation.
+
+---
+
+## Diegetic Vector Light / Source-owned Bloom — added after BATCH-008
+
+Lighting can be a composition system rather than only illumination.
+
+### Attention Funnel
 
 ```text
-pink + purple + blue + watercolor + soft edges
+subject orientation
++ diegetic light-vector direction
++ target contrast
++ depth convergence
+→ attention lock
 ```
 
-And do **not** encode emotional escalation as:
+Add:
+
+- `diegetic_vector_light`
+- `light_cone_target`
+- `attention_funnel`
+
+### Source-owned bloom
+
+Every intense bloom/streak needs a source and region mask.
+
+Add:
+
+- `source_owned_bloom`
+- `bloom_region_mask`
+- `siren_streak_orientation`
+
+**Hard failure:** global magenta/cyan emergency glow with no source ownership.
+
+---
+
+## Event Render Override — added after BATCH-008
+
+A major event may temporarily own the rendering system.
 
 ```text
-more emotion → softer face → more watercolor → more color
+BASE GRAMMAR
+→ EVENT ATTACK
+→ EVENT HOLD
+→ BASE RECOVERY
 ```
 
-Instead plan:
+Add:
+
+- `event_render_mode`
+- `event_render_attack`
+- `event_render_hold`
+- `event_render_recovery`
+- `base_grammar_recovery`
+
+The event layer is not simply extra particles. It can suppress normal world description, change value architecture, change edge authority and temporarily introduce another shape/medium grammar.
+
+### Explosion Shape Grammar
+
+B008-023 shows a plume constructed from discrete dark scalloped/rosette lobes with cream/gold nested contours rather than continuous photoreal volume.
+
+Add:
+
+- `explosion_cloud_shape_grammar`
+- `plume_lobe_scale`
+- `graphic_smoke_edge_mode`
+
+Plan:
 
 ```text
-Relationship / Emotional Authority
-→ Composition Territory
-→ choose Emotional Carrier(s)
-→ assign World Field Color + Subject Role Color
-→ decide whether prior Color Memory persists
-→ choose Environment Detail Strategy
-→ decide which physical-description channels are suppressed
-→ Selective Edge Redistribution
-→ Readability Substitution
-→ local medium behavior
+plume silhouette
+→ lobe hierarchy
+→ contour rhythm
+→ value grouping
+→ edge mode
+→ debris integration
 ```
 
-Hue comes later.
+---
 
-### Important evidence-backed corrections
+## Consolidated Visual Plan fields
 
-- Emotional close-ups may remain crisp.
-- Color can be spatially assigned by relationship plane.
-- A character can leave frame while the emotional field remains active.
-- Shot/reverse-shot can invert scale dominance while preserving relational roles.
-- A large foreground person may be intentionally low-detail.
-- Gwen can remain readable with no visible face.
-- Props may function as chromatic / value rhythm rather than descriptive inventory.
-- A lived-in environment can retain many objects while compressing their perceptual hierarchy.
-- A small hand gesture can carry a major emotional change while every other channel stays held.
-- Facial landmark precision and realistic skin rendering are independent variables.
-- Character-associated color may persist as scene memory after a cut; this remains provisional pending counterexample search.
+The v2 schema should now explicitly cover at least:
 
-## Visual Silence correction
+- narrative / relationship state;
+- primary visual variable;
+- carrier + carrier handoff;
+- composition re-authoring;
+- depth / boundary / occlusion roles;
+- reality suppression / controlled flattening;
+- focal and environmental detail strategies;
+- velocity-driven detail budget + recovery;
+- facial landmark vs surface realism controls;
+- multi-channel identity anchors;
+- world-field / subject-role color + color memory;
+- edge script;
+- surface-specific medium assignment;
+- editorial overlay / nested media layers;
+- local FX spatial-temporal envelope;
+- diegetic vector light;
+- source-owned bloom;
+- event render attack/hold/recovery;
+- event-specific shape grammar.
 
-Visual silence is not equivalent to desaturation, white emptiness, low contrast or no color. A saturated/painterly room can become quiet when the character exits and the camera holds.
-
-## Brooklyn / Miles correction
-
-Do **not** encode Brooklyn as a cyberpunk preset.
-
-Future corpus research must separate ordinary lived-in Brooklyn reality, family/bedroom/school/street environments, rooftop depth, action, emotional scenes and Spider-Society collision behavior.
-
-The likely target is closer to:
-
-> **lived-in urban reality × graphic abstraction**
-
-Batch 004 adds an important candidate production mechanism for that future calibration: **compress before delete**. Preserve lived-in object specificity while reducing its perceptual competition through value/chroma/edge hierarchy. This remains a transfer hypothesis until Miles/Brooklyn frames are systematically reviewed.
+---
 
 ## QA changes
 
-Generation QA must independently score:
+Generation QA should independently score:
 
 1. Identity Anchor Preservation
 2. Non-face Identity Coverage
 3. Composition Mechanism
-4. Shot/Reverse-shot Role Continuity
+4. Role Continuity
 5. Shape Simplification
 6. Value Massing
 7. Rendering Deconstruction
 8. Focal Detail Assignment
 9. Environment Hierarchy Compression
-10. Lived-in Specificity Preservation
-11. Facial Landmark Precision
-12. Facial Surface Realism Suppression
-13. Primary Visual Variable
-14. World Field / Subject Role Color
-15. Color Ownership / Territory
-16. Color Memory Continuity
-17. Edge Script
-18. Surface-specific Medium Coherence
+10. Velocity Detail Budget
+11. Detail Re-entry / Recovery
+12. Facial Landmark Precision
+13. Facial Surface Realism Suppression
+14. Primary Visual Variable
+15. Color Ownership / Territory / Memory
+16. Edge Script
+17. Surface-specific Medium Coherence
+18. Representational-layer Separation
 19. Readability Substitution
-20. Emotional Carrier Fidelity
-21. Gesture Fidelity
-22. Held-Channel Discipline
+20. Carrier Fidelity / Handoff
+21. Held-channel Discipline
+22. Local FX Scope + Envelope
+23. Diegetic Light Direction
+24. Bloom Source Ownership
+25. Event Render Phase
+26. Base Grammar Recovery
+27. Event Shape Grammar
 
-### Hard failure
+### Hard failures
 
 Fail and re-plan when:
 
 - the image still reads as generic semi-realistic 3D after mentally removing color/texture;
-- every emotional increase automatically increases saturation, texture or blur;
-- all people and surfaces receive equal detail;
-- weak source framing is preserved despite missing relationship geometry;
-- a crisp face is softened without evidence that face-detail suppression is the intended carrier;
-- the face is over-protected when the beat would work better through silhouette/posture/gesture;
-- one global palette replaces spatial or character-relative color ownership;
-- cartoonization leaves continuous realistic skin gradients beneath a surface filter;
-- a lived-in environment becomes empty/generic when compression could preserve specificity;
-- a small gesture-led beat is drowned by unnecessary FX;
-- camera widening or cutting resets established color roles without narrative reason.
+- stronger emotion/action automatically adds more blur/saturation/FX;
+- all people/surfaces receive equal detail;
+- a lived-in environment becomes empty when hierarchy compression could preserve specificity;
+- a face is softened instead of restructured through planes/gradient suppression;
+- identity is over-dependent on face visibility;
+- one global palette replaces spatial/role-based color ownership;
+- costume/halftone/graphic motifs leak across unrelated surfaces;
+- editorial panels or nested media are flattened into the base diegetic medium;
+- local comic marks spread across the whole frame;
+- environment detail stays constant through large velocity changes;
+- emergency bloom has no identifiable source;
+- non-diegetic arrows are used when diegetic light already provides the attention vector;
+- an explosion is merely a particle overlay and never changes rendering authority;
+- event rendering fails to recover to the base grammar;
+- smoke defaults to smooth photoreal volumetrics when the evidence calls for graphic shape grammar.
 
 ## Revision timing
 
-Do not lock a final v2 Skill from Earth-65 alone. Representative evidence is still required for Miles/Brooklyn daily and action, Hobie, Miguel/Spider Society, Mumbattan, cross-character close-up rendering, camera/composition families and motion/temporal FX.
+Do not lock a final v2 Skill from Earth-65 alone. Representative evidence is still required for Miles/Brooklyn daily and action, Hobie, Miguel/Spider Society, Mumbattan, world collision, climax/authorship and cross-world counterexamples to the mechanisms above.
