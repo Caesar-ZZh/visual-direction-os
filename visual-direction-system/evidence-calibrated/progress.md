@@ -10,10 +10,10 @@
 - Detailed chapter obligations: [`coverage-matrix-4000.md`](./coverage-matrix-4000.md).
 - Research database: Master Manifest in the user's private Drive master research folder.
 - Existing v1 methodology remains available; Spider-Verse-specific claims are promoted only after evidence calibration.
-- **Cumulative frames actually viewed:** 130.
-- **Cumulative frames with at least L1 annotation:** 130.
+- **Cumulative frames actually viewed:** 154.
+- **Cumulative frames with at least L1 annotation:** 154.
 - **Current scene:** Scene 2 — `Investigate Vulture - Gwen Meets Jess`.
-- **Next unreviewed source boundary:** `01:42:48`.
+- **Next unreviewed source boundary:** `01:43:12`.
 
 ## Batch log
 
@@ -26,6 +26,7 @@
 | BATCH-005 | Scene 1 · 01:41:22–01:41:59 | 38 | 38 | 8 | 6 | 7 | complete first-pass |
 | BATCH-006 | Scene 2 · 01:42:00–01:42:23 | 24 | 24 | 15 | 6 | 7 | complete first-pass |
 | BATCH-007 | Scene 2 · 01:42:24–01:42:47 | 24 | 24 | 16 | 8 | 7 | complete first-pass |
+| BATCH-008 | Scene 2 · 01:42:48–01:43:11 | 24 | 24 | 16 | 8 | 7 | complete first-pass |
 
 ## BATCH-001–005 cumulative learning
 
@@ -39,36 +40,50 @@ The first 82 frames established and corrected the Earth-65 relationship/renderin
 - shot/reverse-shot may invert foreground dominance while preserving relational roles;
 - identity can survive face absence through silhouette, posture, gesture and color anchors;
 - lead expressive channels rotate while held visual grammar amplifies micro-performance;
-- color ownership is state-dependent: separated territories can merge at reconciliation;
-- painterly bloom is conditional rather than a constant Earth-65 filter;
+- color ownership is state-dependent and may merge at reconciliation;
+- painterly bloom is conditional/event-driven rather than a constant world filter;
 - large simplified masses can mean pressure, protection, occlusion or nesting depending on spatial role.
 
 ## BATCH-006 outputs
 
 - 24 / 24 images individually opened and L1-distilled.
-- Evidence claims `EV-E65-027–032` added in the Drive Evidence Ledger.
+- Evidence claims `EV-E65-027–032` added to the Drive Evidence Ledger.
 - **Screen-space Editorial Layer** — brush-framed inset panels can coexist with diegetic depth and temporarily override physical perspective hierarchy.
 - **Local Comic Punctuation** — marks are region/event scoped, not a whole-frame comic filter.
 - **Object Memory / Nested Media** — possessions and embedded photographs can replace the live character as emotional subject.
 - **Cross-modal Carrier Handoff** — dialogue → space → editorial insert → object → nested media → face.
-- **Bloom Decay / Structural Recovery** — painterly intensity has temporal recovery behavior rather than remaining permanently high.
-- GitHub chapter impacts: [`10-batch-006-earth65-editorial-memory.md`](./10-batch-006-earth65-editorial-memory.md).
+- **Bloom Decay / Structural Recovery** — painterly intensity has temporal recovery behavior.
+- GitHub analysis: [`10-batch-006-earth65-editorial-memory.md`](./10-batch-006-earth65-editorial-memory.md).
 
 ## BATCH-007 outputs
 
+- 24 / 24 images individually opened and visually inspected.
+- 24 L1; 16 at least L2; 8 L3/deep diagnostics.
+- Evidence claims `EV-E65-033–038` added to the Drive Evidence Ledger.
+- **Memory Object → Action Handoff**.
+- **Structural Identity Activation** without whole-frame transformation FX.
+- **Surface-assigned Costume Pattern** rather than global motif leakage.
+- **Local FX Attack/Hold/Decay**.
+- **Motion Readability Substitution** through silhouette + trajectory + environment suppression.
+- **Directional World Field** for exterior kinetic information.
+- GitHub analysis: [`11-batch-007-earth65-identity-activation-motion.md`](./11-batch-007-earth65-identity-activation-motion.md).
+
+## BATCH-008 outputs
+
 - **24 / 24 images individually opened and visually inspected.**
 - 24 L1; 16 at least L2; 8 L3/deep diagnostics.
-- Shot clusters `SHOT-E65-002K–W` tracked.
+- Shot clusters `SHOT-E65-002X–AH` tracked.
 - Contact sheet stored in the private Drive contact-sheet library.
-- Seven diagnostic frames copied into the private curated-reference folder.
-- Evidence claims `EV-E65-033–038` added to the Drive Evidence Ledger.
-- **Memory Object → Action Handoff** — the Gwen/Miles photograph flows into a held facial resolve and then equipment/identity preparation.
-- **Structural Identity Activation** — direct eyes, face geometry, symmetry and hood/hand framing communicate activation without whole-frame transformation FX.
-- **Surface-assigned Costume Pattern** — suit motifs remain region/material-specific rather than behaving as global style tokens.
-- **Local FX Attack/Hold/Decay** — radio signal rays persist locally for several frames and disappear while the base composition remains stable.
-- **Motion Readability Substitution** — a near-white action frame removes most city description yet keeps the beat readable through Gwen's silhouette and the looping web trajectory.
-- **Directional World Field** — exterior action turns large vertical magenta/violet/cyan painterly fields into directional kinetic information while Gwen remains graphically simple.
-- GitHub analysis: [`11-batch-007-earth65-identity-activation-motion.md`](./11-batch-007-earth65-identity-activation-motion.md).
+- Seven diagnostic frames copied into private curated-reference folders.
+- Evidence claims `EV-E65-039–044` added to the Drive Evidence Ledger.
+- **Motion-state Detail Re-entry** — environment/location specificity returns as velocity/readability pressure drops.
+- **Contact-local Graphic Punctuation** — rooftop hand-contact marks independently validate local-not-global comic notation.
+- **Diegetic Vector Light / Attention Funnel** — helicopter spotlight cones, Gwen orientation and target contrast jointly point to the incident.
+- **Source-owned Event Bloom** — headlights/sirens can become extreme without turning the whole world into a cyan-magenta filter.
+- **Diegetic Evidence Image / Medium Foreshadowing** — the Vulture dossier contains a rough illustrated medium nested inside administrative paper; live-Vulture correspondence remains provisional.
+- **Event Render Override** — base → luminance attack → graphic plume hold → base recovery.
+- **Explosion Cloud Shape Grammar** — smoke can be built from discrete scalloped/rosette lobes and flat value groups instead of default photoreal volumetrics.
+- GitHub analysis: [`12-batch-008-earth65-event-render-override.md`](./12-batch-008-earth65-event-render-override.md).
 
 ## 4,000-frame selection policy
 
@@ -90,7 +105,7 @@ It must also actively balance Miles/Brooklyn, Gwen/Earth-65, Hobie, Miguel/Spide
 
 Each batch must answer:
 
-1. What GitHub chapters does this evidence strengthen?
+1. What GitHub chapter(s) does this evidence strengthen?
 2. What prior belief does it validate, narrow, revise or contradict?
 3. What production / Skill parameter follows?
 4. What remaining coverage gap should affect later sampling?
@@ -105,21 +120,23 @@ low-change held sequence → 48–60 only when temporal evidence is useful
 
 Every selected frame is actually opened and receives at least L1. L2/L3 density is intentionally higher than under the former exhaustive plan.
 
-## Current coverage pressure after BATCH-007
+## Current coverage pressure after BATCH-008
 
-Earth-65 now has meaningful evidence for quiet relationship staging, facial rendering, object memory/editorial layers, identity activation and early exterior motion. This reduces the former **action/motion** gap inside Earth-65, but does not solve the cross-world gap.
+Earth-65 now has evidence spanning quiet relationship staging, facial construction, color-state transitions, object memory/editorial layers, identity activation, local temporal FX, high-speed motion abstraction, motion-state detail recovery, institutional lighting, nested evidence media and event-specific explosion rendering.
 
-Highest-priority missing evidence remains:
+This substantially strengthens Earth-65 breadth, but **does not justify whole-film generalization**. Highest-priority missing evidence remains:
 
+- live Vulture rendering and its relation to the dossier medium;
+- Jess introduction / interaction grammar;
 - Miles / Brooklyn daily + action;
 - Hobie / punk medium-time behavior;
 - Miguel / Spider Society system/architecture;
 - Mumbattan density/action ecology;
 - world collision / transition;
 - climax / agency / authorship;
-- independent counterexamples to Earth-65 action rules.
+- independent cross-world counterexamples to Earth-65 motion/light/event rules.
 
-Chronological Scene 2 continuation remains useful because Vulture/Jess should soon add different character, action and medium evidence. Next boundary: **`01:42:48`**.
+Next chronological boundary: **`01:43:12`**.
 
 ## Promotion rule
 
