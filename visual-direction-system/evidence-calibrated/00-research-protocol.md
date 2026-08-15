@@ -4,6 +4,20 @@
 
 How does *Across the Spider-Verse* construct visual meaning across character, world, narrative state, camera, color, edge, rendering, texture and time — and which of those mechanisms can be translated into reusable visual-direction rules without collapsing into a generic comic filter?
 
+## Full-corpus mandate
+
+This project is a **full-corpus study**, not a representative-frame sampling exercise.
+
+- Every accessible source screenshot in the corpus must be individually opened and visually inspected at least once.
+- A frame is counted as `VIEWED` only after direct visual inspection.
+- A frame is counted as `DISTILLED` only after its structured annotation has been written to the Master Manifest.
+- Near-duplicate frames may share a Scene / Shot Cluster, but clustering never substitutes for per-frame viewing.
+- Representative frames are selected only after the underlying frames have been reviewed.
+- No progress report may extrapolate reviewed counts from filenames, timestamps, contact sheets, sampling, or cluster membership.
+- Final corpus completion requires `VIEWED = TOTAL ACCESSIBLE FRAMES` and `DISTILLED = TOTAL ACCESSIBLE FRAMES`, with unresolved or inaccessible files listed separately.
+
+The purpose of viewing near-duplicates is not to write the same prose repeatedly; it is to detect change points in pose, framing, occlusion, color territory, edge behavior, rendering mode, temporal effects, focus, hierarchy, and visual authorship.
+
 ## Evidence discipline
 
 Every statement must be tagged as one of:
@@ -22,7 +36,9 @@ A useful theory is not automatically a film fact. A recurring palette is not aut
 
 Every source screenshot is visually reviewed. Minimum annotation covers:
 
-- source / cluster identity;
+- source file ID / timestamp / chronological index;
+- review status and confidence;
+- shot / scene cluster identity;
 - world and location;
 - characters and relational dominance;
 - narrative beat / state / visible emotion;
@@ -34,13 +50,16 @@ Every source screenshot is visually reviewed. Minimum annotation covers:
 - color family / ownership / territory;
 - texture / halftone / hatching / misregistration / glitch;
 - temporal effect / motion energy;
-- primary and secondary visual variables.
+- primary and secondary visual variables;
+- novelty / near-duplicate / change-point status;
+- concise frame-level distillation.
 
 ### PASS B — Cluster & Change-Point Analysis
 
 Adjacent near-duplicate frames are still reviewed, but assigned to Shot / Scene Clusters. We explicitly mark:
 
 - cuts and framing changes;
+- pose / gesture changes;
 - foreground/background ownership shifts;
 - scale and occlusion changes;
 - color territory migration;
@@ -76,6 +95,14 @@ Diagnostic frames receive deep analysis in at least these domains:
 19. Counterexamples
 20. Production / Skill translation
 
+## Distillation hierarchy
+
+The final knowledge base is built from five nested levels:
+
+`Frame → Shot Cluster → Scene / Sequence → Character / World System → Whole-film Meta-Grammar`
+
+A rule cannot be promoted upward merely because it is visually memorable. Promotion requires repeated evidence plus explicit counterexample checks.
+
 ## Anti-bias rules
 
 - Search for **counterexamples**, not only confirmation.
@@ -85,6 +112,7 @@ Diagnostic frames receive deep analysis in at least these domains:
 - Do not infer hidden psychology; distinguish visible emotion from narrative interpretation.
 - Do not treat naturalistic object color as the baseline when the frame demonstrates psychological color.
 - Do not duplicate all source images physically. Keep originals untouched; copy only diagnostic references into curated sets.
+- Do not mark near-duplicate frames as reviewed solely because one neighboring frame was inspected.
 
 ## Core failure test for generative translation
 
@@ -100,3 +128,16 @@ A successful translation should survive through shape, value, composition, rende
 - `0.95+`: highly stable only after broad cross-scene validation
 
 No scene-local inference should be described as a whole-film law regardless of numerical confidence.
+
+## Completion criteria
+
+The full study is complete only when all of the following are true:
+
+1. Every accessible frame is individually `VIEWED`.
+2. Every viewed frame is `DISTILLED` into the Master Manifest.
+3. Every frame belongs to a reviewed Shot / Scene Cluster.
+4. Character, world, camera, rendering, color, edge, texture, motion and sequence atlases have been rebuilt from the corpus.
+5. Contradictions and counterexamples are preserved instead of averaged away.
+6. The existing Visual Direction System has been revised with evidence labels and citations to frame IDs / clusters.
+7. The image-generation Skill has been recalibrated against the evidence-derived rendering grammar.
+8. A final generative validation set demonstrates that the system does not collapse into generic AI comic / concept-art output.
