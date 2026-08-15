@@ -9,36 +9,43 @@
 - Research corpus / manifest: created.
 - Full-corpus status: **in progress**.
 - Existing v1 methodology remains available but Spider-Verse-specific rules are now treated as provisional until evidence-calibrated.
-- **Cumulative frames actually viewed:** 22.
-- **Cumulative frames with at least L1 annotation:** 22.
-- **Next unreviewed extraction boundary:** `01:41:00`.
+- **Cumulative frames actually viewed:** 33.
+- **Cumulative frames with at least L1 annotation:** 33.
+- **Next unreviewed extraction boundary:** `01:41:11`.
 
 ## Batch log
 
-| Batch | Source window | Discovered | Viewed | L1 | L2 | L3/deep candidates | Scene clusters | Curated refs | Status |
+| Batch | Source window | Discovered | Viewed | L1 | L2 | Deep candidates | Scene clusters | Curated refs | Status |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | BATCH-001 | extraction 01:40:38–01:40:48 | 11 | 11 | 11 | 4 | 4 | 1 | 4 | complete first-pass |
 | BATCH-002 | extraction 01:40:49–01:40:59 | 11 | 11 | 11 | 7 | 4 | 1 continuation | 4 | complete first-pass |
+| BATCH-003 | extraction 01:41:00–01:41:10 | 11 | 11 | 11 | 6 | 3 | 1 continuation | 3 | complete first-pass |
 
 ## BATCH-001 outputs
 
 - Scene cluster: `SCN-E65-001`
-- World: Earth-65
-- Characters: Gwen / George Stacy
-- Contact sheet created in Drive.
-- Four diagnostic frames copied to the curated Earth-65 set.
+- Four diagnostic Earth-65 references curated.
 - Four initial evidence-ledger claims created.
-- First methodology correction documented: **Rendering Deconstruction becomes mandatory**.
+- Rendering Deconstruction promoted to a mandatory planning concern.
 
 ## BATCH-002 outputs
 
-- Continued scene cluster: `SCN-E65-001` through extraction `01:40:59`.
-- Contact sheet created in Drive.
-- Four additional diagnostic references curated: empty-room visual silence, George close-up, two-plane relational composition, Gwen withdrawal hold.
-- Five new evidence-ledger claims: `EV-E65-005` through `EV-E65-009`.
+- Continued `SCN-E65-001` through extraction `01:40:59`.
+- Four additional diagnostic references curated.
+- Evidence claims `EV-E65-005` through `EV-E65-009`.
 - Major correction: **Emotion ↑ does not universally imply Face/Physical Detail ↓.** Emotional load can migrate into color territory, environmental flattening, depth-plane separation, scale contrast or micro-performance while facial detail remains crisp.
 - New Skill requirement: **Emotional Carrier Selection / Variable Substitution**.
-- New sequence finding: **stable visual grammar can amplify micro-performance**; do not automatically escalate style intensity.
+- Stable visual grammar can amplify micro-performance.
+
+## BATCH-003 outputs
+
+- Continued `SCN-E65-001` through extraction `01:41:10`.
+- 11 images individually opened and reviewed; shot clusters `F–J` tracked.
+- Contact sheet uploaded to Drive; three new curated references added.
+- Evidence claims `EV-E65-010` through `EV-E65-012`.
+- New mechanism: **Body Orientation as Boundary Variable** — a profile turn can redistribute relational territory without palette/camera escalation.
+- New mechanism: **Static Observer / Moving Subject** — quiet tension can be sustained by locking camera, foreground observer and environment while only the active subject moves.
+- Readability Substitution expanded: **Gwen remains identifiable with no visible face** through hair silhouette, body proportion, color ownership and selective edges.
 
 ## Coverage target
 
