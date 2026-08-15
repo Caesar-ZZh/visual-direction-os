@@ -6,14 +6,13 @@
 
 - Source corpus: user Google Drive screenshot archive, organized into 23 Sorted-by-Scene folders.
 - Research target: **approximately 4,000 high-coverage evidence frames**, selected to cover every existing GitHub chapter, major character/world system, visual mechanism, counterexample family and generative/QA requirement.
-- This is not a mechanical every-source-frame pass. Near-duplicates enter the 4,000 only when they add temporal, held-channel, micro-performance, transition, representative, or counterexample evidence.
+- This is not a mechanical every-source-frame pass. Near-duplicates enter only when they add temporal, held-channel, micro-performance, transition, representative, or counterexample evidence.
 - Detailed chapter obligations: [`coverage-matrix-4000.md`](./coverage-matrix-4000.md).
-- Research database: Master Manifest in the user's private Drive master research folder.
-- Existing v1 methodology remains available; Spider-Verse-specific claims are promoted only after evidence calibration.
-- **Cumulative frames actually viewed:** 154.
-- **Cumulative frames with at least L1 annotation:** 154.
+- Research database and generated research artifacts are stored in the user's private Drive master research library.
+- **Cumulative frames actually viewed:** 178.
+- **Cumulative frames with at least L1 annotation:** 178.
 - **Current scene:** Scene 2 — `Investigate Vulture - Gwen Meets Jess`.
-- **Next unreviewed source boundary:** `01:43:12`.
+- **Next unreviewed source boundary:** `01:43:36`.
 
 ## Batch log
 
@@ -27,90 +26,56 @@
 | BATCH-006 | Scene 2 · 01:42:00–01:42:23 | 24 | 24 | 15 | 6 | 7 | complete first-pass |
 | BATCH-007 | Scene 2 · 01:42:24–01:42:47 | 24 | 24 | 16 | 8 | 7 | complete first-pass |
 | BATCH-008 | Scene 2 · 01:42:48–01:43:11 | 24 | 24 | 16 | 8 | 7 | complete first-pass |
+| BATCH-009 | Scene 2 · 01:43:12–01:43:35 | 24 | 24 | 16 | 7 | 7 | complete first-pass |
 
-## BATCH-001–005 cumulative learning
+## Cumulative learning through BATCH-005
 
-The first 82 frames established and corrected the Earth-65 relationship/rendering model:
+The first 82 frames established and corrected the Earth-65 relationship/rendering model: relationship staging precedes effects; environmental simplification may preserve object density through hierarchical compression; emotional close-ups may remain crisp; facial landmark precision and surface realism are independent; shot/reverse-shot can invert scale dominance while preserving relational polarity; identity may survive without a visible face; color ownership is state-dependent; painterly bloom is event-driven; and simplified body masses can carry pressure, protection, occlusion or nesting according to spatial function.
 
-- color is a relationship/world field rather than a fixed pink-purple-blue recipe;
-- relationship pressure is solved through scale, occlusion, plane separation and architecture before effects;
-- environmental detail suppression is selective and may preserve high object count through hierarchical compression;
-- emotional close-ups do **not** universally dissolve facial detail;
-- facial landmark precision and surface realism are independent controls;
-- shot/reverse-shot may invert foreground dominance while preserving relational roles;
-- identity can survive face absence through silhouette, posture, gesture and color anchors;
-- lead expressive channels rotate while held visual grammar amplifies micro-performance;
-- color ownership is state-dependent and may merge at reconciliation;
-- painterly bloom is conditional/event-driven rather than a constant world filter;
-- large simplified masses can mean pressure, protection, occlusion or nesting depending on spatial role.
+## BATCH-006–008 expansion
 
-## BATCH-006 outputs
+These batches expanded Earth-65 from quiet domestic evidence into representational layers, identity activation, motion and event behavior:
 
-- 24 / 24 images individually opened and L1-distilled.
-- Evidence claims `EV-E65-027–032` added to the Drive Evidence Ledger.
-- **Screen-space Editorial Layer** — brush-framed inset panels can coexist with diegetic depth and temporarily override physical perspective hierarchy.
-- **Local Comic Punctuation** — marks are region/event scoped, not a whole-frame comic filter.
-- **Object Memory / Nested Media** — possessions and embedded photographs can replace the live character as emotional subject.
-- **Cross-modal Carrier Handoff** — dialogue → space → editorial insert → object → nested media → face.
-- **Bloom Decay / Structural Recovery** — painterly intensity has temporal recovery behavior.
-- GitHub analysis: [`10-batch-006-earth65-editorial-memory.md`](./10-batch-006-earth65-editorial-memory.md).
+- Screen-space Editorial Layer and Nested Media;
+- Local Comic Punctuation with spatial/temporal envelopes;
+- Object Memory and Cross-modal Carrier Handoff;
+- Motion Readability Substitution and Directional World Field;
+- Motion-state Detail Re-entry;
+- Diegetic Vector Light / Attention Funnel;
+- Source-owned Bloom;
+- provisional Vulture dossier Medium Foreshadowing;
+- Event Render Override: `base → attack → hold → recovery`;
+- graphic explosion/smoke Shape Grammar.
 
-## BATCH-007 outputs
+Analyses: [`10-batch-006-earth65-editorial-memory.md`](./10-batch-006-earth65-editorial-memory.md), [`11-batch-007-earth65-identity-activation-motion.md`](./11-batch-007-earth65-identity-activation-motion.md), [`12-batch-008-earth65-event-render-override.md`](./12-batch-008-earth65-event-render-override.md).
 
-- 24 / 24 images individually opened and visually inspected.
-- 24 L1; 16 at least L2; 8 L3/deep diagnostics.
-- Evidence claims `EV-E65-033–038` added to the Drive Evidence Ledger.
-- **Memory Object → Action Handoff**.
-- **Structural Identity Activation** without whole-frame transformation FX.
-- **Surface-assigned Costume Pattern** rather than global motif leakage.
-- **Local FX Attack/Hold/Decay**.
-- **Motion Readability Substitution** through silhouette + trajectory + environment suppression.
-- **Directional World Field** for exterior kinetic information.
-- GitHub analysis: [`11-batch-007-earth65-identity-activation-motion.md`](./11-batch-007-earth65-identity-activation-motion.md).
-
-## BATCH-008 outputs
+## BATCH-009 outputs
 
 - **24 / 24 images individually opened and visually inspected.**
-- 24 L1; 16 at least L2; 8 L3/deep diagnostics.
-- Shot clusters `SHOT-E65-002X–AH` tracked.
-- Contact sheet stored in the private Drive contact-sheet library.
-- Seven diagnostic frames copied into private curated-reference folders.
-- Evidence claims `EV-E65-039–044` added to the Drive Evidence Ledger.
-- **Motion-state Detail Re-entry** — environment/location specificity returns as velocity/readability pressure drops.
-- **Contact-local Graphic Punctuation** — rooftop hand-contact marks independently validate local-not-global comic notation.
-- **Diegetic Vector Light / Attention Funnel** — helicopter spotlight cones, Gwen orientation and target contrast jointly point to the incident.
-- **Source-owned Event Bloom** — headlights/sirens can become extreme without turning the whole world into a cyan-magenta filter.
-- **Diegetic Evidence Image / Medium Foreshadowing** — the Vulture dossier contains a rough illustrated medium nested inside administrative paper; live-Vulture correspondence remains provisional.
-- **Event Render Override** — base → luminance attack → graphic plume hold → base recovery.
-- **Explosion Cloud Shape Grammar** — smoke can be built from discrete scalloped/rosette lobes and flat value groups instead of default photoreal volumetrics.
-- GitHub analysis: [`12-batch-008-earth65-event-render-override.md`](./12-batch-008-earth65-event-render-override.md).
+- 24 L1; 16 at least L2; 7 L3/deep diagnostics; 7 curated references.
+- Evidence claims `EV-E65-045–051` added to the Drive Evidence Ledger.
+- **Post-event Structural Recovery** — figure/object/institution detail recovers while source-owned emergency color may persist; recovery is not a palette reset.
+- **Action Signature Before Body Reveal** — Gwen's web enters and changes the police scene several beats before her body becomes visible.
+- **Persistent Diegetic Graphic Material** — web differs ontologically from transient comic punctuation because it attaches, accumulates, spans depth, occludes and constrains.
+- **Orientation + Foreground Scale Reveal** — Gwen's enormous upside-down masked foreground form pays off the delayed body reveal without facial visibility or global transformation FX.
+- **Search-state Information Withholding** — environmental description can be suppressed by perceptual uncertainty, not only emotion or velocity.
+- **Lighting Ownership Handoff** — source-local police lighting yields to atmospheric/world-field color across the smoke/interior threshold.
+- **World Authority Scale Transfer** — Gwen collapses from dominant foreground scale to a tiny silhouette so unknown space owns the beat.
+- The BATCH-008 dossier/live-Vulture correspondence remains **unvalidated**: no live Vulture or Jess is yet visible in BATCH-009.
+- GitHub analysis: [`13-batch-009-earth65-action-signature-search-space.md`](./13-batch-009-earth65-action-signature-search-space.md).
 
 ## 4,000-frame selection policy
 
-The corpus must collectively cover all existing main chapters:
+The corpus must collectively cover all existing main chapters: Master Framework, Character System, World System, Sequence/Color, Production System, Project Worksheets, Original Case Study, Glossary, Decision Tree, Master Workflow and Visual QA. It must also actively balance Miles/Brooklyn, Gwen/Earth-65, Hobie, Miguel/Spider Society, Mumbattan, facial rendering, camera/composition, rendering construction, color/edge/texture, motion/temporal FX, world collision, visual silence and climax/authorship.
 
-1. Master Framework
-2. Character System
-3. World System
-4. Sequence / Color
-5. Production System
-6. Project Worksheets
-7. Original Case Study
-8. Glossary
-9. Decision Tree
-10. Master Workflow
-11. Visual QA
-
-It must also actively balance Miles/Brooklyn, Gwen/Earth-65, Hobie, Miguel/Spider Society, Mumbattan, facial rendering, camera/composition, rendering construction, color/edge/texture, motion/temporal FX, world collision, visual silence and climax/authorship.
-
-Each batch must answer:
+Every batch must answer:
 
 1. What GitHub chapter(s) does this evidence strengthen?
 2. What prior belief does it validate, narrow, revise or contradict?
 3. What production / Skill parameter follows?
 4. What remaining coverage gap should affect later sampling?
 
-## Adaptive batch size
+Adaptive batch size:
 
 ```text
 high / extreme change     → 24–36 frames
@@ -118,15 +83,13 @@ normal narrative segment → ~48 frames
 low-change held sequence → 48–60 only when temporal evidence is useful
 ```
 
-Every selected frame is actually opened and receives at least L1. L2/L3 density is intentionally higher than under the former exhaustive plan.
+## Current coverage pressure after BATCH-009
 
-## Current coverage pressure after BATCH-008
+Earth-65 now has broad evidence across quiet relationship staging, color/edge/rendering, object/editorial media, identity activation, high-speed motion, institutional lighting, event override/recovery, off-screen action signature, persistent graphic material and low-information search-space design. This breadth **does not justify whole-film generalization**.
 
-Earth-65 now has evidence spanning quiet relationship staging, facial construction, color-state transitions, object memory/editorial layers, identity activation, local temporal FX, high-speed motion abstraction, motion-state detail recovery, institutional lighting, nested evidence media and event-specific explosion rendering.
+Highest-priority missing evidence remains:
 
-This substantially strengthens Earth-65 breadth, but **does not justify whole-film generalization**. Highest-priority missing evidence remains:
-
-- live Vulture rendering and its relation to the dossier medium;
+- live Vulture rendering and whether it validates the dossier-medium preview;
 - Jess introduction / interaction grammar;
 - Miles / Brooklyn daily + action;
 - Hobie / punk medium-time behavior;
@@ -134,12 +97,12 @@ This substantially strengthens Earth-65 breadth, but **does not justify whole-fi
 - Mumbattan density/action ecology;
 - world collision / transition;
 - climax / agency / authorship;
-- independent cross-world counterexamples to Earth-65 motion/light/event rules.
+- independent cross-world counterexamples to Earth-65 rules.
 
-Next chronological boundary: **`01:43:12`**.
+Next chronological boundary: **`01:43:36`**.
 
 ## Promotion rule
 
 A provisional claim enters the stable main methodology only after independent support or a clearly bounded scope, active counterexample search, a production consequence, and successful generative/constraint reconstruction.
 
-The goal is not merely to collect references. The 4,000-frame corpus is the evidence engine that continuously rewrites the GitHub methodology.
+The 4,000-frame corpus is the evidence engine that continuously rewrites the GitHub methodology.
