@@ -9,9 +9,9 @@
 - Research corpus / manifest: created.
 - Full-corpus status: **in progress**.
 - Existing v1 methodology remains available but Spider-Verse-specific rules are treated as provisional until evidence-calibrated.
-- **Cumulative frames actually viewed:** 33.
-- **Cumulative frames with at least L1 annotation:** 33.
-- **Next unreviewed extraction boundary:** `01:41:11`.
+- **Cumulative frames actually viewed:** 44.
+- **Cumulative frames with at least L1 annotation:** 44.
+- **Next unreviewed extraction boundary:** `01:41:22`.
 
 ## Batch log
 
@@ -20,6 +20,7 @@
 | BATCH-001 | extraction 01:40:38–01:40:48 | 11 | 11 | 11 | 4 | 4 | 1 | 4 | complete first-pass |
 | BATCH-002 | extraction 01:40:49–01:40:59 | 11 | 11 | 11 | 7 | 4 | 1 continuation | 4 | complete first-pass |
 | BATCH-003 | extraction 01:41:00–01:41:10 | 11 | 11 | 11 | 7 | 4 | 1 continuation | 4 | complete first-pass |
+| BATCH-004 | extraction 01:41:11–01:41:21 | 11 | 11 | 11 | 6 | 4 | 1 continuation | 4 | complete first-pass |
 
 ## BATCH-001 outputs
 
@@ -49,6 +50,21 @@
 - New mechanism: **foreground occluder mass** — a visible person can be simplified aggressively when functioning mainly as pressure/framing.
 - New evidence for **multi-channel identity preservation** — Gwen remains identifiable while back-facing and without a visible face.
 - Existing theory **Parameter Dominance Rotation / Visual Orchestration** receives direct sequence evidence: face/gaze → staging/scale → hand gesture → reaction → object interaction.
+
+## BATCH-004 outputs
+
+- Continued `SCN-E65-001` through extraction `01:41:21`.
+- 11 images individually opened and reviewed.
+- Shot clusters `J–N` tracked.
+- Contact sheet uploaded to Drive.
+- Four new diagnostic references curated.
+- Evidence claims `EV-E65-015` through `EV-E65-019`.
+- New mechanism: **gesture-led emotional carrier** — a single open-palm change can carry attempted relational openness while camera, depth, color and texture remain held.
+- Candidate mechanism: **off-screen Color Residue / scene memory** — a bounded warm field appears to persist near Gwen after George leaves frame; remains provisional pending independent-scene validation.
+- New rendering distinction: **Hierarchical Compression ≠ Object Deletion** — a lived-in environment can preserve many props while grouping them into low-contrast, narrow-chroma, soft-edge masses.
+- Character-relative color ownership survives camera widening as separated **chromatic islands** across a low-energy middle field.
+- Facial rendering correction strengthened: **facial landmark precision and facial surface realism are independent controls**. Crisp graphic features can coexist with strongly simplified skin/value planes.
+- Skill calibration now includes environment detail strategy, color memory, gesture salience, middle-field energy and independent face landmark/surface controls.
 
 ## Coverage target
 
