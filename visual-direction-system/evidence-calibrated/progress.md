@@ -6,12 +6,14 @@
 
 - Source corpus: user Google Drive screenshot archive, approximately 8000 images by user estimate.
 - Exact total: **not yet verified**.
-- Research corpus / manifest: created.
+- Stable traversal source: Sorted-by-Scene Drive folder with 23 scene folders.
+- Research corpus / manifest: created and now stored in the user's private master research folder.
 - Full-corpus status: **in progress**.
 - Existing v1 methodology remains available but Spider-Verse-specific rules are treated as provisional until evidence-calibrated.
-- **Cumulative frames actually viewed:** 44.
-- **Cumulative frames with at least L1 annotation:** 44.
-- **Next unreviewed extraction boundary:** `01:41:22`.
+- **Cumulative frames actually viewed:** 82.
+- **Cumulative frames with at least L1 annotation:** 82.
+- **Scene 1 review boundary:** complete through extraction `01:41:59`.
+- **Next unreviewed boundary:** first source frame of Scene 2, `2) Investigate Vulture - Gwen Meets Jess`.
 
 ## Batch log
 
@@ -21,50 +23,58 @@
 | BATCH-002 | extraction 01:40:49–01:40:59 | 11 | 11 | 11 | 7 | 4 | 1 continuation | 4 | complete first-pass |
 | BATCH-003 | extraction 01:41:00–01:41:10 | 11 | 11 | 11 | 7 | 4 | 1 continuation | 4 | complete first-pass |
 | BATCH-004 | extraction 01:41:11–01:41:21 | 11 | 11 | 11 | 6 | 4 | 1 continuation | 4 | complete first-pass |
+| BATCH-005 | Scene 1 extraction 01:41:22–01:41:59 | 38 | 38 | 38 | 8 | 6 | 1 continuation / Scene 1 close | 7 | complete first-pass |
 
 ## BATCH-001 outputs
 
-- Scene cluster: `SCN-E65-001`
+- Scene cluster: `SCN-E65-001`.
 - Four diagnostic Earth-65 references curated.
-- Four initial evidence-ledger claims created.
+- Evidence claims `EV-E65-001–004`.
 - Rendering Deconstruction promoted to a mandatory planning concern.
 
 ## BATCH-002 outputs
 
 - Continued `SCN-E65-001` through extraction `01:40:59`.
-- Four diagnostic references curated.
-- Evidence claims `EV-E65-005` through `EV-E65-009`.
+- Evidence claims `EV-E65-005–009`.
 - Major correction: **Emotion ↑ does not universally imply Face/Physical Detail ↓.** Emotional load can migrate into color territory, environmental flattening, depth-plane separation, scale contrast or micro-performance while facial detail remains crisp.
 - New Skill requirement: **Emotional Carrier Selection / Variable Substitution**.
-- Stable visual grammar can amplify micro-performance.
 
 ## BATCH-003 outputs
 
 - Continued `SCN-E65-001` through extraction `01:41:10`.
-- 11 images individually opened and reviewed.
-- Shot clusters `F–I` tracked.
-- Contact sheet uploaded to Drive.
-- Four new diagnostic references curated.
-- Evidence claims `EV-E65-010` through `EV-E65-014`.
-- New mechanism: **shot/reverse-shot role continuity** — foreground dominance may invert while relational polarity survives through depth, architecture and character-relative temperature ownership.
-- New mechanism: **foreground occluder mass** — a visible person can be simplified aggressively when functioning mainly as pressure/framing.
-- New evidence for **multi-channel identity preservation** — Gwen remains identifiable while back-facing and without a visible face.
-- Existing theory **Parameter Dominance Rotation / Visual Orchestration** receives direct sequence evidence: face/gaze → staging/scale → hand gesture → reaction → object interaction.
+- Evidence claims `EV-E65-010–014`.
+- Shot/reverse-shot role continuity evidenced.
+- Foreground occluder mass evidenced.
+- Multi-channel identity preservation evidenced with back-facing Gwen.
+- Parameter Dominance Rotation receives direct sequence evidence.
 
 ## BATCH-004 outputs
 
 - Continued `SCN-E65-001` through extraction `01:41:21`.
-- 11 images individually opened and reviewed.
-- Shot clusters `J–N` tracked.
-- Contact sheet uploaded to Drive.
-- Four new diagnostic references curated.
-- Evidence claims `EV-E65-015` through `EV-E65-019`.
-- New mechanism: **gesture-led emotional carrier** — a single open-palm change can carry attempted relational openness while camera, depth, color and texture remain held.
-- Candidate mechanism: **off-screen Color Residue / scene memory** — a bounded warm field appears to persist near Gwen after George leaves frame; remains provisional pending independent-scene validation.
-- New rendering distinction: **Hierarchical Compression ≠ Object Deletion** — a lived-in environment can preserve many props while grouping them into low-contrast, narrow-chroma, soft-edge masses.
-- Character-relative color ownership survives camera widening as separated **chromatic islands** across a low-energy middle field.
-- Facial rendering correction strengthened: **facial landmark precision and facial surface realism are independent controls**. Crisp graphic features can coexist with strongly simplified skin/value planes.
-- Skill calibration now includes environment detail strategy, color memory, gesture salience, middle-field energy and independent face landmark/surface controls.
+- Evidence claims `EV-E65-015–019`.
+- Gesture-led emotional carrier isolated.
+- Off-screen Color Residue retained as a provisional candidate.
+- **Hierarchical Compression ≠ Object Deletion** strengthened.
+- Facial landmark precision and facial surface realism separated as independent controls.
+
+## BATCH-005 outputs
+
+- Completed the remaining reviewed tail of Scene 1: extraction `01:41:22–01:41:59`.
+- **38 images individually opened and visually reviewed; 38 received at least L1 annotation.**
+- Shot clusters `N–R` tracked: packing/object interaction → explicit divider → hug/boundary collapse → George close-up → Gwen close-up.
+- Contact sheet stored in the new private Drive master library.
+- Seven diagnostic frames copied into the new private curated-reference folder.
+- Evidence claims `EV-E65-020–026` added to the Drive Evidence Ledger.
+- Major correction: character-relative temperature ownership is **state-dependent**. Distance can preserve separate warm/cool territories; reconciliation can merge them into a shared relational field.
+- New mechanism: **Boundary Collapse** — a sustained geometric divider is removed/crossed at contact and formerly separate figures form a combined silhouette.
+- New mechanism: **Conditional Painterly Bloom** — watercolor/gouache-like bloom rises around reconciliation rather than behaving as a constant Earth-65 filter.
+- New mechanism: **Protective Framing Mass** — a large simplified body mass can signal safety through enclosure/nesting, not only pressure or occlusion.
+- Facial landmark precision survives the emotional peak while skin/background stay strongly flattened.
+- Identity can survive color integration when shape, face geometry, eyes and costume accents remain stable.
+
+## Private Drive master library
+
+New outputs are now organized under the user's private master folder with dedicated areas for source corpus, research database, curated references, contact sheets, evidence/analysis, GitHub sync exports and progress/admin. The existing Master Manifest has been moved into the new `01_RESEARCH_DATABASE` folder.
 
 ## Coverage target
 
