@@ -67,15 +67,15 @@ The earlier generative hypothesis:
 Emotion ↑ → Physical Description ↓
 ```
 
-now has direct support in this sampled sequence, but is not yet promoted to a whole Earth-65 law.
+has direct support in some wide/environmental frames, but Batch 002 provides a strong counterexample to treating it as universal.
 
 ### Generative rule
 
-`Reality Suppression`, `Controlled Flattening` and `Detail Suppression` must be explicit production controls, not accidental side effects of watercolor texture.
+`Reality Suppression`, `Controlled Flattening` and `Detail Suppression` must be explicit production controls, but the system must choose **where** suppression occurs rather than globally dissolving the image.
 
-### Counterexample requirement
+### Counterexample
 
-Search other Earth-65 scenes for emotionally intense moments that retain high physical description.
+`B002-006` and `B002-008–011` retain comparatively crisp facial planes under strong emotional load while the environment/color/depth system carries the stylization.
 
 ---
 
@@ -97,6 +97,143 @@ This strongly supports **Readability Substitution**: if one recognition channel 
 ### Generative rule
 
 Lost edges are allowed only when at least 2–3 independent identity/readability channels remain protected. QA should not use global sharpness as the readability metric.
+
+---
+
+## EV-E65-005 — Character removal can create visual silence
+
+**Type:** INFERRED  
+**Scope:** Earth-65 domestic sequence, exit beat  
+**Support:** B002-001–B002-005  
+**Confidence:** 0.94
+
+### Observed
+
+Gwen crosses the warm painterly room and leaves. At `B002-005`, the camera continues to hold on the same environment with essentially the same chromatic field but no visible character.
+
+### Revised inference
+
+Visual silence does not require desaturation, white space, or an abstract void. It can be created by **holding an established visual field while removing the character/event that previously organized it**.
+
+### Generative rule
+
+For withdrawal/exit beats, consider:
+
+```text
+establish character + field
+→ cross a boundary
+→ remove character
+→ hold camera and field
+→ let negative space + color memory carry residue
+```
+
+---
+
+## EV-E65-006 — Emotional close-ups do not universally dissolve facial detail
+
+**Type:** INFERRED / COUNTEREXAMPLE  
+**Scope:** Earth-65 domestic close-ups  
+**Support:** B002-006, B002-007, B002-008–B002-011  
+**Confidence:** 0.97
+
+### Observed
+
+George and Gwen retain crisp eyes, brows, mouth shapes, face-plane boundaries and recognizable local detail while the environment remains painterly and the palette strongly non-physical.
+
+### Previous theory risk
+
+The earlier shorthand:
+
+```text
+Emotion ↑ → Physical Description ↓
+```
+
+could cause a generator to soften faces automatically.
+
+### Revised inference
+
+Emotion may suppress physical description, but **suppression is channel-selective**. Earth-65 can keep facial description crisp while moving emotional stylization into:
+
+- environment flattening;
+- color ownership;
+- spatial separation;
+- edge redistribution;
+- depth-plane contrast;
+- gaze / micro-expression.
+
+### Generative rule
+
+Do not equate emotional intensity with blur, watercolor faces or lost facial edges. Choose which descriptive channel yields.
+
+---
+
+## EV-E65-007 — Color temperature can be assigned to relationship planes
+
+**Type:** INFERRED  
+**Scope:** doorway two-plane shot  
+**Support:** B002-008–B002-011  
+**Confidence:** 0.98
+
+### Observed
+
+Gwen dominates a blue-violet/teal foreground while George is smaller and contained inside a warm yellow-orange doorway field.
+
+### Revised inference
+
+Color is not only a global emotional tint. It can be **spatially owned by separate relationship planes**.
+
+### Generative rule
+
+Assign color territories per character/plane before selecting local object color. Use bounded warm/cool regions to stage relational distance.
+
+---
+
+## EV-E65-008 — Relationship staging is a multi-channel stack
+
+**Type:** INFERRED  
+**Scope:** doorway two-plane shot  
+**Support:** B002-009–B002-011  
+**Confidence:** 0.99
+
+### Observed
+
+The same emotional relationship is simultaneously encoded by:
+
+- Gwen's extreme foreground scale;
+- George's reduced background scale;
+- doorway frame-within-frame;
+- depth-plane separation;
+- cool/warm temperature territories;
+- stable camera.
+
+### Revised inference
+
+Strong relational pressure does not require more texture, more effects or more camera energy. **Geometry and territory can carry the entire beat.**
+
+### Generative rule
+
+Solve `Scale → Plane → Architectural Boundary → Color Territory` before surface treatment.
+
+---
+
+## EV-E65-009 — Stable visual grammar can amplify micro-performance
+
+**Type:** INFERRED  
+**Scope:** George reaction + Gwen doorway close-up  
+**Support:** B002-006, B002-007, B002-009–B002-011  
+**Confidence:** 0.93
+
+### Observed
+
+Consecutive frames keep camera, medium and color architecture almost fixed while emotion progresses through eye opening, gaze direction, mouth tension and head angle.
+
+### Revised inference
+
+A sequence does not need continuous visual escalation. Stable style can act as a **container that increases the perceptual value of micro-performance**.
+
+### Generative rule
+
+Add a `hold visual grammar` option to sequence planning. Do not spend visual reserve when performance already carries the beat.
 
 ---
 
