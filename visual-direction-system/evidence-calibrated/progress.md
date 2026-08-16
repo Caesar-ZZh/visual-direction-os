@@ -4,19 +4,18 @@
 
 ## Overall status
 
-- Source corpus: user Google Drive screenshot archive, organized into Sorted-by-Scene material plus a raw-source fallback.
-- Research target: **approximately 4,000 high-coverage evidence frames**, selected to cover every existing GitHub chapter, major character/world system, visual mechanism, counterexample family and generative/QA requirement.
-- This is not a mechanical every-source-frame pass. Near-duplicates enter only when they add temporal, held-channel, micro-performance, transition, representative, or counterexample evidence.
+- Source corpus: user Google Drive screenshot archive, organized into Sorted-by-Scene material plus a read-only raw-source fallback.
+- Research target: **approximately 4,000 high-coverage evidence frames**, selected for chapter, character/world, mechanism, transition and counterexample coverage.
 - Detailed chapter obligations: [`coverage-matrix-4000.md`](./coverage-matrix-4000.md).
-- Research database and generated research artifacts are stored in the user's private Drive master research library.
-- **Cumulative frames actually viewed:** 226.
-- **Cumulative frames with at least L1 annotation:** 226.
+- Research database and generated artifacts remain in the user's canonical private Drive master workspace.
+- **Cumulative frames actually viewed:** 238.
+- **Cumulative frames with at least L1 annotation:** 238.
 - **Current scene:** Scene 2 — `Investigate Vulture - Gwen Meets Jess`.
-- **Next unreviewed source boundary:** `01:44:24`.
+- **Next unreviewed source boundary:** `01:44:36`.
 
 ## Source-discovery resilience
 
-The canonical `00_SOURCE_CORPUS` folder is currently empty. BATCH-010 recovered continuity by resolving the verified source frame's original raw-frame parent and querying that parent with narrow modified-time windows. BATCH-011 through BATCH-013 confirmed the same read-only fallback path remains reliable through `01:44:23`. All research outputs still write only into the canonical `Sorted by Scence` workspace.
+The canonical `00_SOURCE_CORPUS` folder is currently empty. BATCH-010 recovered continuity by resolving the verified source frame's original raw-frame parent. BATCH-014 re-confirmed the raw fallback and recovered the previously blocked `01:44:24` boundary using exact timestamp discovery plus parent-restricted modified-time windows. The raw source remains read-only; all research outputs write only into `Sorted by Scence`.
 
 ## Batch log
 
@@ -35,80 +34,26 @@ The canonical `00_SOURCE_CORPUS` folder is currently empty. BATCH-010 recovered 
 | BATCH-011 | Scene 2 · 01:43:48–01:43:59 | 12 | 12 | 7 | 4 | 3 | complete first-pass |
 | BATCH-012 | Scene 2 · 01:44:00–01:44:11 | 12 | 12 | 8 | 4 | 3 | complete first-pass |
 | BATCH-013 | Scene 2 · 01:44:12–01:44:23 | 12 | 12 | 8 | 4 | 3 | complete first-pass |
+| **BATCH-014** | **Scene 2 · 01:44:24–01:44:35** | **12** | **12** | **8** | **4** | **3** | **complete first-pass** |
 
-## Cumulative learning through BATCH-005
+## Cumulative learning through BATCH-014
 
-The first 82 frames established and corrected the Earth-65 relationship/rendering model: relationship staging precedes effects; environmental simplification may preserve object density through hierarchical compression; emotional close-ups may remain crisp; facial landmark precision and surface realism are independent; shot/reverse-shot can invert scale dominance while preserving relational polarity; identity may survive without a visible face; color ownership is state-dependent; painterly bloom is event-driven; and simplified body masses can carry pressure, protection, occlusion or nesting according to spatial function.
+The Earth-65 evidence now supports a causal rendering system rather than a palette/style imitation model. Key mechanisms include composition-first relationship staging; controlled reality suppression and hierarchical detail compression; facial landmark precision independent from surface realism; state-dependent color ownership; event-driven painterly bloom; screen-space editorial and nested-media layers; local versus persistent graphic material; action-signature entrance; source-owned light; event-render attack/hold/recovery; search-state information withholding; live Vulture entity-medium ownership; force-vector construction; post-impact/post-event visual silence; multiscale entity-medium readability; cross-medium contact; narrative-domain override and discrete exit; bounded fragment occupancy; and host-world preservation outside causal masks.
 
-## BATCH-006–009 expansion
+### BATCH-014 additions
 
-These batches expanded Earth-65 from quiet domestic evidence into representational layers, identity activation, motion, event behavior, entrance design and low-information threat space:
-
-- Screen-space Editorial Layer and Nested Media;
-- Local Comic Punctuation with spatial/temporal envelopes;
-- Object Memory and Cross-modal Carrier Handoff;
-- Motion Readability Substitution and Directional World Field;
-- Motion-state Detail Re-entry;
-- Diegetic Vector Light / Attention Funnel;
-- Source-owned Bloom;
-- provisional Vulture dossier Medium Foreshadowing;
-- Event Render Override: `base → attack → hold → recovery`;
-- graphic explosion/smoke Shape Grammar;
-- Action Signature Before Body Reveal;
-- Persistent Diegetic Graphic Material / Constraint Geometry;
-- Search-state Information Withholding;
-- Lighting Ownership Handoff;
-- World Authority Scale Transfer.
-
-Analyses: [`10-batch-006-earth65-editorial-memory.md`](./10-batch-006-earth65-editorial-memory.md), [`11-batch-007-earth65-identity-activation-motion.md`](./11-batch-007-earth65-identity-activation-motion.md), [`12-batch-008-earth65-event-render-override.md`](./12-batch-008-earth65-event-render-override.md), [`13-batch-009-earth65-action-signature-search-space.md`](./13-batch-009-earth65-action-signature-search-space.md).
-
-## BATCH-010 outputs
-
-- **12 / 12 source images individually opened and visually inspected.**
-- 12 L1; 7 at least L2; 5 deep diagnostics; 3 curated references.
-- Evidence claims `EV-E65-052–055` added to the Drive Evidence Ledger.
-- **Dossier → live Vulture medium correspondence validated** — the rough illustrated/etched medium previewed in the dossier persists on live Vulture.
-- **Entity-medium Ownership** — Vulture, Gwen, host world and event debris can retain different rendering grammars simultaneously; mixed media is not one frame-wide filter.
-- **Force-vector Alignment** — impact readability is built from agreement among body axis, debris, displaced props and event-light origin; motion blur is secondary.
-- **Landing Compression** — airborne trajectory is absorbed into foreshortening, folded anatomy, low camera placement and reduced environment detail.
-- **Post-impact Visual Silence** — description density can collapse almost to zero after a dense impact, then high-specificity threat re-entry gains contrast.
-- GitHub analysis: [`14-batch-010-earth65-vulture-medium-impact-silence.md`](./14-batch-010-earth65-vulture-medium-impact-silence.md).
-
-## BATCH-011 outputs
-
-- **12 / 12 source images individually opened and visually inspected.**
-- 12 L1; 7 at least L2; 4 deep diagnostics; 3 curated references.
-- Evidence claims `EV-E65-056–058` added to the Drive Evidence Ledger.
-- **Rendering-layer Precedence** — localized dimensional-instability rendering can supersede Vulture's brown etched medium without becoming a host-world/global filter.
-- **Threat Occlusion / Silhouette Authority** — Vulture can collapse into a near-black serrated mass while retaining threat identity through contour vocabulary and frame occupation.
-- **Post-event Visual Silence** — after saturated medium fragmentation, the sequence restores readability by reducing description density and reopening negative space.
-- GitHub analysis: [`15-batch-011-earth65-event-layer-occlusion-recovery.md`](./15-batch-011-earth65-event-layer-occlusion-recovery.md).
-
-## BATCH-012 outputs
-
-- **12 / 12 source images individually opened and visually inspected.**
-- 12 L1; 8 at least L2; 4 deep diagnostics; 3 curated references.
-- Evidence claims `EV-E65-059–062` added to the Drive Evidence Ledger.
-- **Multiscale Entity-medium Identity** — Vulture's close-scale hatching/facial detail hands off to value family, jagged wing contour and silhouette rhythm as scale decreases.
-- **Cross-medium Contact without Homogenization** — Gwen, Vulture and web can remain separate rendering owners even in direct physical interaction.
-- **Narrative-domain Override** — a character-owned medium can expand to the entire frame when narrative/editorial authority shifts to that character; this is distinct from event-render override.
-- **Force-vector Environment** — action direction is reinforced when pose, world streaks and interaction lines share a principal motion vector.
-- **Editorial Partition as active structure** — fixed panel geometry can organize simultaneous explanation/comedy while internal action progresses.
-- GitHub analysis: [`16-batch-012-earth65-cross-medium-narrative-domain.md`](./16-batch-012-earth65-cross-medium-narrative-domain.md).
-
-## BATCH-013 outputs
-
-- **12 / 12 source images individually opened and visually inspected.**
-- 12 L1; 8 at least L2; 4 deep diagnostics; 3 curated references.
-- Evidence claims `EV-E65-063–065` added to the Drive Evidence Ledger.
-- **Discrete Narrative-domain Exit** — full-frame entity-owned narrative medium can hand authority directly back to host world + local entity medium without a gradual material dissolve.
-- **Sustained Contact-boundary Preservation** — Gwen and Vulture keep separate edge/texture/description-frequency ownership through direct body contact and occlusion; web remains an independent connector layer.
-- **Bounded Fragment Occupancy** — dimensional/event fragmentation can temporarily stand in for an object/entity inside a causal mask while host-world grammar remains intact outside it.
-- GitHub analysis: [`17-batch-013-earth65-domain-exit-contact-fragment-occupancy.md`](./17-batch-013-earth65-domain-exit-contact-fragment-occupancy.md).
+- **12 / 12 source images actually opened and visually inspected.**
+- Evidence claims `EV-E65-066–069` were written to the canonical Drive Evidence Ledger.
+- **Event-to-entity Reconstitution** — a bounded fragment/event state can hand directly back to coherent Vulture entity medium through a hard state switch when trajectory and identity contour remain continuous.
+- **Sustained Contact-boundary Preservation** — Gwen and Vulture retain separate media through prolonged mounted overlap and shared motion; attachment does not imply material averaging.
+- **Authority Oscillation** — a chase can rapidly alternate world-dominant extreme-wide states, character-dominant frontal/close states and observer/world framing.
+- **Host-world Prop Medium Ownership** — museum architecture/props remain an independent rendering owner while Vulture stays etched and Gwen controlled-flat.
+- Force-vector evidence is strengthened by the frontal Vulture/Gwen frame where radial blue/teal streaks align behind a single principal flight vector.
+- GitHub analysis: [`18-batch-014-earth65-reconstitution-mounted-authority.md`](./18-batch-014-earth65-reconstitution-mounted-authority.md).
 
 ## 4,000-frame selection policy
 
-The corpus must collectively cover all existing main chapters: Master Framework, Character System, World System, Sequence/Color, Production System, Project Worksheets, Original Case Study, Glossary, Decision Tree, Master Workflow and Visual QA. It must also actively balance Miles/Brooklyn, Gwen/Earth-65, Hobie, Miguel/Spider Society, Mumbattan, facial rendering, camera/composition, rendering construction, color/edge/texture, motion/temporal FX, world collision, visual silence and climax/authorship.
+The corpus must collectively cover all existing main chapters and actively balance Miles/Brooklyn, Gwen/Earth-65, Hobie, Miguel/Spider Society, Mumbattan, facial rendering, camera/composition, rendering construction, color/edge/texture, motion/temporal FX, world collision, visual silence and climax/authorship.
 
 Every batch must answer:
 
@@ -117,21 +62,11 @@ Every batch must answer:
 3. What production / Skill parameter follows?
 4. What remaining coverage gap should affect later sampling?
 
-Adaptive batch size:
+## Current coverage pressure after BATCH-014
 
-```text
-high / extreme change     → 24–36 frames
-normal narrative segment → ~48 frames
-low-change held sequence → 48–60 only when temporal evidence is useful
-```
+Earth-65 is now substantially over-represented. The immediate Vulture/Gwen segment has supplied dense evidence for medium ownership, local event overrides, narrative-domain states, contact-boundary preservation, action-scale authority changes, force vectors and independent host-world prop grammar. Further dense sampling of the same mechanism should be avoided unless `01:44:36` introduces genuinely new Jess/Vulture evidence.
 
-## Current coverage pressure after BATCH-013
-
-Earth-65 now has broad and increasingly dense evidence across quiet relationship staging, color/edge/rendering, object/editorial media, identity activation, high-speed motion, institutional lighting, event override/recovery, off-screen action signature, persistent graphic material, low-information search-space design, live Vulture medium collision, impact-vector construction, silhouette threat occupation, localized rendering-medium rupture, post-event visual silence, multiscale medium identity, cross-medium physical interaction, narrative-domain expansion, discrete narrative-domain exit and object-scale fragment occupancy. This breadth **does not justify whole-film generalization**.
-
-The practical rendering model is an ownership system rather than a frame-wide style stack: base world grammar + entity-owned media + local interaction FX, with explicit event masks and narrative-domain states. BATCH-013 adds transition behavior: narrative authority can switch discretely, contact need not average media, and a causal fragment mask can replace object occupancy while leaving the host world intact outside it.
-
-Highest-priority missing evidence remains:
+Highest-priority missing evidence:
 
 - Jess introduction / interaction grammar;
 - Miles / Brooklyn daily + action;
@@ -141,18 +76,13 @@ Highest-priority missing evidence remains:
 - world collision / transition;
 - climax / agency / authorship;
 - independent cross-world counterexamples to Earth-65 rules;
-- counterexamples where character-specific media blend into host worlds;
-- narrative-domain overrides and exits outside Vulture/Earth-65;
-- contact-boundary behavior outside Gwen/Vulture;
-- localized fragment occupancy outside Earth-65;
-- force-vector environments outside Earth-65.
+- event-to-entity reconstitution outside Vulture;
+- sustained contact-boundary behavior outside Gwen/Vulture;
+- authority oscillation outside Earth-65;
+- host-world prop-medium independence in other worlds.
 
-Immediate chronology from `01:44:24` should continue only while it yields genuinely unique Jess/Vulture evidence; otherwise coverage-gap sampling should move toward the under-covered domains above.
-
-Next chronological boundary: **`01:44:24`**.
+**Next chronological boundary: `01:44:36`.**
 
 ## Promotion rule
 
 A provisional claim enters the stable main methodology only after independent support or a clearly bounded scope, active counterexample search, a production consequence, and successful generative/constraint reconstruction.
-
-The 4,000-frame corpus is the evidence engine that continuously rewrites the GitHub methodology.
