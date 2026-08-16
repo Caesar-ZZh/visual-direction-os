@@ -8,14 +8,14 @@
 - Research target: **approximately 4,000 high-coverage evidence frames**, selected for chapter, character/world, mechanism, transition and counterexample coverage.
 - Detailed chapter obligations: [`coverage-matrix-4000.md`](./coverage-matrix-4000.md).
 - Research database and generated artifacts remain in the user's canonical private Drive master workspace.
-- **Cumulative frames actually viewed:** 238.
-- **Cumulative frames with at least L1 annotation:** 238.
+- **Cumulative frames actually viewed:** 250.
+- **Cumulative frames with at least L1 annotation:** 250.
 - **Current scene:** Scene 2 — `Investigate Vulture - Gwen Meets Jess`.
-- **Next unreviewed source boundary:** `01:44:36`.
+- **Next unreviewed source boundary:** `01:44:48`.
 
 ## Source-discovery resilience
 
-The canonical `00_SOURCE_CORPUS` folder is currently empty. BATCH-010 recovered continuity by resolving the verified source frame's original raw-frame parent. BATCH-014 re-confirmed the raw fallback and recovered the previously blocked `01:44:24` boundary using exact timestamp discovery plus parent-restricted modified-time windows. The raw source remains read-only; all research outputs write only into `Sorted by Scence`.
+The canonical `00_SOURCE_CORPUS` folder is currently empty. BATCH-010 recovered continuity by resolving the verified source frame's original raw-frame parent. BATCH-014 re-confirmed the raw fallback and recovered the previously blocked `01:44:24` boundary. BATCH-015 again recovered the continuous sequence with exact timestamp discovery plus a parent-restricted modified-time window, then opened all twelve actual files. The raw source remains read-only; all research outputs write only into `Sorted by Scence`.
 
 ## Batch log
 
@@ -34,22 +34,22 @@ The canonical `00_SOURCE_CORPUS` folder is currently empty. BATCH-010 recovered 
 | BATCH-011 | Scene 2 · 01:43:48–01:43:59 | 12 | 12 | 7 | 4 | 3 | complete first-pass |
 | BATCH-012 | Scene 2 · 01:44:00–01:44:11 | 12 | 12 | 8 | 4 | 3 | complete first-pass |
 | BATCH-013 | Scene 2 · 01:44:12–01:44:23 | 12 | 12 | 8 | 4 | 3 | complete first-pass |
-| **BATCH-014** | **Scene 2 · 01:44:24–01:44:35** | **12** | **12** | **8** | **4** | **3** | **complete first-pass** |
+| BATCH-014 | Scene 2 · 01:44:24–01:44:35 | 12 | 12 | 8 | 4 | 3 | complete first-pass |
+| **BATCH-015** | **Scene 2 · 01:44:36–01:44:47** | **12** | **12** | **8** | **4** | **3** | **complete first-pass** |
 
-## Cumulative learning through BATCH-014
+## Cumulative learning through BATCH-015
 
-The Earth-65 evidence now supports a causal rendering system rather than a palette/style imitation model. Key mechanisms include composition-first relationship staging; controlled reality suppression and hierarchical detail compression; facial landmark precision independent from surface realism; state-dependent color ownership; event-driven painterly bloom; screen-space editorial and nested-media layers; local versus persistent graphic material; action-signature entrance; source-owned light; event-render attack/hold/recovery; search-state information withholding; live Vulture entity-medium ownership; force-vector construction; post-impact/post-event visual silence; multiscale entity-medium readability; cross-medium contact; narrative-domain override and discrete exit; bounded fragment occupancy; and host-world preservation outside causal masks.
+The Earth-65 evidence supports a causal rendering system rather than a palette/style imitation model. The established stack now includes composition-first relationship staging; controlled reality suppression and hierarchical detail compression; facial landmark precision independent from surface realism; state-dependent color ownership; event-driven painterly bloom; screen-space editorial and nested-media layers; local versus persistent graphic material; action-signature entrance; source-owned light; event-render attack/hold/recovery; search-state information withholding; live Vulture entity-medium ownership; force-vector construction; post-impact visual silence; multiscale entity-medium readability; cross-medium contact; narrative-domain override and discrete exit; bounded fragment occupancy; event-to-entity reconstitution; authority oscillation; and host-world prop-medium independence.
 
-### BATCH-014 additions
+### BATCH-015 additions
 
 - **12 / 12 source images actually opened and visually inspected.**
-- Evidence claims `EV-E65-066–069` were written to the canonical Drive Evidence Ledger.
-- **Event-to-entity Reconstitution** — a bounded fragment/event state can hand directly back to coherent Vulture entity medium through a hard state switch when trajectory and identity contour remain continuous.
-- **Sustained Contact-boundary Preservation** — Gwen and Vulture retain separate media through prolonged mounted overlap and shared motion; attachment does not imply material averaging.
-- **Authority Oscillation** — a chase can rapidly alternate world-dominant extreme-wide states, character-dominant frontal/close states and observer/world framing.
-- **Host-world Prop Medium Ownership** — museum architecture/props remain an independent rendering owner while Vulture stays etched and Gwen controlled-flat.
-- Force-vector evidence is strengthened by the frontal Vulture/Gwen frame where radial blue/teal streaks align behind a single principal flight vector.
-- GitHub analysis: [`18-batch-014-earth65-reconstitution-mounted-authority.md`](./18-batch-014-earth65-reconstitution-mounted-authority.md).
+- Evidence claims `EV-E65-070–073` were written to the canonical Drive Evidence Ledger.
+- **World-authority Reset / Threat Re-entry** — visual silence is better modeled as an authority-state reset: character scale collapses and active vectors decay before threat silhouette authority returns.
+- **Narrative-domain Emissive Exception** — a parchment/ink narrative domain may retain functional emissive devices as a higher-priority layer instead of paperizing every luminous channel.
+- **Interaction-layer Persistence across Domain Handoff** — a causal beam/energy layer can bridge a hard switch from narrative-domain rendering back to host-world rendering.
+- **Silhouette-preserving Overexposure** — impact bloom may erase surface description while preserving identity through silhouette, body axis, and residual costume anchors.
+- GitHub analysis: [`19-batch-015-earth65-authority-emissive-overexposure.md`](./19-batch-015-earth65-authority-emissive-overexposure.md).
 
 ## 4,000-frame selection policy
 
@@ -62,9 +62,9 @@ Every batch must answer:
 3. What production / Skill parameter follows?
 4. What remaining coverage gap should affect later sampling?
 
-## Current coverage pressure after BATCH-014
+## Current coverage pressure after BATCH-015
 
-Earth-65 is now substantially over-represented. The immediate Vulture/Gwen segment has supplied dense evidence for medium ownership, local event overrides, narrative-domain states, contact-boundary preservation, action-scale authority changes, force vectors and independent host-world prop grammar. Further dense sampling of the same mechanism should be avoided unless `01:44:36` introduces genuinely new Jess/Vulture evidence.
+Earth-65 is now substantially over-represented. BATCH-015 justified one further chronological batch because it yielded new authority-reset, narrative-domain exception, cross-domain causality and overexposure evidence. Further adjacent dense sampling should now be avoided unless Jess appears or the next frames provide a genuinely new mechanism rather than another Vulture/Gwen variant.
 
 Highest-priority missing evidence:
 
@@ -76,12 +76,11 @@ Highest-priority missing evidence:
 - world collision / transition;
 - climax / agency / authorship;
 - independent cross-world counterexamples to Earth-65 rules;
-- event-to-entity reconstitution outside Vulture;
-- sustained contact-boundary behavior outside Gwen/Vulture;
-- authority oscillation outside Earth-65;
-- host-world prop-medium independence in other worlds.
+- authority reset outside Earth-65;
+- narrative-domain emissive/interaction exceptions in another world/character;
+- silhouette-preserving overexposure under different action grammar.
 
-**Next chronological boundary: `01:44:36`.**
+**Next chronological boundary: `01:44:48`.**
 
 ## Promotion rule
 
