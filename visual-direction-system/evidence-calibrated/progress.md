@@ -7,16 +7,16 @@
 - Source corpus: user Google Drive screenshot archive; canonical research workspace is private `Sorted by Scence` plus a read-only raw-source fallback.
 - Research target: **approximately 4,000 high-coverage evidence frames** selected for chapter, character/world, mechanism, transition and counterexample coverage.
 - Detailed obligations: [`coverage-matrix-4000.md`](./coverage-matrix-4000.md).
-- **Cumulative frames actually viewed:** **382**.
-- **Cumulative frames with at least L1 annotation:** **382**.
-- **Latest completed batch:** **BATCH-026**.
+- **Cumulative frames actually viewed:** **394**.
+- **Cumulative frames with at least L1 annotation:** **394**.
+- **Latest completed batch:** **BATCH-027**.
 - Latest Earth-65 chronological coverage remains **`01:45:23`**; preserved adjacent checkpoint is **`01:45:24`**, but dense Earth-65 adjacency is deprioritized.
-- Latest coverage pivot: **Earth-50101 / Mumbattan action geometry**, continuous raw-fallback slice `02:39:41–02:39:52`.
-- BATCH-026 contains **12 consecutive source screenshots**, all individually opened and visually inspected.
+- Latest coverage pivot: **Earth-50101 / Mumbattan sustained identity/relational constraint**, continuous raw-fallback slice `02:39:53–02:40:04`.
+- BATCH-027 contains **12 consecutive source screenshots**, all individually opened and visually inspected; all 12 received at least L2, with 4 L3/Deep frames and 3 curated references.
 
 ## Source-discovery resilience
 
-The canonical Drive `00_SOURCE_CORPUS` slot may be empty and Sorted-by-Scene routing may fail without blocking the research. BATCH-024 established a recovery path: the read-only raw root can be sliced with a **parent-folder + `modifiedTime` window**, which recovered later Mumbattan chronology without relying on pagination. BATCH-025/026 continued the raw-fallback lineage. Candidate metadata still never counts until each actual source image is opened. Source originals remain read-only; manifests, analysis, curated references, contact sheets and progress artifacts write only to canonical `Sorted by Scence`.
+The canonical Drive `00_SOURCE_CORPUS` slot may be empty and Sorted-by-Scene routing may fail without blocking the research. BATCH-024 established a recovery path: the read-only raw root can be sliced with a **parent-folder + `modifiedTime` window**, which recovered later Mumbattan chronology without relying on pagination. BATCH-025–027 continued the raw-fallback lineage; exact filename/time discovery is also valid when needed. Candidate metadata still never counts until each actual source image is opened. Source originals remain read-only; manifests, analysis, curated references, contact sheets and progress artifacts write only to canonical `Sorted by Scence`.
 
 ## Batch log
 
@@ -47,11 +47,12 @@ The canonical Drive `00_SOURCE_CORPUS` slot may be empty and Sorted-by-Scene rou
 | BATCH-023 | Miguel/Spider Society · representative sample 02:57:31–02:59:10 | 12 | 12 | 9 | 4 | 3 | complete first-pass |
 | BATCH-024 | Mumbattan · continuous 02:39:17–02:39:28 | 12 | 12 | 10 | 4 | 3 | complete first-pass |
 | BATCH-025 | Mumbattan/Spot · continuous 02:39:29–02:39:40 | 12 | 12 | 11 | 4 | 3 | complete first-pass |
-| **BATCH-026** | **Mumbattan action · continuous 02:39:41–02:39:52** | **12** | **12** | **12** | **4** | **3** | **complete first-pass** |
+| BATCH-026 | Mumbattan action · continuous 02:39:41–02:39:52 | 12 | 12 | 12 | 4 | 3 | complete first-pass |
+| **BATCH-027** | **Mumbattan action · continuous 02:39:53–02:40:04** | **12** | **12** | **12** | **4** | **3** | **complete first-pass** |
 
-## Cumulative learning through BATCH-026
+## Cumulative learning through BATCH-027
 
-The evidence base is in an explicit cross-world calibration phase. Earth-65 established a dense causal layered system; BATCH-019–021 calibrated Brooklyn ownership/attention/anomaly behavior; BATCH-022 revised character-medium logic through Hobie; BATCH-023 added the first native Spider Society command/system sample; BATCH-024–026 now establish Mumbattan structured density, bounded Spot anomaly behavior, dense-host action readability, infrastructure action geometry and autonomous host-world grammar.
+The evidence base is in an explicit cross-world calibration phase. Earth-65 established a dense causal layered system; BATCH-019–021 calibrated Brooklyn ownership/attention/anomaly behavior; BATCH-022 revised character-medium logic through Hobie; BATCH-023 added the first native Spider Society command/system sample; BATCH-024–027 establish Mumbattan structured density, bounded Spot anomaly behavior, dense-host action readability, infrastructure action geometry, autonomous host-world grammar, sustained identity landmark persistence and relational constraint-line persistence.
 
 ### BATCH-019 additions — first active-lineage Miles/Brooklyn calibration
 
@@ -122,6 +123,15 @@ The evidence base is in an explicit cross-world calibration phase. Earth-65 esta
 - Exact portal entry/exit causality and camera motion remain unclaimed.
 - GitHub analysis: [`30-batch-026-mumbattan-action-geometry-host-autonomy.md`](./30-batch-026-mumbattan-action-geometry-host-autonomy.md).
 
+### BATCH-027 additions — sustained identity / relational constraint / negative causality calibration
+
+- **Temporal Identity Landmark Persistence Under Severe Perspective** — Miles' black suit mass, white eyes and red emblem/accent topology remain an invariant identity set across severe foreshortening, scale and pose changes while Mumbattan density remains present.
+- **Relational Constraint-Line Persistence Across Subject Dominance** — bright white web material remains an independently owned action/relation carrier while dominance shifts between separated Gwen/Miles and Miles-dominant states.
+- **Anomaly Contact Boundary Without Owner Collapse** — Spot can closely overlap a rough near-black anomaly field while entity, anomaly and host ownership remain separately legible; exact portal transition is not promoted.
+- **Visible Bystanders Are Not Crowd-Response Evidence** — occupancy alone is insufficient; temporal orientation, displacement, avoidance or another reaction cue is required.
+- Immediate Mumbattan adjacency ends after B027 because the remaining causal gaps were not crossed.
+- GitHub analysis: [`31-batch-027-mumbattan-temporal-identity-relational-constraint.md`](./31-batch-027-mumbattan-temporal-identity-relational-constraint.md).
+
 ## 4,000-frame selection policy
 
 The corpus must collectively cover all existing main chapters and actively balance Miles/Brooklyn, Gwen/Earth-65, Hobie, Miguel/Spider Society, Mumbattan, facial rendering, camera/composition, rendering construction, color/edge/texture, motion/temporal FX, world collision, visual silence and climax/authorship.
@@ -133,18 +143,19 @@ Every batch must answer:
 3. What production / Skill parameter follows?
 4. What remaining coverage gap should affect later sampling?
 
-## Current coverage pressure after BATCH-026
+## Current coverage pressure after BATCH-027
 
-BATCH-024–026 now establish Mumbattan density structure, anomaly locality, action readability and infrastructure-as-action geometry, but they do **not** establish the complete portal/chase system.
+BATCH-024–027 now establish 48 consecutive Mumbattan frames covering density structure, anomaly locality, action readability, infrastructure-as-action geometry, host-world autonomy, temporal identity lock and relational connector persistence. The adjacency has reached diminishing marginal value without closing the remaining causal mechanisms.
 
-Continue adjacent Mumbattan only if actually opened frames visibly add new causal evidence for:
+**End immediate Mumbattan adjacency.** Pivot next by marginal value, prioritizing:
 
-- exact portal entry/exit causal chain;
-- traffic/crowd response to moving characters/anomaly;
-- infrastructure collision, destruction or re-authoring;
-- sustained-motion identity lock or force-vector construction not already explained by static spatial rails.
+- Spider Society crowd/order/transport/chase distinct from B023 command-room evidence;
+- Jess introduction/interaction grammar;
+- world collision outside Earth-65;
+- climax/agency/authorship;
+- independent cross-world counterexamples.
 
-Otherwise pivot by marginal value. Highest remaining gaps include Spider Society crowd/order/transport/chase, Jess interaction grammar, world collision outside Earth-65, climax/agency/authorship, and independent cross-world counterexamples. Hobie temporal/frame-rate behavior should be sampled only when visibly provable.
+Return to Mumbattan only for a targeted later sample known to contain exact portal entry/exit, explicit crowd/traffic response, or infrastructure collision/destruction/re-authoring. Hobie temporal/frame-rate behavior should be sampled only when directly visible.
 
 The captured bald adversary in B020 remains deliberately unnamed. Camera movement is never inferred from one still. Do not convert scene knowledge into evidence.
 
