@@ -18,6 +18,26 @@
 
 ---
 
+## 🎛️ Director Workspace v2.1（开发分支）
+
+`agent/director-workspace-v2-1` 正在把现有知识浏览器升级为真正的导演工作台，保持 Vanilla HTML/CSS/JS 和零构建框架：
+
+- **LEARN** — 通过 Knowledge Atlas 进入原有 11 个知识视图，不改写知识源。
+- **DIRECT** — 共享 Scene State、Director Workspace、Miles / Gwen / Hobie / Elian Visual State Machine、同步 Sequence Score、Color Ownership Map。
+- **DIAGNOSE** — 使用与 DIRECT 相同的 scene state，输出确定性的 `PASS / WARN / FAIL`，不制造总分。
+- **TDD + CI** — Node 模型测试、Visual QA、JS syntax check、Pages 组装测试、Playwright Chromium 验收。
+- **响应式验收** — 390 / 768 / 1024 / 1440；移动端保留 Learn / Direct / Diagnose；Reduced Motion 保留等价信息。
+
+开发预览入口：
+
+```text
+visual-direction-os/director-v2.html
+```
+
+发布策略不会覆盖旧知识库源码：GitHub Pages 构建时把 `director-v2.html` 提升为线上 `index.html`，同时把现有稳定版 `index.html` 原样保留为线上 `knowledge.html`。在 Draft PR 合并前，当前线上站点不会被替换。
+
+---
+
 ## 💡 这是什么？
 
 视觉风格从来不是一堆特效的集合，而是一套**规则系统**——它决定：
@@ -53,17 +73,22 @@ Visual Direction OS（视觉导演操作系统）把这套规则拆成 11 个知
 # 打开导演控制台（无需安装任何东西）
 visual-direction-os/index.html
 
+# v2.1 开发预览
+visual-direction-os/director-v2.html
+
 # 或起个本地静态服务器
 npx serve .
 ```
 
 想读"原典"？直接翻 [`visual-direction-system/`](./visual-direction-system/)，11 篇文档即是内容源。
 
-跑质量自检：
+跑稳定版质量自检：
 
 ```bash
 node visual-direction-os/qa-check.js   # 期望输出 50/50 passed
 ```
+
+v2.1 的模型、源码、发布组装与浏览器验收由 `.github/workflows/director-v2-ci.yml` 自动执行。
 
 ---
 
@@ -98,13 +123,15 @@ node visual-direction-os/qa-check.js   # 期望输出 50/50 passed
 
 ```
 📦 visual-direction-os
-├── 🖥️ visual-direction-os/          # 交互前端（11 视图，无构建）
+├── 🖥️ visual-direction-os/          # 交互前端（稳定版 + v2.1 staging）
 │   ├── index.html  styles.css  app.js
-│   └── qa-check.js                # 50 项结构 QA
-├── 📚 visual-direction-system/      # 11 篇知识文档（内容源，勿改语义）
-│   ├── 01-master-framework.md … 11-visual-qa.md
-│   └── README.md
-├── 📐 docs/superpowers/             # v2 设计规格 + 实施计划
+│   ├── director-v2.html  director-v2.css  director-v2-app.js
+│   ├── scene-state.js  state-machine.js  sequence-score.js
+│   ├── color-ownership.js  diagnostic.js  timeline-sync.js
+│   ├── visual-qa.js  build-pages-site.js
+│   └── qa-check.js                # 稳定版 50 项结构 QA
+├── 📚 visual-direction-system/      # 知识文档（内容源，不由 v2.1 前端改写语义）
+├── 📐 docs/superpowers/             # v2.1 设计规格 + 实施计划
 └── 📋 CONTEXT.md                    # 项目上下文
 ```
 
@@ -116,7 +143,7 @@ node visual-direction-os/qa-check.js   # 期望输出 50/50 passed
 |---|---|---|
 | 前端 | Vanilla HTML / CSS / JS + Inline SVG | 零构建、零维护债、永久可读 |
 | 知识源 | Markdown（中英双语） | 可维护、可检索、可继续扩展 |
-| 质量 | `qa-check.js` + 四档响应式人工验证 | 结构 50/50，控制台 0 报错 |
+| 质量 | `qa-check.js` + Visual QA + Playwright Chromium | 稳定版结构检查 + v2.1 模型/浏览器行为验证 |
 
 ---
 
