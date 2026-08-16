@@ -23,6 +23,36 @@ for (const size of sizes) {
   });
 }
 
+test('mobile hero uses a narrative field plus system overlay rather than an empty background', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(url);
+  await expect(page.locator('.hero-visual')).toBeVisible();
+  await expect(page.locator('.hero-visual .narrative-glow')).toBeVisible();
+  await expect(page.locator('.hero-visual .system-overlay')).toBeVisible();
+  await expect(page.locator('.hero-visual')).toHaveAttribute('aria-hidden', 'true');
+});
+
+test('mobile ownership field explains what the visual focus represents', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(url);
+  await expect(page.locator('#ownership-primary')).toHaveText('WORLD');
+  await expect(page.locator('[data-ownership-metric]')).toHaveCount(3);
+  await page.locator('[data-owner-choice="character"]').click();
+  await expect(page.locator('#ownership-primary')).toHaveText('CHARACTER');
+  await expect(page.locator('#ownership-status')).toContainText('WORLD → CHARACTER');
+});
+
+test('director workspace uses direct segmented controls instead of native selects', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(url);
+  await expect(page.locator('#direct-panel select')).toHaveCount(0);
+  const warm = page.locator('[data-variable-family="color"][data-variable-key="temperature"][data-variable-value="warm"]');
+  await expect(warm).toBeVisible();
+  await warm.click();
+  await expect(warm).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#summary-color')).toContainText('WARM');
+});
+
 test('learn mode preserves the existing knowledge atlas', async ({ page }) => {
   await page.goto(url);
   await page.locator('#knowledge-atlas').waitFor();
@@ -30,6 +60,20 @@ test('learn mode preserves the existing knowledge atlas', async ({ page }) => {
   await expect(links).toHaveCount(11);
   await expect(page.locator('#knowledge-atlas a[data-knowledge-route="character"]')).toHaveAttribute('href', 'knowledge.html#character');
   await expect(page.locator('#knowledge-atlas a[data-knowledge-route="qa"]')).toHaveAttribute('href', 'knowledge.html#qa');
+});
+
+test('color palette tabs render genuinely different analysis views', async ({ page }) => {
+  await page.goto(url);
+  await page.locator('#color-ownership-root .color-view-tabs').waitFor();
+  await page.locator('[data-color-view="base"]').click();
+  await expect(page.locator('#palette-panel')).toHaveAttribute('data-view', 'base');
+  await expect(page.locator('#palette-panel .palette-mode-title')).toContainText('Base');
+  await page.locator('[data-color-view="emotion"]').click();
+  await expect(page.locator('#palette-panel')).toHaveAttribute('data-view', 'emotion');
+  await expect(page.locator('#palette-panel .palette-mode-title')).toContainText('Emotion');
+  await page.locator('[data-color-view="conflict"]').click();
+  await expect(page.locator('#palette-panel')).toHaveAttribute('data-view', 'conflict');
+  await expect(page.locator('#palette-panel .palette-mode-title')).toContainText('Conflict');
 });
 
 test('state machine, sequence score and diagnostic share one scene state', async ({ page }) => {
