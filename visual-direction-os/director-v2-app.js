@@ -10,15 +10,15 @@
   function setMode(mode) {
     const safe = modeOrder.includes(mode) ? mode : 'learn';
     scene.updateSceneState({ mode: safe }, 'mode-switch');
-    $$('[data-mode]').forEach((button) => {
-      if (button.dataset.mode === safe) button.setAttribute('aria-current', 'page');
-      else button.removeAttribute('aria-current');
+    $$('[data-mode]').forEach((control) => {
+      if (control.dataset.mode === safe) control.setAttribute('aria-current', 'page');
+      else control.removeAttribute('aria-current');
     });
     const target = safe === 'learn' ? '#learn-panel' : safe === 'direct' ? '#direct-panel' : '#diagnose-panel';
-    $(target)?.scrollIntoView({ block: 'start' });
+    $(target)?.scrollIntoView({ block: 'start', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
   }
 
-  $$('[data-mode]').forEach((button) => button.addEventListener('click', () => setMode(button.dataset.mode)));
+  $$('[data-mode]').forEach((control) => control.addEventListener('click', () => setMode(control.dataset.mode)));
 
   const ownerPatches = {
     world: { agency: 'world', ownership: { character: 'low', world: 'high', narrative: 'medium' }, variables: { color: { temperature: 'cool', territory: 'world' }, camera: { perspective: 'world', stability: 'high' }, line: { stability: 'high' }, space: { compression: 'low' } } },
@@ -38,22 +38,54 @@
     scene.updateSceneState({ variables: { [family]: { [key]: value } }, diagnosticContext: { hasNarrativeCause: true, primaryChanges: 1 } }, `workspace:${family}.${key}`);
   }));
 
-  function render(state) {
+  function directionalPosition(value) {
+    if (value === 'character') return 'character';
+    if (value === 'mixed' || value === 'contested' || value === 'shared') return 'contested';
+    return 'world';
+  }
+
+  function renderOwnership(state) {
     const stage = $('.ownership-stage');
     const ownerState = state.agency === 'character' ? 'character' : state.agency === 'contested' || state.agency === 'shared' ? 'contested' : 'world';
     if (stage) stage.dataset.owner = ownerState;
+
     const ownerText = state.agency === 'character' ? 'WORLD → CHARACTER' : state.agency === 'contested' ? 'WORLD ↔ CHARACTER' : state.agency === 'shared' ? 'CHARACTER + WORLD' : 'WORLD OWNS FRAME';
     const status = $('#ownership-status');
     if (status) status.textContent = `OWNERSHIP · ${ownerText}`;
+
     const primary = $('#ownership-primary');
-    if (primary) primary.textContent = state.agency === 'shared' ? 'CONTESTED' : String(state.agency).toUpperCase();
+    if (primary) primary.textContent = ownerState === 'contested' ? 'CONTESTED' : ownerState.toUpperCase();
+
+    const cameraPosition = directionalPosition(state.variables.camera.perspective);
+    const colorPosition = directionalPosition(state.variables.color.territory);
+    const spacePosition = ['low', 'medium', 'high'].includes(state.variables.space.compression) ? state.variables.space.compression : 'medium';
+
+    const cameraTrack = $('[data-ownership-track="camera"]');
+    const colorTrack = $('[data-ownership-track="color"]');
+    const spaceTrack = $('[data-ownership-track="space"]');
+    if (cameraTrack) cameraTrack.dataset.position = cameraPosition;
+    if (colorTrack) colorTrack.dataset.position = colorPosition;
+    if (spaceTrack) spaceTrack.dataset.position = spacePosition;
+
     const ownershipCamera = $('#ownership-camera');
-    if (ownershipCamera) ownershipCamera.textContent = String(state.variables.camera.perspective).toUpperCase();
+    if (ownershipCamera) ownershipCamera.textContent = cameraPosition === 'contested' ? 'SHARED' : `${cameraPosition.toUpperCase()}-LED`;
     const ownershipColor = $('#ownership-color');
-    if (ownershipColor) ownershipColor.textContent = String(state.variables.color.territory).toUpperCase();
+    if (ownershipColor) ownershipColor.textContent = colorPosition === 'contested' ? 'SHARED' : `${colorPosition.toUpperCase()}-LED`;
     const ownershipSpace = $('#ownership-space');
-    if (ownershipSpace) ownershipSpace.textContent = `${String(state.variables.space.compression).toUpperCase()} PRESSURE`;
+    if (ownershipSpace) ownershipSpace.textContent = spacePosition.toUpperCase();
+
+    const reason = $('#ownership-reason');
+    if (reason) {
+      if (ownerState === 'character') reason.textContent = `CHARACTER leads camera and color; spatial pressure is ${spacePosition}.`;
+      else if (ownerState === 'contested') reason.textContent = `WORLD and CHARACTER split camera/color authority; spatial pressure is ${spacePosition}.`;
+      else reason.textContent = `WORLD leads camera and color; spatial pressure is ${spacePosition}.`;
+    }
+
     $$('[data-owner-choice]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.ownerChoice === ownerState)));
+  }
+
+  function render(state) {
+    renderOwnership(state);
 
     const agency = $('#summary-agency'); if (agency) agency.textContent = String(state.agency).toUpperCase();
     const narrative = $('#summary-narrative'); if (narrative) narrative.textContent = String(state.narrativeState).toUpperCase();
@@ -90,55 +122,11 @@
       </section>`);
   }
 
-  function loadScript(src, globalName) {
-    if (window[globalName]) return Promise.resolve(window[globalName]);
-    return new Promise((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src = src;
-      script.onload = () => resolve(window[globalName]);
-      script.onerror = () => reject(new Error(`Failed to load ${src}`));
-      document.head.appendChild(script);
-    });
-  }
-
-  function loadToolStyles() {
-    if ($('link[href="director-v2-tools.css"]')) return;
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = 'director-v2-tools.css';
-    document.head.appendChild(link);
-  }
-
-  function ensureToolSections() {
-    const diagnose = $('#diagnose-panel');
-    if (!diagnose || $('#state-machine-panel')) return;
-    diagnose.insertAdjacentHTML('beforebegin', `
-      <section class="workspace tool-workspace" id="state-machine-panel" aria-labelledby="state-machine-title">
-        <p class="eyebrow">Direct / Character mechanism</p><h2 id="state-machine-title">Visual State Machine</h2>
-        <p>机制而非画风模仿。拖动 playhead，观察叙事状态如何同步改变视觉变量与 ownership。</p><div id="state-machine-root"></div>
-      </section>
-      <section class="workspace tool-workspace" id="sequence-panel" aria-labelledby="sequence-title">
-        <p class="eyebrow">Direct / Temporal orchestration</p><h2 id="sequence-title">Sequence Score</h2>
-        <p>六条视觉轨道错峰变化。高潮由控制权转移定义，而不是所有参数一起达到最大值。</p><div id="sequence-root"></div>
-      </section>
-      <section class="workspace tool-workspace" id="color-ownership-panel" aria-labelledby="color-ownership-title">
-        <p class="eyebrow">Direct / Color territory</p><h2 id="color-ownership-title">Color Ownership Map</h2>
-        <p>颜色不仅是什么，更重要的是此刻由谁拥有、在哪里占领、是否发生冲突。</p><div id="color-ownership-root"></div>
-      </section>`);
-    diagnose.innerHTML = `<p class="eyebrow">Diagnose / Visual system diagnostic</p><h2 id="diagnose-title">Why did this visual behavior change?</h2><p>使用与 DIRECT 完全相同的 scene state，输出确定性的 PASS / WARN / FAIL，不制造总分。</p><div id="diagnostic-root"></div>`;
-  }
-
-  async function initAdvancedTools() {
-    loadToolStyles();
+  function initAdvancedTools() {
+    const required = ['VDOSStateMachine', 'VDOSSequenceScore', 'VDOSColorOwnership', 'VDOSDiagnostic', 'VDOSTimelineSync'];
+    const missing = required.filter(name => !window[name]);
+    if (missing.length) throw new Error(`Advanced tools unavailable: ${missing.join(', ')}`);
     ensureKnowledgeAtlas();
-    ensureToolSections();
-    await Promise.all([
-      loadScript('state-machine.js', 'VDOSStateMachine'),
-      loadScript('sequence-score.js', 'VDOSSequenceScore'),
-      loadScript('color-ownership.js', 'VDOSColorOwnership'),
-      loadScript('diagnostic.js', 'VDOSDiagnostic'),
-      loadScript('timeline-sync.js', 'VDOSTimelineSync')
-    ]);
     window.VDOSStateMachine.initStateMachine($('#state-machine-root'), scene);
     window.VDOSSequenceScore.initSequenceScore($('#sequence-root'), scene);
     window.VDOSColorOwnership.initColorOwnership($('#color-ownership-root'), scene);
@@ -148,9 +136,12 @@
 
   scene.subscribeSceneState(render);
   scene.createSceneState({ mode: 'learn' });
-  initAdvancedTools().catch((error) => {
+
+  try {
+    initAdvancedTools();
+  } catch (error) {
     console.error(error);
     const diagnose = $('#diagnose-panel');
-    if (diagnose) diagnose.insertAdjacentHTML('beforeend', `<p class="tool-error" role="alert">Advanced tools failed to load. Core LEARN and DIRECT controls remain available.</p>`);
-  });
+    if (diagnose) diagnose.insertAdjacentHTML('beforeend', `<p class="tool-error" role="alert">Advanced tools failed to initialize. Reload this preview to retry.</p>`);
+  }
 })();
