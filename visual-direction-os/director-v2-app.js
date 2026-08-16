@@ -168,11 +168,50 @@
       </section>`);
   }
 
+  function ensureVisualResponseReadout() {
+    const summary = $('.state-summary');
+    if (!summary || $('#vr-live')) return;
+    summary.insertAdjacentHTML('afterend', `
+      <section class="vr-live" id="vr-live" aria-live="polite" aria-label="Live visual response">
+        <div class="vr-live-header"><span>LIVE VISUAL RESPONSE</span><small>SCENE → PAGE</small></div>
+        <div class="vr-live-grid">
+          <span id="vr-atmosphere">ATMOSPHERE · NEUTRAL / WORLD-LED</span>
+          <span id="vr-pressure">PRESSURE · LOW</span>
+          <span id="vr-focus">FOCUS · WORLD / MEDIUM</span>
+          <span id="vr-motion">MOTION · LOW</span>
+        </div>
+      </section>`);
+  }
+
+  function loadStylesheet(href) {
+    if ([...document.styleSheets].some(sheet => sheet.href && sheet.href.includes(href.split('?')[0]))) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = href;
+      link.onload = resolve;
+      link.onerror = () => reject(new Error(`Failed to load ${href}`));
+      document.head.appendChild(link);
+    });
+  }
+
+  function loadScript(src, globalName) {
+    if (window[globalName]) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = src;
+      script.onload = () => window[globalName] ? resolve() : reject(new Error(`${globalName} unavailable after ${src}`));
+      script.onerror = () => reject(new Error(`Failed to load ${src}`));
+      document.head.appendChild(script);
+    });
+  }
+
   function initAdvancedTools() {
     const required = ['VDOSStateMachine', 'VDOSSequenceScore', 'VDOSColorOwnership', 'VDOSDiagnostic', 'VDOSTimelineSync', 'VDOSVisualResponse'];
     const missing = required.filter(name => !window[name]);
     if (missing.length) throw new Error(`Advanced tools unavailable: ${missing.join(', ')}`);
     ensureKnowledgeAtlas();
+    ensureVisualResponseReadout();
     window.VDOSVisualResponse.initVisualResponse(document.documentElement, scene);
     window.VDOSStateMachine.initStateMachine($('#state-machine-root'), scene);
     window.VDOSSequenceScore.initSequenceScore($('#sequence-root'), scene);
@@ -181,15 +220,20 @@
     window.VDOSTimelineSync.syncTimelines(scene, window.VDOSStateMachine, window.VDOSSequenceScore, document);
   }
 
+  function showInitError(error) {
+    console.error(error);
+    const diagnose = $('#diagnose-panel');
+    if (diagnose && !diagnose.querySelector('.tool-error')) diagnose.insertAdjacentHTML('beforeend', `<p class="tool-error" role="alert">Advanced tools failed to initialize. Reload this preview to retry.</p>`);
+  }
+
   scene.subscribeSceneState(render);
   scene.createSceneState({ mode: 'learn' });
 
-  try {
+  Promise.all([
+    loadStylesheet('visual-response.css?v=20260817-0048'),
+    loadScript('visual-response.js?v=20260817-0048', 'VDOSVisualResponse')
+  ]).then(() => {
     initAdvancedTools();
     syncModeFromScroll();
-  } catch (error) {
-    console.error(error);
-    const diagnose = $('#diagnose-panel');
-    if (diagnose) diagnose.insertAdjacentHTML('beforeend', `<p class="tool-error" role="alert">Advanced tools failed to initialize. Reload this preview to retry.</p>`);
-  }
+  }).catch(showInitError);
 })();
