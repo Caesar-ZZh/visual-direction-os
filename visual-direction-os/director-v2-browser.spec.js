@@ -169,13 +169,76 @@ test('state machine, sequence score and diagnostic share one scene state', async
   await expect(page.locator('.diagnostic-list article[data-level="FAIL"]')).toContainText('Character and World both claim primary ownership.');
 });
 
+test('live visual response maps DIRECT controls into page-level state', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(url);
+  await page.locator('#vr-live').waitFor();
+  await expect(page.locator('#vr-live')).toContainText('LIVE VISUAL RESPONSE');
+
+  const accentBefore = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--accent').trim());
+  const focusBefore = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--vr-focus-x').trim());
+
+  await page.locator('[data-variable-family="color"][data-variable-key="temperature"][data-variable-value="warm"]').click();
+  await expect(page.locator('html')).toHaveAttribute('data-vr-temperature', 'warm');
+  await expect(page.locator('#vr-atmosphere')).toContainText('WARM');
+
+  await page.locator('[data-variable-family="camera"][data-variable-key="perspective"][data-variable-value="character"]').click();
+  await expect(page.locator('html')).toHaveAttribute('data-vr-focus', 'character');
+  await expect(page.locator('#vr-focus')).toContainText('CHARACTER');
+  const focusAfter = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--vr-focus-x').trim());
+  expect(focusAfter).not.toBe(focusBefore);
+
+  await page.locator('[data-variable-family="space"][data-variable-key="compression"][data-variable-value="high"]').click();
+  await expect(page.locator('html')).toHaveAttribute('data-vr-pressure', 'high');
+  await expect(page.locator('#vr-pressure')).toContainText('HIGH');
+  const metrics = await page.evaluate(() => ({ scrollWidth: document.documentElement.scrollWidth, innerWidth: innerWidth }));
+  expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.innerWidth + 1);
+
+  const accentAfter = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--accent').trim());
+  expect(accentAfter).toBe(accentBefore);
+});
+
+test('explicit visual variables survive ownership changes', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto(url);
+  await page.locator('#vr-live').waitFor();
+
+  const cool = page.locator('[data-variable-family="color"][data-variable-key="temperature"][data-variable-value="cool"]');
+  await cool.click();
+  await expect(page.locator('html')).toHaveAttribute('data-vr-temperature', 'cool');
+
+  await page.locator('[data-owner-choice="character"]').click();
+  await expect(page.locator('html')).toHaveAttribute('data-vr-agency', 'character');
+  await expect(page.locator('html')).toHaveAttribute('data-vr-temperature', 'cool');
+  await expect(page.locator('#vr-atmosphere')).toContainText('COOL');
+});
+
+test('line texture and rhythm controls update visual response without changing diagnostic semantics', async ({ page }) => {
+  await page.goto(url);
+  await page.locator('#vr-live').waitFor();
+  await page.locator('[data-variable-family="line"][data-variable-key="stability"][data-variable-value="low"]').click();
+  await expect(page.locator('html')).toHaveAttribute('data-vr-line', 'unstable');
+  await page.locator('[data-variable-family="texture"][data-variable-key="noise"][data-variable-value="high"]').click();
+  await expect(page.locator('html')).toHaveAttribute('data-vr-texture', 'high');
+  await page.locator('[data-variable-family="rhythm"][data-variable-key="motionEnergy"][data-variable-value="high"]').click();
+  await expect(page.locator('html')).toHaveAttribute('data-vr-motion', 'high');
+  await expect(page.locator('#vr-motion')).toContainText('HIGH');
+
+  await page.locator('[data-diagnostic="incoherent"]').click();
+  await expect(page.locator('.diagnostic-status')).toContainText('SYSTEM COHERENCE · FAIL');
+});
+
 test('reduced motion keeps information and disables staged transitions', async ({ browser }) => {
   const context = await browser.newContext({ reducedMotion: 'reduce', viewport: { width: 390, height: 844 } });
   const page = await context.newPage();
   await page.goto(url);
   await page.locator('#state-machine-root .case-tabs').waitFor();
   await expect(page.locator('#ownership-status')).toBeVisible();
+  await page.locator('#vr-live').waitFor();
   const transition = await page.locator('.ownership-marker').first().evaluate(node => getComputedStyle(node).transitionDuration);
   expect(transition).toBe('0s');
+  const vrTransition = await page.evaluate(() => getComputedStyle(document.body, '::before').transitionDuration);
+  expect(vrTransition).toBe('0s');
+  await expect(page.locator('#vr-atmosphere')).toBeVisible();
   await context.close();
 });
