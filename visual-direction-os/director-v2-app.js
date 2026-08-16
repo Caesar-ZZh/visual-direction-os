@@ -56,6 +56,31 @@
     });
   }
 
+  function ensureKnowledgeAtlas() {
+    const hero = $('#learn-panel');
+    const ownership = $('.ownership-lab');
+    if (!hero || !ownership || $('#knowledge-atlas')) return;
+    const destinations = [
+      ['overview', '00', 'Overview', 'Master framework and system map'],
+      ['character', '01', 'Character', 'Identity as a controlled range'],
+      ['world', '02', 'World', 'Default visual grammar and compatibility'],
+      ['sequence', '03', 'Sequence', 'Temporal orchestration and score'],
+      ['color', '04', 'Color', 'Territory, migration and ownership'],
+      ['production', '05', 'Production', 'Reverse, rebuild and validate'],
+      ['case-study', '06', 'Case Study', 'Mechanism analysis in context'],
+      ['glossary', 'G', 'Glossary', 'Shared visual-direction vocabulary'],
+      ['decision-tree', 'D', 'Decision Tree', 'Route narrative questions into visual variables'],
+      ['workflow', 'W', 'Master Workflow', 'From analysis to production delivery'],
+      ['qa', 'Q', 'Visual QA', 'Check system coherence before ship']
+    ];
+    ownership.insertAdjacentHTML('beforebegin', `
+      <section class="knowledge-atlas workspace" id="knowledge-atlas" aria-labelledby="knowledge-atlas-title">
+        <p class="eyebrow">Learn / Knowledge Atlas</p>
+        <div class="atlas-heading"><div><h2 id="knowledge-atlas-title">The existing knowledge system stays intact.</h2><p>v2.1 adds a Director Workspace without rewriting the twelve knowledge sources. These routes open the established v2.0 knowledge views directly.</p></div><span>11 VIEWS · READ-ONLY SOURCE</span></div>
+        <div class="atlas-grid">${destinations.map(([route, index, label, copy]) => `<a data-knowledge-route="${route}" href="index.html#${route}"><span>${index}</span><strong>${label}</strong><small>${copy}</small><b aria-hidden="true">↗</b></a>`).join('')}</div>
+      </section>`);
+  }
+
   function loadScript(src, globalName) {
     if (window[globalName]) return Promise.resolve(window[globalName]);
     return new Promise((resolve, reject) => {
@@ -96,6 +121,7 @@
 
   async function initAdvancedTools() {
     loadToolStyles();
+    ensureKnowledgeAtlas();
     ensureToolSections();
     await Promise.all([
       loadScript('state-machine.js', 'VDOSStateMachine'),
