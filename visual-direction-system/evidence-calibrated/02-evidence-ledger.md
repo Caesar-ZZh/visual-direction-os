@@ -166,11 +166,20 @@ A claim is **not** a whole-film rule merely because it appears here. Scope and p
 | ID | Evidence claim | Status / scope |
 |---|---|---|
 | `EV-E65-078` | A causal event can escalate into a full-frame spatialized event domain with its own coherent depth scaffold. | REVISES prior localized-event model |
-| `EV-E65-079` | A newly arriving entity can become graphically legible before the surrounding event field stabilizes. Identity at `01:45:03` remains unresolved. | PROVISIONAL; arrival transition |
+| `EV-E65-079` | A newly arriving entity can become graphically legible before the surrounding event field stabilizes. Identity at `01:45:03` remains unresolved in B017 alone. | PROVISIONAL; arrival transition; resolved by EV-E65-082 |
 | `EV-E65-080` | High-velocity imagery can lock a small identity-landmark set while debris and streak channels vary temporally around it. | PROVISIONAL; temporal channel lock |
 | `EV-E65-081` | Persistent diegetic line material can become compositional recovery scaffolding after chaos. | PROVISIONAL; recovery geometry |
 
-BATCH-017 also independently reinforces `EV-E65-055` / `EV-E65-058`: post-event recovery is helped by a deliberate description-density drop before clean character authority returns.
+## BATCH-018 — Miguel identity / fragmentary reveal / owner-local detail
+
+| ID | Evidence claim | Status / scope |
+|---|---|---|
+| `EV-E65-082` | Ambiguous arrival identity can remain unresolved until a temporally distributed anchor set crosses a confidence threshold; later evidence resolves the B017 figure as **Miguel O'Hara / Spider-Man 2099**, not Jess. | VALIDATES CAUTION / RESOLVES IDENTITY |
+| `EV-E65-083` | A major character can gain identity and authority through a fragmentary reveal sequence without showing the face. | PROVISIONAL; character introduction |
+| `EV-E65-084` | Character-owned emissive technology can remain a local rendering layer without recoloring unrelated characters or the host world. | PROVISIONAL; technology ownership |
+| `EV-E65-085` | Description density can be independently budgeted by visual owner: high-frequency newcomer technology may coexist with a low-frequency recovering host world. | REVISES frame-level detail-budget model |
+
+BATCH-017/018 together establish an important evidence-handling rule: **do not convert narrative expectation into identity evidence**. The transition frame stayed unresolved until later independent anchors made the identity claim supportable.
 
 ## Current production consequences
 
@@ -182,9 +191,12 @@ Carrier Selection + Carrier Handoff
 Reality Suppression / Controlled Flattening
 Hierarchical Detail Compression
 Narrative/Perceptual Detail Budget
+Owner-local Description Density / Detail Budget by Owner
 Motion-state Detail Budget + Re-entry
 Search-state Information Withholding
 Multi-channel Identity Preservation
+Temporal Identity-resolution Confidence / Anchor Threshold
+Fragmentary Reveal Order / Authority before Face
 Identity Landmark Lock under Velocity
 Action Signature Before Body Reveal
 Orientation / Foreground Scale Reveal
@@ -196,6 +208,7 @@ Surface-specific Medium Assignment
 Entity-medium Ownership + Medium Boundary Persistence
 Prop-medium Ownership / Owner-medium Inheritance
 Host-world Prop-medium Lock
+Character-owned Emissive Technology / Device Emissive Owner
 Multiscale Entity-medium Carriers
 Interaction-layer Ownership / Cross-medium Contact without Homogenization
 Contact-boundary Preservation / Contact Edge Ownership Seam
