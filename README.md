@@ -1,14 +1,16 @@
 <div align="center">
 
-# 🎬 Visual Direction OS
+# 🎬 Visual Direction OS — v2.0
 
 ### Narrative becomes visual behavior. —— 叙事即视觉行为
 
-**一套把「电影 / 动画 / 游戏 / 广告」的视觉规律，变成可查、可看、可推演的导演操作系统**
+**一套把「电影 / 动画 / 游戏 / 广告」的视觉规律，拆成可查、可看、可推演的导演操作系统。**
+不是又一份"配色灵感"收藏，而是一台真的能跑的机器。
 
 ✨ 零构建 · 零依赖 · 双击即玩 · 中英双语 ✨
 
 [![Tech](https://img.shields.io/badge/Tech-Vanilla%20HTML%2FCSS%2FJS-c4a362?style=flat-square)](https://github.com/Caesar-ZZh/123)
+[![Version](https://img.shields.io/badge/Version-2.0-cc4444?style=flat-square)](https://github.com/Caesar-ZZh/123)
 [![Build](https://img.shields.io/badge/Build-None%20Needed-4a9a5a?style=flat-square)](https://github.com/Caesar-ZZh/123)
 [![Deploy](https://img.shields.io/badge/Deploy-GitHub%20Pages%20Ready-4a7fa8?style=flat-square)](https://github.com/Caesar-ZZh/123)
 [![QA](https://img.shields.io/badge/QA-50%2F50%20checks-cc4444?style=flat-square)](https://github.com/Caesar-ZZh/123)
@@ -18,79 +20,86 @@
 
 ---
 
-## 💡 这是什么？
+## 💡 这玩意儿到底是啥？
 
-视觉风格从来不是一堆特效的集合，而是一套**规则系统**——它决定：
+大多数"视觉风格指南"只告诉你**画成什么样**。Visual Direction OS 告诉你**谁有权决定画面变成什么样**。
 
-> **什么可以变、何时变、为什么变、以及谁拥有这个"变"的权力。**
+> **视觉风格从来不是一堆特效的集合，而是一套规则系统**——
+> 它规定**什么可以变、何时变、为什么变，以及谁拥有这个"变"的权力。**
 
-Visual Direction OS（视觉导演操作系统）把这套规则拆成 11 个知识模块，并为其配上一个**高颜值、可交互**的网页前端。知识是源（Markdown），网页是窗（HTML），两者各自独立、互相印证。
+我们把这套规则拆成 **11 个知识模块**，再给它配上一个**高颜值、零依赖、可交互**的网页前端。知识是源（Markdown），网页是窗（HTML）——各活各的，互相印证，谁也不绑架谁。
 
----
-
-## ✨ 功能亮点
-
-### 📚 知识库（Single Source of Truth）
-- 🧠 **11 篇中英双语文档**：主框架 → 角色系统 → 世界语法 → 序列与色彩 → 生产管线 → 工作模板 → 原创案例 → 术语表 → 决策树 → 主工作流 → 视觉 QA
-- 🎭 **角色机制案例**：Miles / Gwen / Hobie / Elian 不是"画风模板"，而是"变量所有权"的机制示范
-- 🌐 **中英术语表**：统一对译，写 Brief 不词穷
-
-### 🖥️ 交互操作系统（visual-direction-os/）
-- 🧭 **System Map 主链路**：Narrative → Primary Variable → State → Sequence → Agency，30 秒看懂全局
-- 📈 **Sequence Score**：SVG 可视化 Space / Color / Camera / Agency 随时间的曲线，标出 **Ownership Shift（所有权转移）**
-- 🎭 **Character State Machine**：角色视觉状态机，可交互推演
-- 🌈 **Color Territory & Ownership**：色彩所有权矩阵——谁的画面，谁说了算
-- 🗂️ **全套导演工具**：Decision Tree、Master Workflow、Visual QA 清单
-- ♿ **认真的可访问性**：键盘导航、`prefers-reduced-motion`、所有图形带文本替代
-- 📱 **四档响应式**：1440 / 1024 / 768 / 390 全部无横向溢出，深浅双主题
-- ✅ **结构 QA**：`qa-check.js` 含 50 项检查，全绿才算过关
+**一句话定位**：如果你的视觉系统在去掉颜色之后就塌了，那它从来不是系统，只是层皮。我们干的就是把"皮"下面的骨架挖出来，编号，上架。
 
 ---
 
-## 🚀 使用说明
+## ✨ 功能亮点（aka 为什么这仓库值得一个 Star）
+
+### 📚 知识库 · Single Source of Truth
+- 🧠 **11 篇中英双语文档**：主框架 → 角色系统 → 世界语法 → 序列与色彩 → 生产管线 → 工作模板 → 原创案例 → 术语表 → 决策树 → 主工作流 → 视觉 QA。从 Brief 到 Final Sequence 一条龙不卡壳。
+- 🎭 **角色机制，不是画风模板**：Miles / Gwen / Hobie / Elian 示范的是"变量所有权"怎么转移，不是"黑红配色怎么抄"。
+- 🌐 **中英术语表**：写 Brief 不再词穷，中英文对齐到每一个概念。
+- 🔬 **Elian / Meridian 原创案例**：一个"谁有权决定什么值得被看见"的世界——注意力被制度化分配。听着像科幻？问问你自己每天刷的信息流。
+
+### 🖥️ 交互操作系统 · `visual-direction-os/`
+这里是技术的炫技场，也是设计师的游乐场：
+
+- 🧭 **System Map 主链路**：Narrative → Primary Variable → State → Sequence → Agency，30 秒看懂全局。
+- 📈 **Sequence Score**：Inline SVG 画出 Space / Color / Camera / Agency 随时间的曲线，并自动标出 **Ownership Shift（所有权转移）**——高潮不是最响，是权力易主。
+- 🎭 **Character State Machine**：六状态可交互推演，Baseline → Pressure → Crisis → Decision → Agency → Resolution，每个 Transition 都有叙事触发条件。
+- 🌈 **Color Territory & Ownership**：色彩所有权矩阵——这块颜色**归谁**，谁说了算。
+- 🗂️ **全套导演工具**：Decision Tree、Master Workflow（20 步）、Visual QA 清单，理论落地一条龙。
+- ♿ **认真到偏执的可访问性**：完整键盘导航、`prefers-reduced-motion`、所有图形带文本替代、`skip-link`、`aria-live` 状态播报、`inert` 焦点管理、响应式（820 / 480 断点实测，桌面到手机零横向溢出）、深 / 浅双主题。
+- ✅ **结构 QA**：`qa-check.js` 自带 **50 项**断言，全绿才算过关。CI 没有，但我自己就是 CI。
+
+---
+
+## 🤯 技术栈（或者：为什么我连个 `npm install` 都不给你）
+
+| 层 | 选型 | 为什么这么轴 |
+|---|---|---|
+| 前端 | Vanilla HTML / CSS / JS + Inline SVG | 零构建、零维护债、十年后还能双击打开 |
+| 知识源 | Markdown（中英双语） | 可维护、可检索、可继续长 |
+| 质量 | `qa-check.js`（Node 原生，零依赖）+ 四档响应式人工核验 | 结构 50/50，控制台 0 报错，不靠信仰 |
+| 依赖 | **0 个 node_module** | 对未来的自己温柔一点 |
+
+> 没有 React。没有 Vue。没有打包器。没有"先 `npm install` 再等三分钟"。
+> 一个浏览器，一个标签页，开工。这就是我对"可维护"的全部理解——以及我对"炫技"的另一种定义：用最朴素的技术，做出最不朴素的东西。
+
+---
+
+## 🚀 三秒上手
 
 ```bash
-# 打开导演控制台（无需安装任何东西）
-visual-direction-os/index.html
+# 方案 A：双击即玩（真·双击）
+open visual-direction-os/index.html
 
-# 或起个本地静态服务器
+# 方案 B：起个静态服务器（如果你迷信 localhost）
 npx serve .
 ```
 
-想读"原典"？直接翻 [`visual-direction-system/`](./visual-direction-system/)，11 篇文档即是内容源。
+想读"原典"？直接翻 [`visual-direction-system/`](./visual-direction-system/)，11 篇文档即是内容源，**只追加、不改写语义**。
 
 跑质量自检：
 
 ```bash
-node visual-direction-os/qa-check.js   # 期望输出 50/50 passed
+node visual-direction-os/qa-check.js   # 期望输出：50 passed, 0 failed
 ```
 
 ---
 
-## 📦 安装步骤
-
-| 方式 | 命令 | 说明 |
-|---|---|---|
-| 🔁 克隆 | `git clone https://github.com/Caesar-ZZh/123.git` | 完整仓库 |
-| 📥 下载 | 点 GitHub 右上角 **Code → Download ZIP** | 解压即玩 |
-| 🌐 部署 | GitHub Pages / 任意静态服务器 | 指向 `visual-direction-os/` |
-
-> 无 `npm install`、无打包、无运行时依赖。一个浏览器即可开工。
-
----
-
-## 🎬 示例演示
+## 🎬 我想干嘛来着？（按图索骥）
 
 | 你想做的事 | 去哪看 |
 |---|---|
 | 一眼看懂整个视觉框架 | 首页 **Overview → System Map** |
-| 看一个角色如何"长大" | **Character → State Machine**（推演 Elian 的焦点所有权转移） |
+| 看一个角色怎么"长大" | **Character → State Machine**（推演 Elian 的焦点所有权转移） |
 | 给一段戏排视觉节奏 | **Sequence → Sequence Score** |
 | 决定这场戏谁掌镜 | **Color → Color Territory** |
-| 把理论落地成 Brief | **Production → Workflow / QA** |
-| 查一个术语 | **Glossary**（中英对照） |
+| 把理论榨成 Brief | **Production → Workflow / QA** |
+| 查一个术语卡壳了 | **Glossary**（中英对照） |
 
-> 💡 建议路径：**Overview（30 秒）→ Character（2 分钟）→ Sequence（看图秒懂）**。
+> 💡 推荐路径：**Overview（30 秒）→ Character（2 分钟）→ Sequence（看图秒懂）**。之后你就回不去"凭感觉调色"了。
 
 ---
 
@@ -98,9 +107,9 @@ node visual-direction-os/qa-check.js   # 期望输出 50/50 passed
 
 ```
 📦 visual-direction-os
-├── 🖥️ visual-direction-os/          # 交互前端（11 视图，无构建）
+├── 🖥️ visual-direction-os/          # 交互前端（11 视图，零构建）
 │   ├── index.html  styles.css  app.js
-│   └── qa-check.js                # 50 项结构 QA
+│   └── qa-check.js                # 50 项结构 QA，自带 CI 灵魂
 ├── 📚 visual-direction-system/      # 11 篇知识文档（内容源，勿改语义）
 │   ├── 01-master-framework.md … 11-visual-qa.md
 │   └── README.md
@@ -110,32 +119,12 @@ node visual-direction-os/qa-check.js   # 期望输出 50/50 passed
 
 ---
 
-## 🛠️ 技术栈
-
-| 层 | 选型 | 为什么 |
-|---|---|---|
-| 前端 | Vanilla HTML / CSS / JS + Inline SVG | 零构建、零维护债、永久可读 |
-| 知识源 | Markdown（中英双语） | 可维护、可检索、可继续扩展 |
-| 质量 | `qa-check.js` + 四档响应式人工验证 | 结构 50/50，控制台 0 报错 |
-
----
-
-## ✍️ 改名提案：从「123」到「Visual Direction OS」
+## 🏷️ 改名提案：从「123」到「Visual Direction OS」
 
 当前仓库名 `123` + 简介「乱七八糟」已与实际内容严重不符（命理应用已移除）。建议重命名：
 
-### 🏆 首选方案
-
 > **仓库名：`visual-direction-os`**
 > **简介：** 🎬 Narrative Visual Direction System + 交互式导演操作系统 · 中英双语知识库，零构建可交互网页，Sequence Score / State Machine / Color Territory 一应俱全
-
-### 🥈 备选方案
-
-| 名称 | 简介 | 风格 |
-|---|---|---|
-| `narrative-visual-direction` | 叙事视觉导演系统：把抽象视觉规律变成可查可推演的知识库 | 📚 学术、内容向 |
-| `dir-os` | Director OS：给视觉导演的操作系统 | 🎬 极简、产品感 |
-| `visual-grammar-lab` | 视觉语法实验室：研究"画面为什么这样动" | 🔬 研究、方法论 |
 
 > 💡 改名路径：仓库页 **Settings → General → Repository name**，旧地址自动跳转，不影响克隆记录。建议同步把默认分支 `master` → `main`，并更新仓库 Description 为上方首选简介。
 
@@ -156,8 +145,8 @@ node visual-direction-os/qa-check.js   # 期望输出 50/50 passed
 
 <div align="center">
 
-💀 由 **Hades × Caesar** 联袂监制 · Made with ☕ and 零个 node_modules
+💀 由 **Hades × Caesar** 联袂监制 · Made with ☕ and exactly zero node_modules
 
-**如果这套视觉哲学让你觉得"aha"，欢迎点个 ⭐**
+如果这套视觉哲学让你产生"aha"，欢迎点个 ⭐——毕竟，注意力也是一种所有权。
 
 </div>
