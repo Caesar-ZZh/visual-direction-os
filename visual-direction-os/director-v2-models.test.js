@@ -4,6 +4,7 @@ const stateMachine = require('./state-machine.js');
 const sequence = require('./sequence-score.js');
 const colorOwnership = require('./color-ownership.js');
 const diagnostic = require('./diagnostic.js');
+const timelineSync = require('./timeline-sync.js');
 
 assert.deepStrictEqual(stateMachine.listCases().sort(), ['elian','gwen','hobie','miles']);
 const gwenMid = stateMachine.sampleCase('gwen', 0.5);
@@ -18,6 +19,11 @@ assert.ok(seq.tracks.color);
 assert.ok(seq.tracks.agency);
 assert.ok(seq.ownership.character);
 assert.ok(seq.currentBeat.id);
+
+const synced = timelineSync.deriveTimelineView({ activeCase:'gwen', playhead:0.5 }, stateMachine, sequence);
+assert.equal(synced.caseView.caseId, 'gwen');
+assert.equal(synced.caseView.playhead, 0.5);
+assert.equal(synced.sequenceView.playhead, 0.5);
 
 const territory = colorOwnership.describeOwnership({ character: 'high', world: 'low', narrative: 'medium' });
 assert.equal(territory.primaryOwner, 'character');
