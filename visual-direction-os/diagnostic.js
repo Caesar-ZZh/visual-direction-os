@@ -46,14 +46,21 @@
     if (!root || !scene) return () => {};
     root.innerHTML = `<div class="diagnostic-toolbar"><button type="button" data-diagnostic="current">Current scene</button><button type="button" data-diagnostic="coherent">Coherent fixture</button><button type="button" data-diagnostic="incoherent">Incoherent fixture</button></div><p class="diagnostic-question">Why did this visual behavior change?</p><div id="diagnostic-result" aria-live="polite"></div>`;
     const resultRoot = root.querySelector('#diagnostic-result');
+    let activeView = 'current';
     const render = state => {
       const result = runDiagnostic(state);
       resultRoot.innerHTML = `<p class="diagnostic-status" data-level="${result.status}">SYSTEM COHERENCE · ${result.status}</p><div class="diagnostic-list">${result.findings.map(f=>`<article data-level="${f.level}"><header><strong>${f.level}</strong><h3>${f.message}</h3></header><p>${f.reason}</p><small>${f.suggestion}</small></article>`).join('')}</div>`;
     };
-    root.querySelector('[data-diagnostic="current"]').addEventListener('click',()=>render(scene.getSceneState()));
-    root.querySelector('[data-diagnostic="coherent"]').addEventListener('click',()=>render(fixtures.coherent));
-    root.querySelector('[data-diagnostic="incoherent"]').addEventListener('click',()=>render(fixtures.incoherent));
-    const unsubscribe = scene.subscribeSceneState((state, source) => { if (!String(source).startsWith('diagnostic:fixture')) render(state); });
+    const setView = view => {
+      activeView = view;
+      root.querySelectorAll('[data-diagnostic]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.diagnostic === view)));
+      render(view === 'current' ? scene.getSceneState() : fixtures[view]);
+    };
+    root.querySelector('[data-diagnostic="current"]').addEventListener('click',()=>setView('current'));
+    root.querySelector('[data-diagnostic="coherent"]').addEventListener('click',()=>setView('coherent'));
+    root.querySelector('[data-diagnostic="incoherent"]').addEventListener('click',()=>setView('incoherent'));
+    const unsubscribe = scene.subscribeSceneState(state => { if (activeView === 'current') render(state); });
+    setView('current');
     return unsubscribe;
   }
   return { fixtures, runDiagnostic, initDiagnostic };
