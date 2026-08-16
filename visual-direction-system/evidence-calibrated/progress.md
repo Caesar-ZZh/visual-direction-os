@@ -7,16 +7,16 @@
 - Source corpus: user Google Drive screenshot archive; canonical research workspace is private `Sorted by Scence` plus a read-only raw-source fallback.
 - Research target: **approximately 4,000 high-coverage evidence frames** selected for chapter, character/world, mechanism, transition and counterexample coverage.
 - Detailed obligations: [`coverage-matrix-4000.md`](./coverage-matrix-4000.md).
-- **Cumulative frames actually viewed:** **346**.
-- **Cumulative frames with at least L1 annotation:** **346**.
-- **Latest completed batch:** **BATCH-023**.
+- **Cumulative frames actually viewed:** **358**.
+- **Cumulative frames with at least L1 annotation:** **358**.
+- **Latest completed batch:** **BATCH-024**.
 - Latest Earth-65 chronological coverage remains **`01:45:23`**; preserved adjacent checkpoint is **`01:45:24`**, but dense Earth-65 adjacency is deprioritized.
-- Latest coverage pivot: **Miguel / Earth-928 Spider Society native command/system grammar**, representative sample from `14) Enter Lobby - Miguel is Mad` spanning selected frames `02:57:31–02:59:10`.
-- BATCH-023 is explicitly a **12-frame representative sample**, not uninterrupted frame-by-frame coverage of that full time interval.
+- Latest coverage pivot: **Earth-50101 / Mumbattan density ecology**, continuous raw-fallback slice `02:39:17–02:39:28`.
+- BATCH-024 contains **12 consecutive source screenshots**, all individually opened and visually inspected.
 
 ## Source-discovery resilience
 
-The canonical Drive `00_SOURCE_CORPUS` slot is currently empty, but that is not a stopping condition. Coverage pivots use targeted Sorted-by-Scene folders or the read-only raw source as needed. Candidate metadata never counts until each selected source image is actually opened. Source originals remain read-only; manifests, analysis, curated references, contact sheets and progress artifacts write only to canonical `Sorted by Scence`.
+The canonical Drive `00_SOURCE_CORPUS` slot may be empty and Sorted-by-Scene routing may fail without blocking the research. BATCH-024 established a new recovery path: the read-only raw root can be sliced with a **parent-folder + `modifiedTime` window**, which recovered the `02:39:17–02:39:28` Mumbattan sequence without relying on pagination. Candidate metadata still never counts until each actual source image is opened. Source originals remain read-only; manifests, analysis, curated references, contact sheets and progress artifacts write only to canonical `Sorted by Scence`.
 
 ## Batch log
 
@@ -44,11 +44,12 @@ The canonical Drive `00_SOURCE_CORPUS` slot is currently empty, but that is not 
 | BATCH-020 | Miles/Brooklyn · 01:59:30–01:59:41 | 12 | 12 | 9 | 4 | 3 | complete first-pass |
 | BATCH-021 | Miles/Brooklyn · 01:59:42–01:59:53 | 12 | 12 | 9 | 4 | 3 | complete first-pass |
 | BATCH-022 | Hobie/punk · 02:45:18–02:45:29 | 12 | 12 | 9 | 4 | 3 | complete first-pass |
-| **BATCH-023** | **Miguel/Spider Society · representative sample 02:57:31–02:59:10** | **12** | **12** | **9** | **4** | **3** | **complete first-pass** |
+| BATCH-023 | Miguel/Spider Society · representative sample 02:57:31–02:59:10 | 12 | 12 | 9 | 4 | 3 | complete first-pass |
+| **BATCH-024** | **Mumbattan · continuous 02:39:17–02:39:28** | **12** | **12** | **10** | **4** | **3** | **complete first-pass** |
 
-## Cumulative learning through BATCH-023
+## Cumulative learning through BATCH-024
 
-The evidence base is in an explicit cross-world calibration phase. Earth-65 established a dense causal layered system; BATCH-019–021 calibrated Brooklyn ownership/attention/anomaly behavior; BATCH-022 revised character-medium logic through Hobie; BATCH-023 now adds the first native Spider Society command/system sample.
+The evidence base is in an explicit cross-world calibration phase. Earth-65 established a dense causal layered system; BATCH-019–021 calibrated Brooklyn ownership/attention/anomaly behavior; BATCH-022 revised character-medium logic through Hobie; BATCH-023 added the first native Spider Society command/system sample; BATCH-024 now adds the first active-lineage Mumbattan world-density sample.
 
 ### BATCH-019 additions — first active-lineage Miles/Brooklyn calibration
 
@@ -84,14 +85,24 @@ The evidence base is in an explicit cross-world calibration phase. Earth-65 esta
 
 ### BATCH-023 additions — Spider Society native system / authority grammar
 
-- **12 / 12 selected source images actually opened and visually inspected.**
-- Evidence claims `EV-MIGUEL-001–004` added.
 - **System-owned Interface Field / Nested Evidence Media** — amber analytic panels are diegetic system-owned surfaces; cyan image/video evidence windows remain distinct nested media rather than one global hologram texture.
 - **Vertical Authority Architecture** — Miguel can dominate while tiny in frame through elevation, platform separation, vertical light and subordinate upward gaze before facial detail is available.
 - **Role-space Information-density Partition** — Miguel's command/monitoring zone carries dense system information while Miles/Gwen reaction space remains darker and lower-frequency inside the same broader world.
-- **Cross-medium Guest Preservation** — Hobie's local grayscale/cutout medium persists inside Spider Society without colonizing Miles or host architecture, independently validating BATCH-022 live-medium locality.
+- **Cross-medium Guest Preservation** — Hobie's local grayscale/cutout medium persists inside Spider Society without colonizing Miles or host architecture.
 - Hobie medium-time / frame-rate cycling remains **unproven**.
 - GitHub analysis: [`27-batch-023-miguel-spider-society-system-authority.md`](./27-batch-023-miguel-spider-society-system-authority.md).
+
+### BATCH-024 additions — first active-lineage Mumbattan density ecology
+
+- **12 / 12 consecutive source images actually opened and visually inspected.**
+- Evidence claims `EV-MUM-001–004` added.
+- **Structured Urban Density Bands** — crowd/vehicles, transit/roofways and architecture retain abundance through separate scale/detail bands rather than equal-detail clutter.
+- **Infrastructure as Navigational Scaffold** — towers, bridges, cables and suspended transit are large readability rails inside the dense city.
+- **Regional Color/Value Spatial Zoning** — broad teal/cyan versus warm pink/yellow territories organize depth and action zones before local accents.
+- **Local Identity Carve-out** — Miles/Gwen face/mask/hood/silhouette retain high priority while nearby city frequency compresses without erasing place identity.
+- **Contrast Rarity at Anomaly Threshold** — a very small irregular black void-like shape at `02:39:28` gains attention through rare topology/value rather than scale; identity and causality remain deliberately unresolved.
+- **Source-routing self-heal** — raw-root parent + `modifiedTime` window slicing recovered later corpus frames without pagination.
+- GitHub analysis: [`28-batch-024-mumbattan-density-ecology-anomaly-threshold.md`](./28-batch-024-mumbattan-density-ecology-anomaly-threshold.md).
 
 ## 4,000-frame selection policy
 
@@ -104,23 +115,22 @@ Every batch must answer:
 3. What production / Skill parameter follows?
 4. What remaining coverage gap should affect later sampling?
 
-## Current coverage pressure after BATCH-023
+## Current coverage pressure after BATCH-024
 
-BATCH-023 closes the first native Spider Society command/system sample, but it is intentionally representative rather than exhaustive. Remaining Spider Society evidence should be selected only when it adds genuinely new architecture-scale, crowd/system-order, transport/chase or institutional spatial behavior beyond this dialogue chamber.
+BATCH-024 closes the first Mumbattan density/world-introduction sample, but it intentionally stops at an anomaly-attention threshold. It does **not** establish a complete Mumbattan chase or portal system.
 
-The highest-value next pivot is now **Mumbattan density/action ecology**: vertical infrastructure, layered traffic/crowd vitality, scale, action readability and how dense world information is partitioned under motion. This should be prioritized over mechanically continuing adjacent Miguel dialogue frames.
+The highest marginal value is a targeted continuation after `02:39:28` **only if actually opened frames visibly add**:
 
-Other high-priority gaps:
+- force-vector construction under dense-world load;
+- traffic/crowd interaction with moving characters;
+- infrastructure functioning as action geometry rather than static world description;
+- causal anomaly/portal interaction and whether host-world grammar is preserved or altered;
+- infrastructure re-authoring, collision or destruction;
+- identity-landmark lock under sustained motion.
 
-- targeted Spider Society crowd/order/transport/chase evidence when genuinely distinct from BATCH-023;
-- targeted Hobie temporal behavior only when actual adjacent frames prove material/raster/print cycling or frame-rate-like medium changes;
-- targeted Miles/Spot action only when frames show portal/void causality, force-vector construction, infrastructure re-authoring or sustained-motion identity locking;
-- Jess introduction / interaction grammar from visually confirmed material;
-- world collision / transition outside Earth-65, especially cases where anomaly actually changes world grammar;
-- climax / agency / authorship;
-- independent cross-world counterexamples and intentional medium blending.
+If adjacent Mumbattan frames do not add these mechanisms, pivot rather than sampling chronology mechanically. Other high-priority gaps remain Spider Society crowd/order/transport/chase, Hobie temporal behavior when visually provable, Jess, world collision outside Earth-65, climax/agency/authorship and independent cross-world counterexamples.
 
-The captured bald adversary in B020 remains deliberately unnamed. Do not convert scene knowledge into identity evidence.
+The captured bald adversary in B020 remains deliberately unnamed. The B024-012 black anomaly also remains identity/causality unresolved. Do not convert scene knowledge into evidence.
 
 ## Promotion rule
 
