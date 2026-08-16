@@ -21,37 +21,37 @@ Near-duplicates enter only when they contribute temporal, micro-performance, hel
 
 | GitHub chapter | Evidence obligation | Target tagged frames floor | Deep diagnostics floor | Current evidence status |
 |---|---|---:|---:|---|
-| `01-master-framework.md` | Validate causal chain across characters/worlds: space, color, edge, medium, time, focus, object, performance, light, event grammar and perceptual uncertainty. | 900 | 120 | EARLY — Earth-65 broad/saturated; B019–021 test cross-world ownership, authored surfaces, attention priority, anomaly scope and hard-reset editorial transitions in Brooklyn |
-| `02-character-system.md` | Miles, Gwen, Hobie, Miguel and supporting identity systems; state changes; non-face identity; action signature; character-owned medium. | 1200 | 180 | GWEN STRONG; Vulture dense; Miguel identity validated; **Miles/Brooklyn now has authorship/relationship, Spot threshold, identity anchors and interrupted-agency evidence**; Hobie weak |
-| `03-world-system.md` | Earth-1610/Brooklyn, Earth-65, Earth-928/Spider Society, Mumbattan, Hobie/punk, collision/transition states. | 1300 | 180 | Earth-65 overrepresented; **Brooklyn now has mural/tunnel daily grammar, daylight host-world preservation under close Spot intrusion, and a clean grounded social-interior reset**; other worlds weak |
-| `04-sequence-color.md` | Role-color, territory, migration, residue, merge, attack/hold/decay, light ownership, carrier handoff. | 1000 | 150 | Earth-65 strong; B019–021 show Brooklyn can hold world/color while relationship, threat, UI and attention carriers change, and that scene boundaries may hard-reset rather than decay |
-| `05-production-system.md` | Composition, rendering deconstruction, detail strategy, medium assignment, material ontology, motion, source light, event rendering, force construction. | 850 | 130 | B021 adds attention-owner priority, anomaly-boundary persistence, screen-space→device handoff, agency interruption controls and hard-reset scene-domain transitions |
-| `06-project-worksheets.md` | Convert mechanisms into explicit project fields/questions. | 500 | 60 | fields now include `attention_owner_priority`, `owner_blend_guard`, `anomaly_spread_trigger_required`, `action_attention_target`, `device_hand_occupancy`, `agency_interruption_strength`, `hard_reset_allowed`, `new_scene_world_lock` |
+| `01-master-framework.md` | Validate causal chain across characters/worlds: space, color, edge, medium, time, focus, object, performance, light, event grammar and perceptual uncertainty. | 900 | 120 | EARLY — Earth-65 broad/saturated; B019–021 calibrate Brooklyn; **B022 adds first active-lineage Hobie evidence and revises medium ownership from single-material persistence to governed multi-medium identity assembly** |
+| `02-character-system.md` | Miles, Gwen, Hobie, Miguel and supporting identity systems; state changes; non-face identity; action signature; character-owned medium. | 1200 | 180 | GWEN STRONG; Vulture dense; Miguel identity validated; Miles/Brooklyn has first cross-world clusters; **Hobie now has first verified intro-domain, multi-medium identity, semantic typography and shared-world locality cluster** |
+| `03-world-system.md` | Earth-1610/Brooklyn, Earth-65, Earth-928/Spider Society, Mumbattan, Hobie/punk, collision/transition states. | 1300 | 180 | Earth-65 overrepresented; Brooklyn improving; **B022 distinguishes frame-wide Hobie punk narrative domain from stable shared host-world grammar after hard exit**; Spider Society/Mumbattan remain weak |
+| `04-sequence-color.md` | Role-color, territory, migration, residue, merge, attack/hold/decay, light ownership, carrier handoff. | 1000 | 150 | Earth-65 strong; Brooklyn adds held-world carrier changes; B022 adds a character-domain attack/full-domain/title-card/hard-exit sequence where material/state changes matter more than palette continuity |
+| `05-production-system.md` | Composition, rendering deconstruction, detail strategy, medium assignment, material ontology, motion, source light, event rendering, force construction. | 850 | 130 | B022 adds governed multi-medium entity assembly, collage-layer ownership, cutout-edge authority, semantic typography as spatial material, title-card identity state and live-medium locality |
+| `06-project-worksheets.md` | Convert mechanisms into explicit project fields/questions. | 500 | 60 | fields now include `punk_domain_state`, `multi_medium_entity_assembly`, `medium_fragment_incompatibility`, `identity_anchor_across_medium_fragments`, `character_owned_semantic_text`, `semantic_text_occlusion_budget`, `domain_exit_hard_cut_allowed`, `live_hobie_medium_locality` |
 | `07-original-case-study.md` | Rebuild an original case with evidence-backed mechanisms beyond surface imitation. | 350 | 80 | not yet evidence-refactored |
-| `08-glossary.md` | Stable terms need frame evidence, scope, counterexample and production definition. | 600 | 60 | candidate terms now include Attention-owner Priority, Proximity Without Contamination, Communication-driven Agency Interruption, Hard Scene-domain Reset |
-| `09-decision-tree.md` | Validate preserve/re-author, carrier, detail, medium/FX/material ontology, break/recovery, reveal decisions. | 700 | 100 | B021 adds “did anomaly spread have a causal trigger?”, “which owner currently has attention?”, “is the UI screen-space or device-native?”, “is this transition gradual or a hard reset?” |
-| `10-master-workflow.md` | Validate narrative problem → planning → rendering → sequence → QA across quiet, action, transition and climax. | 900 | 140 | Brooklyn calibration now spans memory/authorship → communication pressure → entity anomaly → owner competition → device handoff → clean social reset |
-| `11-visual-qa.md` | Positive/negative examples for global filters, wrong hierarchy, wrong ownership, FX/material confusion, over-description, leakage, blur-only motion. | 850 | 160 | B021 adds failures for proximity-triggered global anomaly, Spot leakage into Miles/city, false UI materialization, distraction-by-glitch and unnecessary residue across clean cuts |
+| `08-glossary.md` | Stable terms need frame evidence, scope, counterexample and production definition. | 600 | 60 | candidate terms now include Governed Multi-medium Entity Assembly, Punk Narrative-domain State, Character-owned Semantic Typography, Title-card Identity State, Live-medium Locality |
+| `09-decision-tree.md` | Validate preserve/re-author, carrier, detail, medium/FX/material ontology, break/recovery, reveal decisions. | 700 | 100 | B022 adds “is character coherence one material or a governed multi-medium rule-set?”, “is text caption/UI or character-owned spatial material?”, “is punk treatment local or frame-domain?”, “does the domain hard-exit before live shared-world entry?” |
+| `10-master-workflow.md` | Validate narrative problem → planning → rendering → sequence → QA across quiet, action, transition and climax. | 900 | 140 | Cross-world workflow now includes Brooklyn ownership calibration plus first Hobie identity-domain → title-card → host-world reset → local live-medium transition |
+| `11-visual-qa.md` | Positive/negative examples for global filters, wrong hierarchy, wrong ownership, FX/material confusion, over-description, leakage, blur-only motion. | 850 | 160 | B022 adds failures for uniform punk filters, single-shader cleanup, typography treated as UI, global collage leakage, forced gradual exit and stripping Hobie's local medium in shared scenes |
 
 ## Cross-cutting evidence domains
 
 | Domain | Minimum coverage intent | Why it matters |
 |---|---:|---|
-| Miles / Brooklyn daily life | 400+ | Prevent cyberpunk/graffiti shortcut; learn lived-in urban abstraction. **B019–021 now include mural memory, family communication and a grounded institutional interior.** |
-| Miles / Brooklyn action | 300+ | Direction, spatial authorship, motion and agency. **B020–021 establish Spot presence, host-world lock and interrupted agency, but strong force-vector/portal causality remains pending.** |
+| Miles / Brooklyn daily life | 400+ | Prevent cyberpunk/graffiti shortcut; learn lived-in urban abstraction. B019–021 include mural memory, family communication and grounded social interior. |
+| Miles / Brooklyn action | 300+ | Direction, spatial authorship, motion and agency. B020–021 establish Spot presence, host-world lock and interrupted agency; strong portal/force-vector causality remains pending. |
 | Gwen / Earth-65 | 350+ | Emotional permeability, action identity, thresholds and state changes; already disproportionately sampled. |
-| Hobie / punk system | 350+ | Medium-time instability, collage, frame-rate/material behavior. **Still a major gap and now a preferred pivot target.** |
-| Miguel / Spider Society | 300+ | System/order, architecture, high-pressure composition; B018 validates Miguel identity but not native-system grammar. **Preferred pivot target.** |
-| Mumbattan | 300+ | Vertical ecology, density, layered vitality and action readability. **Preferred pivot target.** |
-| Cross-character facial rendering | 350+ | Separate landmark precision from surface realism across identities. |
-| Camera / composition families | 700+ | Re-authoring, scale, occlusion, depth, reveal, relationship carrier, threat-shell authority, anomaly foreground intrusion, attention competition, authority reset and recovery geometry. |
-| Rendering construction | 700+ | Reality suppression, flattening, medium ownership, event modes, regional/owner-local detail, authored surfaces, UI layers, void topology, anomaly boundaries and hard resets. |
-| Color / edge / texture | 700+ | Mechanism rather than palette imitation. |
-| Motion / temporal FX | 500+ | Chase/action, reveal signatures, event envelopes, force vectors, instability, reconstitution, identity lock and recovery. **Miles/Spot sustained force construction is still not yet sampled strongly.** |
-| World transition / collision | 300+ | Learn when grammar breaks, overlaps, hands off, transfers or becomes temporary event-space. B021 adds a **hard editorial scene reset**, not world-level anomaly contamination. |
-| Visual silence / quiet | 250+ | Prevent constant escalation and establish authority/description-density reset. B019 gives first non-Earth-65 validation; B021 adds a clean social-domain reset. |
+| Hobie / punk system | 350+ | Medium-time instability, collage, frame-rate/material behavior. **B022 begins this domain with 12 verified frames covering frame-wide punk domain, multi-medium identity, semantic typography, title-card exit and local live-medium coexistence. Temporal/frame-rate instability is still pending.** |
+| Miguel / Spider Society | 300+ | System/order, architecture, high-pressure composition; B018 validates Miguel identity but not native-system grammar. **Now a top pivot target.** |
+| Mumbattan | 300+ | Vertical ecology, density, layered vitality and action readability. **Now a top pivot target.** |
+| Cross-character facial rendering | 350+ | Separate landmark precision from surface realism across identities. B022 adds a useful Hobie counterexample: face medium itself may be photo/halftone-like inside a mixed-media identity assembly. |
+| Camera / composition families | 700+ | Re-authoring, scale, occlusion, depth, reveal, relationship carrier, threat-shell authority, anomaly intrusion, attention competition, authority reset and recovery geometry. B022 adds cutout foreground scale and typography/body scale collision. |
+| Rendering construction | 700+ | Reality suppression, flattening, medium ownership, event modes, regional/owner-local detail, authored surfaces, UI layers, void topology, anomaly boundaries, hard resets and now governed multi-medium character assembly. |
+| Color / edge / texture | 700+ | Mechanism rather than palette imitation. B022 adds cutout-edge authority, print/halftone/paper/paint incompatibility and distressed typography ownership. |
+| Motion / temporal FX | 500+ | Chase/action, reveal signatures, event envelopes, force vectors, instability, reconstitution, identity lock and recovery. **Hobie's temporal/frame-rate material cycling remains a high-value missing mechanism.** |
+| World transition / collision | 300+ | Learn when grammar breaks, overlaps, hands off, transfers or becomes temporary event-space. B022 adds character-domain takeover → title-card → hard host-world reset → local live-character coexistence. |
+| Visual silence / quiet | 250+ | Prevent constant escalation and establish authority/description-density reset. B019 gives first non-Earth-65 validation; B021 adds hard social-domain reset. |
 | Climax / agency / authorship | 300+ | Validate visual reserve, escalation, transfer of control and residue. |
-| Counterexamples | 500+ multi-tag | Prevent local observations becoming false universal rules. B019–021 add Brooklyn counterexamples to global emotional color, global graffiti, proximity-triggered anomaly spread and mandatory gradual layer decay. |
+| Counterexamples | 500+ multi-tag | Prevent local observations becoming false universal rules. B022 is a direct counterexample to one-entity-one-material consistency and to assuming character-specific style must globally contaminate shared environments. |
 
 ## Batch rules under the 4,000-frame strategy
 
@@ -68,53 +68,37 @@ Each batch must answer:
 - **L2** — change point / representative / counterexample with mechanism analysis.
 - **L3 / Deep** — diagnostic frame/sequence used to revise theory, workflow, prompt schema or QA.
 
-## Current checkpoint after BATCH-021
+## Current checkpoint after BATCH-022
 
-- Selected/viewed/L1 frames: **322 / ~4,000**.
+- Selected/viewed/L1 frames: **334 / ~4,000**.
 - Latest Earth-65 chronological coverage: **`01:45:23`**.
 - Preserved adjacent Earth-65 boundary: **`01:45:24`**, but dense adjacency remains deprioritized.
-- Latest coverage-pivot sample: **Miles / Earth-1610 Brooklyn, `01:59:42–01:59:53`**, 12/12 actually opened, **9** at least L2, **4** deep diagnostics, **3** curated references.
-- The active Miles/Brooklyn pivot now spans `01:59:18–01:59:53` across BATCH-019/020/021.
+- Latest coverage-pivot sample: **Hobie / punk system, `02:45:18–02:45:29`**, 12/12 actually opened, **9** at least L2, **4** deep diagnostics, **3** curated references.
+- First active-lineage Hobie cluster now covers punk narrative-domain takeover, governed multi-medium identity, semantic typography, identity title-card exit and local live-medium coexistence in a stable shared room.
 
-### New / strengthened mechanisms in BATCH-019
+### New / strengthened mechanisms in BATCH-022
 
-- **Private-to-environmental Authorship Scaling** — Miles' relationship/memory imagery scales from sketchbook page to wall mural while the sketch/graffiti medium remains owned by the authored surface instead of becoming a global Brooklyn style.
-- **Regional Density Island / Lived-in Compression** — a mural may preserve very high local portrait/tag/mark density while tunnel architecture remains lower-frequency and readable.
-- **Grounded Relationship Staging** — Miles/Jeff are an explicit cross-world counterexample to overgeneralizing Earth-65 relationship color-field dominance.
-- **Cross-world Description-density Reset** — dark track infrastructure plus Miles' red hood independently validate density-reset/visual-silence logic outside Earth-65.
+- **Punk Narrative-domain Takeover** — Hobie's intro can replace ordinary world depiction with a frame-wide character-owned collage/print/paper/paint/type/cutout domain.
+- **Governed Multi-medium Entity Assembly** — Hobie identity persists across intentionally incompatible materials; coherence belongs to a rule-set plus protected identity anchors rather than one consistent shader.
+- **Semantic Typography as Character-owned Spatial Material** — selected words/labels use scale and occlusion to become compositional objects inside the punk domain rather than ordinary subtitles/UI.
+- **Title-card Exit + Local Live-medium Persistence** — the frame-wide domain can collapse to an abstract identity wordmark and hard-cut to a stable host world, after which live Hobie retains local punk traits without globalizing them.
 
-### New / strengthened mechanisms in BATCH-020
-
-- **Threat-shell Decompression / Equipment-to-person Authority Handoff** — threat pressure can move from oversized hardware to exposed body and face without a world/palette reset. The captured bald adversary remains intentionally unnamed because identity evidence is insufficient.
-- **Environmental Memory Atlas** — Miles' wall-sized mural is a bounded authored archive of people/relationships/symbols, not generic graffiti noise.
-- **Screen-space Communication Layer** — Dad message UI attacks/stacks above the mural and temporarily outranks it for attention without becoming wall paint or rewriting perspective/material/color.
-- **Spot Value-mass Intrusion / Void-topology Identity** — Spot's first clear Brooklyn intrusion reads through huge white value mass, black void topology and foreground occlusion while the host street remains materially stable.
-
-### New / strengthened mechanisms in BATCH-021
-
-- **Triple-owner Attention Competition** — Spot, Miles and Dad UI can occupy one frame as distinct owners while attentional priority changes without medium blending.
-- **Proximity Without Contamination** — Spot stays locally bounded across repeated close-range frames; proximity/occlusion alone does not justify void/anomaly spread into hero or city.
-- **Communication-driven Agency Interruption** — gaze, hands, device occupancy and torso orientation can redirect hero agency while nearby threat remains present; no global FX escalation is required.
-- **Screen-space-to-device-native Handoff** — a communication layer can move from screen-space editorial ownership to physical-device UI ownership when the phone becomes the subject.
-- **Hard Scene-domain Reset** — anomaly/UI confrontation can cut directly to a grounded social interior with zero visible prior-layer residue, narrowing continuous-scene attack/hold/decay assumptions.
-
-The practical model now needs an explicit **owner + attention priority + scope + transition mode** decision before stylization: identify which system owns a signal, whether it currently owns attention, whether its effect is local/entity/world/screen-space/device-native, and whether the next transition decays or hard-resets.
+The practical model now needs an explicit distinction between **material consistency** and **identity consistency**. For some characters, preserving identity means preserving a controlled pattern of material incompatibility rather than forcing all parts through one rendering treatment.
 
 ## Current coverage pressure
 
-BATCH-021 fulfills the requested focused post-threshold Miles/Spot check. Crucially, the interval **did not yield strong portal/void causality or force-vector construction**. Continuing adjacent frames by default would now risk oversampling Brooklyn attention/UI behavior while Hobie, Spider Society and Mumbattan remain almost untouched.
+BATCH-022 substantially improves Hobie coverage, but it does not yet prove the often-cited temporal/frame-rate instability of his punk system. One additional Hobie batch is justified **only** when targeted candidate frames clearly show material cycling, raster/print changes across adjacent frames, live-action medium-time behavior or intentional leakage changes over time.
 
-Highest-priority broader gaps:
+Otherwise the highest marginal coverage value now moves to:
 
-1. **Hobie / punk medium-time behavior** — collage/material instability, temporal/raster/print behavior, intentional ownership leakage.
-2. **Miguel / Spider Society native system/architecture** — institutional order, architecture, information density, pressure and scale.
-3. **Mumbattan density/action ecology** — vertical infrastructure, traffic/crowd density, action legibility and layered vitality.
+1. **Miguel / Spider Society native system and architecture** — institutional order, architecture, information density, pressure and scale.
+2. **Mumbattan density/action ecology** — vertical infrastructure, traffic/crowd density, action legibility and layered vitality.
+3. Targeted **Hobie temporal behavior** only when candidate material visibly changes medium across time rather than merely repeating collage styling.
 4. Targeted **Miles / Spot action** only when candidate material clearly shows portal/void causality, strong force vectors, infrastructure re-authoring or identity locking under sustained motion.
 5. Jess introduction / interaction grammar from visually confirmed frames.
 6. World collision / transition outside Earth-65, including a case where anomaly actually changes world grammar.
 7. Climax / agency / authorship.
-8. Independent cross-world counterexamples.
-9. Intentional cases where authored/anomaly media genuinely spread beyond owned surfaces or blend across owners.
+8. Independent cross-world counterexamples and intentional medium blending.
 
 ## Source-discovery resilience note
 
