@@ -7,16 +7,16 @@
 - Source corpus: user Google Drive screenshot archive; canonical research workspace is private `Sorted by Scence` plus a read-only raw-source fallback.
 - Research target: **approximately 4,000 high-coverage evidence frames** selected for chapter, character/world, mechanism, transition and counterexample coverage.
 - Detailed obligations: [`coverage-matrix-4000.md`](./coverage-matrix-4000.md).
-- **Cumulative frames actually viewed:** **406**.
-- **Cumulative frames with at least L1 annotation:** **406**.
-- **Latest completed batch:** **BATCH-028**.
-- Latest Earth-65 chronological coverage remains **`01:45:23`**; preserved adjacent checkpoint is **`01:45:24`**, but dense Earth-65 adjacency is deprioritized.
-- Latest coverage pivot: **Earth-928 / Spider Society chase**, continuous raw-fallback slice `15:05:57–15:06:08`.
-- BATCH-028 contains **12 consecutive source screenshots**, all individually opened and visually inspected; 11 received at least L2, with 4 L3/Deep frames and 3 curated references.
+- **Cumulative frames actually viewed:** **418**.
+- **Cumulative frames with at least L1 annotation:** **418**.
+- **Latest completed batch:** **BATCH-029**.
+- Latest Earth-65 dense chronological coverage remains **`01:45:23`**. Later Earth-65/Jess locator images were screening-only and are not part of the selected corpus.
+- Latest coverage pivot: **Earth-928 / Spider Society exterior chase**, continuous raw-fallback slice `15:07:38–15:07:49`.
+- BATCH-029 contains **12 consecutive source screenshots**, all individually opened and visually inspected; 10 received at least L2, with 4 L3/Deep frames and 3 curated references.
 
 ## Source-discovery resilience
 
-The canonical Drive `00_SOURCE_CORPUS` slot may be empty and Sorted-by-Scene routing may fail without blocking the research. BATCH-024 established a recovery path: the read-only raw root can be sliced with a **parent-folder + `modifiedTime` window**. BATCH-025–028 continue the raw-fallback lineage; exact filename/time discovery is also valid when needed. Candidate metadata never counts until each actual source image is opened. Source originals remain read-only; manifests, analysis, curated references, contact sheets and progress artifacts write only to canonical `Sorted by Scence`.
+The canonical Drive `00_SOURCE_CORPUS` slot may be empty and Sorted-by-Scene routing may fail without blocking the research. BATCH-024 established a recovery path: the read-only raw root can be sliced with a **parent-folder + `modifiedTime` window**. BATCH-025–029 continue the raw-fallback lineage; exact filename/time discovery is also valid when needed. Candidate metadata and screening-only locator images never count until selected source images are opened and admitted to the evidence corpus. Source originals remain read-only; manifests, analysis, curated references, contact sheets and progress artifacts write only to canonical `Sorted by Scence`.
 
 ## Batch log
 
@@ -49,11 +49,12 @@ The canonical Drive `00_SOURCE_CORPUS` slot may be empty and Sorted-by-Scene rou
 | BATCH-025 | Mumbattan/Spot · continuous 02:39:29–02:39:40 | 12 | 12 | 11 | 4 | 3 | complete first-pass |
 | BATCH-026 | Mumbattan action · continuous 02:39:41–02:39:52 | 12 | 12 | 12 | 4 | 3 | complete first-pass |
 | BATCH-027 | Mumbattan action · continuous 02:39:53–02:40:04 | 12 | 12 | 12 | 4 | 3 | complete first-pass |
-| **BATCH-028** | **Spider Society chase · continuous 15:05:57–15:06:08** | **12** | **12** | **11** | **4** | **3** | **complete first-pass** |
+| BATCH-028 | Spider Society chase · continuous 15:05:57–15:06:08 | 12 | 12 | 11 | 4 | 3 | complete first-pass |
+| **BATCH-029** | **Spider Society exterior chase · continuous 15:07:38–15:07:49** | **12** | **12** | **10** | **4** | **3** | **complete first-pass** |
 
-## Cumulative learning through BATCH-028
+## Cumulative learning through BATCH-029
 
-The evidence base is in an explicit cross-world calibration phase. Earth-65 established a dense causal layered system; BATCH-019–021 calibrated Brooklyn ownership/attention/anomaly behavior; BATCH-022 revised character-medium logic through Hobie; BATCH-023 added the first native Spider Society command/system sample; BATCH-024–027 established Mumbattan density/anomaly/action mechanisms; BATCH-028 now adds an independent Earth-928 chase-mode sample.
+The evidence base is in an explicit cross-world calibration phase. Earth-65 established a dense causal layered system; BATCH-019–021 calibrated Brooklyn ownership/attention/anomaly behavior; BATCH-022 revised character-medium logic through Hobie; BATCH-023 added the first native Spider Society command/system sample; BATCH-024–027 established Mumbattan density/anomaly/action mechanisms; BATCH-028 added Earth-928 crowd/routing/zone-reset chase evidence; BATCH-029 adds an exterior world-scale/transport-action regime.
 
 ### BATCH-019 additions — first active-lineage Miles/Brooklyn calibration
 
@@ -139,6 +140,16 @@ The evidence base is in an explicit cross-world calibration phase. Earth-65 esta
 - **Pursuit-state Persistence Across Host-zone Reset** — chase role-state persists through a hard cut into a pale food/social interior whose props, palette and architecture reinitialize independently.
 - GitHub analysis: [`32-batch-028-spider-society-chase-crowd-routing-zone-reset.md`](./32-batch-028-spider-society-chase-crowd-routing-zone-reset.md).
 
+### BATCH-029 additions — Spider Society exterior scale / transport action
+
+- **Pursuit-state Persistence Through World-scale Decompression** — Miles can become a tiny black/red target invariant while Earth-928 macro city geometry takes temporary authority.
+- **Single-interceptor Pressure Handoff** — a visible pursuit crowd may compress to one enormous mechanically distinct blocker; crowd visibility is not required continuously.
+- **Character-light Host-world Hold** — a brief tower/sky state can preserve host/pursuit continuity before Miles re-enters without forcing another crowd frame.
+- **Host Transport as Temporary Action Constraint** — Miles' white web visibly attaches to a flying vehicle while the vehicle retains Earth-928 material ownership.
+- **World ↔ Target ↔ Pursuer Authority Oscillation** — world scale, target/pursuer split and Miguel near-field body mass can alternately dominate while host continuity remains intact.
+- The mechanically distinct interceptor at `15:07:39` remains deliberately **identity unresolved**.
+- GitHub analysis: [`33-batch-029-spider-society-exterior-world-scale-transport-action.md`](./33-batch-029-spider-society-exterior-world-scale-transport-action.md).
+
 ## 4,000-frame selection policy
 
 The corpus must collectively cover all existing main chapters and actively balance Miles/Brooklyn, Gwen/Earth-65, Hobie, Miguel/Spider Society, Mumbattan, facial rendering, camera/composition, rendering construction, color/edge/texture, motion/temporal FX, world collision, visual silence and climax/authorship.
@@ -150,19 +161,23 @@ Every batch must answer:
 3. What production / Skill parameter follows?
 4. What remaining coverage gap should affect later sampling?
 
-## Current coverage pressure after BATCH-028
+## Current coverage pressure after BATCH-029
 
-BATCH-028 closes the first major Spider Society crowd/chase gap distinct from B023 command-room evidence. It establishes heterogeneous crowd-medium locality, target/depth hierarchy, host-routing rails and action-state continuity across a host-zone reset.
+BATCH-029 extends the Spider Society chase beyond B028's crowd/routing/zone-reset model into a distinct exterior regime: world-scale decompression, optional crowd visibility, single-interceptor pressure handoff, character-light host-world holds and direct host-transport action constraint.
 
-Continue Spider Society only when a targeted sample adds one of the remaining causal/system mechanisms:
+The bounded Jess locator is closed for now: `01:45:45` remains only a represented/nested candidate, and later Earth-65 plus B023/B028-adjacent screening did not produce a live visual anchor. Those screening frames are not counted.
 
-- transport/portal infrastructure;
-- explicit group coordination or order commands during chase;
-- longer temporal evidence for lane changes, avoidance or coordinated interception.
+Highest marginal-value next targets are:
 
-Otherwise pivot by marginal value to Jess introduction/interaction grammar, world collision outside Earth-65, climax/agency/authorship or independent cross-world counterexamples. Hobie temporal/frame-rate behavior should still be sampled only when directly visible.
+- world collision outside Earth-65;
+- climax / agency / authorship;
+- explicit portal/transport entry-exit causality when a targeted sequence can be found;
+- independent cross-world counterexamples;
+- Hobie temporal/frame-rate behavior only when directly visible.
 
-The captured bald adversary in B020 remains deliberately unnamed. Camera movement is never inferred from one still. Do not convert scene knowledge into evidence.
+Revisit Spider Society only for a genuinely new mechanism such as explicit group coordination/order commands or portal infrastructure not already covered by B023/B028/B029.
+
+The captured bald adversary in B020 remains deliberately unnamed. The mechanically distinct B029 interceptor remains unnamed. Camera movement is never inferred from one still. Do not convert scene knowledge into evidence.
 
 ## Promotion rule
 
