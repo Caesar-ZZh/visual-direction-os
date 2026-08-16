@@ -50,3 +50,11 @@ jobs:
           ! grep -R "transition:[[:space:]]*all" visual-direction-os/director-v2*.css
           grep -q "prefers-reduced-motion" visual-direction-os/director-v2.css
           grep -q "prefers-reduced-motion" visual-direction-os/director-v2-tools.css
+      - name: Run browser acceptance
+        run: |
+          npm install --no-save @playwright/test@1.55.0
+          npx playwright install --with-deps chromium
+          python3 -m http.server 4173 --directory visual-direction-os >/tmp/vdos-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          npx playwright test visual-direction-os/director-v2-browser.spec.js --reporter=line --workers=1
