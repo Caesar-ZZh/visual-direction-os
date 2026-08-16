@@ -7,12 +7,12 @@
 - Source corpus: user Google Drive screenshot archive; canonical research workspace is private `Sorted by Scence` plus a read-only raw-source fallback.
 - Research target: **approximately 4,000 high-coverage evidence frames** selected for chapter, character/world, mechanism, transition and counterexample coverage.
 - Detailed obligations: [`coverage-matrix-4000.md`](./coverage-matrix-4000.md).
-- **Cumulative frames actually viewed:** **334**.
-- **Cumulative frames with at least L1 annotation:** **334**.
-- **Latest completed batch:** **BATCH-022**.
+- **Cumulative frames actually viewed:** **346**.
+- **Cumulative frames with at least L1 annotation:** **346**.
+- **Latest completed batch:** **BATCH-023**.
 - Latest Earth-65 chronological coverage remains **`01:45:23`**; preserved adjacent checkpoint is **`01:45:24`**, but dense Earth-65 adjacency is deprioritized.
-- Latest coverage pivot: **Hobie / punk system**, targeted scene folder `12) Pavitr Backstory - Collider Explodes`, extraction **`02:45:18–02:45:29`**.
-- The BATCH-017 unresolved incoming Spider-person remains resolved by BATCH-018 as **Miguel O'Hara / Spider-Man 2099**, not Jess.
+- Latest coverage pivot: **Miguel / Earth-928 Spider Society native command/system grammar**, representative sample from `14) Enter Lobby - Miguel is Mad` spanning selected frames `02:57:31–02:59:10`.
+- BATCH-023 is explicitly a **12-frame representative sample**, not uninterrupted frame-by-frame coverage of that full time interval.
 
 ## Source-discovery resilience
 
@@ -43,11 +43,12 @@ The canonical Drive `00_SOURCE_CORPUS` slot is currently empty, but that is not 
 | BATCH-019 | Miles/Brooklyn · 01:59:18–01:59:29 | 12 | 12 | 8 | 4 | 3 | complete first-pass |
 | BATCH-020 | Miles/Brooklyn · 01:59:30–01:59:41 | 12 | 12 | 9 | 4 | 3 | complete first-pass |
 | BATCH-021 | Miles/Brooklyn · 01:59:42–01:59:53 | 12 | 12 | 9 | 4 | 3 | complete first-pass |
-| **BATCH-022** | **Hobie/punk · 02:45:18–02:45:29** | **12** | **12** | **9** | **4** | **3** | **complete first-pass** |
+| BATCH-022 | Hobie/punk · 02:45:18–02:45:29 | 12 | 12 | 9 | 4 | 3 | complete first-pass |
+| **BATCH-023** | **Miguel/Spider Society · representative sample 02:57:31–02:59:10** | **12** | **12** | **9** | **4** | **3** | **complete first-pass** |
 
-## Cumulative learning through BATCH-022
+## Cumulative learning through BATCH-023
 
-The evidence base is now in an explicit cross-world calibration phase. Earth-65 established a dense causal layered system; BATCH-019–021 calibrated Brooklyn ownership/attention/anomaly behavior; BATCH-022 begins the first active-lineage Hobie correction and materially revises what “character medium” can mean.
+The evidence base is in an explicit cross-world calibration phase. Earth-65 established a dense causal layered system; BATCH-019–021 calibrated Brooklyn ownership/attention/anomaly behavior; BATCH-022 revised character-medium logic through Hobie; BATCH-023 now adds the first native Spider Society command/system sample.
 
 ### BATCH-019 additions — first active-lineage Miles/Brooklyn calibration
 
@@ -75,13 +76,22 @@ The evidence base is now in an explicit cross-world calibration phase. Earth-65 
 
 ### BATCH-022 additions — first active-lineage Hobie/punk calibration
 
-- **12 / 12 source images actually opened and visually inspected.**
-- Evidence claims `EV-HOBIE-001–004` added.
 - **Punk Narrative-domain Takeover** — Hobie's intro can replace ordinary world depiction with a frame-wide character-owned collage/print/paper/paint/type/cutout domain.
-- **Governed Multi-medium Entity Assembly** — Hobie identity remains coherent while face, hands, body and graphic fragments intentionally use incompatible media. Identity consistency is not material consistency.
-- **Semantic Typography as Character-owned Spatial Material** — words/labels can become object-like composition through scale and occlusion rather than behaving as ordinary subtitles/UI.
-- **Title-card Exit + Local Live-medium Persistence** — the full punk domain can collapse into an identity wordmark and hard-cut to a stable room; live Hobie then retains local punk/cutout traits without globally collaging Miles, Gwen or the environment.
+- **Governed Multi-medium Entity Assembly** — Hobie identity remains coherent while face, hands, body and graphic fragments intentionally use incompatible media.
+- **Semantic Typography as Character-owned Spatial Material** — words/labels can become object-like composition through scale and occlusion rather than ordinary subtitles/UI.
+- **Title-card Exit + Local Live-medium Persistence** — full punk domain can hard-cut to a stable room; live Hobie then retains local punk traits without globally collaging the host world.
 - GitHub analysis: [`26-batch-022-hobie-punk-domain-multimedium.md`](./26-batch-022-hobie-punk-domain-multimedium.md).
+
+### BATCH-023 additions — Spider Society native system / authority grammar
+
+- **12 / 12 selected source images actually opened and visually inspected.**
+- Evidence claims `EV-MIGUEL-001–004` added.
+- **System-owned Interface Field / Nested Evidence Media** — amber analytic panels are diegetic system-owned surfaces; cyan image/video evidence windows remain distinct nested media rather than one global hologram texture.
+- **Vertical Authority Architecture** — Miguel can dominate while tiny in frame through elevation, platform separation, vertical light and subordinate upward gaze before facial detail is available.
+- **Role-space Information-density Partition** — Miguel's command/monitoring zone carries dense system information while Miles/Gwen reaction space remains darker and lower-frequency inside the same broader world.
+- **Cross-medium Guest Preservation** — Hobie's local grayscale/cutout medium persists inside Spider Society without colonizing Miles or host architecture, independently validating BATCH-022 live-medium locality.
+- Hobie medium-time / frame-rate cycling remains **unproven**.
+- GitHub analysis: [`27-batch-023-miguel-spider-society-system-authority.md`](./27-batch-023-miguel-spider-society-system-authority.md).
 
 ## 4,000-frame selection policy
 
@@ -94,20 +104,19 @@ Every batch must answer:
 3. What production / Skill parameter follows?
 4. What remaining coverage gap should affect later sampling?
 
-## Current coverage pressure after BATCH-022
+## Current coverage pressure after BATCH-023
 
-The first Hobie batch produced high-value structural corrections, so the pivot was justified. However it mainly covers intro-domain construction and the hard transition into live shared-world presence. It does **not yet establish temporal/frame-rate material instability**.
+BATCH-023 closes the first native Spider Society command/system sample, but it is intentionally representative rather than exhaustive. Remaining Spider Society evidence should be selected only when it adds genuinely new architecture-scale, crowd/system-order, transport/chase or institutional spatial behavior beyond this dialogue chamber.
 
-A second Hobie batch should be selected only if targeted discovery visibly shows material/raster/print cycling across adjacent frames, live-action medium-time changes, or intentional ownership leakage over time. Otherwise continuing adjacent Hobie frames would risk learning static collage styling rather than the temporal mechanism.
+The highest-value next pivot is now **Mumbattan density/action ecology**: vertical infrastructure, layered traffic/crowd vitality, scale, action readability and how dense world information is partitioned under motion. This should be prioritized over mechanically continuing adjacent Miguel dialogue frames.
 
-Highest-priority missing evidence:
+Other high-priority gaps:
 
-- **Miguel / Spider Society native system and architecture** — order/system grammar, architecture, information density, institutional pressure and scale;
-- **Mumbattan density/action ecology** — vertical infrastructure, crowd/traffic density, layered vitality and action readability;
-- targeted **Hobie temporal behavior** only when the actual candidate sequence shows medium-time change;
-- targeted Miles/Spot action only when candidate material shows real portal/void causality, force vectors, infrastructure re-authoring or identity locking under sustained motion;
+- targeted Spider Society crowd/order/transport/chase evidence when genuinely distinct from BATCH-023;
+- targeted Hobie temporal behavior only when actual adjacent frames prove material/raster/print cycling or frame-rate-like medium changes;
+- targeted Miles/Spot action only when frames show portal/void causality, force-vector construction, infrastructure re-authoring or sustained-motion identity locking;
 - Jess introduction / interaction grammar from visually confirmed material;
-- world collision / transition outside Earth-65, especially a case where anomaly actually changes world grammar;
+- world collision / transition outside Earth-65, especially cases where anomaly actually changes world grammar;
 - climax / agency / authorship;
 - independent cross-world counterexamples and intentional medium blending.
 
