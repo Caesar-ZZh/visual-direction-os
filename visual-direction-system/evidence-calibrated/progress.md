@@ -7,16 +7,16 @@
 - Source corpus: user Google Drive screenshot archive; canonical research workspace is private `Sorted by Scence` plus a read-only raw-source fallback.
 - Research target: **approximately 4,000 high-coverage evidence frames** selected for chapter, character/world, mechanism, transition and counterexample coverage.
 - Detailed obligations: [`coverage-matrix-4000.md`](./coverage-matrix-4000.md).
-- **Cumulative frames actually viewed:** **310**.
-- **Cumulative frames with at least L1 annotation:** **310**.
-- **Latest completed batch:** **BATCH-020**.
+- **Cumulative frames actually viewed:** **322**.
+- **Cumulative frames with at least L1 annotation:** **322**.
+- **Latest completed batch:** **BATCH-021**.
 - Latest Earth-65 chronological coverage remains **`01:45:23`**; preserved adjacent checkpoint is **`01:45:24`**, but dense Earth-65 adjacency is deprioritized.
-- Latest coverage pivot: **Miles / Earth-1610 Brooklyn**, scene folder `4) Miles Intro - Spot Captured`, now covered through extraction **`01:59:41`**.
+- Latest coverage pivot: **Miles / Earth-1610 Brooklyn**, scene folder `4) Miles Intro - Spot Captured`, now covered through extraction **`01:59:53`**.
 - The BATCH-017 unresolved incoming Spider-person remains resolved by BATCH-018 as **Miguel O'Hara / Spider-Man 2099**, not Jess.
 
 ## Source-discovery resilience
 
-The canonical Drive `00_SOURCE_CORPUS` slot is currently empty, but that is not a stopping condition. Adjacent Earth-65 batches recovered continuity through verified source metadata and the read-only raw-source parent. BATCH-019/020 demonstrate the coverage-pivot path: targeted Sorted-by-Scene folders can be selected by coverage gap, but candidate metadata still does not count until every selected source image is actually opened. Source originals remain read-only; manifests, analysis, curated references, contact sheets and progress artifacts write only to canonical `Sorted by Scence`.
+The canonical Drive `00_SOURCE_CORPUS` slot is currently empty, but that is not a stopping condition. Adjacent Earth-65 batches recovered continuity through verified source metadata and the read-only raw-source parent. BATCH-019–021 demonstrate the coverage-pivot path: targeted Sorted-by-Scene folders can be selected by coverage gap, but candidate metadata still does not count until every selected source image is actually opened. Source originals remain read-only; manifests, analysis, curated references, contact sheets and progress artifacts write only to canonical `Sorted by Scence`.
 
 ## Batch log
 
@@ -41,11 +41,12 @@ The canonical Drive `00_SOURCE_CORPUS` slot is currently empty, but that is not 
 | BATCH-017 | Scene 2 · 01:45:00–01:45:11 | 12 | 12 | 8 | 4 | 3 | complete first-pass |
 | BATCH-018 | Scene 2 · 01:45:12–01:45:23 | 12 | 12 | 8 | 4 | 3 | complete first-pass |
 | BATCH-019 | Miles/Brooklyn · 01:59:18–01:59:29 | 12 | 12 | 8 | 4 | 3 | complete first-pass |
-| **BATCH-020** | **Miles/Brooklyn · 01:59:30–01:59:41** | **12** | **12** | **9** | **4** | **3** | **complete first-pass** |
+| BATCH-020 | Miles/Brooklyn · 01:59:30–01:59:41 | 12 | 12 | 9 | 4 | 3 | complete first-pass |
+| **BATCH-021** | **Miles/Brooklyn · 01:59:42–01:59:53** | **12** | **12** | **9** | **4** | **3** | **complete first-pass** |
 
-## Cumulative learning through BATCH-020
+## Cumulative learning through BATCH-021
 
-The evidence base is now in an explicit cross-world calibration phase. Earth-65 established a dense causal layered system; BATCH-019/020 are separating which mechanisms transfer to Brooklyn from which visual implementations are world-specific.
+The evidence base is now in an explicit cross-world calibration phase. Earth-65 established a dense causal layered system; BATCH-019–021 are separating which mechanisms transfer to Brooklyn from which visible implementations are world-specific.
 
 ### BATCH-019 additions — first active-lineage Miles/Brooklyn calibration
 
@@ -57,13 +58,22 @@ The evidence base is now in an explicit cross-world calibration phase. Earth-65 
 
 ### BATCH-020 additions — Miles/Brooklyn action/anomaly threshold
 
-- **12 / 12 source images actually opened and visually inspected.**
-- Evidence claims `EV-M1610-005–008` added.
 - **Threat-shell Decompression / Equipment-to-person Authority Handoff** — oversized hardware can own threat pressure and then relinquish authority to exposed body/face while the world remains held. The captured bald adversary remains intentionally **identity unresolved**.
 - **Environmental Memory Atlas** — Miles' wall-sized mural is a bounded authored archive of remembered people/relationships/symbols rather than generic graffiti noise.
-- **Screen-space Communication Layer** — Dad message bubbles attack/stack above the mural and temporarily outrank it without becoming wall paint or rewriting world perspective/material/color; screen-space layering is now independently supported outside Earth-65.
-- **Spot Value-mass Intrusion / Void-topology Identity** — Spot's first clear action-space intrusion reads through huge white value mass, black void topology and foreground occlusion while ordinary Brooklyn remains materially stable. At this checkpoint Spot is an **entity-level anomaly**, not evidence of whole-city contamination.
+- **Screen-space Communication Layer** — Dad message bubbles attack/stack above the mural and temporarily outrank it without becoming wall paint or rewriting world perspective/material/color.
+- **Spot Value-mass Intrusion / Void-topology Identity** — Spot's first clear action-space intrusion reads through huge white value mass, black void topology and foreground occlusion while ordinary Brooklyn remains materially stable.
 - GitHub analysis: [`24-batch-020-miles-brooklyn-memory-ui-spot-threshold.md`](./24-batch-020-miles-brooklyn-memory-ui-spot-threshold.md).
+
+### BATCH-021 additions — attention ownership / proximity lock / hard reset
+
+- **12 / 12 source images actually opened and visually inspected.**
+- Evidence claims `EV-M1610-009–012` added.
+- **Triple-owner Attention Competition** — Spot anomaly, Miles identity and Dad communication UI coexist as distinct owners while attention priority rotates among them; medium ownership remains stable.
+- **Proximity Without Contamination** — repeated close-range Spot/Miles frames validate that proximity and overlap alone do not spread Spot's void topology or white anomaly medium into Miles or Brooklyn.
+- **Communication-driven Agency Interruption** — Miles' action attention can be redirected through gaze, hand/device occupancy, torso orientation and UI priority without palette/glitch escalation.
+- **Screen-space-to-device-native Handoff** — Dad messaging moves from clean screen-space overlay to explicit phone-native UI when the device becomes the subject.
+- **Hard Scene-domain Reset** — the `01:59:49 → 01:59:50` cut removes anomaly/UI layers directly and establishes a grounded social interior without visible residue, narrowing continuous-scene decay assumptions.
+- GitHub analysis: [`25-batch-021-miles-spot-attention-ownership-reset.md`](./25-batch-021-miles-spot-attention-ownership-reset.md).
 
 ## 4,000-frame selection policy
 
@@ -76,19 +86,20 @@ Every batch must answer:
 3. What production / Skill parameter follows?
 4. What remaining coverage gap should affect later sampling?
 
-## Current coverage pressure after BATCH-020
+## Current coverage pressure after BATCH-021
 
-The coverage pivot should continue. Miles/Brooklyn now has two verified 12-frame clusters spanning authorship, relationship, screen-space communication and the first Spot action threshold, but sustained action evidence is still very weak compared with Earth-65.
+The requested focused post-threshold Miles/Spot continuation is complete, but it did **not** produce genuine portal/void causality or strong force-vector construction. Its highest value is instead ownership/attention separation, repeated host-world lock, interrupted agency and hard-reset transition behavior.
+
+Therefore the next sampling decision should no longer default to adjacent Brooklyn frames. Future Miles/Spot material should be selected only when targeted discovery indicates real portal/void causality, stronger force construction, infrastructure re-authoring or identity locking under sustained motion. Otherwise marginal coverage value now favors the much larger gaps below.
 
 Highest-priority missing evidence:
 
-- **One focused Miles/Spot action batch** — infrastructure force vectors, portal/void causality, anomaly spread versus host-world preservation, identity-landmark locking under movement and Brooklyn infrastructure as action geometry;
-- additional Miles/Brooklyn daily-life material outside the mural hideout only if needed to test generality;
-- Hobie / punk medium-time behavior;
-- Miguel / Spider Society native system and architecture;
-- Mumbattan density/action ecology;
+- **Hobie / punk medium-time behavior** — collage/material instability, frame-time logic, edge/raster/print ownership and deliberate medium leakage;
+- **Miguel / Spider Society native system and architecture** — order/system grammar, spatial scale, information density and institutional pressure;
+- **Mumbattan density/action ecology** — vertical infrastructure, crowd/traffic density, layered vitality and action readability;
+- targeted Miles/Spot action only when portal/void causality or strong force construction is actually present;
 - Jess introduction / interaction grammar from visually confirmed material;
-- world collision / transition outside Earth-65, especially a case where anomaly actually changes world grammar;
+- world collision / transition outside Earth-65, especially a case where anomaly genuinely changes world grammar;
 - climax / agency / authorship;
 - independent cross-world counterexamples;
 - intentional medium blending rather than boundary preservation.
