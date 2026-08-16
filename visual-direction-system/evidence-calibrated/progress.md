@@ -7,16 +7,16 @@
 - Source corpus: user Google Drive screenshot archive; canonical research workspace is private `Sorted by Scence` plus a read-only raw-source fallback.
 - Research target: **approximately 4,000 high-coverage evidence frames** selected for chapter, character/world, mechanism, transition and counterexample coverage.
 - Detailed obligations: [`coverage-matrix-4000.md`](./coverage-matrix-4000.md).
-- **Cumulative frames actually viewed:** **286**.
-- **Cumulative frames with at least L1 annotation:** **286**.
-- **Latest completed batch:** **BATCH-018**.
-- Latest chronological coverage in Scene 2: **`01:45:23`**.
-- The next adjacent chronological boundary would be **`01:45:24`**, but dense Earth-65 adjacency is now deprioritized by the coverage policy.
-- The BATCH-017 unresolved incoming Spider-person is now visually resolved as **Miguel O'Hara / Spider-Man 2099**, not Jess.
+- **Cumulative frames actually viewed:** **298**.
+- **Cumulative frames with at least L1 annotation:** **298**.
+- **Latest completed batch:** **BATCH-019**.
+- Latest Earth-65 chronological coverage remains **`01:45:23`**; preserved adjacent checkpoint is **`01:45:24`**, but dense Earth-65 adjacency is deprioritized.
+- Latest coverage pivot: **Miles / Earth-1610 Brooklyn**, scene folder `4) Miles Intro - Spot Captured`, extraction `01:59:18–01:59:29`.
+- The BATCH-017 unresolved incoming Spider-person remains resolved by BATCH-018 as **Miguel O'Hara / Spider-Man 2099**, not Jess.
 
 ## Source-discovery resilience
 
-The canonical Drive `00_SOURCE_CORPUS` slot is currently empty, but that is not a stopping condition. BATCH-010 recovered continuity by resolving the last verified source image back to its original raw-frame parent; later batches use exact/neighboring timestamps plus parent-restricted `modifiedTime` windows on that verified raw-source parent. The raw source remains **read-only**; manifests, analysis, curated references, contact sheets and progress artifacts write only to canonical `Sorted by Scence`.
+The canonical Drive `00_SOURCE_CORPUS` slot is currently empty, but that is not a stopping condition. Adjacent Earth-65 batches recovered continuity through verified source metadata and the read-only raw-source parent. BATCH-019 demonstrates the coverage-pivot path: targeted Sorted-by-Scene folders can be selected by coverage gap, but candidate metadata still does not count until every selected source image is actually opened. Source originals remain read-only; manifests, analysis, curated references, contact sheets and progress artifacts write only to canonical `Sorted by Scence`.
 
 ## Batch log
 
@@ -39,37 +39,31 @@ The canonical Drive `00_SOURCE_CORPUS` slot is currently empty, but that is not 
 | BATCH-015 | Scene 2 · 01:44:36–01:44:47 | 12 | 12 | 8 | 4 | 3 | complete first-pass |
 | BATCH-016 | Scene 2 · 01:44:48–01:44:59 | 12 | 12 | 8 | 4 | 0 | complete first-pass |
 | BATCH-017 | Scene 2 · 01:45:00–01:45:11 | 12 | 12 | 8 | 4 | 3 | complete first-pass |
-| **BATCH-018** | **Scene 2 · 01:45:12–01:45:23** | **12** | **12** | **8** | **4** | **3** | **complete first-pass** |
+| BATCH-018 | Scene 2 · 01:45:12–01:45:23 | 12 | 12 | 8 | 4 | 3 | complete first-pass |
+| **BATCH-019** | **Miles/Brooklyn · 01:59:18–01:59:29** | **12** | **12** | **8** | **4** | **3** | **complete first-pass** |
 
-## Cumulative learning through BATCH-018
+## Cumulative learning through BATCH-019
 
-The Earth-65/Vulture sequence now supports a causal layered system rather than palette/style imitation: composition-first staging, controlled reality suppression, owner-specific detail budgets, surface/entity/prop medium ownership, source-owned light, local versus persistent graphic material, event attack/hold/recovery, event-space takeover, cross-medium contact without homogenization, narrative-domain override, bounded event masks, authority reset, identity-landmark locking, and recovery geometry.
-
-### BATCH-016 additions
-
-- **Prop-medium Inheritance** — entity-controlled props may inherit entity medium without leaking it to other owners.
-- **Local Graphic Insert Scope** — local comic/text notation does not automatically justify frame-wide narrative-domain takeover.
-- **Contact-edge Ownership Seam** — cross-medium overlap can deliberately preserve edge/texture contrast.
-- **Directional Event Ingress** — event override may grow from a causal side while unaffected entity regions preserve original medium.
-- GitHub analysis: [`20-batch-016-earth65-prop-medium-event-ingress.md`](./20-batch-016-earth65-prop-medium-event-ingress.md).
-
-### BATCH-017 additions
-
-- **Event-space Takeover / Transition Corridor** — a causal event may become temporary full-frame spatial world with coherent depth geometry.
-- **Arrival before World Stabilization** — an incoming Spider-person-like entity was readable in unstable transition space, but identity was deliberately left unresolved.
-- **Identity-landmark Lock under Velocity** — Gwen eye/mask geometry stays stable while debris/streak channels vary.
-- **Diegetic Recovery Rails** — persistent web lines and breach geometry can simplify post-chaos space into readable recovery scaffolding.
-- GitHub analysis: [`21-batch-017-earth65-event-space-identity-recovery.md`](./21-batch-017-earth65-event-space-identity-recovery.md).
+The evidence base now begins a deliberate cross-world phase. Earth-65 established a dense causal layered system: composition-first staging, controlled reality suppression, owner-specific detail budgets, medium ownership, source-owned light, local versus persistent graphic material, event attack/hold/recovery, event-space takeover, cross-medium contact, narrative-domain override, bounded event masks, authority reset, identity-landmark locking and recovery geometry. BATCH-019 tests which parts transfer to Brooklyn and which do not.
 
 ### BATCH-018 additions
 
-- **12 / 12 source images actually opened and visually inspected.**
-- Evidence claims `EV-E65-082–085` added.
-- **Deferred Identity Confirmation / Temporal Anchor Accumulation** — later frames cross an evidence threshold and resolve the B017 arrival as **Miguel O'Hara / Spider-Man 2099**. The earlier refusal to label the ambiguous frame as Jess is retained as a methodological counterexample.
-- **Fragmentary Authority Reveal / Face-independent Introduction** — Miguel is assembled through partial torso/back mass, claw/device close-ups and back-emblem payoff without requiring a face-first shot.
-- **Character-owned Emissive Technology** — red grid/holographic shoulder-back structures and wrist-device emission remain local to Miguel/gear rather than becoming a global Earth-65 neon treatment.
-- **Owner-local Description Density** — high-frequency newcomer technology can coexist with a low-frequency recovering host world; detail budget must be allocated by owner as well as frame.
+- **Deferred Identity Confirmation / Temporal Anchor Accumulation** — later frames cross an evidence threshold and resolve the B017 arrival as **Miguel O'Hara / Spider-Man 2099**.
+- **Fragmentary Authority Reveal / Face-independent Introduction** — identity/authority can accumulate from torso/back, claw/device and emblem without a face-first shot.
+- **Character-owned Emissive Technology** — Miguel's red grid/holographic technology remains locally owned.
+- **Owner-local Description Density** — high-frequency newcomer technology can coexist with a low-frequency host field.
 - GitHub analysis: [`22-batch-018-miguel-identity-emissive-detail-ownership.md`](./22-batch-018-miguel-identity-emissive-detail-ownership.md).
+
+### BATCH-019 additions — first active-lineage Miles/Brooklyn calibration
+
+- **12 / 12 source images actually opened and visually inspected.**
+- Evidence claims `EV-M1610-001–004` added.
+- **Private-to-environmental Authorship Scaling** — Miles' memory/authorship medium can expand from sketchbook page to wall mural while remaining surface-owned rather than becoming a global graffiti filter.
+- **Regional Density Island / Lived-in Compression** — Brooklyn preserves dense portraits/tags/marks in a bounded authored region while supporting infrastructure stays quieter and readable.
+- **Grounded Relationship Staging** — Miles/Jeff provide an explicit cross-world counterexample to Earth-65-heavy relationship assumptions: OTS geometry, body orientation, facial performance and shared physical space can carry emotion while color/world rendering stay held.
+- **Cross-world Description-density Reset** — the dark track transition independently validates reset/visual-silence logic outside Earth-65; ordinary infrastructure persists and Miles' red hood becomes the practical identity/value anchor.
+- The `01:59:28` mechanical/clawed gauntlet remains **identity unresolved**; expectation is not converted into evidence.
+- GitHub analysis: [`23-batch-019-miles-brooklyn-authorship-density.md`](./23-batch-019-miles-brooklyn-authorship-density.md).
 
 ## 4,000-frame selection policy
 
@@ -82,24 +76,23 @@ Every batch must answer:
 3. What production / Skill parameter follows?
 4. What remaining coverage gap should affect later sampling?
 
-## Current coverage pressure after BATCH-018
+## Current coverage pressure after BATCH-019
 
-Earth-65 is now heavily overrepresented. The immediate reason for continuing adjacent chronology has been satisfied: the previously unresolved arrival is visually confirmed as Miguel. **Do not keep dense-sampling `01:45:24+` merely for continuity.** The next batch should preferentially locate under-covered clusters and use chronology only where it supports a targeted transition or counterexample.
+The coverage pivot is working and should continue. Miles/Brooklyn is still dramatically under-sampled relative to Earth-65, but now has a first verified daily/authorship/relationship cluster. The next high-value batch should preferentially target **Miles/Brooklyn action** or another distinct Brooklyn daily-life cluster rather than returning to Earth-65 adjacency.
 
 Highest-priority missing evidence:
 
-- Miles / Brooklyn daily life and action;
+- **Miles / Brooklyn action** — infrastructure force vectors, agency, motion readability, identity locks and Spot interaction;
+- additional **Miles / Brooklyn daily life** outside the authored mural hideout, to avoid treating the mural as the whole world grammar;
 - Hobie / punk medium-time behavior;
-- **Miguel / Spider Society native system and architecture**, now that Miguel identity is validated;
+- Miguel / Spider Society native system and architecture;
 - Mumbattan density/action ecology;
 - Jess introduction / interaction grammar from visually confirmed material;
-- world collision / transition outside this Earth-65 cluster;
+- world collision / transition outside Earth-65;
 - climax / agency / authorship;
 - independent cross-world counterexamples to Earth-65 rules;
-- event-space takeover outside this scene;
-- identity-landmark lock under other characters/action grammars;
-- owner-local detail budgets and character-owned emissive technology outside Miguel's arrival;
-- intentional cases where media truly blend rather than remain separately owned.
+- cases where authored media or anomaly media genuinely spread beyond owned surfaces;
+- intentional medium blending rather than boundary preservation.
 
 ## Promotion rule
 
