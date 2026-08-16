@@ -23,33 +23,78 @@ for (const size of sizes) {
   });
 }
 
-test('mobile hero uses a narrative field plus system overlay rather than an empty background', async ({ page }) => {
+test('mobile page reaches the real diagnostic end and primary mode navigation remains tappable', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(url);
+  await page.locator('#diagnostic-root .diagnostic-status').waitFor();
+  await expect(page.locator('.mobile-modes a[data-mode="direct"]')).toHaveAttribute('href', '#direct-panel');
+  await expect(page.locator('.mobile-modes a[data-mode="diagnose"]')).toHaveAttribute('href', '#diagnose-panel');
+  await page.locator('.mobile-modes a[data-mode="diagnose"]').click();
+  await expect(page.locator('.mobile-modes a[data-mode="diagnose"]')).toHaveAttribute('aria-current', 'page');
+  await expect(page.locator('#diagnostic-root')).toBeVisible();
+  const afterDiagnose = await page.evaluate(() => ({ y: window.scrollY, max: document.documentElement.scrollHeight - innerHeight }));
+  expect(afterDiagnose.y).toBeGreaterThan(0);
+  expect(afterDiagnose.max - afterDiagnose.y).toBeLessThan(220);
+  await page.locator('.mobile-modes a[data-mode="direct"]').click();
+  await expect(page.locator('.mobile-modes a[data-mode="direct"]')).toHaveAttribute('aria-current', 'page');
+  const directTop = await page.locator('#direct-panel').evaluate(node => node.getBoundingClientRect().top);
+  expect(Math.abs(directTop)).toBeLessThan(100);
+});
+
+test('advanced tools are part of the deterministic document structure', async ({ page }) => {
+  await page.goto(url);
+  await expect(page.locator('#state-machine-panel')).toHaveCount(1);
+  await expect(page.locator('#sequence-panel')).toHaveCount(1);
+  await expect(page.locator('#color-ownership-panel')).toHaveCount(1);
+  await expect(page.locator('#diagnose-panel')).toContainText('Visual system diagnostic');
+  await expect(page.locator('script[src*="state-machine.js?v="]')).toHaveCount(1);
+  await expect(page.locator('link[href*="director-v2-tools.css?v="]')).toHaveCount(1);
+});
+
+test('mobile hero presents a connected system map rather than a loose word row', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(url);
   await expect(page.locator('.hero-visual')).toBeVisible();
-  const glows = page.locator('.hero-visual .narrative-glow');
-  await expect(glows).toHaveCount(2);
-  await expect(glows.first()).toBeVisible();
-  await expect(page.locator('.hero-visual .system-overlay')).toBeVisible();
-  await expect(page.locator('.hero-visual')).toHaveAttribute('aria-hidden', 'true');
+  await expect(page.locator('.hero-system-map')).toBeVisible();
+  await expect(page.locator('.hero-system-map [data-hero-node]')).toHaveCount(5);
+  await expect(page.locator('.hero-system-path')).toBeVisible();
+  const active = page.locator('.hero-system-map [data-active="true"]');
+  await expect(active).toHaveCount(1);
+  const opacity = await page.locator('.hero-system-map').evaluate(node => Number(getComputedStyle(node).opacity));
+  expect(opacity).toBeGreaterThan(0.35);
 });
 
-test('mobile ownership field explains what the visual focus represents', async ({ page }) => {
+test('mobile ownership field explains the conclusion with directional tracks', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(url);
   await expect(page.locator('#ownership-primary')).toHaveText('WORLD');
-  await expect(page.locator('[data-ownership-metric]')).toHaveCount(3);
+  await expect(page.locator('[data-ownership-track]')).toHaveCount(3);
+  await expect(page.locator('#ownership-reason')).toContainText('WORLD');
   await page.locator('[data-owner-choice="character"]').click();
   await expect(page.locator('#ownership-primary')).toHaveText('CHARACTER');
+  await expect(page.locator('#ownership-reason')).toContainText('CHARACTER');
   await expect(page.locator('#ownership-status')).toContainText('WORLD → CHARACTER');
 });
 
-test('director workspace uses direct segmented controls instead of native selects', async ({ page }) => {
+test('director workspace uses separated dark segmented controls instead of native/default buttons', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(url);
   await expect(page.locator('#direct-panel select')).toHaveCount(0);
+  const group = page.locator('#direct-panel .variable-options').first();
+  const buttons = group.locator('button');
+  await expect(buttons).toHaveCount(3);
+  const visuals = await group.evaluate(node => {
+    const children = [...node.querySelectorAll('button')];
+    const boxes = children.map(child => child.getBoundingClientRect());
+    return {
+      bg: getComputedStyle(children[0]).backgroundColor,
+      color: getComputedStyle(children[0]).color,
+      gaps: [boxes[1].left - boxes[0].right, boxes[2].left - boxes[1].right]
+    };
+  });
+  expect(visuals.bg).not.toBe('rgb(239, 239, 239)');
+  expect(Math.min(...visuals.gaps)).toBeGreaterThanOrEqual(6);
   const warm = page.locator('[data-variable-family="color"][data-variable-key="temperature"][data-variable-value="warm"]');
-  await expect(warm).toBeVisible();
   await warm.click();
   await expect(warm).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('#summary-color')).toContainText('WARM');
@@ -103,7 +148,7 @@ test('reduced motion keeps information and disables staged transitions', async (
   await page.goto(url);
   await page.locator('#state-machine-root .case-tabs').waitFor();
   await expect(page.locator('#ownership-status')).toBeVisible();
-  const transition = await page.locator('.ownership-focus').evaluate(node => getComputedStyle(node).transitionDuration);
+  const transition = await page.locator('.ownership-marker').first().evaluate(node => getComputedStyle(node).transitionDuration);
   expect(transition).toBe('0s');
   await context.close();
 });
