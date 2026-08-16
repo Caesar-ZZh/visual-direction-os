@@ -25,17 +25,17 @@ Near-duplicates enter only when they contribute temporal, micro-performance, hel
 
 | GitHub chapter | Evidence obligation | Target tagged frames floor | Deep diagnostics floor | Current evidence status |
 |---|---|---:|---:|---|
-| `01-master-framework.md` | Validate the causal chain across characters/worlds; include space, color, edge, medium, time, focus, object, performance, light, event grammar and perceptual uncertainty. | 900 | 120 | EARLY — Earth-65 broad; B012 adds multiscale entity-medium and narrative-domain ownership; cross-world weak |
-| `02-character-system.md` | Miles, Gwen, Hobie, Miguel and supporting identity systems; state changes; non-face identity; action signature; entrance logic; character-owned medium. | 1200 | 180 | GWEN STRONG; Vulture multiscale medium identity now observed; Miles/Hobie/Miguel pending |
-| `03-world-system.md` | Earth-1610/Brooklyn, Earth-65, Earth-928/Spider Society, Mumbattan, Hobie/punk, collision/transition states. | 1300 | 180 | Earth-65 strong; B012 separates host-world grammar from entity, interaction and narrative-domain layers; other worlds pending |
-| `04-sequence-color.md` | Role-color, territory, migration, residue, merge, attack/hold/decay, light ownership and carrier handoff. | 1000 | 150 | Earth-65 strong; B012 adds directional action field → post-contact re-stabilization; cross-world validation weak |
-| `05-production-system.md` | Composition, rendering deconstruction, detail strategy, medium assignment, graphic-material ontology, motion, source light, event rendering and force construction. | 850 | 130 | growing quickly; B012 adds scale-specific medium carriers, connector-layer ownership and narrative-domain override |
-| `06-project-worksheets.md` | Convert mechanisms into explicit project fields/questions rather than prose-only theory. | 500 | 60 | many fields defined; B012 adds entity_medium_close/mid/far, interaction_layer_owner, narrative_domain_owner |
+| `01-master-framework.md` | Validate the causal chain across characters/worlds; include space, color, edge, medium, time, focus, object, performance, light, event grammar and perceptual uncertainty. | 900 | 120 | EARLY — Earth-65 broad; B013 adds explicit medium-ownership handoff and bounded event-mask behavior; cross-world weak |
+| `02-character-system.md` | Miles, Gwen, Hobie, Miguel and supporting identity systems; state changes; non-face identity; action signature; entrance logic; character-owned medium. | 1200 | 180 | GWEN STRONG; Vulture medium identity/contact behavior dense; Miles/Hobie/Miguel pending |
+| `03-world-system.md` | Earth-1610/Brooklyn, Earth-65, Earth-928/Spider Society, Mumbattan, Hobie/punk, collision/transition states. | 1300 | 180 | Earth-65 strong; B013 shows host-world preservation outside local causal masks; other worlds pending |
+| `04-sequence-color.md` | Role-color, territory, migration, residue, merge, attack/hold/decay, light ownership and carrier handoff. | 1000 | 150 | Earth-65 strong; domain-state exit and action decompression added; cross-world validation weak |
+| `05-production-system.md` | Composition, rendering deconstruction, detail strategy, medium assignment, graphic-material ontology, motion, source light, event rendering and force construction. | 850 | 130 | growing quickly; B013 adds domain-exit mode, contact-boundary preservation and fragment occupancy masks |
+| `06-project-worksheets.md` | Convert mechanisms into explicit project fields/questions rather than prose-only theory. | 500 | 60 | many fields defined; B013 adds domain_override_exit_mode, contact_boundary_preservation, fragment_occupancy and host_world_preservation_outside_mask |
 | `07-original-case-study.md` | Rebuild an original case with evidence-backed mechanisms and prove causal transfer beyond surface imitation. | 350 | 80 | not yet evidence-refactored |
-| `08-glossary.md` | Stable terms need frame evidence, scope, counterexample and production definition. | 600 | 60 | candidate terms expanded with Narrative-domain Override, Cross-medium Connector and Multiscale Entity-medium Identity |
-| `09-decision-tree.md` | Validate preserve/re-author, carrier, detail, medium/FX/material ontology, break/recovery and reveal decisions. | 700 | 100 | B012 adds “what owns contact?”, “what owns the whole-frame medium?”, and scale-dependent identity-carrier decisions |
-| `10-master-workflow.md` | Validate narrative problem → planning → rendering → sequence → QA across quiet, action, transition and climax. | 900 | 140 | Earth-65 broad through relationship→action→event→mixed-medium threat→editorial/narrative-domain shift; cross-world pending |
-| `11-visual-qa.md` | Positive/negative examples for generic AI 3D, global filters, wrong hierarchy, wrong color ownership, FX/material confusion, over-description, medium leakage, blur-only motion, etc. | 850 | 160 | B012 adds failures for texture averaging at contact, ownerless paper/comic filters, meaningless panel splits and conflicting motion vectors |
+| `08-glossary.md` | Stable terms need frame evidence, scope, counterexample and production definition. | 600 | 60 | candidate terms now include Narrative-domain Exit, Contact-boundary Preservation and Fragment Occupancy |
+| `09-decision-tree.md` | Validate preserve/re-author, carrier, detail, medium/FX/material ontology, break/recovery and reveal decisions. | 700 | 100 | B013 adds “how does ownership exit?”, “does contact preserve boundaries?” and “what is inside the causal mask?” decisions |
+| `10-master-workflow.md` | Validate narrative problem → planning → rendering → sequence → QA across quiet, action, transition and climax. | 900 | 140 | Earth-65 broad through relationship→action→event→mixed-medium threat→narrative-domain shift→domain exit; cross-world pending |
+| `11-visual-qa.md` | Positive/negative examples for generic AI 3D, global filters, wrong hierarchy, wrong color ownership, FX/material confusion, over-description, medium leakage, blur-only motion, etc. | 850 | 160 | B013 adds failures for unmotivated medium crossfades, texture averaging at physical contact and frame-wide glitch outside the causal mask |
 
 ## Cross-cutting evidence domains
 
@@ -49,11 +49,11 @@ Near-duplicates enter only when they contribute temporal, micro-performance, hel
 | Mumbattan | 300+ | Vertical ecology, density, layered vitality and action readability. |
 | Cross-character facial rendering | 350+ | Separate landmark precision from surface realism across identities. |
 | Camera / composition families | 700+ | Re-authoring, scale, occlusion, depth, frame-within-frame, orientation, reveal and light vectors. |
-| Rendering construction | 700+ | Reality suppression, flattening, value mass, line/edge strategy, 2D/3D relation, material ontology, event modes, entity-medium ownership and narrative-domain override. |
+| Rendering construction | 700+ | Reality suppression, flattening, value mass, line/edge strategy, 2D/3D relation, material ontology, event modes, entity-medium ownership, narrative-domain states and bounded causal masks. |
 | Color / edge / texture | 700+ | Mechanism rather than palette imitation. |
 | Motion / temporal FX | 500+ | Essential for Hobie, chase/action, reveal signatures, event envelopes, force-vector construction and dimensional instability. |
 | World transition / collision | 300+ | Learn when grammar breaks, overlaps, hands off or transfers. |
-| Visual silence / quiet | 250+ | Prevent constant AI-style escalation; B011 adds rendering-instability → decompression and B012 adds post-contact re-stabilization. |
+| Visual silence / quiet | 250+ | Prevent constant AI-style escalation; Earth-65 now includes impact/event decompression and lower-description resets. |
 | Climax / agency / authorship | 300+ | Validate visual reserve, escalation, transfer of control and residue. |
 | Counterexamples | 500+ multi-tag | Prevent local observations from becoming false universal rules. |
 
@@ -84,22 +84,22 @@ low-change held sequence → 48–60, but only if temporal evidence is useful
 
 A mechanism should be promoted when it has independent support or a clearly bounded narrow scope, counterexamples have been actively searched, it changes a production decision, it survives generative/constraint reconstruction, and its scope is explicit.
 
-## Current checkpoint after BATCH-012
+## Current checkpoint after BATCH-013
 
-- Selected/viewed/L1 frames: **214 / ~4,000**.
-- Earth-65 evidence now spans domestic relationship staging, facial rendering, color-state transitions, object/editorial layers, identity activation, local temporal FX, high-speed motion abstraction, detail re-entry, institutional lighting, event rendering/recovery, action-signature entrance, persistent web material, low-information search-space design, live Vulture mixed-medium collision, impact-vector construction, silhouette threat occupation, localized medium rupture, post-event visual silence, multiscale entity-medium readability, cross-medium contact and narrative-domain expansion.
-- BATCH-012 specifically strengthens:
-  - **Multiscale Entity-medium Identity** — close detail hands off to value/contour/silhouette at distance;
-  - **Cross-medium Contact without Homogenization** — web/contact can be a third connector layer;
-  - **Narrative-domain Override** — character-owned medium can take frame-wide authority when narrative/editorial domain shifts;
-  - **Force-vector Environment** — pose/world/interaction vectors share a principal direction;
-  - **Functional Editorial Partition** — panel geometry organizes information/timing rather than decorating the frame.
-- BATCH-012 revises the one-dimensional layer-precedence model. The practical model is base world grammar + entity-owned media + local interaction FX, with distinct frame-wide override families for `event_render` and `narrative_domain`.
-- Earth-65 is over-represented relative to other worlds. After immediate unique Jess/Vulture chronological evidence, coverage-gap sampling must increasingly pull toward Miles/Brooklyn, Hobie, Miguel/Spider Society, Mumbattan, world collision and climax/authorship.
+- Selected/viewed/L1 frames: **226 / ~4,000**.
+- Earth-65 evidence now spans domestic relationship staging, facial rendering, color-state transitions, object/editorial layers, identity activation, local temporal FX, high-speed motion abstraction, detail re-entry, institutional lighting, event rendering/recovery, action-signature entrance, persistent web material, low-information search-space design, live Vulture mixed-medium collision, impact-vector construction, silhouette threat occupation, localized medium rupture, post-event visual silence, multiscale entity-medium readability, cross-medium contact, narrative-domain expansion, discrete narrative-domain exit and bounded fragment occupancy.
+- BATCH-013 specifically strengthens:
+  - **Narrative-domain Exit / Ownership Handoff** — frame-wide character medium can end with a discrete state switch back to host world + entity-local medium;
+  - **Contact-boundary Preservation** — direct body contact/occlusion need not average differently owned media;
+  - **Independent Connector Layer** — web remains separately rendered while crossing an entity medium;
+  - **Fragment Occupancy / Causal Masking** — event fragmentation may replace an object-region while host-world grammar persists outside the mask;
+  - **Description-density Decompression** — a wider lower-description beat can separate denser action states.
+- The practical model is now an **ownership handoff + bounded-mask system**: base world grammar + entity-owned media + interaction layers + event masks + narrative-domain states, with explicit transition behavior between them.
+- Earth-65 is over-represented relative to other worlds. Immediate continuity from `01:44:24` is justified only if it secures unique Jess/Vulture evidence; otherwise coverage-gap sampling should move aggressively toward Miles/Brooklyn, Hobie, Miguel/Spider Society, Mumbattan, world collision and climax/authorship.
 - Highest-priority broader gaps remain Jess, Miles/Brooklyn, Hobie, Miguel/Spider Society, Mumbattan, world collision, climax/authorship and independent counterexamples.
-- Specific counterexample search: entity media that blend rather than remain bounded; narrative-domain overrides outside Vulture; connector layers outside web; force-vector environments outside Earth-65; editorial panels that intentionally break the current functional-partition model.
-- Current next chronological source boundary: `01:44:12`.
+- Specific counterexample search: entity media that blend rather than remain bounded; narrative-domain overrides/exits outside Vulture; contact-boundary behavior outside Gwen/Vulture; connector layers outside web; event fragment occupancy outside Earth-65; force-vector environments outside Earth-65; intentional cases where a causal event *does* own the whole frame.
+- Current next chronological source boundary: `01:44:24`.
 
 ## Source-discovery resilience note
 
-The canonical `00_SOURCE_CORPUS` folder is currently empty. BATCH-010 through BATCH-012 recovered continuity from the original raw-frame parent resolved through verified source-frame metadata, using parent-restricted modified-time windows. This raw folder is read-only fallback evidence access; all annotations and generated artifacts remain in the canonical `Sorted by Scence` workspace.
+The canonical `00_SOURCE_CORPUS` folder is currently empty. BATCH-010 through BATCH-013 recovered continuity from the original raw-frame parent resolved through verified source-frame metadata, using parent-restricted modified-time windows. This raw folder is read-only fallback evidence access; all annotations and generated artifacts remain in the canonical `Sorted by Scence` workspace.
