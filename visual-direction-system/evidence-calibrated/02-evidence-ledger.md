@@ -132,6 +132,16 @@ BATCH-011 narrows Entity-medium Ownership into a **layer-precedence model**: `ba
 
 BATCH-012 revises the precedence model into **owned layers plus orthogonal overrides**: base world grammar + entity-owned media + local interaction FX, with an `event-render override` for instability/impact/anomaly and a separate `narrative-domain override` for memory, explanation, joke, dossier or subjective telling. Frame-wide parchment/comic treatment is therefore valid only when the domain has a clear narrative/editorial owner.
 
+## BATCH-013 — domain exit / sustained cross-medium contact / fragment occupancy
+
+| ID | Evidence claim | Status / scope |
+|---|---|---|
+| `EV-E65-063` | Narrative-domain override can exit discretely: frame-wide entity-owned medium may hand authority directly back to base world + entity-local medium without gradual dissolve. | PROVISIONAL; narrative-domain exit |
+| `EV-E65-064` | Cross-medium contact boundaries remain legible through sustained overlap/occlusion; connector FX can retain independent third-layer ownership. | VALIDATES EV-E65-060; Earth-65 contact |
+| `EV-E65-065` | Event-render override may replace an object/entity with a spatially bounded fragment cloud while host-world grammar persists outside the mask. | VALIDATES EV-E65-056; localized event fragmentation |
+
+BATCH-013 converts the layer model into an explicit **ownership handoff + bounded-mask model**: narrative domains may end with a hard authority switch; direct physical contact does not imply medium averaging; event fragmentation may occupy an object-scale region while the host world survives outside the causal mask.
+
 ## Current production consequences
 
 The evidence now requires the system to support, at minimum:
@@ -154,9 +164,12 @@ Surface-specific Medium Assignment
 Entity-medium Ownership + Medium Boundary Persistence
 Multiscale Entity-medium Carriers: close / mid / far
 Interaction-layer Ownership / Cross-medium Contact without Homogenization
+Contact-boundary Preservation / Per-entity Edge Ownership
 Rendering-layer Precedence + Owned Override Types
 Narrative-domain Override
+Narrative-domain Exit / Ownership-state Handoff
 Localized Event-override Masking
+Fragment Occupancy + Host-world Preservation outside Mask
 Nested Medium Foreshadowing → Live Medium Payoff
 Screen-space Editorial Layer / Functional Panel Partition
 Nested Media / Evidence Media
