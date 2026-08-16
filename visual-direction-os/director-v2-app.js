@@ -169,10 +169,11 @@
   }
 
   function initAdvancedTools() {
-    const required = ['VDOSStateMachine', 'VDOSSequenceScore', 'VDOSColorOwnership', 'VDOSDiagnostic', 'VDOSTimelineSync'];
+    const required = ['VDOSStateMachine', 'VDOSSequenceScore', 'VDOSColorOwnership', 'VDOSDiagnostic', 'VDOSTimelineSync', 'VDOSVisualResponse'];
     const missing = required.filter(name => !window[name]);
     if (missing.length) throw new Error(`Advanced tools unavailable: ${missing.join(', ')}`);
     ensureKnowledgeAtlas();
+    window.VDOSVisualResponse.initVisualResponse(document.documentElement, scene);
     window.VDOSStateMachine.initStateMachine($('#state-machine-root'), scene);
     window.VDOSSequenceScore.initSequenceScore($('#sequence-root'), scene);
     window.VDOSColorOwnership.initColorOwnership($('#color-ownership-root'), scene);
