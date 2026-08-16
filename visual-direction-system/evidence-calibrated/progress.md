@@ -9,14 +9,14 @@
 - This is not a mechanical every-source-frame pass. Near-duplicates enter only when they add temporal, held-channel, micro-performance, transition, representative, or counterexample evidence.
 - Detailed chapter obligations: [`coverage-matrix-4000.md`](./coverage-matrix-4000.md).
 - Research database and generated research artifacts are stored in the user's private Drive master research library.
-- **Cumulative frames actually viewed:** 214.
-- **Cumulative frames with at least L1 annotation:** 214.
+- **Cumulative frames actually viewed:** 226.
+- **Cumulative frames with at least L1 annotation:** 226.
 - **Current scene:** Scene 2 — `Investigate Vulture - Gwen Meets Jess`.
-- **Next unreviewed source boundary:** `01:44:12`.
+- **Next unreviewed source boundary:** `01:44:24`.
 
 ## Source-discovery resilience
 
-The canonical `00_SOURCE_CORPUS` folder is currently empty. BATCH-010 recovered continuity by resolving the verified source frame's original raw-frame parent and querying that parent with narrow modified-time windows. BATCH-011 and BATCH-012 confirmed the same read-only fallback path remains reliable through `01:44:11`. All research outputs still write only into the canonical `Sorted by Scence` workspace.
+The canonical `00_SOURCE_CORPUS` folder is currently empty. BATCH-010 recovered continuity by resolving the verified source frame's original raw-frame parent and querying that parent with narrow modified-time windows. BATCH-011 through BATCH-013 confirmed the same read-only fallback path remains reliable through `01:44:23`. All research outputs still write only into the canonical `Sorted by Scence` workspace.
 
 ## Batch log
 
@@ -34,6 +34,7 @@ The canonical `00_SOURCE_CORPUS` folder is currently empty. BATCH-010 recovered 
 | BATCH-010 | Scene 2 · 01:43:36–01:43:47 | 12 | 12 | 7 | 5 | 3 | complete first-pass |
 | BATCH-011 | Scene 2 · 01:43:48–01:43:59 | 12 | 12 | 7 | 4 | 3 | complete first-pass |
 | BATCH-012 | Scene 2 · 01:44:00–01:44:11 | 12 | 12 | 8 | 4 | 3 | complete first-pass |
+| BATCH-013 | Scene 2 · 01:44:12–01:44:23 | 12 | 12 | 8 | 4 | 3 | complete first-pass |
 
 ## Cumulative learning through BATCH-005
 
@@ -95,6 +96,16 @@ Analyses: [`10-batch-006-earth65-editorial-memory.md`](./10-batch-006-earth65-ed
 - **Editorial Partition as active structure** — fixed panel geometry can organize simultaneous explanation/comedy while internal action progresses.
 - GitHub analysis: [`16-batch-012-earth65-cross-medium-narrative-domain.md`](./16-batch-012-earth65-cross-medium-narrative-domain.md).
 
+## BATCH-013 outputs
+
+- **12 / 12 source images individually opened and visually inspected.**
+- 12 L1; 8 at least L2; 4 deep diagnostics; 3 curated references.
+- Evidence claims `EV-E65-063–065` added to the Drive Evidence Ledger.
+- **Discrete Narrative-domain Exit** — full-frame entity-owned narrative medium can hand authority directly back to host world + local entity medium without a gradual material dissolve.
+- **Sustained Contact-boundary Preservation** — Gwen and Vulture keep separate edge/texture/description-frequency ownership through direct body contact and occlusion; web remains an independent connector layer.
+- **Bounded Fragment Occupancy** — dimensional/event fragmentation can temporarily stand in for an object/entity inside a causal mask while host-world grammar remains intact outside it.
+- GitHub analysis: [`17-batch-013-earth65-domain-exit-contact-fragment-occupancy.md`](./17-batch-013-earth65-domain-exit-contact-fragment-occupancy.md).
+
 ## 4,000-frame selection policy
 
 The corpus must collectively cover all existing main chapters: Master Framework, Character System, World System, Sequence/Color, Production System, Project Worksheets, Original Case Study, Glossary, Decision Tree, Master Workflow and Visual QA. It must also actively balance Miles/Brooklyn, Gwen/Earth-65, Hobie, Miguel/Spider Society, Mumbattan, facial rendering, camera/composition, rendering construction, color/edge/texture, motion/temporal FX, world collision, visual silence and climax/authorship.
@@ -114,11 +125,11 @@ normal narrative segment → ~48 frames
 low-change held sequence → 48–60 only when temporal evidence is useful
 ```
 
-## Current coverage pressure after BATCH-012
+## Current coverage pressure after BATCH-013
 
-Earth-65 now has broad evidence across quiet relationship staging, color/edge/rendering, object/editorial media, identity activation, high-speed motion, institutional lighting, event override/recovery, off-screen action signature, persistent graphic material, low-information search-space design, live Vulture medium collision, impact-vector construction, silhouette threat occupation, localized rendering-medium rupture, post-event visual silence, multiscale medium identity, cross-medium physical interaction and narrative-domain expansion. This breadth **does not justify whole-film generalization**.
+Earth-65 now has broad and increasingly dense evidence across quiet relationship staging, color/edge/rendering, object/editorial media, identity activation, high-speed motion, institutional lighting, event override/recovery, off-screen action signature, persistent graphic material, low-information search-space design, live Vulture medium collision, impact-vector construction, silhouette threat occupation, localized rendering-medium rupture, post-event visual silence, multiscale medium identity, cross-medium physical interaction, narrative-domain expansion, discrete narrative-domain exit and object-scale fragment occupancy. This breadth **does not justify whole-film generalization**.
 
-The practical rendering model is no longer a single precedence ladder. Use base world grammar plus entity-owned media and local interaction FX, with two distinct frame-wide override families: **event-render override** and **narrative-domain override**. Frame-wide character medium is valid only when narrative/editorial authority changes.
+The practical rendering model is an ownership system rather than a frame-wide style stack: base world grammar + entity-owned media + local interaction FX, with explicit event masks and narrative-domain states. BATCH-013 adds transition behavior: narrative authority can switch discretely, contact need not average media, and a causal fragment mask can replace object occupancy while leaving the host world intact outside it.
 
 Highest-priority missing evidence remains:
 
@@ -131,10 +142,14 @@ Highest-priority missing evidence remains:
 - climax / agency / authorship;
 - independent cross-world counterexamples to Earth-65 rules;
 - counterexamples where character-specific media blend into host worlds;
-- narrative-domain overrides and connector layers outside Vulture/Earth-65;
+- narrative-domain overrides and exits outside Vulture/Earth-65;
+- contact-boundary behavior outside Gwen/Vulture;
+- localized fragment occupancy outside Earth-65;
 - force-vector environments outside Earth-65.
 
-Next chronological boundary: **`01:44:12`**.
+Immediate chronology from `01:44:24` should continue only while it yields genuinely unique Jess/Vulture evidence; otherwise coverage-gap sampling should move toward the under-covered domains above.
+
+Next chronological boundary: **`01:44:24`**.
 
 ## Promotion rule
 
