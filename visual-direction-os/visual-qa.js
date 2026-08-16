@@ -48,7 +48,9 @@
       ? result('accessible-control-name','FAIL','Interactive controls without accessible names found.', String(unnamedButtons.length))
       : result('accessible-control-name','PASS','Interactive controls have accessible names or visible text.'));
 
-    const nestedInteractive = /<button\b[^>]*>[\s\S]*?<a\b|<a\b[^>]*>[\s\S]*?<button\b/i.test(html);
+    const buttonBlocks = [...String(html).matchAll(/<button\b[^>]*>([\s\S]*?)<\/button>/gi)].map(match => match[1]);
+    const anchorBlocks = [...String(html).matchAll(/<a\b[^>]*>([\s\S]*?)<\/a>/gi)].map(match => match[1]);
+    const nestedInteractive = buttonBlocks.some(body => /<a\b|<button\b/i.test(body)) || anchorBlocks.some(body => /<button\b|<a\b/i.test(body));
     findings.push(nestedInteractive
       ? result('nested-interactive','FAIL','Nested interactive elements found.')
       : result('nested-interactive','PASS','No obvious nested interactive elements found.'));
