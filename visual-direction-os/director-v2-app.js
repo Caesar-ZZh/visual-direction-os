@@ -14,16 +14,33 @@
     });
   }
 
+  function modeTarget(mode) {
+    return mode === 'learn' ? $('#learn-panel') : mode === 'direct' ? $('#direct-panel') : $('#diagnose-panel');
+  }
+
   function setMode(mode) {
     const safe = modeOrder.includes(mode) ? mode : 'learn';
     scene.updateSceneState({ mode: safe }, 'mode-switch');
     updateModeUI(safe);
-    const target = safe === 'learn' ? '#learn-panel' : safe === 'direct' ? '#direct-panel' : '#diagnose-panel';
+    const target = modeTarget(safe);
+    if (!target) return;
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    $(target)?.scrollIntoView({ block: 'start', behavior: window.innerWidth <= 900 || reduced ? 'auto' : 'smooth' });
+    if (window.innerWidth <= 900 || reduced) {
+      const top = target.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({ top, left: 0, behavior: 'auto' });
+    } else {
+      target.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    }
   }
 
-  $$('[data-mode]').forEach((control) => control.addEventListener('click', () => setMode(control.dataset.mode)));
+  $$('[data-mode]').forEach((control) => control.addEventListener('click', (event) => {
+    if (control.tagName === 'A') {
+      event.preventDefault();
+      const hash = control.getAttribute('href');
+      if (hash && hash.startsWith('#')) history.replaceState(null, '', hash);
+    }
+    setMode(control.dataset.mode);
+  }));
 
   function modeFromScroll() {
     const direct = $('#direct-panel');
