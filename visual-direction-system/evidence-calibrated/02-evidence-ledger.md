@@ -280,6 +280,17 @@ BATCH-026 adds a multi-owner action state and a direct host-world counterexample
 
 BATCH-027 converts Mumbattan identity carve-out from mainly isolated-state support into a continuous perspective/pose sequence, extends web ownership into a persistent relation carrier, and strengthens anomaly contact without material inheritance. It deliberately **does not** promote portal or crowd-response causality. Immediate Mumbattan adjacency should end after this batch unless a targeted later sample is known to contain one of those unresolved mechanisms.
 
+## BATCH-028 — Spider Society chase crowd / routing geometry / host-zone reset
+
+| ID | Evidence claim | Status / scope |
+|---|---|---|
+| `EV-MIGUEL-005` | Radically different Spider pursuer proportions and rendering signatures can coexist inside one Earth-928 chase volume without one common crowd material; shared spatial and pursuit rules create coherence while character media remain locally owned. | VALIDATES + EXTENDS EV-MIGUEL-004; heterogeneous crowd medium ownership |
+| `EV-MIGUEL-006` | Spider Society chase readability is organized around a target anchor plus near/mid/far pursuer depth bands rather than equal-detail crowd treatment. | NEW CHASE-MODE SUPPORT; depth-band hierarchy |
+| `EV-MIGUEL-007` | Host steel beams, ledges and web lines remain readable as shared crowd-routing rails while pursuers distribute across the chase field. | EXTENDS EV-MIGUEL-002 into pursuit geometry; static spatial evidence only |
+| `EV-MIGUEL-008` | Pursuit role-state can persist across a hard cut from amber open structural chase space into a pale food/social host zone whose props, palette and architecture reinitialize independently. | VALIDATES hard-reset logic cross-domain; pursuit-state persistence |
+
+BATCH-028 extends Spider Society from command-room authority into chase organization. It rejects crowd texture homogenization and equal-detail pursuit clutter: Miles remains the target anchor, nearby pursuers retain distinctive silhouettes/media, farther pursuers compress into depth bands, and a small set of host structural rails keeps the action field navigable. The host-zone reset shows that pursuit state can survive while world props, palette and architecture reinitialize. Camera trajectory, explicit command structure and complete transport/portal mechanics remain unclaimed.
+
 ## Current production consequences
 
 The evidence now requires the system to support, at minimum:
