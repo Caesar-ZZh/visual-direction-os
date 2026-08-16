@@ -15,7 +15,8 @@
       else control.removeAttribute('aria-current');
     });
     const target = safe === 'learn' ? '#learn-panel' : safe === 'direct' ? '#direct-panel' : '#diagnose-panel';
-    $(target)?.scrollIntoView({ block: 'start', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    $(target)?.scrollIntoView({ block: 'start', behavior: window.innerWidth <= 900 || reduced ? 'auto' : 'smooth' });
   }
 
   $$('[data-mode]').forEach((control) => control.addEventListener('click', () => setMode(control.dataset.mode)));
