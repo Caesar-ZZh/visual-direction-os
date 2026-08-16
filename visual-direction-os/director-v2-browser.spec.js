@@ -27,7 +27,9 @@ test('mobile hero uses a narrative field plus system overlay rather than an empt
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(url);
   await expect(page.locator('.hero-visual')).toBeVisible();
-  await expect(page.locator('.hero-visual .narrative-glow')).toBeVisible();
+  const glows = page.locator('.hero-visual .narrative-glow');
+  await expect(glows).toHaveCount(2);
+  await expect(glows.first()).toBeVisible();
   await expect(page.locator('.hero-visual .system-overlay')).toBeVisible();
   await expect(page.locator('.hero-visual')).toHaveAttribute('aria-hidden', 'true');
 });
