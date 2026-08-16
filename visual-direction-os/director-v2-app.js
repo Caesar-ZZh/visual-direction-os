@@ -7,19 +7,47 @@
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const modeOrder = ['learn', 'direct', 'diagnose'];
 
+  function updateModeUI(mode) {
+    $$('[data-mode]').forEach((control) => {
+      if (control.dataset.mode === mode) control.setAttribute('aria-current', 'page');
+      else control.removeAttribute('aria-current');
+    });
+  }
+
   function setMode(mode) {
     const safe = modeOrder.includes(mode) ? mode : 'learn';
     scene.updateSceneState({ mode: safe }, 'mode-switch');
-    $$('[data-mode]').forEach((control) => {
-      if (control.dataset.mode === safe) control.setAttribute('aria-current', 'page');
-      else control.removeAttribute('aria-current');
-    });
+    updateModeUI(safe);
     const target = safe === 'learn' ? '#learn-panel' : safe === 'direct' ? '#direct-panel' : '#diagnose-panel';
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     $(target)?.scrollIntoView({ block: 'start', behavior: window.innerWidth <= 900 || reduced ? 'auto' : 'smooth' });
   }
 
   $$('[data-mode]').forEach((control) => control.addEventListener('click', () => setMode(control.dataset.mode)));
+
+  function modeFromScroll() {
+    const direct = $('#direct-panel');
+    const diagnose = $('#diagnose-panel');
+    if (!direct || !diagnose) return 'learn';
+    const probe = window.scrollY + Math.min(180, window.innerHeight * .24);
+    if (probe >= diagnose.offsetTop) return 'diagnose';
+    if (probe >= direct.offsetTop) return 'direct';
+    return 'learn';
+  }
+
+  let scrollTicking = false;
+  function syncModeFromScroll() {
+    if (scrollTicking) return;
+    scrollTicking = true;
+    requestAnimationFrame(() => {
+      scrollTicking = false;
+      const mode = modeFromScroll();
+      updateModeUI(mode);
+      const current = scene.getSceneState?.();
+      if (current && current.mode !== mode) scene.updateSceneState({ mode }, 'scroll-spy');
+    });
+  }
+  window.addEventListener('scroll', syncModeFromScroll, { passive: true });
 
   const ownerPatches = {
     world: { agency: 'world', ownership: { character: 'low', world: 'high', narrative: 'medium' }, variables: { color: { temperature: 'cool', territory: 'world' }, camera: { perspective: 'world', stability: 'high' }, line: { stability: 'high' }, space: { compression: 'low' } } },
@@ -140,6 +168,7 @@
 
   try {
     initAdvancedTools();
+    syncModeFromScroll();
   } catch (error) {
     console.error(error);
     const diagnose = $('#diagnose-panel');
