@@ -236,6 +236,17 @@ BATCH-022 introduces a necessary refinement to medium ownership: **ownership may
 
 BATCH-023 establishes the first active-lineage native Spider Society system grammar. It rejects a generic “whole world = holograms” shortcut, adds architecture as a direct authority carrier, extends description-density control from owner/frame level to role-space level, and independently validates live Hobie medium locality in Earth-928. The 12 frames are representative samples, not uninterrupted coverage of the full `02:57:31–02:59:10` interval.
 
+## BATCH-024 — Mumbattan structured density / spatial zoning / anomaly threshold
+
+| ID | Evidence claim | Status / scope |
+|---|---|---|
+| `EV-MUM-001` | Mumbattan sustains very high visual density by organizing crowd, vehicles, rail/transit, signage and architecture into scale-banded infrastructure layers rather than giving every object equal descriptive authority. | REVISES PRIOR; first active-lineage Mumbattan density sample |
+| `EV-MUM-002` | Regional color/value partition acts as spatial wayfinding inside Mumbattan's dense geometry: cool structural masses and warm illuminated fields separate depth/action zones without reducing object count. | PROVISIONAL; structural color zoning |
+| `EV-MUM-003` | Character readability inside Mumbattan can be preserved through a local detail-budget carve-out: identity landmarks stay high-priority while dense city frequency compresses locally without losing place identity. | VALIDATES + EXTENDS owner-local detail budgeting |
+| `EV-MUM-004` | A very small rare black void shape can seize attention against a dense warm skyline through contrast rarity and negative topology rather than physical scale; identity and causality remain unresolved in B024 alone. | PROVISIONAL CAUTION; anomaly threshold only |
+
+BATCH-024 rejects “Mumbattan = colorful/maximalist clutter.” The observed construction is structured abundance: infrastructure scaffold, density bands, regional color/value zoning, owner-local identity carve-outs and then micro-detail. It also preserves evidence discipline at the `02:39:28` anomaly threshold: no identity, portal, spread, contamination or camera-motion claim is promoted without later causal frames.
+
 ## Current production consequences
 
 The evidence now requires the system to support, at minimum:
@@ -253,6 +264,14 @@ Narrative/Perceptual Detail Budget
 Owner-local Description Density / Detail Budget by Owner
 Role-space Information-density Partition
 System Info Density / Reaction-space Detail Budget
+Structured Urban Density Bands
+Infrastructure Anchor Strength / Multi-level Transit Scaffold
+Crowd/Vehicle Layer Separation / Background Compression Ratio
+Regional Color/Value Spatial Zoning
+Local Identity Carve-out in Dense World
+Local Background Frequency Reduction / Place Anchor Retention
+Anomaly Contrast Rarity / Negative Topology Uniqueness
+World-contamination Evidence Requirement
 Motion-state Detail Budget + Re-entry
 Search-state Information Withholding
 Multi-channel Identity Preservation
