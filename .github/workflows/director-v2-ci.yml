@@ -23,11 +23,13 @@ jobs:
       - name: Run model behavior tests
         run: |
           node visual-direction-os/director-v2-models.test.js
+          node visual-direction-os/visual-response.test.js
           node visual-direction-os/visual-qa.test.js
           node visual-direction-os/site-publish.test.js
       - name: Check JavaScript syntax
         run: |
           node --check visual-direction-os/scene-state.js
+          node --check visual-direction-os/visual-response.js
           node --check visual-direction-os/director-v2-app.js
           node --check visual-direction-os/state-machine.js
           node --check visual-direction-os/sequence-score.js
