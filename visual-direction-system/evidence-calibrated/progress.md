@@ -9,14 +9,14 @@
 - This is not a mechanical every-source-frame pass. Near-duplicates enter only when they add temporal, held-channel, micro-performance, transition, representative, or counterexample evidence.
 - Detailed chapter obligations: [`coverage-matrix-4000.md`](./coverage-matrix-4000.md).
 - Research database and generated research artifacts are stored in the user's private Drive master research library.
-- **Cumulative frames actually viewed:** 202.
-- **Cumulative frames with at least L1 annotation:** 202.
+- **Cumulative frames actually viewed:** 214.
+- **Cumulative frames with at least L1 annotation:** 214.
 - **Current scene:** Scene 2 — `Investigate Vulture - Gwen Meets Jess`.
-- **Next unreviewed source boundary:** `01:44:00`.
+- **Next unreviewed source boundary:** `01:44:12`.
 
 ## Source-discovery resilience
 
-The canonical `00_SOURCE_CORPUS` folder is currently empty. BATCH-010 recovered continuity by resolving the verified source frame's original raw-frame parent and querying that parent with narrow modified-time windows. BATCH-011 confirmed the same fallback path remains reliable through `01:43:59`. The raw parent is a **read-only source fallback**; all research outputs still write only into the canonical `Sorted by Scence` workspace.
+The canonical `00_SOURCE_CORPUS` folder is currently empty. BATCH-010 recovered continuity by resolving the verified source frame's original raw-frame parent and querying that parent with narrow modified-time windows. BATCH-011 and BATCH-012 confirmed the same read-only fallback path remains reliable through `01:44:11`. All research outputs still write only into the canonical `Sorted by Scence` workspace.
 
 ## Batch log
 
@@ -33,6 +33,7 @@ The canonical `00_SOURCE_CORPUS` folder is currently empty. BATCH-010 recovered 
 | BATCH-009 | Scene 2 · 01:43:12–01:43:35 | 24 | 24 | 16 | 7 | 7 | complete first-pass |
 | BATCH-010 | Scene 2 · 01:43:36–01:43:47 | 12 | 12 | 7 | 5 | 3 | complete first-pass |
 | BATCH-011 | Scene 2 · 01:43:48–01:43:59 | 12 | 12 | 7 | 4 | 3 | complete first-pass |
+| BATCH-012 | Scene 2 · 01:44:00–01:44:11 | 12 | 12 | 8 | 4 | 3 | complete first-pass |
 
 ## Cumulative learning through BATCH-005
 
@@ -70,7 +71,6 @@ Analyses: [`10-batch-006-earth65-editorial-memory.md`](./10-batch-006-earth65-ed
 - **Force-vector Alignment** — impact readability is built from agreement among body axis, debris, displaced props and event-light origin; motion blur is secondary.
 - **Landing Compression** — airborne trajectory is absorbed into foreshortening, folded anatomy, low camera placement and reduced environment detail.
 - **Post-impact Visual Silence** — description density can collapse almost to zero after a dense impact, then high-specificity threat re-entry gains contrast.
-- **Performance Before FX** — Gwen's recovery is communicated by small posture/support-arm geometry while palette and global FX stay held.
 - GitHub analysis: [`14-batch-010-earth65-vulture-medium-impact-silence.md`](./14-batch-010-earth65-vulture-medium-impact-silence.md).
 
 ## BATCH-011 outputs
@@ -78,11 +78,22 @@ Analyses: [`10-batch-006-earth65-editorial-memory.md`](./10-batch-006-earth65-ed
 - **12 / 12 source images individually opened and visually inspected.**
 - 12 L1; 7 at least L2; 4 deep diagnostics; 3 curated references.
 - Evidence claims `EV-E65-056–058` added to the Drive Evidence Ledger.
-- **Rendering-layer Precedence** — Entity-medium Ownership is persistent but not absolute; localized dimensional-instability rendering can supersede Vulture's brown etched medium without becoming a host-world/global filter.
+- **Rendering-layer Precedence** — localized dimensional-instability rendering can supersede Vulture's brown etched medium without becoming a host-world/global filter.
 - **Threat Occlusion / Silhouette Authority** — Vulture can collapse into a near-black serrated mass while retaining threat identity through contour vocabulary and frame occupation.
-- **Post-event Visual Silence** — after saturated medium fragmentation, the sequence restores readability by reducing description density, reopening negative space and retaining Gwen's compact high-value hood/silhouette anchor.
-- **Force-vector Alignment strengthened** — staff/weapon and wing axes carry directional attack structure before any reliance on blur.
+- **Post-event Visual Silence** — after saturated medium fragmentation, the sequence restores readability by reducing description density and reopening negative space.
 - GitHub analysis: [`15-batch-011-earth65-event-layer-occlusion-recovery.md`](./15-batch-011-earth65-event-layer-occlusion-recovery.md).
+
+## BATCH-012 outputs
+
+- **12 / 12 source images individually opened and visually inspected.**
+- 12 L1; 8 at least L2; 4 deep diagnostics; 3 curated references.
+- Evidence claims `EV-E65-059–062` added to the Drive Evidence Ledger.
+- **Multiscale Entity-medium Identity** — Vulture's close-scale hatching/facial detail hands off to value family, jagged wing contour and silhouette rhythm as scale decreases.
+- **Cross-medium Contact without Homogenization** — Gwen, Vulture and web can remain separate rendering owners even in direct physical interaction.
+- **Narrative-domain Override** — a character-owned medium can expand to the entire frame when narrative/editorial authority shifts to that character; this is distinct from event-render override.
+- **Force-vector Environment** — action direction is reinforced when pose, world streaks and interaction lines share a principal motion vector.
+- **Editorial Partition as active structure** — fixed panel geometry can organize simultaneous explanation/comedy while internal action progresses.
+- GitHub analysis: [`16-batch-012-earth65-cross-medium-narrative-domain.md`](./16-batch-012-earth65-cross-medium-narrative-domain.md).
 
 ## 4,000-frame selection policy
 
@@ -103,11 +114,11 @@ normal narrative segment → ~48 frames
 low-change held sequence → 48–60 only when temporal evidence is useful
 ```
 
-## Current coverage pressure after BATCH-011
+## Current coverage pressure after BATCH-012
 
-Earth-65 now has broad evidence across quiet relationship staging, color/edge/rendering, object/editorial media, identity activation, high-speed motion, institutional lighting, event override/recovery, off-screen action signature, persistent graphic material, low-information search-space design, live Vulture medium collision, impact-vector construction, silhouette threat occupation, localized rendering-medium rupture and post-event visual silence. This breadth **does not justify whole-film generalization**.
+Earth-65 now has broad evidence across quiet relationship staging, color/edge/rendering, object/editorial media, identity activation, high-speed motion, institutional lighting, event override/recovery, off-screen action signature, persistent graphic material, low-information search-space design, live Vulture medium collision, impact-vector construction, silhouette threat occupation, localized rendering-medium rupture, post-event visual silence, multiscale medium identity, cross-medium physical interaction and narrative-domain expansion. This breadth **does not justify whole-film generalization**.
 
-The BATCH-010 entity-medium rule is now narrowed: the medium persists through normal state changes, but BATCH-011 demonstrates a causally owned event layer can temporarily override it. The practical model is `base world grammar < entity medium < event override`, with localized masks and explicit ownership.
+The practical rendering model is no longer a single precedence ladder. Use base world grammar plus entity-owned media and local interaction FX, with two distinct frame-wide override families: **event-render override** and **narrative-domain override**. Frame-wide character medium is valid only when narrative/editorial authority changes.
 
 Highest-priority missing evidence remains:
 
@@ -119,10 +130,11 @@ Highest-priority missing evidence remains:
 - world collision / transition;
 - climax / agency / authorship;
 - independent cross-world counterexamples to Earth-65 rules;
-- counterexamples where a character-specific medium partially blends into the host world;
-- post-event visual-silence and threat-occlusion mechanisms outside Gwen/Earth-65.
+- counterexamples where character-specific media blend into host worlds;
+- narrative-domain overrides and connector layers outside Vulture/Earth-65;
+- force-vector environments outside Earth-65.
 
-Next chronological boundary: **`01:44:00`**.
+Next chronological boundary: **`01:44:12`**.
 
 ## Promotion rule
 
