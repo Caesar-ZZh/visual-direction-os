@@ -107,6 +107,7 @@
       'data-vr-agency': response.agency,
       'data-vr-pressure': response.pressure,
       'data-vr-focus': response.focus,
+      'data-vr-focus-distance': response.focusDistance,
       'data-vr-line': response.line,
       'data-vr-texture': response.texture,
       'data-vr-motion': response.motion,
