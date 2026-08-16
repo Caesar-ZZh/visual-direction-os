@@ -29,7 +29,19 @@ jobs:
           node --check visual-direction-os/sequence-score.js
           node --check visual-direction-os/color-ownership.js
           node --check visual-direction-os/diagnostic.js
+          node --check visual-direction-os/timeline-sync.js
           node --check visual-direction-os/visual-qa.js
+      - name: Run staging source QA
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const qa = require('./visual-direction-os/visual-qa.js');
+          const html = fs.readFileSync('./visual-direction-os/director-v2.html','utf8');
+          const css = fs.readFileSync('./visual-direction-os/director-v2.css','utf8') + '\n' + fs.readFileSync('./visual-direction-os/director-v2-tools.css','utf8');
+          const findings = qa.scanSource({html, css});
+          findings.forEach(f => console.log(`${f.level} ${f.id}: ${f.message} ${f.detail || ''}`));
+          if (findings.some(f => f.level === 'FAIL')) process.exit(1);
+          NODE
       - name: Check staging contracts
         run: |
           test -f visual-direction-os/director-v2.html
