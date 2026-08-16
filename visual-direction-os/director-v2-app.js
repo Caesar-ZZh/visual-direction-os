@@ -77,7 +77,7 @@
       <section class="knowledge-atlas workspace" id="knowledge-atlas" aria-labelledby="knowledge-atlas-title">
         <p class="eyebrow">Learn / Knowledge Atlas</p>
         <div class="atlas-heading"><div><h2 id="knowledge-atlas-title">The existing knowledge system stays intact.</h2><p>v2.1 adds a Director Workspace without rewriting the twelve knowledge sources. These routes open the established v2.0 knowledge views directly.</p></div><span>11 VIEWS · READ-ONLY SOURCE</span></div>
-        <div class="atlas-grid">${destinations.map(([route, index, label, copy]) => `<a data-knowledge-route="${route}" href="index.html#${route}"><span>${index}</span><strong>${label}</strong><small>${copy}</small><b aria-hidden="true">↗</b></a>`).join('')}</div>
+        <div class="atlas-grid">${destinations.map(([route, index, label, copy]) => `<a data-knowledge-route="${route}" href="knowledge.html#${route}"><span>${index}</span><strong>${label}</strong><small>${copy}</small><b aria-hidden="true">↗</b></a>`).join('')}</div>
       </section>`);
   }
 
