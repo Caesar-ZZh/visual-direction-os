@@ -192,6 +192,17 @@ BATCH-017/018 together establish an important evidence-handling rule: **do not c
 
 BATCH-019 begins the cross-world correction phase: transferable mechanisms must be separated from world-specific visual implementations. Graphic authorship is intensely present in Miles' world, but evidence says it belongs to authored surfaces rather than every Brooklyn surface.
 
+## BATCH-020 — threat-shell handoff / memory atlas / UI layer / Spot threshold
+
+| ID | Evidence claim | Status / scope |
+|---|---|---|
+| `EV-M1610-005` | Threat authority can decompress from an equipment-dominant shell to exposed body and then a human face while the Brooklyn world grammar stays held. | PROVISIONAL; sequence-local authority handoff |
+| `EV-M1610-006` | Miles' wall mural can function as a bounded environmental memory atlas while surrounding infrastructure retains independent material grammar. | VALIDATES + EXTENDS B019 authorship evidence |
+| `EV-M1610-007` | A clean screen-space communication layer can attack and stack over a diegetic authored surface without rewriting world perspective/material/color. | VALIDATES screen-space layering CROSS-WORLD |
+| `EV-M1610-008` | Spot can intrude as a huge low-detail white value mass with black void topology while grounded Brooklyn remains materially stable. | PROVISIONAL; entity-level anomaly threshold |
+
+BATCH-020 extends the cross-world correction phase into action/anomaly onset. It also preserves the evidence discipline established in B017/018: the captured bald adversary is not named from this batch, while Spot is only treated as an entity-level anomaly until later frames show whether portal/void behavior spreads into world grammar.
+
 ## Current production consequences
 
 The evidence now requires the system to support, at minimum:
@@ -200,6 +211,7 @@ The evidence now requires the system to support, at minimum:
 Composition Re-Authoring
 Carrier Selection + Carrier Handoff
 World/Scene-specific Relationship Carrier Mode
+Threat-shell State / Equipment-to-person Authority Handoff
 Reality Suppression / Controlled Flattening
 Hierarchical Detail Compression
 Regional Detail Budget / Density Island Occupancy
@@ -220,6 +232,7 @@ World-field / Role-color / Color Memory
 Lighting Ownership Handoff
 Surface-specific Medium Assignment
 Authored Memory Surface Ownership / Authorship Scale
+Environmental Memory Atlas
 Represented-image Attention Ownership
 Entity-medium Ownership + Medium Boundary Persistence
 Prop-medium Ownership / Owner-medium Inheritance
@@ -229,6 +242,7 @@ Multiscale Entity-medium Carriers
 Interaction-layer Ownership / Cross-medium Contact without Homogenization
 Contact-boundary Preservation / Contact Edge Ownership Seam
 Graphic Insert Scope: local / object / entity / frame
+Screen-space Editorial / Communication Layer + UI Occlusion Budget
 Rendering-layer Precedence + Owned Override Types
 Narrative-domain Override + Discrete Exit
 Narrative-domain Emissive Exceptions
@@ -238,7 +252,6 @@ Fragment Occupancy + Host-world Preservation outside Mask
 Event-to-entity Reconstitution
 Event-space Takeover + Spatial Depth Scaffold
 Nested Medium Foreshadowing → Live Medium Payoff
-Screen-space Editorial Layer
 Nested Media / Evidence Media
 Transient Local Graphic FX
 Persistent Diegetic Graphic Material / Constraint Geometry
@@ -249,6 +262,8 @@ Event Render Attack / Hold / Recovery
 Graphic Explosion / Smoke Shape Grammar
 Force-vector Alignment + Force-vector Environment
 Threat Occlusion + Silhouette Identity Preservation
+Spot Value-mass / Void-topology Anomaly Readability
+Host-world Medium Lock during Entity-level Anomaly Intrusion
 Post-impact / Post-event / Post-dense Description-density Reset
 World Authority Scale Transfer + Authority Oscillation / Reset
 Silhouette-preserving Overexposure
