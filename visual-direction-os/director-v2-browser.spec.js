@@ -29,12 +29,24 @@ test('mobile page reaches the real diagnostic end and primary mode navigation re
   await page.locator('#diagnostic-root .diagnostic-status').waitFor();
   await expect(page.locator('.mobile-modes a[data-mode="direct"]')).toHaveAttribute('href', '#direct-panel');
   await expect(page.locator('.mobile-modes a[data-mode="diagnose"]')).toHaveAttribute('href', '#diagnose-panel');
+
   await page.locator('.mobile-modes a[data-mode="diagnose"]').click();
   await expect(page.locator('.mobile-modes a[data-mode="diagnose"]')).toHaveAttribute('aria-current', 'page');
   await expect(page.locator('#diagnostic-root')).toBeVisible();
-  const afterDiagnose = await page.evaluate(() => ({ y: window.scrollY, max: document.documentElement.scrollHeight - innerHeight }));
-  expect(afterDiagnose.y).toBeGreaterThan(0);
-  expect(afterDiagnose.max - afterDiagnose.y).toBeLessThan(220);
+  const diagnoseTop = await page.locator('#diagnose-panel').evaluate(node => node.getBoundingClientRect().top);
+  expect(Math.abs(diagnoseTop)).toBeLessThan(100);
+
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  await page.waitForTimeout(60);
+  const endMetrics = await page.evaluate(() => ({ y: window.scrollY, max: document.documentElement.scrollHeight - innerHeight }));
+  expect(Math.abs(endMetrics.max - endMetrics.y)).toBeLessThanOrEqual(2);
+  const clearance = await page.evaluate(() => {
+    const root = document.querySelector('#diagnostic-root');
+    const nav = document.querySelector('.mobile-modes');
+    return nav.getBoundingClientRect().top - root.getBoundingClientRect().bottom;
+  });
+  expect(clearance).toBeGreaterThan(12);
+
   await page.locator('.mobile-modes a[data-mode="direct"]').click();
   await expect(page.locator('.mobile-modes a[data-mode="direct"]')).toHaveAttribute('aria-current', 'page');
   const directTop = await page.locator('#direct-panel').evaluate(node => node.getBoundingClientRect().top);
