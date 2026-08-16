@@ -269,6 +269,17 @@ BATCH-025 revises the strictest entity-only Spot model without allowing uncontro
 
 BATCH-026 adds a multi-owner action state and a direct host-world counterexample. Spot anomaly, web constraint and architecture can interact without material homogenization; Gwen's local priority preserves city identity; infrastructure becomes action-coordinate geometry; and the character-empty `02:39:52` frame shows Mumbattan's world grammar does not depend on hero presence. Exact portal entry/exit mechanics and camera motion remain unclaimed.
 
+## BATCH-027 — temporal identity lock / relational constraint persistence / causality calibration
+
+| ID | Evidence claim | Status / scope |
+|---|---|---|
+| `EV-MUM-013` | Miles remains identifiable through severe foreshortening, subject-scale and pose changes because a compact black/red/white landmark set persists while Mumbattan density remains active. | TEMPORAL VALIDATION; continuous B027 sequence |
+| `EV-MUM-014` | Bright white web material remains a distinct relational/action constraint owner while subject dominance shifts between Gwen/Miles-separated and Miles-dominant states. | TEMPORAL VALIDATION + EXTENSION |
+| `EV-MUM-015` | Spot's white body/black marks remain separable from a large irregular near-black anomaly field despite close overlap/contact; contact does not collapse visual ownership. | VALIDATES owner separation; exact portal entry/exit unresolved |
+| `EV-MUM-016` | Visible bystander occupancy is not sufficient evidence of crowd response; temporal orientation, pose, displacement, avoidance or another reaction cue is required. | NEGATIVE CALIBRATION / QA |
+
+BATCH-027 converts Mumbattan identity carve-out from mainly isolated-state support into a continuous perspective/pose sequence, extends web ownership into a persistent relation carrier, and strengthens anomaly contact without material inheritance. It deliberately **does not** promote portal or crowd-response causality. Immediate Mumbattan adjacency should end after this batch unless a targeted later sample is known to contain one of those unresolved mechanisms.
+
 ## Current production consequences
 
 The evidence now requires the system to support, at minimum:
@@ -304,6 +315,12 @@ Infrastructure Action Rail Count / Vertical Depth Scaffold
 Action Coordinate Anchor / Cable-Facade Constraint Geometry
 Host-world Autonomy / Character-independent World Grammar
 World Style Without Hero / Character-local Priority not World Generation
+Identity Invariant Set / Temporal Identity Lock
+Perspective Deformation Tolerance
+Relational Connector Owner / Connector Contrast Priority
+Connector Persistence across Subject Dominance
+Anomaly Contact Boundary Energy / Owner Separation under Contact
+Crowd-response Temporal Cue Requirement / Occupancy not Reaction
 Motion-state Detail Budget + Re-entry
 Search-state Information Withholding
 Multi-channel Identity Preservation
