@@ -7,16 +7,16 @@
 - Source corpus: user Google Drive screenshot archive; canonical research workspace is private `Sorted by Scence` plus a read-only raw-source fallback.
 - Research target: **approximately 4,000 high-coverage evidence frames** selected for chapter, character/world, mechanism, transition and counterexample coverage.
 - Detailed obligations: [`coverage-matrix-4000.md`](./coverage-matrix-4000.md).
-- **Cumulative frames actually viewed:** **358**.
-- **Cumulative frames with at least L1 annotation:** **358**.
-- **Latest completed batch:** **BATCH-024**.
+- **Cumulative frames actually viewed:** **382**.
+- **Cumulative frames with at least L1 annotation:** **382**.
+- **Latest completed batch:** **BATCH-026**.
 - Latest Earth-65 chronological coverage remains **`01:45:23`**; preserved adjacent checkpoint is **`01:45:24`**, but dense Earth-65 adjacency is deprioritized.
-- Latest coverage pivot: **Earth-50101 / Mumbattan density ecology**, continuous raw-fallback slice `02:39:17–02:39:28`.
-- BATCH-024 contains **12 consecutive source screenshots**, all individually opened and visually inspected.
+- Latest coverage pivot: **Earth-50101 / Mumbattan action geometry**, continuous raw-fallback slice `02:39:41–02:39:52`.
+- BATCH-026 contains **12 consecutive source screenshots**, all individually opened and visually inspected.
 
 ## Source-discovery resilience
 
-The canonical Drive `00_SOURCE_CORPUS` slot may be empty and Sorted-by-Scene routing may fail without blocking the research. BATCH-024 established a new recovery path: the read-only raw root can be sliced with a **parent-folder + `modifiedTime` window**, which recovered the `02:39:17–02:39:28` Mumbattan sequence without relying on pagination. Candidate metadata still never counts until each actual source image is opened. Source originals remain read-only; manifests, analysis, curated references, contact sheets and progress artifacts write only to canonical `Sorted by Scence`.
+The canonical Drive `00_SOURCE_CORPUS` slot may be empty and Sorted-by-Scene routing may fail without blocking the research. BATCH-024 established a recovery path: the read-only raw root can be sliced with a **parent-folder + `modifiedTime` window**, which recovered later Mumbattan chronology without relying on pagination. BATCH-025/026 continued the raw-fallback lineage. Candidate metadata still never counts until each actual source image is opened. Source originals remain read-only; manifests, analysis, curated references, contact sheets and progress artifacts write only to canonical `Sorted by Scence`.
 
 ## Batch log
 
@@ -45,11 +45,13 @@ The canonical Drive `00_SOURCE_CORPUS` slot may be empty and Sorted-by-Scene rou
 | BATCH-021 | Miles/Brooklyn · 01:59:42–01:59:53 | 12 | 12 | 9 | 4 | 3 | complete first-pass |
 | BATCH-022 | Hobie/punk · 02:45:18–02:45:29 | 12 | 12 | 9 | 4 | 3 | complete first-pass |
 | BATCH-023 | Miguel/Spider Society · representative sample 02:57:31–02:59:10 | 12 | 12 | 9 | 4 | 3 | complete first-pass |
-| **BATCH-024** | **Mumbattan · continuous 02:39:17–02:39:28** | **12** | **12** | **10** | **4** | **3** | **complete first-pass** |
+| BATCH-024 | Mumbattan · continuous 02:39:17–02:39:28 | 12 | 12 | 10 | 4 | 3 | complete first-pass |
+| BATCH-025 | Mumbattan/Spot · continuous 02:39:29–02:39:40 | 12 | 12 | 11 | 4 | 3 | complete first-pass |
+| **BATCH-026** | **Mumbattan action · continuous 02:39:41–02:39:52** | **12** | **12** | **12** | **4** | **3** | **complete first-pass** |
 
-## Cumulative learning through BATCH-024
+## Cumulative learning through BATCH-026
 
-The evidence base is in an explicit cross-world calibration phase. Earth-65 established a dense causal layered system; BATCH-019–021 calibrated Brooklyn ownership/attention/anomaly behavior; BATCH-022 revised character-medium logic through Hobie; BATCH-023 added the first native Spider Society command/system sample; BATCH-024 now adds the first active-lineage Mumbattan world-density sample.
+The evidence base is in an explicit cross-world calibration phase. Earth-65 established a dense causal layered system; BATCH-019–021 calibrated Brooklyn ownership/attention/anomaly behavior; BATCH-022 revised character-medium logic through Hobie; BATCH-023 added the first native Spider Society command/system sample; BATCH-024–026 now establish Mumbattan structured density, bounded Spot anomaly behavior, dense-host action readability, infrastructure action geometry and autonomous host-world grammar.
 
 ### BATCH-019 additions — first active-lineage Miles/Brooklyn calibration
 
@@ -94,8 +96,6 @@ The evidence base is in an explicit cross-world calibration phase. Earth-65 esta
 
 ### BATCH-024 additions — first active-lineage Mumbattan density ecology
 
-- **12 / 12 consecutive source images actually opened and visually inspected.**
-- Evidence claims `EV-MUM-001–004` added.
 - **Structured Urban Density Bands** — crowd/vehicles, transit/roofways and architecture retain abundance through separate scale/detail bands rather than equal-detail clutter.
 - **Infrastructure as Navigational Scaffold** — towers, bridges, cables and suspended transit are large readability rails inside the dense city.
 - **Regional Color/Value Spatial Zoning** — broad teal/cyan versus warm pink/yellow territories organize depth and action zones before local accents.
@@ -103,6 +103,24 @@ The evidence base is in an explicit cross-world calibration phase. Earth-65 esta
 - **Contrast Rarity at Anomaly Threshold** — a very small irregular black void-like shape at `02:39:28` gains attention through rare topology/value rather than scale; identity and causality remain deliberately unresolved.
 - **Source-routing self-heal** — raw-root parent + `modifiedTime` window slicing recovered later corpus frames without pagination.
 - GitHub analysis: [`28-batch-024-mumbattan-density-ecology-anomaly-threshold.md`](./28-batch-024-mumbattan-density-ecology-anomaly-threshold.md).
+
+### BATCH-025 additions — Spot local anomaly spread / host-object lock
+
+- **Multi-instance Anomaly Escalation under Host Lock** — multiple separated black void instances can increase anomaly pressure while Mumbattan city material/color remains held.
+- **Entity-to-environment Local Anomaly Externalization** — Spot's anomaly grammar may cross his body boundary into a bounded local interaction mask without proving whole-street contamination.
+- **Host-object Material Lock** — cars, riders, tableware, furniture and bystanders retain independent host ownership under local anomaly overlap/occlusion.
+- **Persistent Entity Medium through Host-context Reset** — street/traffic can hard-cut to a restaurant host scene while Spot's white/black anomaly ownership persists locally.
+- Exact transport/portal mechanics remain unresolved.
+- GitHub analysis: [`29-batch-025-mumbattan-spot-local-anomaly-spread.md`](./29-batch-025-mumbattan-spot-local-anomaly-spread.md).
+
+### BATCH-026 additions — action geometry / dense-host readability / host-world autonomy
+
+- **Concurrent Action Constraint Ownership** — Spot anomaly, external white web/constraint and host structures can coexist as distinct visual/material owners.
+- **Dense-host Action Readability by Local Priority Override** — Gwen remains highly readable while Mumbattan signage/facades/linework remain present; action clarity does not require city erasure.
+- **Infrastructure as Action Coordinate System** — building-canyon depth, facade boundaries, cables and web relationships provide large spatial rails for action placement.
+- **Host-world Grammar Persistence without Character Occupancy** — a character-empty Mumbattan view retains coherent color zoning, signage/linework, infrastructure and depth, directly supporting autonomous world grammar.
+- Exact portal entry/exit causality and camera motion remain unclaimed.
+- GitHub analysis: [`30-batch-026-mumbattan-action-geometry-host-autonomy.md`](./30-batch-026-mumbattan-action-geometry-host-autonomy.md).
 
 ## 4,000-frame selection policy
 
@@ -115,22 +133,20 @@ Every batch must answer:
 3. What production / Skill parameter follows?
 4. What remaining coverage gap should affect later sampling?
 
-## Current coverage pressure after BATCH-024
+## Current coverage pressure after BATCH-026
 
-BATCH-024 closes the first Mumbattan density/world-introduction sample, but it intentionally stops at an anomaly-attention threshold. It does **not** establish a complete Mumbattan chase or portal system.
+BATCH-024–026 now establish Mumbattan density structure, anomaly locality, action readability and infrastructure-as-action geometry, but they do **not** establish the complete portal/chase system.
 
-The highest marginal value is a targeted continuation after `02:39:28` **only if actually opened frames visibly add**:
+Continue adjacent Mumbattan only if actually opened frames visibly add new causal evidence for:
 
-- force-vector construction under dense-world load;
-- traffic/crowd interaction with moving characters;
-- infrastructure functioning as action geometry rather than static world description;
-- causal anomaly/portal interaction and whether host-world grammar is preserved or altered;
-- infrastructure re-authoring, collision or destruction;
-- identity-landmark lock under sustained motion.
+- exact portal entry/exit causal chain;
+- traffic/crowd response to moving characters/anomaly;
+- infrastructure collision, destruction or re-authoring;
+- sustained-motion identity lock or force-vector construction not already explained by static spatial rails.
 
-If adjacent Mumbattan frames do not add these mechanisms, pivot rather than sampling chronology mechanically. Other high-priority gaps remain Spider Society crowd/order/transport/chase, Hobie temporal behavior when visually provable, Jess, world collision outside Earth-65, climax/agency/authorship and independent cross-world counterexamples.
+Otherwise pivot by marginal value. Highest remaining gaps include Spider Society crowd/order/transport/chase, Jess interaction grammar, world collision outside Earth-65, climax/agency/authorship, and independent cross-world counterexamples. Hobie temporal/frame-rate behavior should be sampled only when visibly provable.
 
-The captured bald adversary in B020 remains deliberately unnamed. The B024-012 black anomaly also remains identity/causality unresolved. Do not convert scene knowledge into evidence.
+The captured bald adversary in B020 remains deliberately unnamed. Camera movement is never inferred from one still. Do not convert scene knowledge into evidence.
 
 ## Promotion rule
 
