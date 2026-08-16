@@ -109,7 +109,7 @@ A claim is **not** a whole-film rule merely because it appears here. Scope and p
 | `EV-E65-054` | Impact readability can be built from aligned body pose, displaced objects and debris vectors, with motion blur secondary. | PROVISIONAL; impact micro-sequence |
 | `EV-E65-055` | Description density can collapse to near-empty visual silence after dense impact imagery, creating a perceptual reset before threat re-entry. | PROVISIONAL; action-rhythm mechanism |
 
-The earlier open dossier/live-Vulture hypothesis is now **resolved positively within this sequence**: live Vulture retains the previewed rough etched/sketched medium while the Earth-65 host field remains materially distinct. Jess is still not yet observed through `01:43:47`.
+The earlier open dossier/live-Vulture hypothesis is now **resolved positively within this sequence**: live Vulture retains the previewed rough etched/sketched medium while the Earth-65 host field remains materially distinct.
 
 ## BATCH-011 — event-layer rupture / silhouette threat / recovery
 
@@ -119,7 +119,18 @@ The earlier open dossier/live-Vulture hypothesis is now **resolved positively wi
 | `EV-E65-057` | Antagonist threat identity can survive near-total internal-detail loss when distinctive serrated silhouette and spatial occlusion carry the information. | PROVISIONAL; threat/readability mechanism |
 | `EV-E65-058` | After a high-density rendering-instability peak, readability can recover through a strong description-density drop, expanded negative space and one compact high-value hero anchor. | VALIDATES / broadens EV-E65-055; post-event recovery |
 
-BATCH-011 narrows Entity-medium Ownership into a **layer-precedence model**: `base world grammar < entity medium < event override`. Vulture's brown etched medium is stable through ordinary pose/scale changes, but at `01:43:55–56` a localized multicolor fragmentation layer ruptures it while the Earth-65 host field remains materially distinct. The following `01:43:57–59` frames then restore Gwen/space through a low-description recovery plateau.
+BATCH-011 narrows Entity-medium Ownership into a **layer-precedence model**: `base world grammar < entity medium < event override`.
+
+## BATCH-012 — multiscale medium / cross-medium contact / narrative domain
+
+| ID | Evidence claim | Status / scope |
+|---|---|---|
+| `EV-E65-059` | Vulture's entity-medium identity persists across close-to-far scale change by shifting readable carriers from internal hatching/facial detail to jagged wing silhouette, brown value family and edge rhythm. | VALIDATED; Vulture multiscale readability |
+| `EV-E65-060` | Physical interaction between differently rendered entities can remain legible without material homogenization; connector FX such as web can operate as a third rendering layer. | VALIDATED; cross-medium interaction |
+| `EV-E65-061` | When narrative/editorial authority shifts to an entity, that entity's medium can expand from character-local ownership to a frame-wide narrative-domain override, distinct from event-render override. | REVISES layer-precedence model; editorial/narrative domain |
+| `EV-E65-062` | At an action peak, environment can collapse into a dominant directional field when pose, streaks and web/debris vectors align to a common force direction; blur is secondary. | VALIDATED; force-vector motion readability |
+
+BATCH-012 revises the precedence model into **owned layers plus orthogonal overrides**: base world grammar + entity-owned media + local interaction FX, with an `event-render override` for instability/impact/anomaly and a separate `narrative-domain override` for memory, explanation, joke, dossier or subjective telling. Frame-wide parchment/comic treatment is therefore valid only when the domain has a clear narrative/editorial owner.
 
 ## Current production consequences
 
@@ -141,10 +152,13 @@ World-field / Role-color / Color Memory
 Lighting Ownership Handoff
 Surface-specific Medium Assignment
 Entity-medium Ownership + Medium Boundary Persistence
-Rendering-layer Precedence: Base World < Entity Medium < Event Override
+Multiscale Entity-medium Carriers: close / mid / far
+Interaction-layer Ownership / Cross-medium Contact without Homogenization
+Rendering-layer Precedence + Owned Override Types
+Narrative-domain Override
 Localized Event-override Masking
 Nested Medium Foreshadowing → Live Medium Payoff
-Screen-space Editorial Layer
+Screen-space Editorial Layer / Functional Panel Partition
 Nested Media / Evidence Media
 Transient Local Graphic FX
 Persistent Diegetic Graphic Material / Constraint Geometry
@@ -152,7 +166,7 @@ Diegetic Vector Light
 Source-owned Bloom
 Event Render Override with Base Recovery
 Graphic Explosion / Smoke Shape Grammar
-Force-vector Alignment + Landing Compression
+Force-vector Alignment + Force-vector Environment
 Threat Occlusion + Silhouette Identity Preservation
 Post-impact / Post-event Description-density Reset / Visual Silence
 World Authority Scale Transfer
