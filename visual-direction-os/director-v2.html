@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Visual Direction OS Director Workspace v2.1 staging shell">
+  <title>Visual Direction OS · Director Workspace v2.1</title>
+  <link rel="stylesheet" href="director-v2.css">
+</head>
+<body>
+  <a class="skip" href="#main">跳到主要内容</a>
+  <div class="v2-shell">
+    <aside class="v2-rail" aria-label="Visual Direction OS v2.1 navigation">
+      <div class="brand">Visual Direction OS<small>Director Workspace · v2.1 staging</small></div>
+      <nav class="mode-group" aria-label="LEARN">
+        <p class="mode-label">Learn</p>
+        <button class="mode-btn" type="button" data-mode="learn" aria-current="page"><strong>01</strong>Understand the grammar</button>
+      </nav>
+      <nav class="mode-group" aria-label="DIRECT">
+        <p class="mode-label">Direct</p>
+        <button class="mode-btn" type="button" data-mode="direct"><strong>02</strong>Make visual decisions</button>
+      </nav>
+      <nav class="mode-group" aria-label="DIAGNOSE">
+        <p class="mode-label">Diagnose</p>
+        <button class="mode-btn" type="button" data-mode="diagnose"><strong>03</strong>Test coherence</button>
+      </nav>
+      <p class="rail-note">Narrative becomes visual behavior.<br>Decoration is not direction.</p>
+    </aside>
+
+    <main id="main" class="stage">
+      <section class="hero" id="learn-panel" aria-labelledby="hero-title">
+        <div>
+          <p class="eyebrow">Director Control Room / staging build</p>
+          <h1 id="hero-title">Narrative becomes visual behavior.</h1>
+          <p>这不是风格库。它把故事问题转译成可观察、可调整、可诊断的视觉状态与所有权关系。</p>
+        </div>
+        <div class="system-chain" aria-label="Narrative to Agency system chain">
+          <button type="button"><small>INPUT</small><strong>Narrative</strong></button>
+          <button type="button"><small>TRANSLATE</small><strong>Variable</strong></button>
+          <button type="button"><small>MODULATE</small><strong>State</strong></button>
+          <button type="button"><small>ORCHESTRATE</small><strong>Sequence</strong></button>
+          <button type="button"><small>TRANSFER</small><strong>Agency</strong></button>
+        </div>
+      </section>
+
+      <section class="ownership-lab" aria-labelledby="ownership-title">
+        <div class="ownership-stage" data-owner="world" role="img" aria-describedby="ownership-status" aria-label="Visual ownership demonstration">
+          <div class="ownership-field"></div><div class="ownership-grid"></div><div class="ownership-focus"></div>
+        </div>
+        <div class="ownership-copy">
+          <p class="eyebrow">Ownership transfer</p>
+          <h2 id="ownership-title">Who gets to define the image?</h2>
+          <p id="ownership-status" class="status-line">OWNERSHIP · WORLD OWNS FRAME</p>
+          <p>切换视觉控制权，观察同一场景如何因为 agency 改变而改变，而不是因为“想更炫”。</p>
+          <div class="segmented" aria-label="Ownership states">
+            <button type="button" data-owner-choice="world" aria-pressed="true">World</button>
+            <button type="button" data-owner-choice="contested" aria-pressed="false">Contested</button>
+            <button type="button" data-owner-choice="character" aria-pressed="false">Character</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="workspace" id="direct-panel" aria-labelledby="workspace-title">
+        <p class="eyebrow">Direct / Workspace</p>
+        <h2 id="workspace-title">Direct the visual state.</h2>
+        <p>先改变状态，再让界面反映状态。所有工具共享同一个 scene state。</p>
+        <div class="workspace-grid">
+          <section class="variable-family"><h3>Color</h3>
+            <div class="control-row"><label for="color-temp">Temperature</label><select id="color-temp" data-variable-family="color" data-variable-key="temperature"><option>cool</option><option selected>neutral</option><option>warm</option></select><output data-output="color.temperature">neutral</output></div>
+            <div class="control-row"><label for="color-territory">Territory</label><select id="color-territory" data-variable-family="color" data-variable-key="territory"><option selected>world</option><option>contested</option><option>character</option></select><output data-output="color.territory">world</output></div>
+          </section>
+          <section class="variable-family"><h3>Space</h3>
+            <div class="control-row"><label for="space-compress">Compression</label><select id="space-compress" data-variable-family="space" data-variable-key="compression"><option selected>low</option><option>medium</option><option>high</option></select><output data-output="space.compression">low</output></div>
+            <div class="control-row"><label for="space-open">Openness</label><select id="space-open" data-variable-family="space" data-variable-key="openness"><option>low</option><option selected>medium</option><option>high</option></select><output data-output="space.openness">medium</output></div>
+          </section>
+          <section class="variable-family"><h3>Camera</h3>
+            <div class="control-row"><label for="camera-perspective">Perspective</label><select id="camera-perspective" data-variable-family="camera" data-variable-key="perspective"><option selected>world</option><option>mixed</option><option>character</option></select><output data-output="camera.perspective">world</output></div>
+            <div class="control-row"><label for="camera-stability">Stability</label><select id="camera-stability" data-variable-family="camera" data-variable-key="stability"><option>low</option><option>medium</option><option selected>high</option></select><output data-output="camera.stability">high</output></div>
+          </section>
+          <section class="variable-family"><h3>Line</h3>
+            <div class="control-row"><label for="line-stability">Stability</label><select id="line-stability" data-variable-family="line" data-variable-key="stability"><option>low</option><option>medium</option><option selected>high</option></select><output data-output="line.stability">high</output></div>
+            <div class="control-row"><label for="line-density">Density</label><select id="line-density" data-variable-family="line" data-variable-key="density"><option>low</option><option selected>medium</option><option>high</option></select><output data-output="line.density">medium</output></div>
+          </section>
+          <section class="variable-family"><h3>Texture</h3>
+            <div class="control-row"><label for="texture-noise">Noise</label><select id="texture-noise" data-variable-family="texture" data-variable-key="noise"><option selected>low</option><option>medium</option><option>high</option></select><output data-output="texture.noise">low</output></div>
+            <div class="control-row"><label for="texture-grain">Granularity</label><select id="texture-grain" data-variable-family="texture" data-variable-key="granularity"><option selected>low</option><option>medium</option><option>high</option></select><output data-output="texture.granularity">low</output></div>
+          </section>
+          <section class="variable-family"><h3>Rhythm</h3>
+            <div class="control-row"><label for="rhythm-energy">Motion energy</label><select id="rhythm-energy" data-variable-family="rhythm" data-variable-key="motionEnergy"><option selected>low</option><option>medium</option><option>high</option></select><output data-output="rhythm.motionEnergy">low</output></div>
+            <div class="control-row"><label for="rhythm-cut">Cut density</label><select id="rhythm-cut" data-variable-family="rhythm" data-variable-key="cutDensity"><option selected>low</option><option>medium</option><option>high</option></select><output data-output="rhythm.cutDensity">low</output></div>
+          </section>
+        </div>
+        <div class="state-summary" aria-live="polite">
+          <div><span>Narrative</span><strong id="summary-narrative">BASELINE</strong></div>
+          <div><span>Agency</span><strong id="summary-agency">WORLD</strong></div>
+          <div><span>Color</span><strong id="summary-color">NEUTRAL / WORLD</strong></div>
+          <div><span>Camera</span><strong id="summary-camera">WORLD / HIGH</strong></div>
+        </div>
+      </section>
+
+      <section class="workspace" id="diagnose-panel" aria-labelledby="diagnose-title">
+        <p class="eyebrow">Diagnose / coming next</p>
+        <h2 id="diagnose-title">Why did this visual behavior change?</h2>
+        <p>下一阶段会在这里接入确定性的 PASS / WARN / FAIL 诊断规则，与 DIRECT 使用完全相同的 scene state。</p>
+      </section>
+    </main>
+  </div>
+
+  <nav class="mobile-modes" aria-label="Primary modes">
+    <button type="button" data-mode="learn" aria-current="page">Learn</button>
+    <button type="button" data-mode="direct">Direct</button>
+    <button type="button" data-mode="diagnose">Diagnose</button>
+  </nav>
+  <script src="scene-state.js"></script>
+  <script src="director-v2-app.js"></script>
+</body>
+</html>
