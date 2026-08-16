@@ -18,7 +18,9 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Run model behavior tests
-        run: node visual-direction-os/director-v2-models.test.js
+        run: |
+          node visual-direction-os/director-v2-models.test.js
+          node visual-direction-os/visual-qa.test.js
       - name: Check JavaScript syntax
         run: |
           node --check visual-direction-os/scene-state.js
@@ -27,6 +29,7 @@ jobs:
           node --check visual-direction-os/sequence-score.js
           node --check visual-direction-os/color-ownership.js
           node --check visual-direction-os/diagnostic.js
+          node --check visual-direction-os/visual-qa.js
       - name: Check staging contracts
         run: |
           test -f visual-direction-os/director-v2.html
