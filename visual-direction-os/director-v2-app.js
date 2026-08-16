@@ -6,6 +6,7 @@
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const modeOrder = ['learn', 'direct', 'diagnose'];
+  const explicitVariables = new Set();
 
   function updateModeUI(mode) {
     $$('[data-mode]').forEach((control) => {
@@ -72,15 +73,29 @@
     character: { agency: 'character', ownership: { character: 'high', world: 'low', narrative: 'medium' }, variables: { color: { temperature: 'warm', territory: 'character' }, camera: { perspective: 'character', stability: 'medium' }, line: { stability: 'low' }, space: { compression: 'high' } } }
   };
 
+  function filteredOwnerPatch(owner) {
+    const preset = ownerPatches[owner];
+    const variables = {};
+    Object.entries(preset.variables || {}).forEach(([family, values]) => {
+      Object.entries(values).forEach(([key, value]) => {
+        if (explicitVariables.has(`${family}.${key}`)) return;
+        if (!variables[family]) variables[family] = {};
+        variables[family][key] = value;
+      });
+    });
+    return { agency: preset.agency, ownership: preset.ownership, variables };
+  }
+
   $$('[data-owner-choice]').forEach((button) => button.addEventListener('click', () => {
     const owner = button.dataset.ownerChoice;
-    scene.updateSceneState(ownerPatches[owner], 'ownership-demo');
+    scene.updateSceneState(filteredOwnerPatch(owner), 'ownership-demo');
   }));
 
   $$('[data-variable-family][data-variable-key][data-variable-value]').forEach((button) => button.addEventListener('click', () => {
     const family = button.dataset.variableFamily;
     const key = button.dataset.variableKey;
     const value = button.dataset.variableValue;
+    explicitVariables.add(`${family}.${key}`);
     scene.updateSceneState({ variables: { [family]: { [key]: value } }, diagnosticContext: { hasNarrativeCause: true, primaryChanges: 1 } }, `workspace:${family}.${key}`);
   }));
 
