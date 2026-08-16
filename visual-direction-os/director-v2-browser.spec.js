@@ -41,6 +41,21 @@ test('mobile page reaches the real diagnostic end and primary mode navigation re
   expect(Math.abs(directTop)).toBeLessThan(100);
 });
 
+test('mobile mode highlight follows manual scroll position', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(url);
+  await page.locator('#diagnostic-root .diagnostic-status').waitFor();
+  await page.locator('#direct-panel').evaluate(node => node.scrollIntoView({ block: 'start' }));
+  await page.waitForTimeout(80);
+  await expect(page.locator('.mobile-modes [data-mode="direct"]')).toHaveAttribute('aria-current', 'page');
+  await page.locator('#diagnose-panel').evaluate(node => node.scrollIntoView({ block: 'start' }));
+  await page.waitForTimeout(80);
+  await expect(page.locator('.mobile-modes [data-mode="diagnose"]')).toHaveAttribute('aria-current', 'page');
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.waitForTimeout(80);
+  await expect(page.locator('.mobile-modes [data-mode="learn"]')).toHaveAttribute('aria-current', 'page');
+});
+
 test('advanced tools are part of the deterministic document structure', async ({ page }) => {
   await page.goto(url);
   await expect(page.locator('#state-machine-panel')).toHaveCount(1);
