@@ -21,6 +21,7 @@ jobs:
         run: |
           node visual-direction-os/director-v2-models.test.js
           node visual-direction-os/visual-qa.test.js
+          node visual-direction-os/site-publish.test.js
       - name: Check JavaScript syntax
         run: |
           node --check visual-direction-os/scene-state.js
@@ -31,6 +32,7 @@ jobs:
           node --check visual-direction-os/diagnostic.js
           node --check visual-direction-os/timeline-sync.js
           node --check visual-direction-os/visual-qa.js
+          node --check visual-direction-os/build-pages-site.js
       - name: Run staging source QA
         run: |
           node - <<'NODE'
@@ -50,6 +52,13 @@ jobs:
           ! grep -R "transition:[[:space:]]*all" visual-direction-os/director-v2*.css
           grep -q "prefers-reduced-motion" visual-direction-os/director-v2.css
           grep -q "prefers-reduced-motion" visual-direction-os/director-v2-tools.css
+      - name: Verify assembled Pages site
+        run: |
+          node visual-direction-os/build-pages-site.js visual-direction-os /tmp/vdos-site
+          cmp visual-direction-os/director-v2.html /tmp/vdos-site/index.html
+          cmp visual-direction-os/index.html /tmp/vdos-site/knowledge.html
+          test -f /tmp/vdos-site/director-v2-app.js
+          test -f /tmp/vdos-site/scene-state.js
       - name: Run browser acceptance
         run: |
           npm install --no-save @playwright/test@1.55.0
