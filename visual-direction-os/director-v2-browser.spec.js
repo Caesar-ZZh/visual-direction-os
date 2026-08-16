@@ -39,7 +39,7 @@ test('state machine, sequence score and diagnostic share one scene state', async
 
   await page.locator('[data-diagnostic="incoherent"]').click();
   await expect(page.locator('.diagnostic-status')).toContainText('SYSTEM COHERENCE · FAIL');
-  await expect(page.locator('[data-level="FAIL"]')).toContainText('Character and World both claim primary ownership.');
+  await expect(page.locator('.diagnostic-list article[data-level="FAIL"]')).toContainText('Character and World both claim primary ownership.');
 });
 
 test('reduced motion keeps information and disables staged transitions', async ({ browser }) => {
