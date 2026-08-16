@@ -27,7 +27,7 @@ A claim is **not** a whole-film rule merely because it appears here. Scope and p
 
 | ID | Evidence claim | Status / scope |
 |---|---|---|
-| `EV-E65-010` | Shot/reverse-shot can invert scale dominance while preserving relational polarity. | PROVISIONAL; scene cluster |
+| `EV-E65-010` | Shot/reverse-shot can invert foreground scale dominance while preserving relational polarity. | PROVISIONAL; scene cluster |
 | `EV-E65-011` | A non-focal foreground person can become a low-detail graphic occluder mass. | PROVISIONAL |
 | `EV-E65-012` | Character-relative temperature ownership can persist across camera changes. | PROVISIONAL; later revised by EV-E65-020 |
 | `EV-E65-013` | Facial visibility is not required for identity/emotional continuity if other anchors survive. | PROVISIONAL |
@@ -214,6 +214,17 @@ BATCH-020 extends the cross-world correction phase into action/anomaly onset. It
 
 BATCH-021 separates **ownership** from **attention priority** and adds a transition counterexample: proximity does not imply anomaly contamination, and a scene boundary may perform a hard reset without gradual decay.
 
+## BATCH-022 — Hobie punk-domain / multi-medium identity / semantic typography
+
+| ID | Evidence claim | Status / scope |
+|---|---|---|
+| `EV-HOBIE-001` | Hobie's introduction can escalate beyond costume texture into a frame-wide punk narrative/editorial domain with print, paper, paint, typography and cutout logic. | PROVISIONAL; Hobie intro phase |
+| `EV-HOBIE-002` | Hobie can remain one coherent identity while face, hands, body, print fragments and paint use incompatible media; the entity is a governed multi-medium assemblage rather than one stable material. | REVISES one-entity-one-medium simplification |
+| `EV-HOBIE-003` | Semantic typography can become character-owned spatial material, using scale and occlusion to re-weight Hobie's body rather than behaving as ordinary subtitles/UI. | PROVISIONAL; typography/material ownership |
+| `EV-HOBIE-004` | The frame-wide punk intro can terminate through an abstract identity title-card and hard cut to a stable host world; live Hobie can then retain local punk-medium traits without globalizing them. | VALIDATES + EXTENDS domain-exit/locality model |
+
+BATCH-022 introduces a necessary refinement to medium ownership: **ownership may govern a multi-medium rule-set rather than one material**. Hobie's visible inconsistency is structured identity behavior, and frame-wide punk takeover is a phase-specific domain state rather than an always-on aura.
+
 ## Current production consequences
 
 The evidence now requires the system to support, at minimum:
@@ -248,6 +259,13 @@ Authored Memory Surface Ownership / Authorship Scale
 Environmental Memory Atlas
 Represented-image Attention Ownership
 Entity-medium Ownership + Medium Boundary Persistence
+Governed Multi-medium Entity Assembly / Medium Fragment Incompatibility
+Identity Anchor across Medium Fragments
+Punk Narrative-domain State / Collage Layer Count
+Character-owned Semantic Typography / Typography as Spatial Object
+Semantic Text Priority / Occlusion Budget
+Title-card Identity State
+Live Hobie Medium Locality / Host-world Lock under Hobie
 Prop-medium Ownership / Owner-medium Inheritance
 Host-world Prop-medium Lock
 Character-owned Emissive Technology / Device Emissive Owner
