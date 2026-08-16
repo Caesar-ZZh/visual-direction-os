@@ -181,6 +181,17 @@ A claim is **not** a whole-film rule merely because it appears here. Scope and p
 
 BATCH-017/018 together establish an important evidence-handling rule: **do not convert narrative expectation into identity evidence**. The transition frame stayed unresolved until later independent anchors made the identity claim supportable.
 
+## BATCH-019 — Miles/Brooklyn authorship / density / grounded relationship
+
+| ID | Evidence claim | Status / scope |
+|---|---|---|
+| `EV-M1610-001` | Miles' authored memory medium can scale from handheld sketchbook to wall-sized mural while preserving identity/relationship function without becoming a global world filter. | PROVISIONAL; authorship surface ownership |
+| `EV-M1610-002` | Brooklyn can preserve a very high count of marks, portraits and tags inside a bounded density island while surrounding architecture stays quieter and readable. | VALIDATES + REVISES hierarchical compression |
+| `EV-M1610-003` | Miles/Jeff relationship staging can remain emotionally legible through OTS geometry, body orientation, facial performance and shared space while architecture/color remain comparatively stable. | COUNTEREXAMPLE / NARROWS Earth-65-heavy relationship assumptions |
+| `EV-M1610-004` | A Brooklyn post-dense transition can reset description density while preserving place through infrastructure and Miles' red hood as a practical identity anchor. | VALIDATES reset logic CROSS-WORLD |
+
+BATCH-019 begins the cross-world correction phase: transferable mechanisms must be separated from world-specific visual implementations. Graphic authorship is intensely present in Miles' world, but evidence says it belongs to authored surfaces rather than every Brooklyn surface.
+
 ## Current production consequences
 
 The evidence now requires the system to support, at minimum:
@@ -188,13 +199,16 @@ The evidence now requires the system to support, at minimum:
 ```text
 Composition Re-Authoring
 Carrier Selection + Carrier Handoff
+World/Scene-specific Relationship Carrier Mode
 Reality Suppression / Controlled Flattening
 Hierarchical Detail Compression
+Regional Detail Budget / Density Island Occupancy
 Narrative/Perceptual Detail Budget
 Owner-local Description Density / Detail Budget by Owner
 Motion-state Detail Budget + Re-entry
 Search-state Information Withholding
 Multi-channel Identity Preservation
+Practical Identity Anchor during Density Reset
 Temporal Identity-resolution Confidence / Anchor Threshold
 Fragmentary Reveal Order / Authority before Face
 Identity Landmark Lock under Velocity
@@ -205,6 +219,8 @@ Facial Landmark Precision ≠ Surface Realism
 World-field / Role-color / Color Memory
 Lighting Ownership Handoff
 Surface-specific Medium Assignment
+Authored Memory Surface Ownership / Authorship Scale
+Represented-image Attention Ownership
 Entity-medium Ownership + Medium Boundary Persistence
 Prop-medium Ownership / Owner-medium Inheritance
 Host-world Prop-medium Lock
@@ -233,7 +249,7 @@ Event Render Attack / Hold / Recovery
 Graphic Explosion / Smoke Shape Grammar
 Force-vector Alignment + Force-vector Environment
 Threat Occlusion + Silhouette Identity Preservation
-Post-impact / Post-event Description-density Reset
+Post-impact / Post-event / Post-dense Description-density Reset
 World Authority Scale Transfer + Authority Oscillation / Reset
 Silhouette-preserving Overexposure
 ```
