@@ -4,6 +4,8 @@
   --vr-focus-x:74%;
   --vr-focus-y:26%;
   --vr-focus-scale:1;
+  --vr-focus-radius-a:30%;
+  --vr-focus-radius-b:36%;
   --vr-pressure:.2;
   --vr-line-opacity:.12;
   --vr-texture-opacity:.025;
@@ -11,25 +13,27 @@
   --vr-motion-duration:520ms;
 }
 
+body{isolation:isolate}
+.v2-shell{position:relative;z-index:1}
+
 body::before,
 body::after{
   content:"";
   position:fixed;
   inset:0;
   pointer-events:none;
-  z-index:-2;
+  z-index:0;
 }
 
 body::before{
   background:
-    radial-gradient(circle at var(--vr-focus-x) var(--vr-focus-y),var(--vr-atmosphere-a) 0,transparent calc(28% * var(--vr-focus-scale))),
-    radial-gradient(circle at calc(100% - var(--vr-focus-x)) calc(100% - var(--vr-focus-y)),var(--vr-atmosphere-b) 0,transparent calc(34% * var(--vr-focus-scale)));
+    radial-gradient(circle at var(--vr-focus-x) var(--vr-focus-y),var(--vr-atmosphere-a) 0,transparent var(--vr-focus-radius-a)),
+    radial-gradient(circle at calc(100% - var(--vr-focus-x)) calc(100% - var(--vr-focus-y)),var(--vr-atmosphere-b) 0,transparent var(--vr-focus-radius-b));
   opacity:.9;
-  transition:background-position var(--vr-motion-duration) ease,opacity var(--vr-motion-duration) ease;
+  transition:opacity var(--vr-motion-duration) ease,filter var(--vr-motion-duration) ease;
 }
 
 body::after{
-  z-index:-1;
   opacity:var(--vr-texture-opacity);
   background-image:
     linear-gradient(rgba(241,239,234,.14) 1px,transparent 1px),
@@ -38,26 +42,35 @@ body::after{
   transition:opacity var(--vr-motion-duration) ease,background-size var(--vr-motion-duration) ease;
 }
 
+html[data-vr-focus-distance="near"]{
+  --vr-focus-radius-a:23%;
+  --vr-focus-radius-b:29%;
+}
+
+html[data-vr-focus-distance="far"]{
+  --vr-focus-radius-a:38%;
+  --vr-focus-radius-b:44%;
+}
+
 html[data-vr-agency="contested"] body::before{
   background:
     radial-gradient(circle at 28% 30%,var(--vr-atmosphere-a) 0,transparent 30%),
     radial-gradient(circle at 74% 64%,var(--vr-atmosphere-b) 0,transparent 32%);
 }
 
+.workspace,
+.ownership-lab{
+  transition:padding-block var(--vr-motion-duration) ease;
+}
+
 html[data-vr-pressure="medium"] .workspace,
 html[data-vr-pressure="medium"] .ownership-lab{
-  --vr-section-shift:10px;
+  padding-block:clamp(32px,4.7vw,66px);
 }
 
 html[data-vr-pressure="high"] .workspace,
 html[data-vr-pressure="high"] .ownership-lab{
-  --vr-section-shift:18px;
-}
-
-.workspace,
-.ownership-lab{
-  transform:translateY(calc(var(--vr-section-shift,0px) * -.18));
-  transition:transform var(--vr-motion-duration) ease;
+  padding-block:clamp(28px,4.2vw,60px);
 }
 
 html[data-vr-line="active"] .hero-system-path,
