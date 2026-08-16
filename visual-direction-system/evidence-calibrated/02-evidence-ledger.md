@@ -203,6 +203,17 @@ BATCH-019 begins the cross-world correction phase: transferable mechanisms must 
 
 BATCH-020 extends the cross-world correction phase into action/anomaly onset. It also preserves the evidence discipline established in B017/018: the captured bald adversary is not named from this batch, while Spot is only treated as an entity-level anomaly until later frames show whether portal/void behavior spreads into world grammar.
 
+## BATCH-021 — attention ownership / proximity lock / hard reset
+
+| ID | Evidence claim | Status / scope |
+|---|---|---|
+| `EV-M1610-009` | Spot anomaly, Miles identity and Dad communication UI can compete for attention as distinct owners without medium blending or world rewrite. | VALIDATES + EXTENDS owner/layer model |
+| `EV-M1610-010` | Spot remains an entity-level anomaly across adjacent close-range frames; proximity/occlusion alone does not spread void topology into Miles or Brooklyn. | VALIDATES EV-M1610-008; host-world lock |
+| `EV-M1610-011` | Hero action agency can be interrupted by communication through gaze, hand/device orientation and body posture without global rendering escalation. | PROVISIONAL; agency/attention |
+| `EV-M1610-012` | A hard editorial scene-domain handoff can reset anomaly/UI layers directly into a grounded social interior with no visible residue. | COUNTEREXAMPLE / NARROWS gradual-decay assumptions |
+
+BATCH-021 separates **ownership** from **attention priority** and adds a transition counterexample: proximity does not imply anomaly contamination, and a scene boundary may perform a hard reset without gradual decay.
+
 ## Current production consequences
 
 The evidence now requires the system to support, at minimum:
@@ -212,6 +223,7 @@ Composition Re-Authoring
 Carrier Selection + Carrier Handoff
 World/Scene-specific Relationship Carrier Mode
 Threat-shell State / Equipment-to-person Authority Handoff
+Attention-owner Priority / Concurrent-owner Count / Owner-blend Guard
 Reality Suppression / Controlled Flattening
 Hierarchical Detail Compression
 Regional Detail Budget / Density Island Occupancy
@@ -224,6 +236,7 @@ Practical Identity Anchor during Density Reset
 Temporal Identity-resolution Confidence / Anchor Threshold
 Fragmentary Reveal Order / Authority before Face
 Identity Landmark Lock under Velocity
+Action Attention Target / Device-hand Occupancy / Agency Interruption Strength
 Action Signature Before Body Reveal
 Orientation / Foreground Scale Reveal
 Arrival Entity Edge Lock before World Stabilization
@@ -243,6 +256,7 @@ Interaction-layer Ownership / Cross-medium Contact without Homogenization
 Contact-boundary Preservation / Contact Edge Ownership Seam
 Graphic Insert Scope: local / object / entity / frame
 Screen-space Editorial / Communication Layer + UI Occlusion Budget
+Screen-space-to-device-native UI Handoff
 Rendering-layer Precedence + Owned Override Types
 Narrative-domain Override + Discrete Exit
 Narrative-domain Emissive Exceptions
@@ -264,6 +278,8 @@ Force-vector Alignment + Force-vector Environment
 Threat Occlusion + Silhouette Identity Preservation
 Spot Value-mass / Void-topology Anomaly Readability
 Host-world Medium Lock during Entity-level Anomaly Intrusion
+Anomaly Spread Trigger Requirement / Proximity Without Contamination
+Scene-domain Handoff / Hard Reset / New-scene World Lock
 Post-impact / Post-event / Post-dense Description-density Reset
 World Authority Scale Transfer + Authority Oscillation / Reset
 Silhouette-preserving Overexposure
