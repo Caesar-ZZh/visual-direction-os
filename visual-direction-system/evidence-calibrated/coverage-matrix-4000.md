@@ -21,17 +21,17 @@ Near-duplicates enter only when they contribute temporal, micro-performance, hel
 
 | GitHub chapter | Evidence obligation | Target tagged frames floor | Deep diagnostics floor | Current evidence status |
 |---|---|---:|---:|---|
-| `01-master-framework.md` | Validate causal chain across characters/worlds: space, color, edge, medium, time, focus, object, performance, light, event grammar and perceptual uncertainty. | 900 | 120 | EARLY — Earth-65 broad/saturated; Brooklyn, Hobie and Spider Society calibrated; **B024–026 add structured urban density, bounded anomaly behavior, concurrent action constraints, infrastructure action rails and autonomous host-world grammar** |
-| `02-character-system.md` | Miles, Gwen, Hobie, Miguel and supporting identity systems; state changes; non-face identity; action signature; character-owned medium. | 1200 | 180 | GWEN STRONG; Vulture dense; Miles improving; Hobie first cluster verified; Miguel identity/system sampled; **B026 validates Gwen identity/pose priority under dense action without global city erasure** |
-| `03-world-system.md` | Earth-1610/Brooklyn, Earth-65, Earth-928/Spider Society, Mumbattan, Hobie/punk, collision/transition states. | 1300 | 180 | Earth-65 overrepresented; Brooklyn improving; Hobie and Spider Society sampled; **B024–026 establish Mumbattan density grammar, host-object lock, action-coordinate infrastructure and character-independent world persistence** |
-| `04-sequence-color.md` | Role-color, territory, migration, residue, merge, attack/hold/decay, light ownership, carrier handoff. | 1000 | 150 | Earth-65 strong; Brooklyn/Hobie/Spider Society extend ownership logic; B024 structural color zoning remains active through later Mumbattan action, including the character-empty B026-012 host view |
-| `05-production-system.md` | Composition, rendering deconstruction, detail strategy, medium assignment, material ontology, motion, source light, event rendering, force construction. | 850 | 130 | **B024–026 add infrastructure-first density construction, local action identity carve-outs, bounded anomaly masks, host-object material locks, multi-owner constraints and infrastructure action-coordinate controls** |
-| `06-project-worksheets.md` | Convert mechanisms into explicit project fields/questions. | 500 | 60 | fields now include `urban_density_band_count`, `infrastructure_anchor_strength`, `regional_color_zone_count`, `identity_carveout_radius`, `anomaly_externalization_radius`, `host_object_material_lock`, `concurrent_action_constraint_count`, `infrastructure_action_rail_count`, `host_world_autonomy` |
+| `01-master-framework.md` | Validate causal chain across characters/worlds: space, color, edge, medium, time, focus, object, performance, light, event grammar and perceptual uncertainty. | 900 | 120 | EARLY — Earth-65 broad/saturated; Brooklyn, Hobie and Spider Society calibrated; **B024–027 add structured urban density, bounded anomaly behavior, concurrent action constraints, infrastructure action rails, autonomous host-world grammar and temporal identity/relational-connector persistence** |
+| `02-character-system.md` | Miles, Gwen, Hobie, Miguel and supporting identity systems; state changes; non-face identity; action signature; character-owned medium. | 1200 | 180 | GWEN STRONG; Vulture dense; Miles improving; Hobie first cluster verified; Miguel identity/system sampled; **B027 validates Miles' compact identity invariant set across severe perspective/pose/scale variation while host density remains intact** |
+| `03-world-system.md` | Earth-1610/Brooklyn, Earth-65, Earth-928/Spider Society, Mumbattan, Hobie/punk, collision/transition states. | 1300 | 180 | Earth-65 overrepresented; Brooklyn improving; Hobie and Spider Society sampled; **B024–027 establish Mumbattan density grammar, host-object lock, action-coordinate infrastructure, character-independent world persistence and host-density preservation across sustained action states** |
+| `04-sequence-color.md` | Role-color, territory, migration, residue, merge, attack/hold/decay, light ownership, carrier handoff. | 1000 | 150 | Earth-65 strong; Brooklyn/Hobie/Spider Society extend ownership logic; Mumbattan structural color zoning remains active through B027's changing character dominance and deep-space relation states |
+| `05-production-system.md` | Composition, rendering deconstruction, detail strategy, medium assignment, material ontology, motion, source light, event rendering, force construction. | 850 | 130 | **B024–027 add infrastructure-first density construction, local action identity carve-outs, bounded anomaly masks, host-object material locks, multi-owner constraints, infrastructure action-coordinate controls, perspective deformation tolerance and connector persistence** |
+| `06-project-worksheets.md` | Convert mechanisms into explicit project fields/questions. | 500 | 60 | fields now include `urban_density_band_count`, `infrastructure_anchor_strength`, `regional_color_zone_count`, `identity_carveout_radius`, `anomaly_externalization_radius`, `host_object_material_lock`, `concurrent_action_constraint_count`, `infrastructure_action_rail_count`, `host_world_autonomy`, `identity_invariant_set`, `relational_connector_owner`, `crowd_response_requires_temporal_cue` |
 | `07-original-case-study.md` | Rebuild an original case with evidence-backed mechanisms beyond surface imitation. | 350 | 80 | not yet evidence-refactored |
-| `08-glossary.md` | Stable terms need frame evidence, scope, counterexample and production definition. | 600 | 60 | candidate terms now include Structured Urban Density Bands, Infrastructure Navigational Scaffold, Regional Color/Value Spatial Zoning, Local Identity Carve-out, Bounded Anomaly Interaction Mask, Host-object Material Lock, Concurrent Action Constraint Ownership, Infrastructure Action Coordinate System and Host-world Autonomy |
-| `09-decision-tree.md` | Validate preserve/re-author, carrier, detail, medium/FX/material ontology, break/recovery, reveal decisions. | 700 | 100 | B026 adds “which action constraint owns this mark?”, “can hero priority remain local?”, “which infrastructure rail coordinates the action?”, and “does world grammar survive without a character carrier?” |
-| `10-master-workflow.md` | Validate narrative problem → planning → rendering → sequence → QA across quiet, action, transition and climax. | 900 | 140 | Cross-world workflow now includes Brooklyn ownership, Hobie multi-medium identity, Spider Society system hierarchy and Mumbattan density/anomaly/action construction; full portal/chase causality remains pending |
-| `11-visual-qa.md` | Positive/negative examples for global filters, wrong hierarchy, wrong ownership, FX/material confusion, over-description, leakage, blur-only motion. | 850 | 160 | B024–026 add failures for equal-detail city clutter, generic colorful/maximalist styling, hero-readable-by-world-erasure, anomaly material leakage, blended web/anomaly/host ownership, decorative-only infrastructure and character-dependent world styling |
+| `08-glossary.md` | Stable terms need frame evidence, scope, counterexample and production definition. | 600 | 60 | candidate terms now include Structured Urban Density Bands, Infrastructure Navigational Scaffold, Regional Color/Value Spatial Zoning, Local Identity Carve-out, Bounded Anomaly Interaction Mask, Host-object Material Lock, Concurrent Action Constraint Ownership, Infrastructure Action Coordinate System, Host-world Autonomy, Temporal Identity Landmark Persistence and Relational Constraint-Line Persistence |
+| `09-decision-tree.md` | Validate preserve/re-author, carrier, detail, medium/FX/material ontology, break/recovery, reveal decisions. | 700 | 100 | B027 adds “which identity landmarks must remain invariant under deformation?”, “does the connector remain its own owner?”, and “is visible crowd occupancy actually response evidence?” |
+| `10-master-workflow.md` | Validate narrative problem → planning → rendering → sequence → QA across quiet, action, transition and climax. | 900 | 140 | Cross-world workflow now includes Brooklyn ownership, Hobie multi-medium identity, Spider Society system hierarchy and Mumbattan density/anomaly/action construction; B027 adds temporal identity and evidence-causality gates; full portal/chase causality remains pending |
+| `11-visual-qa.md` | Positive/negative examples for global filters, wrong hierarchy, wrong ownership, FX/material confusion, over-description, leakage, blur-only motion. | 850 | 160 | B024–027 add failures for equal-detail city clutter, generic colorful/maximalist styling, hero-readable-by-world-erasure, anomaly material leakage, blended web/anomaly/host ownership, decorative-only infrastructure, character-dependent world styling and inferring crowd reaction from occupancy alone |
 
 ## Cross-cutting evidence domains
 
@@ -42,16 +42,16 @@ Near-duplicates enter only when they contribute temporal, micro-performance, hel
 | Gwen / Earth-65 | 350+ | Emotional permeability, action identity, thresholds and state changes; already disproportionately sampled. |
 | Hobie / punk system | 350+ | Medium-time instability, collage, frame-rate/material behavior. B022 begins this domain; B023 independently validates live Hobie medium locality. Temporal/frame-rate instability is still pending. |
 | Miguel / Spider Society | 300+ | System/order, architecture, high-pressure composition. B018 validates Miguel identity; B023 adds first native-system command/authority sample. Crowd/order/transport/chase remains pending. |
-| Mumbattan | 300+ | Vertical ecology, density, layered vitality and action readability. **B024–026 now provide 36 consecutive verified frames from 02:39:17–02:39:52: structured density, color/value zoning, Spot anomaly escalation/local externalization, host-object material lock, dense-host Gwen action readability, infrastructure action rails and a character-empty host-world counterexample. Complete portal/chase causality remains pending.** |
-| Cross-character facial rendering | 350+ | Separate landmark precision from surface realism across identities. B024/B026 add Miles/Gwen cases where landmarks remain privileged inside unusually dense world frequency. |
-| Camera / composition families | 700+ | Re-authoring, scale, occlusion, depth, reveal, relationship carrier, threat-shell authority, anomaly intrusion, authority reset and recovery geometry. B026 adds tiny-character readability inside large infrastructure fields and explicit action-coordinate rails; **camera motion remains unclaimed from stills**. |
-| Rendering construction | 700+ | Reality suppression, flattening, medium ownership, event modes, regional/owner-local detail, authored surfaces, UI layers, anomaly boundaries, hard resets, governed multi-medium assembly, diegetic interfaces, dense-world frequency budgeting and now multi-owner constraint separation. |
-| Color / edge / texture | 700+ | Mechanism rather than palette imitation. Mumbattan broad zoning and host linework persist through anomaly/action states and remain coherent without a hero carrier. |
-| Motion / temporal FX | 500+ | Chase/action, reveal signatures, event envelopes, force vectors, instability, reconstitution, identity lock and recovery. **B026 improves adjacent action-state evidence but does not prove camera trajectory or complete sustained-motion force construction.** |
-| World transition / collision | 300+ | Learn when grammar breaks, overlaps, hands off, transfers or becomes temporary event-space. B025 shows bounded anomaly externalization and host-context reset; exact portal entry/exit mechanics remain unresolved. |
+| Mumbattan | 300+ | Vertical ecology, density, layered vitality and action readability. **B024–027 now provide 48 consecutive verified frames from 02:39:17–02:40:04: structured density, color/value zoning, Spot anomaly escalation/local externalization, host-object material lock, dense-host action readability, infrastructure action rails, host-world autonomy, temporal identity lock and relational web persistence. Immediate adjacency is now closed; exact portal/crowd/collision causality remains pending only for targeted later sampling.** |
+| Cross-character facial rendering | 350+ | Separate landmark precision from surface realism across identities. Mumbattan adds Miles/Gwen cases where landmark sets remain privileged under extreme density and perspective. |
+| Camera / composition families | 700+ | Re-authoring, scale, occlusion, depth, reveal, relationship carrier, threat-shell authority, anomaly intrusion, authority reset and recovery geometry. B027 adds severe low-angle/foreshortened character states and deep-space Gwen/Miles separation; **camera motion remains unclaimed from stills**. |
+| Rendering construction | 700+ | Reality suppression, flattening, medium ownership, event modes, regional/owner-local detail, authored surfaces, UI layers, anomaly boundaries, hard resets, governed multi-medium assembly, diegetic interfaces, dense-world frequency budgeting, multi-owner constraint separation and owner separation under energetic contact. |
+| Color / edge / texture | 700+ | Mechanism rather than palette imitation. Mumbattan broad zoning and host linework persist through anomaly/action states and remain structurally active while character dominance changes. |
+| Motion / temporal FX | 500+ | Chase/action, reveal signatures, event envelopes, force vectors, instability, reconstitution, identity lock and recovery. **B027 supplies continuous temporal support for identity-landmark persistence and relational-connector persistence, but still does not prove camera trajectory or complete force-vector/portal mechanics.** |
+| World transition / collision | 300+ | Learn when grammar breaks, overlaps, hands off, transfers or becomes temporary event-space. B025–027 show bounded anomaly externalization, host-context reset and energetic contact without owner collapse; exact portal entry/exit remains unresolved. |
 | Visual silence / quiet | 250+ | Prevent constant escalation and establish authority/description-density reset. |
 | Climax / agency / authorship | 300+ | Validate visual reserve, escalation, transfer of control and residue. |
-| Counterexamples | 500+ multi-tag | Prevent local observations becoming false universal rules. B026 counters “action readability requires city erasure,” “interaction requires material blending,” “infrastructure is decorative density only,” and “world style requires hero occupancy.” |
+| Counterexamples | 500+ multi-tag | Prevent local observations becoming false universal rules. B027 adds a direct negative calibration: **visible bystanders are not crowd-response evidence without temporal reaction cues**. |
 
 ## Batch rules under the 4,000-frame strategy
 
@@ -68,13 +68,13 @@ Each batch must answer:
 - **L2** — change point / representative / counterexample with mechanism analysis.
 - **L3 / Deep** — diagnostic frame/sequence used to revise theory, workflow, prompt schema or QA.
 
-## Current checkpoint after BATCH-026
+## Current checkpoint after BATCH-027
 
-- Selected/viewed/L1 frames: **382 / ~4,000**.
+- Selected/viewed/L1 frames: **394 / ~4,000**.
 - Latest Earth-65 chronological coverage: **`01:45:23`**.
 - Preserved adjacent Earth-65 boundary: **`01:45:24`**, but dense adjacency remains deprioritized.
-- Latest coverage-pivot sample: **Earth-50101 / Mumbattan, continuous `02:39:41–02:39:52`**, **12/12 source images actually opened, 12 at least L2, 4 deep diagnostics, 3 curated references**.
-- Mumbattan active-lineage consecutive coverage now spans B024–026, `02:39:17–02:39:52`, 36 actually opened source frames.
+- Latest coverage-pivot sample: **Earth-50101 / Mumbattan, continuous `02:39:53–02:40:04`**, **12/12 source images actually opened, all 12 at least L2, 4 deep diagnostics, 3 curated references**.
+- Mumbattan active-lineage consecutive coverage spans B024–027, `02:39:17–02:40:04`, **48 actually opened source frames**.
 - Source routing remains recoverable via read-only raw-root parent + narrow time/file-title discovery; metadata-only discovery does not count.
 
 ### BATCH-024 baseline mechanisms
@@ -99,23 +99,33 @@ Each batch must answer:
 - **Infrastructure as Action Coordinate System** — building-canyon depth, facade boundaries, cables and web relationships provide large spatial rails for action placement.
 - **Host-world Grammar Persistence without Character Occupancy** — Mumbattan color zoning, linework/signage, cables and depth remain coherent in a character-empty view; the host world is an autonomous grammar.
 
-The practical dense-world/action model now needs an explicit order: **host-world infrastructure scaffold → density bands → regional color/value zoning → local identity/action carve-out → independent action-constraint owners → micro-detail**. Reversing that order produces clutter, generic surface styling or material leakage.
+### BATCH-027 temporal / QA mechanisms
+
+- **Temporal Identity Landmark Persistence Under Severe Perspective** — Miles remains identifiable across severe foreshortening, scale and pose variation through a compact invariant set: silhouette family, eye landmark and emblem/accent topology.
+- **Relational Constraint-Line Persistence Across Subject Dominance** — bright white web material remains a distinct relation/action owner as dominance shifts between Gwen/Miles-separated and Miles-dominant states.
+- **Anomaly Contact Boundary Without Owner Collapse** — energetic Spot/anomaly contact can intensify while entity/anomaly/host ownership remains separately readable; contact is not evidence of portal transition.
+- **Visible Bystanders Are Not Crowd-Response Evidence** — occupancy alone cannot close the crowd-response gap; temporal orientation/displacement/avoidance evidence is required.
+
+The practical dense-world/action model now needs an explicit order: **host-world infrastructure scaffold → density bands → regional color/value zoning → local identity/action carve-out → identity invariant lock under deformation → independent action/relationship constraint owners → micro-detail**. Reversing that order produces clutter, generic surface styling or material leakage.
 
 ## Current coverage pressure
 
-Mumbattan now has useful world, anomaly and action-coordinate evidence, so adjacency should continue only when new frames add genuinely causal mechanisms rather than repeating the same visual state:
+Immediate Mumbattan adjacency is now **closed after BATCH-027** because `02:39:53–02:40:04` primarily strengthens temporal identity/connector continuity and does not cross the remaining causal thresholds.
 
-1. exact portal entry/exit causal chain;
-2. traffic/crowd response to characters/anomaly;
-3. infrastructure re-authoring, collision or destruction;
-4. force-vector construction beyond static action rails;
-5. identity-landmark lock under sustained motion.
+Pivot by marginal value. Highest priorities are:
 
-If adjacent frames do not add those mechanisms, pivot by marginal value. Priority gaps remain Spider Society crowd/order/transport/chase, Jess interaction grammar, Hobie temporal behavior only when visibly provable, world collision outside Earth-65, climax/agency/authorship and independent cross-world counterexamples.
+1. Spider Society crowd/order/transport/chase distinct from B023 command-room evidence;
+2. Jess introduction/interaction grammar;
+3. world collision outside Earth-65;
+4. climax/agency/authorship;
+5. independent cross-world counterexamples;
+6. Hobie temporal/material/frame-rate behavior only when directly visible.
+
+Return to Mumbattan only for a targeted later sample known to contain exact portal entry/exit, explicit crowd/traffic reaction, infrastructure collision/destruction/re-authoring or another unresolved causal mechanism.
 
 ## Source-discovery resilience note
 
-The canonical `00_SOURCE_CORPUS` folder may be empty. BATCH-024–026 demonstrate that later raw-source chronology can be recovered without modifying originals by searching the read-only raw root and resolving exact source images. Candidate metadata never counts; actual source images must still be opened before L1. All generated research artifacts remain in canonical `Sorted by Scence`.
+The canonical `00_SOURCE_CORPUS` folder may be empty. BATCH-024–027 demonstrate that later raw-source chronology can be recovered without modifying originals by searching the read-only raw root and resolving exact source images. Candidate metadata never counts; actual source images must still be opened before L1. All generated research artifacts remain in canonical `Sorted by Scence`.
 
 ## Promotion policy
 
