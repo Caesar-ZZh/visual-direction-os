@@ -101,12 +101,14 @@
       loadScript('state-machine.js', 'VDOSStateMachine'),
       loadScript('sequence-score.js', 'VDOSSequenceScore'),
       loadScript('color-ownership.js', 'VDOSColorOwnership'),
-      loadScript('diagnostic.js', 'VDOSDiagnostic')
+      loadScript('diagnostic.js', 'VDOSDiagnostic'),
+      loadScript('timeline-sync.js', 'VDOSTimelineSync')
     ]);
     window.VDOSStateMachine.initStateMachine($('#state-machine-root'), scene);
     window.VDOSSequenceScore.initSequenceScore($('#sequence-root'), scene);
     window.VDOSColorOwnership.initColorOwnership($('#color-ownership-root'), scene);
     window.VDOSDiagnostic.initDiagnostic($('#diagnostic-root'), scene);
+    window.VDOSTimelineSync.syncTimelines(scene, window.VDOSStateMachine, window.VDOSSequenceScore, document);
   }
 
   scene.subscribeSceneState(render);
