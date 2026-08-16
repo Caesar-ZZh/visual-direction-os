@@ -2,10 +2,11 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="description" content="Visual Direction OS Director Workspace v2.1 staging shell">
   <title>Visual Direction OS · Director Workspace v2.1</title>
-  <link rel="stylesheet" href="director-v2.css">
+  <link rel="stylesheet" href="director-v2.css?v=20260816-1951">
+  <link rel="stylesheet" href="director-v2-tools.css?v=20260816-1951">
 </head>
 <body>
   <a class="skip" href="#main">跳到主要内容</a>
@@ -33,13 +34,15 @@
           <div class="narrative-glow glow-a"></div>
           <div class="narrative-glow glow-b"></div>
           <div class="hero-focus-field"></div>
-          <div class="system-overlay">
-            <span class="system-node node-narrative">NARRATIVE</span>
-            <span class="system-node node-variable">VARIABLE</span>
-            <span class="system-node node-state">STATE</span>
-            <span class="system-node node-sequence">SEQUENCE</span>
-            <span class="system-node node-agency">AGENCY</span>
-            <i class="system-line line-a"></i><i class="system-line line-b"></i><i class="system-line line-c"></i>
+          <div class="hero-system-map">
+            <svg class="hero-system-path" viewBox="0 0 100 52" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M8 14 C20 6, 30 7, 38 18 S58 32, 68 22 S82 14, 92 34"></path>
+            </svg>
+            <span class="hero-node node-narrative" data-hero-node="narrative"><i>01</i><b>Narrative</b></span>
+            <span class="hero-node node-variable" data-hero-node="variable"><i>02</i><b>Variable</b></span>
+            <span class="hero-node node-state" data-hero-node="state" data-active="true"><i>03</i><b>State</b></span>
+            <span class="hero-node node-sequence" data-hero-node="sequence"><i>04</i><b>Sequence</b></span>
+            <span class="hero-node node-agency" data-hero-node="agency"><i>05</i><b>Agency</b></span>
           </div>
         </div>
         <div class="hero-copy">
@@ -57,23 +60,35 @@
       </section>
 
       <section class="ownership-lab" aria-labelledby="ownership-title">
-        <div class="ownership-stage" data-owner="world" role="img" aria-describedby="ownership-status ownership-help" aria-label="Visual ownership field showing primary owner and linked visual controls">
+        <div class="ownership-stage" data-owner="world" role="img" aria-describedby="ownership-status ownership-help ownership-reason" aria-label="Visual ownership diagnostic showing which subject leads camera, color and spatial pressure">
           <div class="ownership-field"></div><div class="ownership-grid"></div>
-          <div class="ownership-focus">
-            <span>PRIMARY OWNER</span>
-            <strong id="ownership-primary">WORLD</strong>
-          </div>
-          <div class="ownership-metrics" aria-hidden="true">
-            <div data-ownership-metric="camera"><span>Camera</span><b id="ownership-camera">WORLD</b></div>
-            <div data-ownership-metric="color"><span>Color</span><b id="ownership-color">WORLD</b></div>
-            <div data-ownership-metric="space"><span>Space</span><b id="ownership-space">LOW PRESSURE</b></div>
+          <div class="ownership-board">
+            <div class="ownership-summary">
+              <span>PRIMARY OWNER</span>
+              <strong id="ownership-primary">WORLD</strong>
+              <p id="ownership-reason">WORLD leads camera and color; spatial pressure remains low.</p>
+            </div>
+            <div class="ownership-tracks">
+              <div class="ownership-track" data-ownership-track="camera" data-position="world">
+                <div class="ownership-track-head"><span>Camera authority</span><b id="ownership-camera">WORLD-LED</b></div>
+                <div class="ownership-axis"><small>WORLD</small><i class="ownership-marker"></i><small>CHARACTER</small></div>
+              </div>
+              <div class="ownership-track" data-ownership-track="color" data-position="world">
+                <div class="ownership-track-head"><span>Color authority</span><b id="ownership-color">WORLD-LED</b></div>
+                <div class="ownership-axis"><small>WORLD</small><i class="ownership-marker"></i><small>CHARACTER</small></div>
+              </div>
+              <div class="ownership-track" data-ownership-track="space" data-position="low">
+                <div class="ownership-track-head"><span>Spatial pressure</span><b id="ownership-space">LOW</b></div>
+                <div class="ownership-axis ownership-axis-pressure"><small>LOW</small><i class="ownership-marker"></i><small>HIGH</small></div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="ownership-copy">
           <p class="eyebrow">Ownership transfer</p>
           <h2 id="ownership-title">Who gets to define the image?</h2>
           <p id="ownership-status" class="status-line">OWNERSHIP · WORLD OWNS FRAME</p>
-          <p id="ownership-help">切换视觉控制权，观察同一场景如何因为 agency 改变而改变，而不是因为“想更炫”。</p>
+          <p id="ownership-help">切换视觉控制权，观察 camera、color 与空间压力如何共同支持“谁拥有画面”这个结论。</p>
           <div class="segmented" aria-label="Ownership states">
             <button type="button" data-owner-choice="world" aria-pressed="true">World</button>
             <button type="button" data-owner-choice="contested" aria-pressed="false">Contested</button>
@@ -120,20 +135,40 @@
         </div>
       </section>
 
-      <section class="workspace" id="diagnose-panel" aria-labelledby="diagnose-title">
-        <p class="eyebrow">Diagnose / coming next</p>
+      <section class="workspace tool-workspace" id="state-machine-panel" aria-labelledby="state-machine-title">
+        <p class="eyebrow">Direct / Character mechanism</p><h2 id="state-machine-title">Visual State Machine</h2>
+        <p>机制而非画风模仿。拖动 playhead，观察叙事状态如何同步改变视觉变量与 ownership。</p><div id="state-machine-root"></div>
+      </section>
+      <section class="workspace tool-workspace" id="sequence-panel" aria-labelledby="sequence-title">
+        <p class="eyebrow">Direct / Temporal orchestration</p><h2 id="sequence-title">Sequence Score</h2>
+        <p>六条视觉轨道错峰变化。高潮由控制权转移定义，而不是所有参数一起达到最大值。</p><div id="sequence-root"></div>
+      </section>
+      <section class="workspace tool-workspace" id="color-ownership-panel" aria-labelledby="color-ownership-title">
+        <p class="eyebrow">Direct / Color territory</p><h2 id="color-ownership-title">Color Ownership Map</h2>
+        <p>颜色不仅是什么，更重要的是此刻由谁拥有、在哪里占领、是否发生冲突。</p><div id="color-ownership-root"></div>
+      </section>
+
+      <section class="workspace tool-workspace diagnose-workspace" id="diagnose-panel" aria-labelledby="diagnose-title">
+        <p class="eyebrow">Diagnose / Visual system diagnostic</p>
         <h2 id="diagnose-title">Why did this visual behavior change?</h2>
-        <p>下一阶段会在这里接入确定性的 PASS / WARN / FAIL 诊断规则，与 DIRECT 使用完全相同的 scene state。</p>
+        <p>使用与 DIRECT 完全相同的 scene state，输出确定性的 PASS / WARN / FAIL，不制造总分。</p>
+        <div id="diagnostic-root"></div>
       </section>
     </main>
   </div>
 
   <nav class="mobile-modes" aria-label="Primary modes">
-    <button type="button" data-mode="learn" aria-current="page">Learn</button>
-    <button type="button" data-mode="direct">Direct</button>
-    <button type="button" data-mode="diagnose">Diagnose</button>
+    <a href="#learn-panel" data-mode="learn" aria-current="page">Learn</a>
+    <a href="#direct-panel" data-mode="direct">Direct</a>
+    <a href="#diagnose-panel" data-mode="diagnose">Diagnose</a>
   </nav>
-  <script src="scene-state.js"></script>
-  <script src="director-v2-app.js"></script>
+
+  <script src="scene-state.js?v=20260816-1951"></script>
+  <script src="state-machine.js?v=20260816-1951"></script>
+  <script src="sequence-score.js?v=20260816-1951"></script>
+  <script src="color-ownership.js?v=20260816-1951"></script>
+  <script src="diagnostic.js?v=20260816-1951"></script>
+  <script src="timeline-sync.js?v=20260816-1951"></script>
+  <script src="director-v2-app.js?v=20260816-1951"></script>
 </body>
 </html>
