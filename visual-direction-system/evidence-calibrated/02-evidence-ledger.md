@@ -225,6 +225,17 @@ BATCH-021 separates **ownership** from **attention priority** and adds a transit
 
 BATCH-022 introduces a necessary refinement to medium ownership: **ownership may govern a multi-medium rule-set rather than one material**. Hobie's visible inconsistency is structured identity behavior, and frame-wide punk takeover is a phase-specific domain state rather than an always-on aura.
 
+## BATCH-023 — Spider Society system / architectural authority / role-space density
+
+| ID | Evidence claim | Status / scope |
+|---|---|---|
+| `EV-MIGUEL-001` | Spider Society command interfaces operate as system-owned diegetic information fields that can contain nested image/video evidence media without merging character, interface and represented-image ownership. | VALIDATES + EXTENDS interface/nested-media model |
+| `EV-MIGUEL-002` | Miguel's institutional authority can be established through elevation, platform separation, vertical light and subordinate upward gaze before facial detail carries the beat. | PROVISIONAL; vertical authority architecture |
+| `EV-MIGUEL-003` | Spider Society description density is role-space partitioned: Miguel's command zone carries dense amber system information while Miles/Gwen reaction space stays darker and lower-frequency. | REVISES owner/frame detail-budget model |
+| `EV-MIGUEL-004` | Hobie's local grayscale/cutout punk-medium traits can persist inside Spider Society while Miles and Earth-928 host architecture keep their own rendering grammar. | VALIDATES EV-HOBIE-004 cross-world |
+
+BATCH-023 establishes the first active-lineage native Spider Society system grammar. It rejects a generic “whole world = holograms” shortcut, adds architecture as a direct authority carrier, extends description-density control from owner/frame level to role-space level, and independently validates live Hobie medium locality in Earth-928. The 12 frames are representative samples, not uninterrupted coverage of the full `02:57:31–02:59:10` interval.
+
 ## Current production consequences
 
 The evidence now requires the system to support, at minimum:
@@ -240,6 +251,8 @@ Hierarchical Detail Compression
 Regional Detail Budget / Density Island Occupancy
 Narrative/Perceptual Detail Budget
 Owner-local Description Density / Detail Budget by Owner
+Role-space Information-density Partition
+System Info Density / Reaction-space Detail Budget
 Motion-state Detail Budget + Re-entry
 Search-state Information Withholding
 Multi-channel Identity Preservation
@@ -252,12 +265,15 @@ Action Signature Before Body Reveal
 Orientation / Foreground Scale Reveal
 Arrival Entity Edge Lock before World Stabilization
 Facial Landmark Precision ≠ Surface Realism
+Vertical Authority Architecture / Elevation / Subordinate Gaze / Light Axis
 World-field / Role-color / Color Memory
 Lighting Ownership Handoff
 Surface-specific Medium Assignment
 Authored Memory Surface Ownership / Authorship Scale
 Environmental Memory Atlas
 Represented-image Attention Ownership
+System-owned Diegetic Interface Field
+Nested Evidence Media Ownership
 Entity-medium Ownership + Medium Boundary Persistence
 Governed Multi-medium Entity Assembly / Medium Fragment Incompatibility
 Identity Anchor across Medium Fragments
@@ -266,6 +282,7 @@ Character-owned Semantic Typography / Typography as Spatial Object
 Semantic Text Priority / Occlusion Budget
 Title-card Identity State
 Live Hobie Medium Locality / Host-world Lock under Hobie
+Guest-medium Locality / Host-system Medium Lock
 Prop-medium Ownership / Owner-medium Inheritance
 Host-world Prop-medium Lock
 Character-owned Emissive Technology / Device Emissive Owner
