@@ -291,6 +291,17 @@ BATCH-027 converts Mumbattan identity carve-out from mainly isolated-state suppo
 
 BATCH-028 extends Spider Society from command-room authority into chase organization. It rejects crowd texture homogenization and equal-detail pursuit clutter: Miles remains the target anchor, nearby pursuers retain distinctive silhouettes/media, farther pursuers compress into depth bands, and a small set of host structural rails keeps the action field navigable. The host-zone reset shows that pursuit state can survive while world props, palette and architecture reinitialize. Camera trajectory, explicit command structure and complete transport/portal mechanics remain unclaimed.
 
+## BATCH-029 — Spider Society exterior world-scale / transport action geometry
+
+| ID | Evidence claim | Status / scope |
+|---|---|---|
+| `EV-MIGUEL-009` | Pursuit state and Miles identity persist when the Spider Society chase decompresses into a vast Earth-928 exterior where host-world macro geometry temporarily dominates screen authority. | VALIDATES + EXTENDS B028; world-scale pursuit decompression |
+| `EV-MIGUEL-010` | Pursuit pressure can hand off from a multi-pursuer crowd to one extreme-scale mechanically distinct interceptor, followed by a character-light host-world hold; the interceptor's identity remains unresolved. | REVISES crowd-visibility continuity assumption |
+| `EV-MIGUEL-011` | A flying Earth-928 vehicle can become a temporary action constraint when Miles' web visibly attaches to it while the vehicle retains host-world material ownership. | NEW DIRECT ACTION SUPPORT; transport constraint without material inheritance |
+| `EV-MIGUEL-012` | Visual authority can oscillate from world-dominant city scale to target/pursuer split and then to Miguel's extreme near-field body mass while Earth-928 remains readable. | VALIDATES + EXTENDS EV-E65-068 cross-world; exact camera path unclaimed |
+
+BATCH-029 revises an over-narrow Spider Society chase model. B028 established heterogeneous crowd media, target/depth hierarchy, routing rails and zone reset; B029 shows that the chase can hand off into **world-scale decompression**, compress crowd pressure into one high-authority interceptor, hold a character-light host field, use host transport as a contacted action constraint, and recompress pursuit authority into Miguel's near-field mass. The mechanically distinct `15:07:39` pursuer remains intentionally unnamed, and the sequence does not establish exact camera trajectory or force magnitude.
+
 ## Current production consequences
 
 The evidence now requires the system to support, at minimum:
@@ -332,6 +343,12 @@ Relational Connector Owner / Connector Contrast Priority
 Connector Persistence across Subject Dominance
 Anomaly Contact Boundary Energy / Owner Separation under Contact
 Crowd-response Temporal Cue Requirement / Occupancy not Reaction
+World-scale Pursuit Decompression / Target Invariant under World Dominance
+Single-interceptor Pressure Handoff / Crowd Visibility Continuity Optional
+Character-light Host-world Hold
+Host Transport Action Anchor / Connector-to-transport Legibility
+Transport Material Lock under Web Contact
+World-target-pursuer Authority Oscillation / City Macro-geometry Priority
 Motion-state Detail Budget + Re-entry
 Search-state Information Withholding
 Multi-channel Identity Preservation
