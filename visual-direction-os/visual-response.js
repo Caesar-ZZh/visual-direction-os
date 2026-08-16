@@ -14,7 +14,7 @@
 
   function deriveLine(line = {}) {
     if (line.stability === 'low' || line.density === 'high') return 'unstable';
-    if (line.stability === 'medium' || line.density === 'medium') return 'active';
+    if (line.stability === 'medium') return 'active';
     return 'stable';
   }
 
