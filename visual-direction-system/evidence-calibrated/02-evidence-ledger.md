@@ -247,6 +247,28 @@ BATCH-023 establishes the first active-lineage native Spider Society system gram
 
 BATCH-024 rejects “Mumbattan = colorful/maximalist clutter.” The observed construction is structured abundance: infrastructure scaffold, density bands, regional color/value zoning, owner-local identity carve-outs and then micro-detail. It also preserves evidence discipline at the `02:39:28` anomaly threshold: no identity, portal, spread, contamination or camera-motion claim is promoted without later causal frames.
 
+## BATCH-025 — Spot local anomaly spread / host-object lock / host reset
+
+| ID | Evidence claim | Status / scope |
+|---|---|---|
+| `EV-MUM-005` | A single rare black anomaly threshold can escalate into multiple separated void instances while Mumbattan city material/color remain stable; anomaly intensity can increase through count/topology before global world rewrite. | VALIDATES + EXTENDS B024; exact portal semantics unresolved |
+| `EV-MUM-006` | Spot's black anomaly grammar can extend beyond his body into a bounded local interaction mask around nearby traffic/object space without proving whole-street contamination. | REVISES strict entity-only model; local externalization |
+| `EV-MUM-007` | Cars, riders, tableware, furniture and bystanders retain independent host-world material ownership under local Spot anomaly overlap/occlusion; contact does not imply material inheritance. | VALIDATES host-object material lock |
+| `EV-MUM-008` | A street/traffic host scene can hard-reset to a restaurant/interior while Spot's white/black anomaly ownership persists locally and the new host scene reinitializes its own props/people/color. | VALIDATES entity-medium persistence through host-context reset; transport mechanism unresolved |
+
+BATCH-025 revises the strictest entity-only Spot model without allowing uncontrolled contamination: anomaly ownership may externalize into a bounded local interaction field, while host objects keep their own material grammar. The street-to-restaurant reset supports persistent entity medium across host-context change but does not prove exact portal transport or camera path.
+
+## BATCH-026 — action constraints / infrastructure action geometry / host-world autonomy
+
+| ID | Evidence claim | Status / scope |
+|---|---|---|
+| `EV-MUM-009` | A bounded Spot anomaly field, Spot body deformation and an external white web/constraint line can coexist while each retains separate visual/material ownership and host structures stay distinct. | VALIDATES + EXTENDS prior ownership/contact model |
+| `EV-MUM-010` | Gwen remains highly readable through white/pink/black silhouette and landmark priority while Mumbattan signage, facades and linework remain present; action clarity does not require global city erasure. | VALIDATES + EXTENDS EV-MUM-003 |
+| `EV-MUM-011` | Building-canyon depth, facade boundaries, cables/infrastructure and web relationships can function as explicit spatial rails for character/action placement under dense-world load. | VALIDATES + EXTENDS EV-MUM-001; static spatial evidence only |
+| `EV-MUM-012` | Mumbattan color zoning, linework/signage, cable/infrastructure and depth grammar remain coherent in a character-empty view; host-world style is autonomous from hero occupancy. | COUNTEREXAMPLE VALIDATION; character-independent host grammar |
+
+BATCH-026 adds a multi-owner action state and a direct host-world counterexample. Spot anomaly, web constraint and architecture can interact without material homogenization; Gwen's local priority preserves city identity; infrastructure becomes action-coordinate geometry; and the character-empty `02:39:52` frame shows Mumbattan's world grammar does not depend on hero presence. Exact portal entry/exit mechanics and camera motion remain unclaimed.
+
 ## Current production consequences
 
 The evidence now requires the system to support, at minimum:
@@ -272,6 +294,16 @@ Local Identity Carve-out in Dense World
 Local Background Frequency Reduction / Place Anchor Retention
 Anomaly Contrast Rarity / Negative Topology Uniqueness
 World-contamination Evidence Requirement
+Anomaly Externalization Radius / Bounded Interaction Mask
+Host-object Material Lock / Overlap Without Material Inheritance
+Persistent Entity Medium through Host-context Reset
+Concurrent Action Constraint Count / Constraint-owner Lock
+Web-Anomaly Material Separation / Host Material Preservation
+Action Identity Carve-out / Local Host-frequency Suppression
+Infrastructure Action Rail Count / Vertical Depth Scaffold
+Action Coordinate Anchor / Cable-Facade Constraint Geometry
+Host-world Autonomy / Character-independent World Grammar
+World Style Without Hero / Character-local Priority not World Generation
 Motion-state Detail Budget + Re-entry
 Search-state Information Withholding
 Multi-channel Identity Preservation
