@@ -23,6 +23,15 @@ for (const size of sizes) {
   });
 }
 
+test('learn mode preserves the existing knowledge atlas', async ({ page }) => {
+  await page.goto(url);
+  await page.locator('#knowledge-atlas').waitFor();
+  const links = page.locator('#knowledge-atlas a[data-knowledge-route]');
+  await expect(links).toHaveCount(11);
+  await expect(page.locator('#knowledge-atlas a[data-knowledge-route="character"]')).toHaveAttribute('href', 'index.html#character');
+  await expect(page.locator('#knowledge-atlas a[data-knowledge-route="qa"]')).toHaveAttribute('href', 'index.html#qa');
+});
+
 test('state machine, sequence score and diagnostic share one scene state', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(url);
