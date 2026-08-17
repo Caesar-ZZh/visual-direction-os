@@ -30,6 +30,8 @@ jobs:
       - name: Check JavaScript syntax
         run: |
           node --check visual-direction-os/scene-state.js
+          node --check visual-direction-os/sequence-director-model.js
+          node --check visual-direction-os/sequence-director.js
           node --check visual-direction-os/visual-response.js
           node --check visual-direction-os/director-v2-app.js
           node --check visual-direction-os/state-machine.js
@@ -48,7 +50,8 @@ jobs:
           const css = [
             './visual-direction-os/director-v2.css',
             './visual-direction-os/director-v2-tools.css',
-            './visual-direction-os/visual-response.css'
+            './visual-direction-os/visual-response.css',
+            './visual-direction-os/sequence-director.css'
           ].map(path => fs.readFileSync(path,'utf8')).join('\n');
           const findings = qa.scanSource({html, css});
           findings.forEach(f => console.log(`${f.level} ${f.id}: ${f.message} ${f.detail || ''}`));
@@ -61,10 +64,14 @@ jobs:
           test -f visual-direction-os/director-v2-tools.css
           test -f visual-direction-os/visual-response.css
           test -f visual-direction-os/visual-response.js
-          ! grep -E "transition:[[:space:]]*all" visual-direction-os/director-v2.css visual-direction-os/director-v2-tools.css visual-direction-os/visual-response.css
+          test -f visual-direction-os/sequence-director.css
+          test -f visual-direction-os/sequence-director-model.js
+          test -f visual-direction-os/sequence-director.js
+          ! grep -E "transition:[[:space:]]*all" visual-direction-os/director-v2.css visual-direction-os/director-v2-tools.css visual-direction-os/visual-response.css visual-direction-os/sequence-director.css
           grep -q "prefers-reduced-motion" visual-direction-os/director-v2.css
           grep -q "prefers-reduced-motion" visual-direction-os/director-v2-tools.css
           grep -q "prefers-reduced-motion" visual-direction-os/visual-response.css
+          grep -q "prefers-reduced-motion" visual-direction-os/sequence-director.css
       - name: Verify assembled Pages site
         run: |
           node visual-direction-os/build-pages-site.js visual-direction-os /tmp/vdos-site
@@ -74,6 +81,9 @@ jobs:
           test -f /tmp/vdos-site/scene-state.js
           test -f /tmp/vdos-site/visual-response.js
           test -f /tmp/vdos-site/visual-response.css
+          test -f /tmp/vdos-site/sequence-director-model.js
+          test -f /tmp/vdos-site/sequence-director.js
+          test -f /tmp/vdos-site/sequence-director.css
       - name: Verify Pages workflow contract
         run: |
           grep -q "node visual-direction-os/build-pages-site.js visual-direction-os _site" .github/workflows/pages.yml
