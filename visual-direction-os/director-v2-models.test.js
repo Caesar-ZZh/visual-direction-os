@@ -46,4 +46,50 @@ const incoherent = diagnostic.runDiagnostic(diagnostic.fixtures.incoherent);
 assert.ok(incoherent.findings.some(f => f.level === 'FAIL'));
 assert.ok(incoherent.findings.some(f => f.id === 'ownership-conflict'));
 
+const cameraFinding = incoherent.findings.find(f => f.id === 'camera-ownership');
+assert.equal(cameraFinding.category, 'OWNERSHIP');
+assert.deepStrictEqual(cameraFinding.route, {
+  family: 'camera',
+  control: 'perspective',
+  suggestedDirection: 'character'
+});
+assert.ok(cameraFinding.learnTarget);
+assert.equal(cameraFinding.current, 'world');
+assert.equal(cameraFinding.recommendedDirection, 'mixed → character');
+
+const hierarchyFinding = incoherent.findings.find(f => f.id === 'simultaneous-change');
+assert.equal(hierarchyFinding.category, 'HIERARCHY');
+assert.equal(hierarchyFinding.route, null);
+
+const continuityFinding = incoherent.findings.find(f => f.id === 'state-abstraction');
+assert.equal(continuityFinding.category, 'CONTINUITY');
+assert.deepStrictEqual(continuityFinding.route, {
+  family: 'texture',
+  control: 'noise',
+  suggestedDirection: 'low'
+});
+
+const releaseDiagnostic = diagnostic.runDiagnostic({
+  narrativeState: 'release',
+  agency: 'contested',
+  ownership: { character: 'medium', world: 'low', narrative: 'high' },
+  variables: {
+    camera: { perspective: 'mixed', stability: 'low' },
+    texture: { noise: 'high', granularity: 'high' },
+    space: { compression: 'high' },
+    line: { density: 'low' },
+    rhythm: { motionEnergy: 'low', cutDensity: 'low' }
+  },
+  diagnosticContext: {
+    hasNarrativeCause: true,
+    primaryChanges: 2,
+    sequenceBeat: 'release',
+    declaredPrimary: 'camera',
+    restrainedVariables: ['texture','line','rhythm'],
+    tension: 'medium'
+  }
+});
+assert.ok(releaseDiagnostic.findings.some(f => f.category === 'RECOVERY' && f.level === 'WARN'));
+assert.ok(releaseDiagnostic.findings.some(f => f.category === 'HIERARCHY' && f.level === 'WARN'));
+
 console.log('director-v2 model tests passed');
