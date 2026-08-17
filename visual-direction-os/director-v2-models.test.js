@@ -20,10 +20,19 @@ assert.ok(seq.tracks.agency);
 assert.ok(seq.ownership.character);
 assert.ok(seq.currentBeat.id);
 
+const semanticSeq = sequence.sampleSequence(0.5);
+assert.equal(semanticSeq.currentBeat.id, 'rupture');
+assert.equal(semanticSeq.currentBeat.label, 'RUPTURE');
+assert.ok(semanticSeq.hierarchy.primary);
+assert.ok(semanticSeq.tension);
+assert.ok(Array.isArray(semanticSeq.events));
+assert.ok(semanticSeq.events.some(event => event.type === 'TEXTURE PEAK'));
+
 const synced = timelineSync.deriveTimelineView({ activeCase:'gwen', playhead:0.5 }, stateMachine, sequence);
 assert.equal(synced.caseView.caseId, 'gwen');
 assert.equal(synced.caseView.playhead, 0.5);
 assert.equal(synced.sequenceView.playhead, 0.5);
+assert.equal(synced.sequenceView.currentBeat.id, 'rupture');
 
 const territory = colorOwnership.describeOwnership({ character: 'high', world: 'low', narrative: 'medium' });
 assert.equal(territory.primaryOwner, 'character');
