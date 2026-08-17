@@ -118,6 +118,24 @@
     </article>`;
   }
 
+  function remainingStatusText(result) {
+    const fails = result.findings.filter(item => item.level === 'FAIL').length;
+    const warns = result.findings.filter(item => item.level === 'WARN').length;
+    if (fails > 0) return fails === 1 ? '1 FAIL REMAINS' : `${fails} FAILS REMAIN`;
+    if (warns > 0) return warns === 1 ? '1 WARN REMAINS' : `${warns} WARNINGS REMAIN`;
+    return '';
+  }
+
+  function resolutionMarkup(resolution, result) {
+    if (!resolution) return '';
+    const remaining = remainingStatusText(result);
+    return `<div class="diagnostic-route-resolution" role="status">
+      <span>ROUTE RESOLVED</span>
+      <strong>${escapeHtml(String(resolution.family || 'CONTROL').toUpperCase())} → PASS</strong>
+      <small>${escapeHtml(resolution.message || 'The routed diagnostic finding now passes.')}${remaining ? ` · ${escapeHtml(remaining)}` : ' · SYSTEM COHERENCE PASS'}</small>
+    </div>`;
+  }
+
   function initDiagnostic(root, scene, options = {}) {
     if (!root || !scene) return () => {};
     const routing = options.routing || null;
@@ -125,25 +143,52 @@
     const resultRoot = root.querySelector('#diagnostic-result');
     let activeView = 'current';
     let lastResult = null;
+    let activeRoute = null;
+    let resolvedRoute = null;
 
     const bindRoutes = () => {
       resultRoot.querySelectorAll('[data-fix-route]').forEach(button => button.addEventListener('click', () => {
         const findingId = button.dataset.fixRoute;
         const targetFinding = lastResult?.findings?.find(item => item.id === findingId);
         if (!targetFinding?.route || !routing?.goToControl) return;
+        activeRoute = { id: findingId, family: targetFinding.route.family || 'control' };
+        resolvedRoute = null;
         routing.goToControl(targetFinding.route, { doc: root.ownerDocument, setMode: options.setMode });
       }));
     };
 
     const render = state => {
+      const previousResult = lastResult;
       const result = runDiagnostic(state);
+
+      if (activeView === 'current' && activeRoute) {
+        const previousFinding = previousResult?.findings?.find(item => item.id === activeRoute.id);
+        const currentFinding = result.findings.find(item => item.id === activeRoute.id);
+        if (currentFinding?.level === 'PASS' && previousFinding?.level !== 'PASS') {
+          resolvedRoute = {
+            id: activeRoute.id,
+            family: activeRoute.family,
+            message: currentFinding.message
+          };
+          activeRoute = null;
+        }
+      }
+
+      if (resolvedRoute) {
+        const resolvedFinding = result.findings.find(item => item.id === resolvedRoute.id);
+        if (resolvedFinding && resolvedFinding.level !== 'PASS') resolvedRoute = null;
+      }
+
       lastResult = result;
-      resultRoot.innerHTML = `<p class="diagnostic-status" data-level="${result.status}">SYSTEM COHERENCE · ${result.status}</p><div class="diagnostic-list">${result.findings.map(f => findingMarkup(f, routing)).join('')}</div>`;
+      const remaining = remainingStatusText(result);
+      resultRoot.innerHTML = `<p class="diagnostic-status" data-level="${result.status}">SYSTEM COHERENCE · ${result.status}${remaining ? ` · ${remaining}` : ''}</p>${resolutionMarkup(resolvedRoute, result)}<div class="diagnostic-list">${result.findings.map(f => findingMarkup(f, routing)).join('')}</div>`;
       bindRoutes();
     };
 
     const setView = view => {
       activeView = view;
+      activeRoute = null;
+      resolvedRoute = null;
       root.querySelectorAll('[data-diagnostic]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.diagnostic === view)));
       render(view === 'current' ? scene.getSceneState() : fixtures[view]);
     };
