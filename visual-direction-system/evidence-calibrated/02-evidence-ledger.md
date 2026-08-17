@@ -550,3 +550,29 @@ The causal upgrade is deliberately narrow. The evidence supports a visible physi
 The production system must additionally support `direct_device_interaction_state`, `action_to_observed_result_pair`, `command_semantics_guard`, `external_state_change_requirement`, `portal_aperture_formation`, `portal_scale_growth`, `origin_world_host_lock`, `portal_event_owner`, `local_collage_boundary_invasion`, `event_overlay_without_global_world_rewrite`, `threshold_occupancy_state`, `portal_open_not_departure_guard`, `origin_side_absence_requirement`, `traveler_world_reset_attribution_guard`, and `departure_transit_arrival_state_machine`.
 
 Reject: destination display=execution; visible finger interaction=known hidden command; portal open=completed departure; local collage/glitch=global world replacement; or later city establishing imagery=Gwen arrival without a directly attributable crossing/world-reset bridge.
+
+## BATCH-039 — Earth-65 completed departure / unassigned city reset
+
+| ID | Evidence claim | Status / scope |
+|---|---|---|
+| `EV-TRANS-019` | Gwen is still visibly present at the active aperture at `16:11:25`, followed by a same-Earth-65-host frame at `16:11:26` where the active aperture remains but Gwen is absent; George-only continuation reinforces the post-state. | NEW DIRECT DEPARTURE SUPPORT / CLOSES B038 GAP |
+| `EV-TRANS-020` | After the origin-side post-departure reaction, a distinct city host appears with a compact collage/cutout transition-residue cluster at `16:11:29–30`; the residue is absent by `16:11:31` while the city geometry remains. | NEW HOST-RESET SUPPORT / TRAVELER ATTRIBUTION WITHHELD |
+| `EV-TRANS-021` | Completed origin-side departure and a subsequent new-host reset do not by themselves establish Gwen's arrival because the admitted city frames contain no visible Gwen or unique traveler bridge. | NEW DIRECT DEPARTURE≠ARRIVAL CALIBRATION |
+
+BATCH-039 closes **completed origin-side departure** with the strict state test introduced earlier:
+
+`last-present traveler at active threshold → same-origin-host absent post-state`.
+
+It then adds a separate post-departure host sequence:
+
+`Earth-65 absent post-state → George-only origin reaction → distinct unassigned city host + local transition residue → residue decay → stable city host`.
+
+The safe late Earth-65 chain therefore becomes:
+
+`recipient possession → explicit DESTINATION--1610 state → direct device interaction → observed portal opening → portal growth / local event-domain intrusion → threshold occupancy → last-present origin-side state → completed origin-side departure → origin-side reaction hold → distinct unassigned city host reset + local transition-residue decay → [Gwen-attributed arrival unresolved] → [transit environment unresolved]`.
+
+### B039 production / QA addendum
+
+The production system must additionally support `departure_last_present_state`, `origin_side_absent_post_state`, `completed_departure_guard`, `post_departure_origin_reaction`, `host_identity_hold_for_departure_certification`, `destination_host_reset`, `local_transition_residue_decay`, `stable_host_under_residue_decay`, `traveler_destination_attribution_guard`, `traveler_presence_requirement`, `unique_bridge_attribution_requirement`, `departure_not_arrival_state_machine`, `world_identity_guard`, and `camera_motion_from_still_forbidden`.
+
+Reject: portal-open=departure before an absent/crossed post-state; collage/glitch intensity=traveler identity; city host reset=Gwen arrival without traveler attribution; city=Earth-1610 without direct world identity anchors in the admitted slice; invented transit corridor; or exact portal physics/camera motion inferred from stills.
