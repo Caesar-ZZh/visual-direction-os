@@ -32,6 +32,7 @@ jobs:
           node visual-direction-os/narrative-apply.test.js
           node api/narrative/_handler.test.js
           node api/narrative/_openai-adapter.test.js
+          node api/narrative/_production.test.js
       - name: Check JavaScript syntax
         run: |
           node --check visual-direction-os/scene-state.js
