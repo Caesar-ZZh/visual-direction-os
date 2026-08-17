@@ -87,6 +87,46 @@ test('desktop rail remains a viewport-edge hover target after deep page scroll',
   expect(Math.abs(after[1] - before[1])).toBeLessThanOrEqual(2);
 });
 
+test('collapsed desktop rail keeps 01 02 and active 03 in identical centered cells', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto(url);
+  await page.locator('#diagnose-panel').scrollIntoViewIfNeeded();
+  await page.waitForTimeout(160);
+  await page.mouse.move(1200, 500);
+  await page.waitForTimeout(260);
+
+  const metrics = await page.locator('.v2-rail').evaluate(rail => {
+    const rr = rail.getBoundingClientRect();
+    return [...rail.querySelectorAll('.mode-btn')].map(button => {
+      const br = button.getBoundingClientRect();
+      const strong = button.querySelector('strong');
+      const sr = strong.getBoundingClientRect();
+      return {
+        mode: button.dataset.mode,
+        current: button.getAttribute('aria-current') === 'page',
+        width: br.width,
+        height: br.height,
+        buttonCenter: br.left + br.width / 2,
+        numberCenter: sr.left + sr.width / 2,
+        railCenter: rr.left + rr.width / 2
+      };
+    });
+  });
+
+  expect(metrics).toHaveLength(3);
+  expect(metrics.filter(item => item.current).map(item => item.mode)).toEqual(['diagnose']);
+  metrics.forEach(item => {
+    expect(item.width).toBeGreaterThanOrEqual(42);
+    expect(item.width).toBeLessThanOrEqual(46);
+    expect(item.height).toBeGreaterThanOrEqual(42);
+    expect(item.height).toBeLessThanOrEqual(46);
+    expect(Math.abs(item.buttonCenter - item.railCenter)).toBeLessThanOrEqual(1);
+    expect(Math.abs(item.numberCenter - item.buttonCenter)).toBeLessThanOrEqual(1);
+  });
+  expect(Math.max(...metrics.map(item => item.width)) - Math.min(...metrics.map(item => item.width))).toBeLessThanOrEqual(1);
+  expect(Math.max(...metrics.map(item => item.height)) - Math.min(...metrics.map(item => item.height))).toBeLessThanOrEqual(1);
+});
+
 test('director option buttons use the same serif family as variable section titles', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(url);
