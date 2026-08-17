@@ -265,7 +265,7 @@
   }
 
   function initAdvancedTools() {
-    const required = ['VDOSStateMachine', 'VDOSSequenceScore', 'VDOSColorOwnership', 'VDOSDiagnostic', 'VDOSTimelineSync', 'VDOSVisualResponse'];
+    const required = ['VDOSSequenceDirectorModel', 'VDOSStateMachine', 'VDOSSequenceScore', 'VDOSColorOwnership', 'VDOSDiagnostic', 'VDOSTimelineSync', 'VDOSVisualResponse'];
     const missing = required.filter(name => !window[name]);
     if (missing.length) throw new Error(`Advanced tools unavailable: ${missing.join(', ')}`);
     ensureKnowledgeAtlas();
@@ -289,8 +289,9 @@
   scene.createSceneState({ mode: 'learn' });
 
   Promise.all([
-    loadStylesheet('visual-response.css?v=20260817-0048'),
-    loadScript('visual-response.js?v=20260817-0048', 'VDOSVisualResponse')
+    loadStylesheet('visual-response.css?v=20260817-1136'),
+    loadScript('sequence-director-model.js?v=20260817-1136', 'VDOSSequenceDirectorModel'),
+    loadScript('visual-response.js?v=20260817-1136', 'VDOSVisualResponse')
   ]).then(() => {
     initAdvancedTools();
     syncModeFromScroll();
