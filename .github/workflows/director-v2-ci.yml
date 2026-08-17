@@ -85,4 +85,4 @@ jobs:
           python3 -m http.server 4173 --directory visual-direction-os >/tmp/vdos-server.log 2>&1 &
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
-          npx playwright test visual-direction-os/director-v2-browser.spec.js --reporter=line --workers=1
+          npx playwright test visual-direction-os/director-v2-browser.spec.js visual-direction-os/director-v2-desktop-polish.spec.js --reporter=line --workers=1
