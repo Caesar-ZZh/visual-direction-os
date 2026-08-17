@@ -233,3 +233,38 @@ The direct object-transfer gap is now closed. Highest marginal-value immediate e
 4. explicit host-world reset / Earth-1610 arrival with both sides of the transition opened.
 
 If those states do not appear quickly, pivot to later team/climax authorship-control transfer or directly visible Hobie temporal/frame-rate behavior. Do not spend corpus budget on repeated post-handoff reaction frames.
+
+## BATCH-038 coverage update — latest checkpoint supersedes B037 snapshot
+
+### Current checkpoint after BATCH-038
+
+- Selected/viewed/L1 frames: **533 / ~4,000**.
+- Latest admitted coverage pivot: **Earth-65 device action / portal opening / threshold occupancy, continuous `16:11:06–16:11:18`**, **13/13 source images actually opened, all 13 at least L2, 4 deep diagnostics, 3 curated references**.
+- Sparse probes at `16:11:21`, `16:11:24`, `16:11:27`, `16:11:30`, `16:11:33`, `16:11:36`, and `16:11:39` are screening-only and not counted.
+- B038 closes the immediate action→external-result gap: visible recipient device interaction is followed by first aperture formation and growth.
+- B038 does **not** close departure, transit or Gwen-attributed arrival because Gwen remains visibly origin-side through `16:11:18`.
+- Source-routing and count discipline remain unchanged: metadata-only discovery and screening probes do not count.
+
+### BATCH-038 new / strengthened mechanisms
+
+- **Direct Device Interaction → Observed External Result** — recipient-side physical device manipulation is immediately followed by aperture appearance and growth; displayed destination alone is no longer the strongest execution evidence.
+- **Portal Aperture Formation** — a compact high-contrast aperture can emerge inside the host world and rapidly gain event authority.
+- **Origin-world Host Lock during Portal Formation** — Earth-65 walls, shelves, furniture and George remain recognizable while the portal/event layer grows.
+- **Local Collage/Glitch Boundary Invasion** — cutout planes, print-like fragments and RGB edge doubling can strongly overwrite local geometry without requiring global destination-world replacement.
+- **Threshold Occupancy** — Gwen can be staged directly before an open aperture as a distinct state before crossing.
+- **Portal-open ≠ Departure** — direct traveler absence/crossing evidence is still required.
+- **Traveler-attributed World-reset Guard** — a later city establishing shot is insufficient for Gwen-arrival attribution unless a bridging traveler state connects origin departure to destination geometry.
+
+The B036–038 Earth-65 agency/transport chain is now:
+
+`relationship reactivation → object presentation → shared-contact handoff → recipient-only possession → Hobie-signed contingency carrier → explicit DESTINATION--1610 interface → direct device interaction → observed portal opening → portal growth / local event-domain intrusion → threshold occupancy → [completed departure unresolved] → [transit unresolved] → [Gwen-attributed arrival unresolved]`.
+
+### Updated coverage pressure after BATCH-038
+
+The immediate next high-value evidence is narrower than before. Start immediately after `16:11:18` and spend only enough adjacency budget to test:
+
+1. **Gwen crossing or origin-side disappearance** after the open portal;
+2. **destination/world-reset geometry directly attributable to Gwen** through a bridging state;
+3. a distinct **transit environment**, if visually present.
+
+Sparse screening already shows distinct city geometry at `16:11:30` and masked Miles in a city at `16:11:39`, but these do not yet satisfy traveler attribution and remain outside the counted corpus. If a short continuous probe cannot bridge Gwen to the new world, close this adjacency and pivot to later climax/team authorship or Hobie temporal behavior.
