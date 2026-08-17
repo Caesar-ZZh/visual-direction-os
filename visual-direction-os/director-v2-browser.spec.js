@@ -150,6 +150,23 @@ test('color palette tabs render genuinely different analysis views', async ({ pa
   await expect(page.locator('#palette-panel .palette-mode-title')).toContainText('Conflict');
 });
 
+test('sequence director exposes narrative beats events tension and hierarchy at desktop and mobile', async ({ page }) => {
+  for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 1000 }]) {
+    await page.setViewportSize(viewport);
+    await page.goto(url);
+    await page.locator('#sequence-root').waitFor();
+    await expect(page.locator('#sequence-root .sequence-tension')).toHaveCount(1);
+    await expect(page.locator('#sequence-root .sequence-beat-band')).toHaveCount(1);
+    await expect(page.locator('#sequence-root [data-sequence-event]')).toHaveCount(6);
+    await expect(page.locator('#sequence-root .sequence-hierarchy')).toHaveCount(1);
+    await expect(page.locator('#sequence-playhead')).toHaveCount(1);
+    await page.locator('#sequence-playhead').evaluate(input => { input.value = '50'; input.dispatchEvent(new Event('input', { bubbles: true })); });
+    await expect(page.locator('#sequence-beat')).toHaveText('RUPTURE');
+    await expect(page.locator('.sequence-hierarchy')).toContainText('PRIMARY');
+    await expect(page.locator('.sequence-hierarchy')).toContainText('SPACE');
+  }
+});
+
 test('state machine, sequence score and diagnostic share one scene state', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(url);
