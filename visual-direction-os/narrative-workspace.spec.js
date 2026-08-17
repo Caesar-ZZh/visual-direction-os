@@ -6,6 +6,26 @@ test('Narrative mode exposes editorial story input instead of chat', async ({ pa
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(url);
   await page.getByRole('button', { name: /Turn story into direction/i }).click();
+  await page.waitForTimeout(1400);
+  const routing = await page.evaluate(() => {
+    const panel = document.querySelector('#narrative-panel');
+    const direct = document.querySelector('#direct-panel');
+    const active = document.querySelector('.mode-btn[aria-current="page"]');
+    const scene = window.VDOSScene?.getSceneState?.();
+    const rect = panel.getBoundingClientRect();
+    return {
+      scrollY: window.scrollY,
+      innerHeight: window.innerHeight,
+      documentHeight: document.documentElement.scrollHeight,
+      narrativeOffsetTop: panel.offsetTop,
+      narrativeRectTop: rect.top,
+      narrativeRectBottom: rect.bottom,
+      directOffsetTop: direct.offsetTop,
+      activeMode: active?.dataset.mode || null,
+      sceneMode: scene?.mode || null
+    };
+  });
+  console.log('NARRATIVE_ROUTING_DIAGNOSTIC', JSON.stringify(routing));
   await expect(page.locator('#narrative-panel')).toBeInViewport();
   await expect(page.getByRole('heading', { name: /Tell your story/i })).toBeVisible();
   await expect(page.getByLabel('Scene description')).toBeVisible();
