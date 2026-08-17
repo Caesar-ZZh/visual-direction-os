@@ -326,7 +326,7 @@ html[data-vr-line="unstable"] .ownership-grid{
     box-shadow:none;
     transition:width .22s ease,padding .22s ease,box-shadow .22s ease;
   }
-  .v2-rail[data-expanded="true"],.v2-rail:focus-within{
+  .v2-rail[data-expanded="true"],.v2-rail:hover,.v2-rail:focus-within{
     width:264px;
     padding:24px;
     box-shadow:20px 0 48px rgba(0,0,0,.34);
@@ -363,20 +363,20 @@ html[data-vr-line="unstable"] .ownership-grid{
     transition:background-color .16s ease,border-color .16s ease,color .16s ease,padding .16s ease;
   }
   .v2-rail .mode-btn strong{margin-right:0}
-  .v2-rail[data-expanded="true"] .brand,.v2-rail:focus-within .brand{color:var(--text)}
-  .v2-rail[data-expanded="true"] .brand::before,.v2-rail:focus-within .brand::before{opacity:0}
-  .v2-rail[data-expanded="true"] .brand small,.v2-rail:focus-within .brand small,
-  .v2-rail[data-expanded="true"] .mode-label,.v2-rail:focus-within .mode-label,
-  .v2-rail[data-expanded="true"] .rail-note,.v2-rail:focus-within .rail-note{
+  .v2-rail[data-expanded="true"] .brand,.v2-rail:hover .brand,.v2-rail:focus-within .brand{color:var(--text)}
+  .v2-rail[data-expanded="true"] .brand::before,.v2-rail:hover .brand::before,.v2-rail:focus-within .brand::before{opacity:0}
+  .v2-rail[data-expanded="true"] .brand small,.v2-rail:focus-within .brand small,.v2-rail:hover .brand small,
+  .v2-rail[data-expanded="true"] .mode-label,.v2-rail:focus-within .mode-label,.v2-rail:hover .mode-label,
+  .v2-rail[data-expanded="true"] .rail-note,.v2-rail:focus-within .rail-note,.v2-rail:hover .rail-note{
     opacity:1;
     visibility:visible;
   }
-  .v2-rail[data-expanded="true"] .mode-btn,.v2-rail:focus-within .mode-btn{
+  .v2-rail[data-expanded="true"] .mode-btn,.v2-rail:focus-within .mode-btn,.v2-rail:hover .mode-btn{
     padding:0 12px;
     font-size:.92rem;
     text-align:left;
   }
-  .v2-rail[data-expanded="true"] .mode-btn strong,.v2-rail:focus-within .mode-btn strong{margin-right:8px}
+  .v2-rail[data-expanded="true"] .mode-btn strong,.v2-rail:focus-within .mode-btn strong,.v2-rail:hover .mode-btn strong{margin-right:8px}
 
   .ownership-board{
     grid-template-columns:minmax(260px,.9fr) minmax(0,1.1fr);
