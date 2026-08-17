@@ -56,6 +56,37 @@ test('desktop rail stays collapsed until hover and expands as an overlay without
   expect(focusedWidth).toBeGreaterThanOrEqual(240);
 });
 
+test('desktop rail remains a viewport-edge hover target after deep page scroll', async ({ page }) => {
+  await page.setViewportSize({ width: 1680, height: 900 });
+  await page.goto(url);
+  await page.locator('#sequence-root').scrollIntoViewIfNeeded();
+  await page.waitForTimeout(120);
+
+  const rail = page.locator('.v2-rail');
+  const stage = page.locator('.stage');
+  const before = await Promise.all([
+    rail.evaluate(node => {
+      const r = node.getBoundingClientRect();
+      return { width: r.width, top: r.top, bottom: r.bottom };
+    }),
+    stage.evaluate(node => node.getBoundingClientRect().left)
+  ]);
+
+  expect(before[0].width).toBeLessThanOrEqual(72);
+  expect(before[0].top).toBeLessThanOrEqual(1);
+  expect(before[0].bottom).toBeGreaterThanOrEqual(899);
+
+  await page.mouse.move(18, 420);
+  await page.waitForTimeout(420);
+
+  const after = await Promise.all([
+    rail.evaluate(node => node.getBoundingClientRect().width),
+    stage.evaluate(node => node.getBoundingClientRect().left)
+  ]);
+  expect(after[0]).toBeGreaterThanOrEqual(240);
+  expect(Math.abs(after[1] - before[1])).toBeLessThanOrEqual(2);
+});
+
 test('director option buttons use the same serif family as variable section titles', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(url);
