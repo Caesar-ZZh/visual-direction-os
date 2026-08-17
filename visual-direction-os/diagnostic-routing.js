@@ -18,5 +18,31 @@
     return `knowledge.html#${target}`;
   }
 
-  return { selectorForRoute, learnHref };
+  function clearRouteTargets(doc) {
+    if (!doc?.querySelectorAll) return;
+    doc.querySelectorAll('.is-route-target').forEach(node => node.classList.remove('is-route-target'));
+  }
+
+  function goToControl(route, options = {}) {
+    const doc = options.doc || (typeof document !== 'undefined' ? document : null);
+    const selector = selectorForRoute(route);
+    if (!doc || !selector) return { found: false };
+
+    const controls = [...doc.querySelectorAll(selector)];
+    if (!controls.length) return { found: false };
+
+    const group = controls[0].closest('.control-row') || controls[0].closest('.variable-family') || controls[0].parentElement;
+    clearRouteTargets(doc);
+    if (group) group.classList.add('is-route-target');
+
+    if (typeof options.setMode === 'function') options.setMode('direct');
+
+    const selected = controls.find(control => control.getAttribute('aria-pressed') === 'true') || controls[0];
+    if (group?.scrollIntoView) group.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'auto' });
+    if (selected?.focus) selected.focus({ preventScroll: true });
+
+    return { found: true, target: group || selected, control: selected };
+  }
+
+  return { selectorForRoute, learnHref, goToControl, clearRouteTargets };
 });
