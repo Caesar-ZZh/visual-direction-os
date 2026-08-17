@@ -265,14 +265,14 @@
   }
 
   function initAdvancedTools() {
-    const required = ['VDOSSequenceDirectorModel', 'VDOSStateMachine', 'VDOSSequenceScore', 'VDOSColorOwnership', 'VDOSDiagnostic', 'VDOSTimelineSync', 'VDOSVisualResponse'];
+    const required = ['VDOSSequenceDirectorModel', 'VDOSSequenceDirector', 'VDOSStateMachine', 'VDOSSequenceScore', 'VDOSColorOwnership', 'VDOSDiagnostic', 'VDOSTimelineSync', 'VDOSVisualResponse'];
     const missing = required.filter(name => !window[name]);
     if (missing.length) throw new Error(`Advanced tools unavailable: ${missing.join(', ')}`);
     ensureKnowledgeAtlas();
     ensureVisualResponseReadout();
     window.VDOSVisualResponse.initVisualResponse(document.documentElement, scene);
     window.VDOSStateMachine.initStateMachine($('#state-machine-root'), scene);
-    window.VDOSSequenceScore.initSequenceScore($('#sequence-root'), scene);
+    window.VDOSSequenceDirectorController = window.VDOSSequenceDirector.initSequenceDirector($('#sequence-root'), scene);
     window.VDOSColorOwnership.initColorOwnership($('#color-ownership-root'), scene);
     window.VDOSDiagnostic.initDiagnostic($('#diagnostic-root'), scene);
     window.VDOSTimelineSync.syncTimelines(scene, window.VDOSStateMachine, window.VDOSSequenceScore, document);
@@ -290,7 +290,9 @@
 
   Promise.all([
     loadStylesheet('visual-response.css?v=20260817-1136'),
+    loadStylesheet('sequence-director.css?v=20260817-1148'),
     loadScript('sequence-director-model.js?v=20260817-1136', 'VDOSSequenceDirectorModel'),
+    loadScript('sequence-director.js?v=20260817-1148', 'VDOSSequenceDirector'),
     loadScript('visual-response.js?v=20260817-1136', 'VDOSVisualResponse')
   ]).then(() => {
     initAdvancedTools();
