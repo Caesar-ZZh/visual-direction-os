@@ -89,7 +89,7 @@ test('desktop rail remains a viewport-edge hover target after deep page scroll',
   expect(Math.abs(after[1] - before[1])).toBeLessThanOrEqual(2);
 });
 
-test('collapsed desktop rail keeps 01 02 and active 03 in identical centered cells', async ({ page }) => {
+test('collapsed desktop rail keeps 01 through 04 in identical centered cells', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(url);
   await page.locator('#diagnose-panel').scrollIntoViewIfNeeded();
@@ -115,7 +115,8 @@ test('collapsed desktop rail keeps 01 02 and active 03 in identical centered cel
     });
   });
 
-  expect(metrics).toHaveLength(3);
+  expect(metrics).toHaveLength(4);
+  expect(metrics.map(item => item.mode)).toEqual(['learn', 'narrative', 'direct', 'diagnose']);
   expect(metrics.filter(item => item.current).map(item => item.mode)).toEqual(['diagnose']);
   metrics.forEach(item => {
     expect(item.width).toBeGreaterThanOrEqual(42);
