@@ -10,6 +10,7 @@
   const clone = value => JSON.parse(JSON.stringify(value));
   const EVENT_SHORT_LABELS = {
     'SPACE COLLAPSE': 'SPACE',
+    'SPACE COMPRESSION': 'SPACE',
     'CAMERA BREAK': 'CAMERA',
     'TEXTURE PEAK': 'TEXTURE',
     'COLOR MIGRATION': 'COLOR',
@@ -95,10 +96,18 @@
       </dl>`;
   }
 
+  function beatMarkup(sequence) {
+    return sequence.beats.map(beat => `<div class="sequence-beat" data-sequence-beat="${beat.id}" style="--beat-start:${beat.start * 100}%;--beat-span:${(beat.end - beat.start) * 100}%"><span>${beat.label}</span><small>${beat.narrativePurpose}</small></div>`).join('');
+  }
+
+  function eventMarkup(sequence) {
+    return `<div class="sequence-event-line" aria-hidden="true"></div>${sequence.events.map(event => `<button type="button" data-sequence-event="${event.id}" data-event-at="${event.at}" style="--event-at:${event.at * 100}%" aria-label="${eventLabel(event)}" aria-pressed="false"><i aria-hidden="true"></i><span class="sequence-event-visible-label">${eventShortLabel(event)}</span></button>`).join('')}`;
+  }
+
   function initSequenceDirector(rootNode, scene) {
-    if (!rootNode || !scene) return { play() {}, pause() {}, isPlaying: () => false, destroy() {} };
+    if (!rootNode || !scene) return { play() {}, pause() {}, isPlaying: () => false, getSequence: () => null, setSequence() {}, destroy() {} };
     const sequenceModel = model();
-    const sequence = sequenceModel.DEFAULT_SEQUENCE;
+    let sequence = clone(sequenceModel.DEFAULT_SEQUENCE);
     const doc = rootNode.ownerDocument;
     const viewWindow = doc.defaultView || (typeof window !== 'undefined' ? window : null);
     let selectedEventId = null;
@@ -132,14 +141,9 @@
         </div>
       </section>
 
-      <div class="sequence-beat-band" aria-label="Narrative beats">
-        ${sequence.beats.map(beat => `<div class="sequence-beat" data-sequence-beat="${beat.id}" style="--beat-start:${beat.start * 100}%;--beat-span:${(beat.end - beat.start) * 100}%"><span>${beat.label}</span><small>${beat.narrativePurpose}</small></div>`).join('')}
-      </div>
+      <div class="sequence-beat-band" aria-label="Narrative beats">${beatMarkup(sequence)}</div>
 
-      <div class="sequence-events" aria-label="Visual events">
-        <div class="sequence-event-line" aria-hidden="true"></div>
-        ${sequence.events.map(event => `<button type="button" data-sequence-event="${event.id}" data-event-at="${event.at}" style="--event-at:${event.at * 100}%" aria-label="${eventLabel(event)}" aria-pressed="false"><i aria-hidden="true"></i><span class="sequence-event-visible-label">${eventShortLabel(event)}</span></button>`).join('')}
-      </div>
+      <div class="sequence-events" aria-label="Visual events">${eventMarkup(sequence)}</div>
 
       <div class="score-tracks" role="img" aria-describedby="sequence-text-state">
         ${TRACKS.map(name => `<div class="score-track"><span>${name}</span><div class="score-track-line"><i data-score-fill="${name}"></i></div><b data-score-value="${name}">low</b></div>`).join('')}
@@ -164,6 +168,8 @@
     const beatOutput = rootNode.querySelector('#sequence-beat');
     const playButton = rootNode.querySelector('[data-sequence-action="play"]');
     const pauseButton = rootNode.querySelector('[data-sequence-action="pause"]');
+    const beatBand = rootNode.querySelector('.sequence-beat-band');
+    const eventRail = rootNode.querySelector('.sequence-events');
 
     function setPlaybackUI() {
       playButton.setAttribute('aria-pressed', String(playing));
@@ -221,6 +227,20 @@
       });
 
       rootNode.querySelector('#sequence-text-state').textContent = `${view.beat.label}: ${Object.entries(view.qualitative).map(([key, value]) => `${key} ${value}`).join(' · ')} · primary ${view.hierarchy.primary} · tension ${view.tension}`;
+    }
+
+    function bindEventControls() {
+      rootNode.querySelectorAll('[data-sequence-event]').forEach(button => button.addEventListener('click', () => {
+        selectedEventId = button.dataset.sequenceEvent;
+        const current = sequenceModel.deriveSequenceState(sequence, scene.getSceneState().playhead);
+        renderView(current);
+      }));
+    }
+
+    function rebuildSequenceStructure() {
+      beatBand.innerHTML = beatMarkup(sequence);
+      eventRail.innerHTML = eventMarkup(sequence);
+      bindEventControls();
     }
 
     function publish(playhead, source = 'sequence-director:playhead') {
@@ -283,18 +303,30 @@
       return playing;
     }
 
+    function getSequence() {
+      return clone(sequence);
+    }
+
+    function setSequence(nextSequence, options = {}) {
+      const validation = sequenceModel.validateSequence(nextSequence);
+      if (!validation.valid) throw new Error(`Invalid Sequence Director sequence: ${validation.errors.join('; ')}`);
+      pause();
+      sequence = clone(nextSequence);
+      selectedEventId = null;
+      rebuildSequenceStructure();
+      const requested = options.playhead == null ? Number(scene.getSceneState().playhead) || 0 : Number(options.playhead);
+      const playhead = sequenceModel.clamp01(requested);
+      renderView(sequenceModel.deriveSequenceState(sequence, playhead));
+      return getSequence();
+    }
+
     input.addEventListener('input', () => {
       pause();
       publish(Number(input.value) / 100);
     });
     playButton.addEventListener('click', play);
     pauseButton.addEventListener('click', pause);
-
-    rootNode.querySelectorAll('[data-sequence-event]').forEach(button => button.addEventListener('click', () => {
-      selectedEventId = button.dataset.sequenceEvent;
-      const current = sequenceModel.deriveSequenceState(sequence, scene.getSceneState().playhead);
-      renderView(current);
-    }));
+    bindEventControls();
 
     const manualControlSelector = '[data-variable-family][data-variable-key][data-variable-value],[data-owner-choice],[data-case]';
     const pauseForManualClick = event => {
@@ -329,6 +361,8 @@
       play,
       pause,
       isPlaying,
+      getSequence,
+      setSequence,
       destroy() {
         pause();
         unsubscribe();
