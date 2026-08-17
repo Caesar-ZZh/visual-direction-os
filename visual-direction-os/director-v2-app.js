@@ -130,11 +130,13 @@
   }
 
   $$('[data-owner-choice]').forEach((button) => button.addEventListener('click', () => {
+    window.VDOSDiagnosticRouting?.clearRouteTargets?.(document);
     const owner = button.dataset.ownerChoice;
     scene.updateSceneState(filteredOwnerPatch(owner), 'ownership-demo');
   }));
 
   $$('[data-variable-family][data-variable-key][data-variable-value]').forEach((button) => button.addEventListener('click', () => {
+    window.VDOSDiagnosticRouting?.clearRouteTargets?.(document);
     const family = button.dataset.variableFamily;
     const key = button.dataset.variableKey;
     const value = button.dataset.variableValue;
@@ -265,7 +267,7 @@
   }
 
   function initAdvancedTools() {
-    const required = ['VDOSSequenceDirectorModel', 'VDOSSequenceDirector', 'VDOSStateMachine', 'VDOSSequenceScore', 'VDOSColorOwnership', 'VDOSDiagnostic', 'VDOSTimelineSync', 'VDOSVisualResponse'];
+    const required = ['VDOSSequenceDirectorModel', 'VDOSSequenceDirector', 'VDOSDiagnosticRouting', 'VDOSStateMachine', 'VDOSSequenceScore', 'VDOSColorOwnership', 'VDOSDiagnostic', 'VDOSTimelineSync', 'VDOSVisualResponse'];
     const missing = required.filter(name => !window[name]);
     if (missing.length) throw new Error(`Advanced tools unavailable: ${missing.join(', ')}`);
     ensureKnowledgeAtlas();
@@ -274,7 +276,7 @@
     window.VDOSStateMachine.initStateMachine($('#state-machine-root'), scene);
     window.VDOSSequenceDirectorController = window.VDOSSequenceDirector.initSequenceDirector($('#sequence-root'), scene);
     window.VDOSColorOwnership.initColorOwnership($('#color-ownership-root'), scene);
-    window.VDOSDiagnostic.initDiagnostic($('#diagnostic-root'), scene);
+    window.VDOSDiagnostic.initDiagnostic($('#diagnostic-root'), scene, { routing: window.VDOSDiagnosticRouting, setMode });
     window.VDOSTimelineSync.syncTimelines(scene, window.VDOSStateMachine, window.VDOSSequenceScore, document);
   }
 
@@ -289,11 +291,13 @@
   scene.createSceneState({ mode: 'learn' });
 
   Promise.all([
-    loadStylesheet('visual-response.css?v=20260817-1136'),
-    loadStylesheet('sequence-director.css?v=20260817-1148'),
-    loadScript('sequence-director-model.js?v=20260817-1136', 'VDOSSequenceDirectorModel'),
-    loadScript('sequence-director.js?v=20260817-1148', 'VDOSSequenceDirector'),
-    loadScript('visual-response.js?v=20260817-1136', 'VDOSVisualResponse')
+    loadStylesheet('visual-response.css?v=20260817-1208'),
+    loadStylesheet('sequence-director.css?v=20260817-1208'),
+    loadStylesheet('diagnostic-routing.css?v=20260817-1208'),
+    loadScript('sequence-director-model.js?v=20260817-1208', 'VDOSSequenceDirectorModel'),
+    loadScript('sequence-director.js?v=20260817-1208', 'VDOSSequenceDirector'),
+    loadScript('diagnostic-routing.js?v=20260817-1208', 'VDOSDiagnosticRouting'),
+    loadScript('visual-response.js?v=20260817-1208', 'VDOSVisualResponse')
   ]).then(() => {
     initAdvancedTools();
     syncModeFromScroll();
