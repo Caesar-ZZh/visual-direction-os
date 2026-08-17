@@ -1,6 +1,7 @@
 'use strict';
 
 const { STAGES, validateInput, validateOutput } = require('./_contracts.js');
+const { createOpenAIProvider } = require('./_openai-adapter.js');
 
 const LOCAL_ORIGINS = new Set(['http://127.0.0.1:4173', 'http://localhost:4173']);
 
@@ -73,4 +74,19 @@ function createHandler({ stage, provider, allowedOrigin = '', production = proce
   };
 }
 
-module.exports = { createHandler, originAllowed };
+function createProductionHandler(stage, options = {}) {
+  const env = options.env || process.env;
+  const provider = options.provider || createOpenAIProvider({
+    apiKey: env.OPENAI_API_KEY || '',
+    model: env.OPENAI_MODEL || 'gpt-5.6',
+    fetchImpl: options.fetchImpl || globalThis.fetch
+  });
+  return createHandler({
+    stage,
+    provider,
+    allowedOrigin: env.VDOS_ALLOWED_ORIGIN || '',
+    production: env.NODE_ENV === 'production'
+  });
+}
+
+module.exports = { createHandler, createProductionHandler, originAllowed };
