@@ -11,6 +11,16 @@ test('Narrative mode exposes editorial story input instead of chat', async ({ pa
     const text = await fetch(`director-v2-app.js?probe=${Date.now()}`).then(response => response.text());
     window.__narrativeClickCount = 0;
     window.__sceneSources = [];
+    window.__pointerTrace = [];
+    const describe = node => {
+      if (!node || node.nodeType !== 1) return String(node?.nodeName || node);
+      return `${node.tagName.toLowerCase()}${node.id ? `#${node.id}` : ''}${node.className && typeof node.className === 'string' ? `.${node.className.trim().replace(/\s+/g,'.')}` : ''}[mode=${node.dataset?.mode || ''}]`;
+    };
+    ['pointerdown','mousedown','pointerup','mouseup','click'].forEach(type => {
+      document.addEventListener(type, event => {
+        window.__pointerTrace.push({ type, x:event.clientX, y:event.clientY, target:describe(event.target), current:describe(event.currentTarget) });
+      }, true);
+    });
     document.querySelector('.mode-btn[data-mode="narrative"]').addEventListener('click', () => { window.__narrativeClickCount += 1; });
     window.addEventListener('vdos:scene-state', event => { window.__sceneSources.push(event.detail?.source || null); });
     return {
@@ -37,7 +47,8 @@ test('Narrative mode exposes editorial story input instead of chat', async ({ pa
       activeMode: active?.dataset.mode || null,
       sceneMode: scene?.mode || null,
       clickCount: window.__narrativeClickCount,
-      sceneSources: window.__sceneSources
+      sceneSources: window.__sceneSources,
+      pointerTrace: window.__pointerTrace
     };
   });
   console.log('NARRATIVE_APP_PROBE', JSON.stringify(appProbe));
