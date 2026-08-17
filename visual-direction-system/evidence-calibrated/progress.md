@@ -7,16 +7,17 @@
 - Source corpus: user Google Drive screenshot archive; canonical research workspace is private `Sorted by Scence` plus a read-only raw-source fallback.
 - Research target: **approximately 4,000 high-coverage evidence frames** selected for chapter, character/world, mechanism, transition and counterexample coverage.
 - Detailed obligations: [`coverage-matrix-4000.md`](./coverage-matrix-4000.md).
-- **Cumulative frames actually viewed:** **494**.
-- **Cumulative frames with at least L1 annotation:** **494**.
-- **Latest completed batch:** **BATCH-035**.
-- Latest Earth-65 dense chronological coverage remains **`01:45:23`**. Later Earth-65/Jess locator images were screening-only and are not part of the selected corpus.
-- Latest coverage pivot: **Earth-928 / Spider Society transport-system continuation**, continuous raw-fallback slice `16:03:25–16:03:37`.
-- BATCH-035 contains **13 consecutive source screenshots**, all individually opened and visually inspected; 12 received at least L2, with 4 L3/Deep frames and 3 curated references.
+- **Cumulative frames actually viewed:** **507**.
+- **Cumulative frames with at least L1 annotation:** **507**.
+- **Latest completed batch:** **BATCH-036**.
+- Latest Earth-65 dense early chronological coverage remains **`01:45:23`**; later screening-only locator images are not part of the selected corpus.
+- Latest coverage pivot: **Earth-65 / Gwen bedroom relationship reactivation**, continuous raw-fallback slice `16:07:57–16:08:09`.
+- BATCH-036 contains **13 consecutive admitted source screenshots**, all individually opened and visually inspected; 12 received at least L2, with 4 L3/Deep frames and 3 curated references.
+- Screening-only probes `16:03:38–16:03:47` and `16:08:10–16:08:12` are explicitly excluded from cumulative counts.
 
 ## Source-discovery resilience
 
-The canonical Drive `00_SOURCE_CORPUS` slot may be empty and Sorted-by-Scene routing may fail without blocking the research. BATCH-024 established a recovery path: the read-only raw root can be sliced with a **parent-folder + `modifiedTime` window**. BATCH-025–035 continue the raw-fallback lineage; exact filename/time/file-ID discovery is also valid when needed. Candidate metadata and screening-only locator images never count until selected source images are opened and admitted to the evidence corpus. Source originals remain read-only; manifests, analysis, curated references, contact sheets and progress artifacts write only to canonical `Sorted by Scence`.
+The canonical Drive `00_SOURCE_CORPUS` slot may be empty and Sorted-by-Scene routing may fail without blocking the research. BATCH-024 established a recovery path: the read-only raw root can be sliced with a **parent-folder + `modifiedTime` window**. BATCH-025–036 continue the raw-fallback lineage; exact filename/time/file-ID discovery is also valid when needed. Candidate metadata and screening-only locator images never count until selected source images are opened and admitted to the evidence corpus. Source originals remain read-only; manifests, analysis, curated references, contact sheets and progress artifacts write only to canonical `Sorted by Scence`.
 
 ## Batch log
 
@@ -56,11 +57,12 @@ The canonical Drive `00_SOURCE_CORPUS` slot may be empty and Sorted-by-Scene rou
 | BATCH-032 | Earth-928 exit threshold · continuous 16:02:46–16:02:58 | 13 | 13 | 12 | 4 | 3 | complete first-pass |
 | BATCH-033 | Earth-928 near-completion/readout · continuous 16:02:59–16:03:11 | 13 | 13 | 12 | 4 | 3 | complete first-pass |
 | BATCH-034 | Earth-928 reboot/differential destabilization · continuous 16:03:12–16:03:24 | 13 | 13 | 12 | 4 | 3 | complete first-pass |
-| **BATCH-035** | **Earth-928 field reset/local interaction · continuous 16:03:25–16:03:37** | **13** | **13** | **12** | **4** | **3** | **complete first-pass** |
+| BATCH-035 | Earth-928 field reset/local interaction · continuous 16:03:25–16:03:37 | 13 | 13 | 12 | 4 | 3 | complete first-pass |
+| **BATCH-036** | **Earth-65 relationship reactivation / web-carried agency · continuous 16:07:57–16:08:09** | **13** | **13** | **12** | **4** | **3** | **complete first-pass** |
 
-## Cumulative learning through BATCH-035
+## Cumulative learning through BATCH-036
 
-The evidence base is in an explicit cross-world calibration phase. Earth-65 established a dense causal layered system; BATCH-019–021 calibrated Brooklyn ownership/attention/anomaly behavior; BATCH-022 revised character-medium logic through Hobie; BATCH-023 added the first native Spider Society command/system sample; BATCH-024–027 established Mumbattan density/anomaly/action mechanisms; BATCH-028–029 added Earth-928 crowd/routing/world-scale/transport-object chase evidence; BATCH-030–035 add the strongest explicit transport-system state chain so far while deliberately keeping completed exit, transit and arrival unresolved.
+The evidence base is in an explicit cross-world calibration phase. Earth-65 established a dense causal layered system; BATCH-019–021 calibrated Brooklyn ownership/attention/anomaly behavior; BATCH-022 revised character-medium logic through Hobie; BATCH-023 added the first native Spider Society command/system sample; BATCH-024–027 established Mumbattan density/anomaly/action mechanisms; BATCH-028–029 added Earth-928 crowd/routing/world-scale/transport-object chase evidence; BATCH-030–035 added the strongest explicit transport-system state chain so far while deliberately keeping completed exit, transit and arrival unresolved; BATCH-036 returns to a later Earth-65 relationship/action state and adds color-field reactivation, threshold-aligned minimal web agency and object-mediated agency without transfer overclaim.
 
 ### BATCH-019 additions — first active-lineage Miles/Brooklyn calibration
 
@@ -201,9 +203,19 @@ The evidence base is in an explicit cross-world calibration phase. Earth-65 esta
 - **Same-world Reaction Handoff** — Gwen and observers remain in the Earth-928 control room immediately afterward, so the reaction cut is not transit or arrival.
 - GitHub analysis: [`39-batch-035-earth928-field-regime-reset-localized-machine-interaction.md`](./39-batch-035-earth928-field-regime-reset-localized-machine-interaction.md).
 
-The combined BATCH-030–035 transport/system chain is:
+### BATCH-036 additions — Earth-65 relationship reactivation / web-carried agency
+
+- **Relationship Color-Field Reactivation** — within the stable bedroom, broad expressive color migrates from cool violet/blue solitary hold toward warm salmon/red relationship/action activation without turning into a fixed palette recipe.
+- **Threshold-Aligned Agency through a Minimal Web Carrier** — Gwen reorients toward the window and one thick white web line makes action legible across a simplified painterly room; threshold alignment is not portal evidence.
+- **Object-Mediated Agency Affordance without Confirmed Transfer** — George’s compact green-blue web-wrapped object becomes a salient relationship/agency carrier, but no admitted or screening probe frame shows completed hand-to-hand transfer.
+- **Possession ≠ Transfer calibration** — object introduction, possession/presentation, shared attention and completed transfer must remain distinct states.
+- GitHub analysis: [`40-batch-036-earth65-relationship-reactivation-web-agency.md`](./40-batch-036-earth65-relationship-reactivation-web-agency.md).
+
+The combined BATCH-030–035 transport/system chain remains:
 
 `diagnostic acquisition → origin identification → destination lock → occupied active field → progressive continuity loss / exit threshold → sub-completion / continued occupancy → explicit reboot/intervention affordance → [command execution unresolved] → field-regime reset with continued occupancy → localized machine/participant interaction → same-world observer reaction → [completed exit unresolved] → [transit unresolved] → [arrival unresolved]`.
+
+B036 deliberately pivots away from redundant transport adjacency after the `16:03:38–16:03:47` screening probe failed to add a new completion marker.
 
 ## 4,000-frame selection policy
 
@@ -216,23 +228,21 @@ Every batch must answer:
 3. What production / Skill parameter follows?
 4. What remaining coverage gap should affect later sampling?
 
-## Current coverage pressure after BATCH-035
+## Current coverage pressure after BATCH-036
 
-BATCH-030–035 substantially reduce the Spider Society **transport-system-state** gap: destination selection, field occupancy, exit threshold, sub-completion, reboot affordance, participant-local destabilization, field-regime reset, localized machine interaction and same-world reaction are now directly sampled. The decisive transport-completion evidence is still missing: no empty/absent chamber post-state, transit environment or destination-world arrival has been verified.
+BATCH-036 adds a late Earth-65 counterpoint without reopening already-saturated early domestic coverage. It strengthens state-responsive relationship color, threshold/action geometry and object-mediated agency while actively rejecting two seductive overclaims: **window alignment ≠ portal traversal** and **object possession/presentation ≠ control transfer**.
 
-The bounded Jess locator remains closed for now: `01:45:45` is only a represented/nested candidate, and screening-only frames are not counted.
+The B030–035 transport lineage is closed for ordinary adjacency. Revisit it only for direct completed-exit/arrival evidence or an explicit action→reboot-result pair. The `16:03:38–16:03:47` probe is screening-only and confirmed that immediate continuation merely repeats same-world reaction/authority states.
 
 Highest marginal-value next targets are:
 
-- world collision outside Earth-65;
-- later climax / authorship / control-transfer mechanisms not reducible to the already sampled machine intervention;
-- a narrowly targeted completed transport exit/transit/arrival sample only if direct evidence is available;
+- direct **object/control transfer** only if later frames visibly show handoff or independent ownership change;
+- explicit **cross-world arrival/world-reset pairs** with both sides of the transition directly opened;
+- later climax / authorship / control-transfer mechanisms where the decisive action or visual carrier changes owner;
 - independent cross-world counterexamples;
 - Hobie temporal/frame-rate behavior only when directly visible.
 
-Immediate adjacency after `16:03:37` should be opened only long enough to seek an empty/absent post-state, explicit destination/world-reset, or a direct reboot action→result pair. If those do not appear, close this transport lineage to avoid redundant occupancy/system-state sampling.
-
-The captured bald adversary in B020 remains deliberately unnamed. The mechanically distinct B029 interceptor remains unnamed. Camera movement is never inferred from one still. Do not convert scene knowledge into evidence.
+The bounded Jess locator remains closed. The captured bald adversary in B020 and mechanically distinct B029 interceptor remain deliberately unnamed. Camera movement is never inferred from one still. Do not convert scene knowledge into evidence.
 
 ## Promotion rule
 
