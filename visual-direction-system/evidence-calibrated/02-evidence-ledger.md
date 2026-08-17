@@ -576,3 +576,23 @@ The safe late Earth-65 chain therefore becomes:
 The production system must additionally support `departure_last_present_state`, `origin_side_absent_post_state`, `completed_departure_guard`, `post_departure_origin_reaction`, `host_identity_hold_for_departure_certification`, `destination_host_reset`, `local_transition_residue_decay`, `stable_host_under_residue_decay`, `traveler_destination_attribution_guard`, `traveler_presence_requirement`, `unique_bridge_attribution_requirement`, `departure_not_arrival_state_machine`, `world_identity_guard`, and `camera_motion_from_still_forbidden`.
 
 Reject: portal-open=departure before an absent/crossed post-state; collage/glitch intensity=traveler identity; city host reset=Gwen arrival without traveler attribution; city=Earth-1610 without direct world identity anchors in the admitted slice; invented transit corridor; or exact portal physics/camera motion inferred from stills.
+
+## BATCH-040 — coalition assembly / distributed mission ownership
+
+| ID | Evidence claim | Status / scope |
+|---|---|---|
+| `EV-AGENCY-008` | A solo portal-facing Gwen state expands into a multi-character coalition through progressive peripheral accretion while the portal/Gwen mission axis remains comparatively stable. | NEW DIRECT TEAM-ASSEMBLY SUPPORT |
+| `EV-AGENCY-009` | The visual mission broadens from one central agent to a distributed coalition-owned objective field without a directly visible command object, authority token or explicit control handoff changing hands. | NEW TEAM-OWNERSHIP SUPPORT / COMMAND TRANSFER WITHHELD |
+| `EV-AGENCY-010` | Hobie, Margo, Peni, Noir, Spider-Ham, Pavitr, Peter B., Gwen and the portal retain locally distinct rendering/shape systems inside one ensemble; shared objective geometry supplies coherence rather than one common team material. | NEW TEAM-LEVEL MEDIUM-LOCALITY SUPPORT / TEMPORAL CLAIM WITHHELD |
+
+BATCH-040 adds a team-level state decomposition:
+
+`single-agent portal-facing mission → first ally enters shared objective field → progressive coalition accretion → multi-medium team composition → distributed coalition mission ownership → [direct command handoff unresolved] → [team portal traversal unresolved] → [Hobie temporal/frame-rate behavior unresolved]`.
+
+The key revision is that **mission ownership expansion is not the same thing as command transfer**. Gwen may remain near the composition/portal axis while visible agency broadens to the coalition. Likewise, heterogeneous characters do not need material homogenization to read as one team when they share objective geometry, orientation and silhouette hierarchy.
+
+### B040 production / QA addendum
+
+The production system must additionally support `coalition_assembly_state`, `stable_mission_axis`, `progressive_periphery_accretion`, `coalition_membership_count`, `shared_objective_orientation`, `coalition_readability_without_equal_detail`, `single_agent_mission_state`, `distributed_mission_ownership`, `ownership_expansion_without_handoff`, `command_transfer_evidence_requirement`, `team_action_field`, `leader_axis_without_exclusive_ownership`, `heterogeneous_team_medium_lock`, `shared_objective_geometry`, `local_character_medium_preservation`, `coalition_without_material_homogenization`, `guest_medium_locality_under_team_load`, and `hobie_temporal_claim_guard`.
+
+Reject: team co-presence=direct command transfer; Gwen centering=exclusive control ownership; shared mission=shared material; Hobie presence=frame-rate proof; portal visibility=known destination/completed team travel; equal team membership=equal visual priority; or exact camera motion inferred from stills.
