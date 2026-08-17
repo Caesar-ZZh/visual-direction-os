@@ -138,13 +138,66 @@
     return response;
   }
 
+  function initDesktopRail(root) {
+    const doc = root?.ownerDocument || global.document;
+    const rail = doc?.querySelector?.('.v2-rail');
+    if (!rail || typeof rail.addEventListener !== 'function') return () => {};
+
+    let pointerInside = false;
+    let revealTimer = null;
+    const clearRevealTimer = () => {
+      if (revealTimer !== null && typeof global.clearTimeout === 'function') global.clearTimeout(revealTimer);
+      revealTimer = null;
+    };
+    const expand = () => rail.setAttribute('data-expanded', 'true');
+    const collapseIfIdle = () => {
+      const active = doc?.activeElement;
+      if (!pointerInside && !(active && rail.contains(active))) rail.removeAttribute('data-expanded');
+    };
+    const onPointerEnter = () => {
+      pointerInside = true;
+      clearRevealTimer();
+      revealTimer = global.setTimeout?.(() => {
+        revealTimer = null;
+        if (pointerInside) expand();
+      }, 100) ?? null;
+    };
+    const onPointerLeave = () => {
+      pointerInside = false;
+      clearRevealTimer();
+      collapseIfIdle();
+    };
+    const onFocusIn = expand;
+    const onFocusOut = () => global.setTimeout?.(collapseIfIdle, 0);
+
+    rail.removeAttribute('data-expanded');
+    rail.addEventListener('pointerenter', onPointerEnter);
+    rail.addEventListener('pointerleave', onPointerLeave);
+    rail.addEventListener('focusin', onFocusIn);
+    rail.addEventListener('focusout', onFocusOut);
+
+    return () => {
+      clearRevealTimer();
+      rail.removeEventListener('pointerenter', onPointerEnter);
+      rail.removeEventListener('pointerleave', onPointerLeave);
+      rail.removeEventListener('focusin', onFocusIn);
+      rail.removeEventListener('focusout', onFocusOut);
+      rail.removeAttribute('data-expanded');
+    };
+  }
+
   function initVisualResponse(root, sceneApi) {
     const api = sceneApi || global.VDOSScene;
     if (!root || !api || typeof api.subscribeSceneState !== 'function') return () => {};
-    return api.subscribeSceneState((state) => applyVisualResponse(root, deriveVisualResponse(state)));
+    const cleanupRail = initDesktopRail(root);
+    const unsubscribe = api.subscribeSceneState((state) => applyVisualResponse(root, deriveVisualResponse(state)));
+    return () => {
+      if (typeof unsubscribe === 'function') unsubscribe();
+      cleanupRail();
+    };
   }
 
-  const api = { deriveVisualResponse, applyVisualResponse, initVisualResponse };
+  const api = { deriveVisualResponse, applyVisualResponse, initDesktopRail, initVisualResponse };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   global.VDOSVisualResponse = api;
 })(typeof window !== 'undefined' ? window : globalThis);
