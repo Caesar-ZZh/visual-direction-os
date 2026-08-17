@@ -6,13 +6,12 @@
 
 **一套把「电影 / 动画 / 游戏 / 广告」的视觉规律，变成可查、可看、可推演的导演操作系统**
 
-✨ 零构建 · 零依赖 · 双击即玩 · 中英双语 ✨
+✨ 零构建 · 双击可看 · 中英双语 ✨
 
-[![Tech](https://img.shields.io/badge/Tech-Vanilla%20HTML%2FCSS%2FJS-c4a362?style=flat-square)](https://github.com/Caesar-ZZh/123)
-[![Build](https://img.shields.io/badge/Build-None%20Needed-4a9a5a?style=flat-square)](https://github.com/Caesar-ZZh/123)
-[![Deploy](https://img.shields.io/badge/Deploy-GitHub%20Pages%20Ready-4a7fa8?style=flat-square)](https://github.com/Caesar-ZZh/123)
-[![QA](https://img.shields.io/badge/QA-50%2F50%20checks-cc4444?style=flat-square)](https://github.com/Caesar-ZZh/123)
-[![License](https://img.shields.io/badge/License-待补充-lightgrey?style=flat-square)](https://github.com/Caesar-ZZh/123)
+[![Tech](https://img.shields.io/badge/Tech-Vanilla%20HTML%2FCSS%2FJS-c4a362?style=flat-square)](https://github.com/Caesar-ZZh/visual-direction-os)
+[![Deploy](https://img.shields.io/badge/Deploy-GitHub%20Pages%20%2B%20Serverless-4a7fa8?style=flat-square)](https://github.com/Caesar-ZZh/visual-direction-os)
+[![QA](https://img.shields.io/badge/QA-TDD%20%2B%20Playwright-cc4444?style=flat-square)](https://github.com/Caesar-ZZh/visual-direction-os)
+[![License](https://img.shields.io/badge/License-待补充-lightgrey?style=flat-square)](https://github.com/Caesar-ZZh/visual-direction-os)
 
 </div>
 
@@ -20,21 +19,54 @@
 
 ## 🎛️ Director Workspace v2.1（开发分支）
 
-`agent/director-workspace-v2-1` 正在把现有知识浏览器升级为真正的导演工作台，保持 Vanilla HTML/CSS/JS 和零构建框架：
+`agent/director-workspace-v2-1` 正在把现有知识浏览器升级为真正的导演工作台。前端继续保持 Vanilla HTML/CSS/JS 与零打包器；Narrative AI 通过独立 Serverless API 接入，不把模型密钥放进浏览器。
 
 - **LEARN** — 通过 Knowledge Atlas 进入原有 11 个知识视图，不改写知识源。
-- **DIRECT** — 共享 Scene State、Director Workspace、Miles / Gwen / Hobie / Elian Visual State Machine、同步 Sequence Score、Color Ownership Map。
+- **NARRATIVE** — Scene Description + 可选 Director Intent → 2–3 个 Narrative Reading → 可编辑确认 → 2–3 个 Visual Direction Strategy → 五段 Sequence Proposal → Preview / Apply。
+- **DIRECT** — 共享 Scene State、Director Workspace、Visual State Machine、Sequence Score、Color Ownership Map。
 - **DIAGNOSE** — 使用与 DIRECT 相同的 scene state，输出确定性的 `PASS / WARN / FAIL`，不制造总分。
-- **TDD + CI** — Node 模型测试、Visual QA、JS syntax check、Pages 组装测试、Playwright Chromium 验收。
-- **响应式验收** — 390 / 768 / 1024 / 1440；移动端保留 Learn / Direct / Diagnose；Reduced Motion 保留等价信息。
+- **TDD + CI** — Node 合同/状态/API/Apply/Serverless 测试、Visual QA、JS syntax check、Pages 组装测试、Playwright Chromium 验收。
+- **响应式验收** — 390 / 768 / 1024 / 1440；移动端保留 Learn / Narrative / Direct / Diagnose；Reduced Motion 保留等价信息。
 
 开发预览入口：
 
 ```text
-visual-direction-os/director-v2.html
+visual-direction-os/director-v2.html?narrativeDemo=1
 ```
 
-发布策略不会覆盖旧知识库源码：GitHub Pages 构建时把 `director-v2.html` 提升为线上 `index.html`，同时把现有稳定版 `index.html` 原样保留为线上 `knowledge.html`。在 Draft PR 合并前，当前线上站点不会被替换。
+`?narrativeDemo=1` 只用于明确标记的本地/Review fixture，不会伪装成真实 AI 结果。发布策略不会覆盖旧知识库源码：GitHub Pages 构建时把 `director-v2.html` 提升为线上 `index.html`，同时把现有稳定版 `index.html` 原样保留为线上 `knowledge.html`。在 Draft PR 合并前，当前线上站点不会被替换。
+
+### Narrative API configuration
+
+正常 Narrative 模式需要一个独立的 Serverless API base，例如：
+
+```text
+https://your-serverless-host.example/api/narrative
+```
+
+前端通过 `director-v2.html` 中的：
+
+```html
+<meta name="vdos-narrative-api-base" content="https://your-serverless-host.example/api/narrative">
+```
+
+调用三个端点：
+
+```text
+POST /api/narrative/interpret
+POST /api/narrative/strategy
+POST /api/narrative/sequence
+```
+
+Serverless 环境变量：
+
+```text
+OPENAI_API_KEY=<server-side secret>
+OPENAI_MODEL=gpt-5.6
+VDOS_ALLOWED_ORIGIN=https://caesar-zzh.github.io
+```
+
+`OPENAI_API_KEY` **只能存在服务端环境变量中，不能写入 HTML、浏览器 JS、Git 或 GitHub Pages**。未配置 API base 的正常模式会显示 `AI SERVICE NOT CONFIGURED`；只有显式 `?narrativeDemo=1` 才启用 `DEMO FIXTURE`。`vercel.json` 已包含 `/api/narrative/*.js` 的 Serverless function 配置；也可以把同样的 Node handlers 部署到兼容平台。
 
 ---
 
@@ -42,9 +74,13 @@ visual-direction-os/director-v2.html
 
 视觉风格从来不是一堆特效的集合，而是一套**规则系统**——它决定：
 
-> **什么可以变、何时变、为什么变、以及谁拥有这个"变"的权力。**
+> **什么可以变、何时变、为什么变、以及谁拥有这个“变”的权力。**
 
-Visual Direction OS（视觉导演操作系统）把这套规则拆成 11 个知识模块，并为其配上一个**高颜值、可交互**的网页前端。知识是源（Markdown），网页是窗（HTML），两者各自独立、互相印证。
+Visual Direction OS（视觉导演操作系统）把这套规则拆成知识系统与可交互导演工作台。核心方法不是“模仿某种画风”，而是：
+
+> **Narrative → Primary Variable → State → Sequence → Agency**
+
+知识是源（Markdown），网页是窗（HTML），Director Workspace 则把方法论变成可以选择、预览、应用与诊断的状态系统。
 
 ---
 
@@ -52,55 +88,56 @@ Visual Direction OS（视觉导演操作系统）把这套规则拆成 11 个知
 
 ### 📚 知识库（Single Source of Truth）
 - 🧠 **11 篇中英双语文档**：主框架 → 角色系统 → 世界语法 → 序列与色彩 → 生产管线 → 工作模板 → 原创案例 → 术语表 → 决策树 → 主工作流 → 视觉 QA
-- 🎭 **角色机制案例**：Miles / Gwen / Hobie / Elian 不是"画风模板"，而是"变量所有权"的机制示范
+- 🎭 **角色机制案例**：Miles / Gwen / Hobie / Elian 不是“画风模板”，而是“变量所有权”的机制示范
 - 🌐 **中英术语表**：统一对译，写 Brief 不词穷
 
-### 🖥️ 交互操作系统（visual-direction-os/）
-- 🧭 **System Map 主链路**：Narrative → Primary Variable → State → Sequence → Agency，30 秒看懂全局
-- 📈 **Sequence Score**：SVG 可视化 Space / Color / Camera / Agency 随时间的曲线，标出 **Ownership Shift（所有权转移）**
-- 🎭 **Character State Machine**：角色视觉状态机，可交互推演
+### 🖥️ Director Workspace（visual-direction-os/）
+- 🧭 **System Map 主链路**：Narrative → Primary Variable → State → Sequence → Agency
+- ✍️ **Narrative Input**：自由文本场景 + Director Intent，候选 Reading 与 Grounding、Strategy、Sequence Preview、Apply Selected
+- 📈 **Sequence Director / Sequence Score**：五段导演序列、视觉事件、tension probe、动态 Beat/Event replacement
+- 🎭 **Visual State Machine**：角色视觉状态机，可交互推演
 - 🌈 **Color Territory & Ownership**：色彩所有权矩阵——谁的画面，谁说了算
-- 🗂️ **全套导演工具**：Decision Tree、Master Workflow、Visual QA 清单
-- ♿ **认真的可访问性**：键盘导航、`prefers-reduced-motion`、所有图形带文本替代
-- 📱 **四档响应式**：1440 / 1024 / 768 / 390 全部无横向溢出，深浅双主题
-- ✅ **结构 QA**：`qa-check.js` 含 50 项检查，全绿才算过关
+- 🧪 **DIAGNOSE**：在共享 Scene State 上做确定性一致性诊断，并可路由回精确 DIRECT 控件
+- ♿ **可访问性**：键盘导航、`prefers-reduced-motion`、语义控件、`aria-live` 状态与错误
+- 📱 **四档响应式**：1440 / 1024 / 768 / 390 无横向溢出
 
 ---
 
 ## 🚀 使用说明
 
 ```bash
-# 打开导演控制台（无需安装任何东西）
+# 稳定知识浏览器
 visual-direction-os/index.html
 
-# v2.1 开发预览
-visual-direction-os/director-v2.html
+# v2.1 导演工作台 Demo Review
+visual-direction-os/director-v2.html?narrativeDemo=1
 
-# 或起个本地静态服务器
-npx serve .
+# 或起本地静态服务器
+python3 -m http.server 4173 --directory visual-direction-os
 ```
 
-想读"原典"？直接翻 [`visual-direction-system/`](./visual-direction-system/)，11 篇文档即是内容源。
+想读“原典”？直接翻 [`visual-direction-system/`](./visual-direction-system/)，知识文档即是内容源。
 
 跑稳定版质量自检：
 
 ```bash
-node visual-direction-os/qa-check.js   # 期望输出 50/50 passed
+node visual-direction-os/qa-check.js
 ```
 
-v2.1 的模型、源码、发布组装与浏览器验收由 `.github/workflows/director-v2-ci.yml` 自动执行。
+v2.1 的模型、Narrative contracts/state/client、Apply、Serverless handlers、源码 QA、发布组装与浏览器验收由 `.github/workflows/director-v2-ci.yml` 自动执行。
 
 ---
 
-## 📦 安装步骤
+## 📦 安装与部署
 
-| 方式 | 命令 | 说明 |
+| 方式 | 命令 / 入口 | 说明 |
 |---|---|---|
-| 🔁 克隆 | `git clone https://github.com/Caesar-ZZh/123.git` | 完整仓库 |
-| 📥 下载 | 点 GitHub 右上角 **Code → Download ZIP** | 解压即玩 |
-| 🌐 部署 | GitHub Pages / 任意静态服务器 | 指向 `visual-direction-os/` |
+| 🔁 克隆 | `git clone https://github.com/Caesar-ZZh/visual-direction-os.git` | 完整仓库 |
+| 📥 下载 | GitHub **Code → Download ZIP** | 静态知识库与 Demo 可直接查看 |
+| 🌐 前端 | GitHub Pages / 任意静态服务器 | 发布 `visual-direction-os/` 装配站点 |
+| 🤖 Narrative AI | Vercel / 兼容 Node Serverless | 部署 `api/narrative/`，服务端配置 API Key |
 
-> 无 `npm install`、无打包、无运行时依赖。一个浏览器即可开工。
+前端没有 React / Vue / 打包器运行时。真实 AI Narrative 模式需要 Serverless 网络请求；Demo fixture 不需要模型服务。
 
 ---
 
@@ -108,31 +145,35 @@ v2.1 的模型、源码、发布组装与浏览器验收由 `.github/workflows/d
 
 | 你想做的事 | 去哪看 |
 |---|---|
-| 一眼看懂整个视觉框架 | 首页 **Overview → System Map** |
-| 看一个角色如何"长大" | **Character → State Machine**（推演 Elian 的焦点所有权转移） |
-| 给一段戏排视觉节奏 | **Sequence → Sequence Score** |
-| 决定这场戏谁掌镜 | **Color → Color Territory** |
-| 把理论落地成 Brief | **Production → Workflow / QA** |
+| 从一段剧情形成导演判断 | **Narrative → Interpret → Strategy → Sequence Preview** |
+| 一眼看懂整个视觉框架 | **Learn → Knowledge Atlas / System Map** |
+| 看一个角色如何“长大” | **Character → State Machine** |
+| 给一段戏排视觉节奏 | **Sequence Director / Sequence Score** |
+| 决定这场戏谁掌镜 | **Color / Ownership** |
+| 检查导演变量是否互相打架 | **Diagnose** |
 | 查一个术语 | **Glossary**（中英对照） |
-
-> 💡 建议路径：**Overview（30 秒）→ Character（2 分钟）→ Sequence（看图秒懂）**。
 
 ---
 
 ## 📁 仓库结构
 
-```
+```text
 📦 visual-direction-os
-├── 🖥️ visual-direction-os/          # 交互前端（稳定版 + v2.1 staging）
-│   ├── index.html  styles.css  app.js
-│   ├── director-v2.html  director-v2.css  director-v2-app.js
-│   ├── scene-state.js  state-machine.js  sequence-score.js
-│   ├── color-ownership.js  diagnostic.js  timeline-sync.js
-│   ├── visual-qa.js  build-pages-site.js
-│   └── qa-check.js                # 稳定版 50 项结构 QA
-├── 📚 visual-direction-system/      # 知识文档（内容源，不由 v2.1 前端改写语义）
+├── 🖥️ visual-direction-os/
+│   ├── index.html / knowledge source browser
+│   ├── director-v2.html / director-v2-app.js / director-v2*.css
+│   ├── scene-state.js / state-machine.js / sequence-director*.js
+│   ├── narrative-contracts.js / narrative-state.js / narrative-api-client.js
+│   ├── narrative-workspace.js / narrative-workspace.css
+│   ├── narrative-apply.js / narrative-apply-ui.js
+│   └── visual-qa.js / build-pages-site.js / tests
+├── 🤖 api/narrative/
+│   ├── _contracts.js / _prompts.js / _openai-adapter.js / _handler.js
+│   └── interpret.js / strategy.js / sequence.js
+├── 📚 visual-direction-system/      # 知识文档内容源
 ├── 📐 docs/superpowers/             # v2.1 设计规格 + 实施计划
-└── 📋 CONTEXT.md                    # 项目上下文
+├── vercel.json                      # Narrative Serverless function 配置
+└── 📋 CONTEXT.md
 ```
 
 ---
@@ -141,50 +182,43 @@ v2.1 的模型、源码、发布组装与浏览器验收由 `.github/workflows/d
 
 | 层 | 选型 | 为什么 |
 |---|---|---|
-| 前端 | Vanilla HTML / CSS / JS + Inline SVG | 零构建、零维护债、永久可读 |
+| 前端 | Vanilla HTML / CSS / JS + Inline SVG | 零打包器、永久可读、静态发布友好 |
+| 状态 | Canonical Scene State + isolated Narrative Draft | AI 提案与导演最终状态明确隔离 |
+| Narrative AI | Node Serverless + OpenAI Responses API Structured Outputs | API Key 留服务端；三阶段结构化合同可替换 provider |
 | 知识源 | Markdown（中英双语） | 可维护、可检索、可继续扩展 |
-| 质量 | `qa-check.js` + Visual QA + Playwright Chromium | 稳定版结构检查 + v2.1 模型/浏览器行为验证 |
+| 质量 | Node tests + Visual QA + Playwright Chromium + GitHub Actions | TDD 与真实浏览器回归共同守住行为边界 |
 
 ---
 
-## ✍️ 改名提案：从「123」到「Visual Direction OS」
+## ✍️ 仓库命名
 
-当前仓库名 `123` + 简介「乱七八糟」已与实际内容严重不符（命理应用已移除）。建议重命名：
+仓库已使用：
 
-### 🏆 首选方案
+> **`visual-direction-os`**
 
-> **仓库名：`visual-direction-os`**
-> **简介：** 🎬 Narrative Visual Direction System + 交互式导演操作系统 · 中英双语知识库，零构建可交互网页，Sequence Score / State Machine / Color Territory 一应俱全
+建议仓库 Description 保持：
 
-### 🥈 备选方案
-
-| 名称 | 简介 | 风格 |
-|---|---|---|
-| `narrative-visual-direction` | 叙事视觉导演系统：把抽象视觉规律变成可查可推演的知识库 | 📚 学术、内容向 |
-| `dir-os` | Director OS：给视觉导演的操作系统 | 🎬 极简、产品感 |
-| `visual-grammar-lab` | 视觉语法实验室：研究"画面为什么这样动" | 🔬 研究、方法论 |
-
-> 💡 改名路径：仓库页 **Settings → General → Repository name**，旧地址自动跳转，不影响克隆记录。建议同步把默认分支 `master` → `main`，并更新仓库 Description 为上方首选简介。
+> 🎬 Narrative Visual Direction System + 交互式导演操作系统 · 中英双语知识库，Sequence Director / State Machine / Narrative Input / Diagnostic 一应俱全
 
 ---
 
 ## 🤝 贡献指南
 
-这是个个人知识项目，欢迎一切交流：
+这是个个人知识项目，欢迎交流：
 
 - 🐛 **报 Bug** — 提 Issue，注明浏览器、分辨率、复现步骤
-- 💡 **提点子** — 新模块、新案例、新可视化？开 Issue 聊聊
-- 🔧 **提 PR** — 请遵守两条馆规：
-  1. 📚 [`visual-direction-system/`](./visual-direction-system/) 的 Markdown 是**内容唯一源**，只追加、不改写语义
-  2. 🚫 保持**零构建依赖**——不引入 React / Vue / 打包器，对未来的自己温柔一点
-- ✅ **自检** — 改动 `visual-direction-os/` 后跑 `node visual-direction-os/qa-check.js`，50/50 才算过
+- 💡 **提点子** — 新模块、新案例、新可视化可以开 Issue 讨论
+- 🔧 **提 PR** — 请遵守两条原则：
+  1. [`visual-direction-system/`](./visual-direction-system/) 的 Markdown 是**内容唯一源**，只追加、不无依据改写语义
+  2. 保持前端**零打包器依赖**，不要把 Narrative Serverless secret 移进浏览器
+- ✅ **自检** — 修改 Director Workspace 后跑对应 Node + Playwright 测试，并以 GitHub Actions exact-head success 为合并前证据
 
 ---
 
 <div align="center">
 
-💀 由 **Hades × Caesar** 联袂监制 · Made with ☕ and 零个 node_modules
+💀 由 **Hades × Caesar** 联袂监制 · Made with ☕
 
-**如果这套视觉哲学让你觉得"aha"，欢迎点个 ⭐**
+**如果这套视觉哲学让你觉得“aha”，欢迎点个 ⭐**
 
 </div>
