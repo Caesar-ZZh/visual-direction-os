@@ -76,3 +76,57 @@ test('director option buttons use the same serif family as variable section titl
   expect(typography.buttonWeight).toBeGreaterThanOrEqual(500);
   expect(typography.buttonWeight).toBeLessThanOrEqual(700);
 });
+
+test('site-wide metadata uses one clean sans family while display and director controls retain serif hierarchy', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto(url);
+
+  const typography = await page.evaluate(() => {
+    const family = selector => {
+      const node = document.querySelector(selector);
+      return node ? getComputedStyle(node).fontFamily : null;
+    };
+    const size = selector => {
+      const node = document.querySelector(selector);
+      return node ? parseFloat(getComputedStyle(node).fontSize) : null;
+    };
+    const weight = selector => {
+      const node = document.querySelector(selector);
+      return node ? Number(getComputedStyle(node).fontWeight) : null;
+    };
+
+    return {
+      bodyFamily: getComputedStyle(document.body).fontFamily,
+      displayFamily: family('.workspace h2'),
+      controlFamily: family('.variable-options button'),
+      metaFamilies: [
+        '.eyebrow',
+        '.hero-node b',
+        '.system-chain small',
+        '.ownership-summary > span',
+        '.ownership-track-head span',
+        '.ownership-axis small',
+        '.status-line',
+        '.vr-live-header span',
+        '.vr-live-grid span',
+        '.case-state-panel dt',
+        '.score-track > span',
+        '.palette-mode-head > span',
+        '.palette-readout dt'
+      ].map(family),
+      tabFamily: family('.case-tabs button'),
+      tabSize: size('.case-tabs button'),
+      eyebrowSize: size('.eyebrow'),
+      eyebrowWeight: weight('.eyebrow')
+    };
+  });
+
+  expect(typography.displayFamily).not.toBe(typography.bodyFamily);
+  expect(typography.controlFamily).toBe(typography.displayFamily);
+  typography.metaFamilies.forEach(metaFamily => expect(metaFamily).toBe(typography.bodyFamily));
+  expect(typography.tabFamily).toBe(typography.bodyFamily);
+  expect(typography.tabSize).toBeGreaterThanOrEqual(14);
+  expect(typography.eyebrowSize).toBeGreaterThanOrEqual(11);
+  expect(typography.eyebrowWeight).toBeGreaterThanOrEqual(550);
+  expect(typography.eyebrowWeight).toBeLessThanOrEqual(700);
+});
