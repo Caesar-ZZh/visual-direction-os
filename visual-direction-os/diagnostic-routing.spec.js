@@ -72,12 +72,14 @@ test('real sequence-context route reports the targeted fix even when another war
   });
   await expect(page.locator('#sequence-beat')).toHaveText('RELEASE');
 
-  // Create a real current-scene ownership mismatch using DIRECT controls while preserving release context.
+  // Create a real current-scene ownership mismatch while keeping only recovery as the independent warning.
   await page.locator('[data-owner-choice="character"]').click();
+  await page.locator('[data-variable-family="line"][data-variable-key="stability"][data-variable-value="high"]').click();
   await page.locator('[data-variable-family="camera"][data-variable-key="perspective"][data-variable-value="world"]').click();
 
   const cameraFinding = page.locator('[data-finding-id="camera-ownership"]');
   await expect(cameraFinding).toHaveAttribute('data-level', 'WARN');
+  await expect(page.locator('[data-finding-id="sequence-hierarchy"]')).toHaveAttribute('data-level', 'PASS');
   await expect(page.locator('[data-finding-id="sequence-recovery"]')).toHaveAttribute('data-level', 'WARN');
 
   await cameraFinding.locator('[data-fix-route]').click();
