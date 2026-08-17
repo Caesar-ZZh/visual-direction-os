@@ -3,8 +3,21 @@ const { test, expect } = require('@playwright/test');
 const url = 'http://127.0.0.1:4173/director-v2.html?narrativeDemo=1';
 
 test('Narrative mode exposes editorial story input instead of chat', async ({ page }) => {
+  const pageErrors = [];
+  page.on('pageerror', error => pageErrors.push(error.message));
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(url);
+  const appProbe = await page.evaluate(async () => {
+    const text = await fetch(`director-v2-app.js?probe=${Date.now()}`).then(response => response.text());
+    window.__narrativeClickCount = 0;
+    window.__sceneSources = [];
+    document.querySelector('.mode-btn[data-mode="narrative"]').addEventListener('click', () => { window.__narrativeClickCount += 1; });
+    window.addEventListener('vdos:scene-state', event => { window.__sceneSources.push(event.detail?.source || null); });
+    return {
+      hasNarrativeModeOrder: text.includes("['learn', 'narrative', 'direct', 'diagnose']"),
+      scriptSrc: [...document.scripts].map(script => script.src).find(src => src.includes('director-v2-app.js')) || null
+    };
+  });
   await page.getByRole('button', { name: /Turn story into direction/i }).click();
   await page.waitForTimeout(1400);
   const routing = await page.evaluate(() => {
@@ -22,9 +35,13 @@ test('Narrative mode exposes editorial story input instead of chat', async ({ pa
       narrativeRectBottom: rect.bottom,
       directOffsetTop: direct.offsetTop,
       activeMode: active?.dataset.mode || null,
-      sceneMode: scene?.mode || null
+      sceneMode: scene?.mode || null,
+      clickCount: window.__narrativeClickCount,
+      sceneSources: window.__sceneSources
     };
   });
+  console.log('NARRATIVE_APP_PROBE', JSON.stringify(appProbe));
+  console.log('NARRATIVE_PAGE_ERRORS', JSON.stringify(pageErrors));
   console.log('NARRATIVE_ROUTING_DIAGNOSTIC', JSON.stringify(routing));
   await expect(page.locator('#narrative-panel')).toBeInViewport();
   await expect(page.getByRole('heading', { name: /Tell your story/i })).toBeVisible();
