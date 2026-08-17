@@ -31,6 +31,8 @@ test('desktop ownership summary stays inside its column when contested', async (
 test('desktop rail stays collapsed until hover and expands as an overlay without shifting stage', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(url);
+  await page.mouse.move(1200, 500);
+  await page.waitForTimeout(80);
 
   const rail = page.locator('.v2-rail');
   const stage = page.locator('.stage');
@@ -41,7 +43,7 @@ test('desktop rail stays collapsed until hover and expands as an overlay without
   expect(before[0]).toBeLessThanOrEqual(72);
 
   await rail.hover();
-  await page.waitForTimeout(220);
+  await page.waitForTimeout(260);
   const after = await Promise.all([
     rail.evaluate(node => node.getBoundingClientRect().width),
     stage.evaluate(node => node.getBoundingClientRect().left)
@@ -80,6 +82,7 @@ test('director option buttons use the same serif family as variable section titl
 test('site-wide metadata uses one clean sans family while display and director controls retain serif hierarchy', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(url);
+  await expect(page.locator('.case-tabs button').first()).toBeVisible();
 
   const typography = await page.evaluate(() => {
     const family = selector => {
@@ -111,8 +114,7 @@ test('site-wide metadata uses one clean sans family while display and director c
         '.vr-live-grid span',
         '.case-state-panel dt',
         '.score-track > span',
-        '.palette-mode-head > span',
-        '.palette-readout dt'
+        '.palette-mode-head > span'
       ].map(family),
       tabFamily: family('.case-tabs button'),
       tabSize: size('.case-tabs button'),
@@ -129,4 +131,8 @@ test('site-wide metadata uses one clean sans family while display and director c
   expect(typography.eyebrowSize).toBeGreaterThanOrEqual(11);
   expect(typography.eyebrowWeight).toBeGreaterThanOrEqual(550);
   expect(typography.eyebrowWeight).toBeLessThanOrEqual(700);
+
+  await page.locator('[data-color-view="base"]').click();
+  const basePaletteFamily = await page.locator('.palette-readout dt').first().evaluate(node => getComputedStyle(node).fontFamily);
+  expect(basePaletteFamily).toBe(typography.bodyFamily);
 });
