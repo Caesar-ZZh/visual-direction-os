@@ -6,6 +6,7 @@ on:
       - agent/director-workspace-v2-1
     paths:
       - "visual-direction-os/**"
+      - "api/narrative/**"
       - ".github/workflows/director-v2-ci.yml"
       - ".github/workflows/pages.yml"
       - "README.md"
@@ -29,6 +30,7 @@ jobs:
           node visual-direction-os/visual-qa.test.js
           node visual-direction-os/site-publish.test.js
           node visual-direction-os/narrative-apply.test.js
+          node api/narrative/_handler.test.js
       - name: Check JavaScript syntax
         run: |
           node --check visual-direction-os/scene-state.js
