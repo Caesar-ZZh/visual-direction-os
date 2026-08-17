@@ -11,6 +11,12 @@
   --vr-texture-opacity:.025;
   --vr-texture-size:28px;
   --vr-motion-duration:520ms;
+  --meta-font:var(--sans);
+  --meta-xs:.64rem;
+  --meta-sm:.7rem;
+  --meta-md:.76rem;
+  --meta-track:.08em;
+  --meta-track-wide:.12em;
 }
 
 body{isolation:isolate}
@@ -101,15 +107,16 @@ html[data-vr-line="unstable"] .ownership-grid{
 
 .vr-live-header span{
   color:var(--accent);
-  font:600 .62rem/1 var(--mono);
-  letter-spacing:.12em;
+  font:650 var(--meta-sm)/1 var(--meta-font);
+  letter-spacing:var(--meta-track-wide);
   text-transform:uppercase;
 }
 
 .vr-live-header small{
   color:var(--muted);
-  font:600 .56rem/1 var(--mono);
-  letter-spacing:.08em;
+  font:600 var(--meta-xs)/1 var(--meta-font);
+  letter-spacing:var(--meta-track);
+  text-transform:uppercase;
 }
 
 .vr-live-grid{
@@ -124,8 +131,188 @@ html[data-vr-line="unstable"] .ownership-grid{
   background:var(--surface);
   color:var(--text);
   padding:12px;
-  font:600 .62rem/1.35 var(--mono);
-  letter-spacing:.03em;
+  font:600 var(--meta-sm)/1.35 var(--meta-font);
+  letter-spacing:.025em;
+}
+
+/* Site-wide metadata typography: editorial sans, not terminal mono. */
+.brand small,
+.mode-label,
+.hero-node i,
+.hero-node b,
+.eyebrow,
+.system-chain small,
+.ownership-summary>span,
+.ownership-track-head span,
+.ownership-track-head b,
+.ownership-axis small,
+.status-line,
+.state-summary span,
+.case-state-panel dt,
+.score-toolbar output,
+.score-track>span,
+.score-track>b,
+.ownership-markers button,
+.territory-visual b,
+.diagnostic-status,
+.diagnostic-list article header strong,
+.atlas-heading>span,
+.atlas-grid a>span,
+.palette-mode-head>span,
+.palette-readout dt,
+.temperature-axis span,
+.ownership-verdict span,
+.ownership-verdict strong,
+.conflict-field>div b,
+.conflict-field>i,
+.conflict-verdict strong{
+  font-family:var(--meta-font);
+  font-style:normal;
+  font-variant-numeric:tabular-nums;
+}
+
+.brand small{
+  font-size:var(--meta-sm);
+  font-weight:600;
+  line-height:1.35;
+  letter-spacing:.09em;
+}
+.mode-label{
+  font-size:var(--meta-sm);
+  font-weight:650;
+  line-height:1;
+  letter-spacing:var(--meta-track-wide);
+}
+.mode-btn strong{
+  font-family:var(--meta-font);
+  font-size:var(--meta-sm);
+  font-weight:700;
+  letter-spacing:.02em;
+}
+.hero-node i{
+  font-size:.58rem;
+  font-weight:650;
+  line-height:1;
+  letter-spacing:.08em;
+}
+.hero-node b{
+  font-size:.68rem;
+  font-weight:650;
+  line-height:1.05;
+  letter-spacing:.07em;
+}
+.eyebrow{
+  font-family:var(--meta-font);
+  font-size:.74rem;
+  font-weight:650;
+  line-height:1.1;
+  letter-spacing:var(--meta-track-wide);
+}
+.system-chain small{
+  font-size:var(--meta-sm);
+  font-weight:650;
+  line-height:1;
+  letter-spacing:.07em;
+}
+.ownership-summary>span{
+  font-size:var(--meta-sm);
+  font-weight:650;
+  line-height:1;
+  letter-spacing:.09em;
+}
+.ownership-track-head span{
+  font-size:var(--meta-sm);
+  font-weight:650;
+  line-height:1;
+  letter-spacing:.06em;
+}
+.ownership-track-head b{
+  font-size:var(--meta-sm);
+  font-weight:700;
+  line-height:1;
+  letter-spacing:.02em;
+}
+.ownership-axis small{
+  font-size:var(--meta-xs);
+  font-weight:600;
+  line-height:1;
+  letter-spacing:.04em;
+}
+.status-line{
+  font-family:var(--meta-font);
+  font-size:var(--meta-md);
+  font-weight:650;
+  line-height:1.35;
+  letter-spacing:.07em;
+}
+.state-summary span{
+  font-size:var(--meta-sm);
+  font-weight:650;
+  line-height:1;
+  letter-spacing:.06em;
+}
+.case-state-panel dt,
+.palette-readout dt{
+  font-size:var(--meta-sm);
+  font-weight:650;
+  line-height:1.15;
+  letter-spacing:.06em;
+}
+.score-toolbar output,
+.score-track>span,
+.score-track>b,
+.ownership-markers button,
+.territory-visual b,
+.diagnostic-status,
+.diagnostic-list article header strong{
+  font-size:var(--meta-sm);
+  font-weight:650;
+  letter-spacing:.045em;
+}
+.atlas-heading>span,
+.palette-mode-head>span{
+  font-size:var(--meta-sm);
+  font-weight:650;
+  letter-spacing:.09em;
+}
+.atlas-grid a>span{
+  font-size:var(--meta-md);
+  font-weight:700;
+  letter-spacing:.02em;
+}
+.temperature-axis span{
+  font-size:var(--meta-sm);
+  font-weight:650;
+  letter-spacing:.045em;
+}
+.ownership-verdict span,
+.ownership-verdict strong,
+.conflict-field>div b,
+.conflict-field>i,
+.conflict-verdict strong{
+  font-size:var(--meta-sm);
+  font-weight:650;
+  letter-spacing:.055em;
+}
+
+/* Functional tabs stay sans, but gain enough weight to feel intentional. */
+.case-tabs button,
+.color-view-tabs button,
+.diagnostic-toolbar button{
+  font-family:var(--meta-font);
+  font-size:.95rem;
+  font-weight:600;
+  letter-spacing:0;
+}
+
+/* Director decision switches stay editorial serif on every viewport. */
+.variable-options button{
+  font-family:var(--serif);
+  font-size:.92rem;
+  font-weight:600;
+  line-height:1;
+  letter-spacing:-.01em;
+  text-transform:none;
 }
 
 /* Desktop polish: collapsed navigation rail, stable ownership composition, editorial control type. */
@@ -205,15 +392,6 @@ html[data-vr-line="unstable"] .ownership-grid{
   }
   .ownership-summary>p{max-width:23ch}
   .ownership-tracks{min-width:0}
-
-  .variable-options button{
-    font-family:var(--serif);
-    font-size:.92rem;
-    font-weight:600;
-    line-height:1;
-    letter-spacing:-.01em;
-    text-transform:none;
-  }
 }
 
 @media(min-width:901px) and (max-width:1120px){
@@ -230,6 +408,8 @@ html[data-vr-line="unstable"] .ownership-grid{
 @media(max-width:420px){
   .vr-live-grid{grid-template-columns:1fr}
   .vr-live-grid span{padding:11px 10px}
+  .eyebrow{font-size:.7rem;letter-spacing:.1em}
+  .case-tabs button,.color-view-tabs button,.diagnostic-toolbar button{font-size:.9rem}
 }
 
 @media(prefers-reduced-motion:reduce){
