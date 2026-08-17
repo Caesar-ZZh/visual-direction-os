@@ -7,16 +7,16 @@
 - Source corpus: user Google Drive screenshot archive; canonical research workspace is private `Sorted by Scence` plus a read-only raw-source fallback.
 - Research target: **approximately 4,000 high-coverage evidence frames** selected for chapter, character/world, mechanism, transition and counterexample coverage.
 - Detailed obligations: [`coverage-matrix-4000.md`](./coverage-matrix-4000.md).
-- **Cumulative frames actually viewed:** **418**.
-- **Cumulative frames with at least L1 annotation:** **418**.
-- **Latest completed batch:** **BATCH-029**.
+- **Cumulative frames actually viewed:** **494**.
+- **Cumulative frames with at least L1 annotation:** **494**.
+- **Latest completed batch:** **BATCH-035**.
 - Latest Earth-65 dense chronological coverage remains **`01:45:23`**. Later Earth-65/Jess locator images were screening-only and are not part of the selected corpus.
-- Latest coverage pivot: **Earth-928 / Spider Society exterior chase**, continuous raw-fallback slice `15:07:38–15:07:49`.
-- BATCH-029 contains **12 consecutive source screenshots**, all individually opened and visually inspected; 10 received at least L2, with 4 L3/Deep frames and 3 curated references.
+- Latest coverage pivot: **Earth-928 / Spider Society transport-system continuation**, continuous raw-fallback slice `16:03:25–16:03:37`.
+- BATCH-035 contains **13 consecutive source screenshots**, all individually opened and visually inspected; 12 received at least L2, with 4 L3/Deep frames and 3 curated references.
 
 ## Source-discovery resilience
 
-The canonical Drive `00_SOURCE_CORPUS` slot may be empty and Sorted-by-Scene routing may fail without blocking the research. BATCH-024 established a recovery path: the read-only raw root can be sliced with a **parent-folder + `modifiedTime` window**. BATCH-025–029 continue the raw-fallback lineage; exact filename/time discovery is also valid when needed. Candidate metadata and screening-only locator images never count until selected source images are opened and admitted to the evidence corpus. Source originals remain read-only; manifests, analysis, curated references, contact sheets and progress artifacts write only to canonical `Sorted by Scence`.
+The canonical Drive `00_SOURCE_CORPUS` slot may be empty and Sorted-by-Scene routing may fail without blocking the research. BATCH-024 established a recovery path: the read-only raw root can be sliced with a **parent-folder + `modifiedTime` window**. BATCH-025–035 continue the raw-fallback lineage; exact filename/time/file-ID discovery is also valid when needed. Candidate metadata and screening-only locator images never count until selected source images are opened and admitted to the evidence corpus. Source originals remain read-only; manifests, analysis, curated references, contact sheets and progress artifacts write only to canonical `Sorted by Scence`.
 
 ## Batch log
 
@@ -50,11 +50,17 @@ The canonical Drive `00_SOURCE_CORPUS` slot may be empty and Sorted-by-Scene rou
 | BATCH-026 | Mumbattan action · continuous 02:39:41–02:39:52 | 12 | 12 | 12 | 4 | 3 | complete first-pass |
 | BATCH-027 | Mumbattan action · continuous 02:39:53–02:40:04 | 12 | 12 | 12 | 4 | 3 | complete first-pass |
 | BATCH-028 | Spider Society chase · continuous 15:05:57–15:06:08 | 12 | 12 | 11 | 4 | 3 | complete first-pass |
-| **BATCH-029** | **Spider Society exterior chase · continuous 15:07:38–15:07:49** | **12** | **12** | **10** | **4** | **3** | **complete first-pass** |
+| BATCH-029 | Spider Society exterior chase · continuous 15:07:38–15:07:49 | 12 | 12 | 10 | 4 | 3 | complete first-pass |
+| BATCH-030 | Earth-928 transport destination · continuous 15:16:30–15:16:41 | 12 | 12 | 10 | 4 | 3 | complete first-pass |
+| BATCH-031 | Earth-928 active transport field · continuous 16:02:34–16:02:45 | 12 | 12 | 11 | 4 | 3 | complete first-pass |
+| BATCH-032 | Earth-928 exit threshold · continuous 16:02:46–16:02:58 | 13 | 13 | 12 | 4 | 3 | complete first-pass |
+| BATCH-033 | Earth-928 near-completion/readout · continuous 16:02:59–16:03:11 | 13 | 13 | 12 | 4 | 3 | complete first-pass |
+| BATCH-034 | Earth-928 reboot/differential destabilization · continuous 16:03:12–16:03:24 | 13 | 13 | 12 | 4 | 3 | complete first-pass |
+| **BATCH-035** | **Earth-928 field reset/local interaction · continuous 16:03:25–16:03:37** | **13** | **13** | **12** | **4** | **3** | **complete first-pass** |
 
-## Cumulative learning through BATCH-029
+## Cumulative learning through BATCH-035
 
-The evidence base is in an explicit cross-world calibration phase. Earth-65 established a dense causal layered system; BATCH-019–021 calibrated Brooklyn ownership/attention/anomaly behavior; BATCH-022 revised character-medium logic through Hobie; BATCH-023 added the first native Spider Society command/system sample; BATCH-024–027 established Mumbattan density/anomaly/action mechanisms; BATCH-028 added Earth-928 crowd/routing/zone-reset chase evidence; BATCH-029 adds an exterior world-scale/transport-action regime.
+The evidence base is in an explicit cross-world calibration phase. Earth-65 established a dense causal layered system; BATCH-019–021 calibrated Brooklyn ownership/attention/anomaly behavior; BATCH-022 revised character-medium logic through Hobie; BATCH-023 added the first native Spider Society command/system sample; BATCH-024–027 established Mumbattan density/anomaly/action mechanisms; BATCH-028–029 added Earth-928 crowd/routing/world-scale/transport-object chase evidence; BATCH-030–035 add the strongest explicit transport-system state chain so far while deliberately keeping completed exit, transit and arrival unresolved.
 
 ### BATCH-019 additions — first active-lineage Miles/Brooklyn calibration
 
@@ -150,6 +156,55 @@ The evidence base is in an explicit cross-world calibration phase. Earth-65 esta
 - The mechanically distinct interceptor at `15:07:39` remains deliberately **identity unresolved**.
 - GitHub analysis: [`33-batch-029-spider-society-exterior-world-scale-transport-action.md`](./33-batch-029-spider-society-exterior-world-scale-transport-action.md).
 
+### BATCH-030 additions — Earth-928 transport destination resolution / digital operator locality
+
+- **DNA-origin-to-destination Binding** — adjacent UI states explicitly bind `DNA ORIGIN: EARTH_0042` to `DESTINATION LOCKED EARTH-42`; this closes destination-selection causality, not transport completion.
+- **Diagnostic Carrier Handoff** — system readability moves through scan, eye diagnostic, graphic insert and explicit confirmation UI without requiring one persistent HUD.
+- **Digital Avatar Medium Locality** — the digital operator/avatar, connector strands and host machinery remain separately owned during overlap/contact.
+- **Host-system Recovery after Digital Occupancy** — local digital occupancy can disappear/reappear without mandatory residue or permanent host conversion.
+- GitHub analysis: [`34-batch-030-earth928-transport-destination-digital-operator.md`](./34-batch-030-earth928-transport-destination-digital-operator.md).
+
+### BATCH-031 additions — Earth-928 active transport field / agency opposition
+
+- **Occupied Active Transport Field** — Miles is directly visible inside an energized chamber after destination lock; system state advances into physical field occupancy without proving completed transport.
+- **Local High-energy Domain under Host Lock** — the transport field radically rewrites local event space while the wider Earth-928 room remains materially stable.
+- **Directional Intrusion versus Target-centered Field** — Miguel’s bodily advance and Miles’ target-centered occupancy establish opposed agency roles.
+- **Identity-landmark Lock under Saturation** — compact face/hair/silhouette/emblem channels remain readable under peak event density.
+- GitHub analysis: [`35-batch-031-earth928-active-transport-agency.md`](./35-batch-031-earth928-active-transport-agency.md).
+
+### BATCH-032 additions — Earth-928 exit threshold / digital operator mediation
+
+- **Progressive Material Discontinuity at Exit Threshold** — adjacent frames directly show body topology breaking into separated fragments/holes; visible remnants prevent a completed-exit claim.
+- **Entity-local Temporal Multiplicity** — multiple translucent operator states remain local while host consoles and geometry remain singular.
+- **Character-local Destabilization without Host-world Rewrite** — Miguel can undergo strong RGB/pixel displacement while Earth-928 host structure remains comparatively stable.
+- **Multiplexed Agency Channels** — interface mediation and bodily intervention stay distinct without exact button/result causality.
+- GitHub analysis: [`36-batch-032-earth928-exit-threshold-digital-operator.md`](./36-batch-032-earth928-exit-threshold-digital-operator.md).
+
+### BATCH-033 additions — Earth-928 near-completion hold / interface readout
+
+- **Non-monotonic Exit-threshold Visibility** — coherent Miles identity reappears after severe fragmentation, proving fragmentation amount alone cannot certify completion.
+- **Sub-100 Readout under Continued Occupancy** — `98.02%` is directly visible while Miles remains present; UI state and actual occupancy must be cross-checked.
+- **Interface/Physical Agency Intercut** — Margo monitoring and Miguel physical confrontation alternate while command causality remains bounded.
+- GitHub analysis: [`37-batch-033-earth928-near-completion-interface-readout.md`](./37-batch-033-earth928-near-completion-interface-readout.md).
+
+### BATCH-034 additions — Earth-928 reboot affordance / differential destabilization
+
+- **Explicit Binary Reboot Affordance** — `INITIATE SYSTEM REBOOT / YES / no` proves an available intervention choice, not confirmed execution or result.
+- **Participant-local Distortion Intensity** — Miles and Miguel can carry sharply different topology-loss levels inside one shared active field.
+- **Reboot-prompt Exit Guard** — continued later occupancy proves the prompt itself is not completed exit.
+- GitHub analysis: [`38-batch-034-earth928-reboot-differential-destabilization.md`](./38-batch-034-earth928-reboot-differential-destabilization.md).
+
+### BATCH-035 additions — Earth-928 field-regime reset / localized machine interaction
+
+- **Field-regime Reset with Continued Occupancy** — the high-saturation lattice hands off to a dim green column / retracting mechanism while Miguel remains visible.
+- **Localized Scan/Contact Interaction** — orange local emission plus direct hand-to-apparatus contact/burst establishes interaction without proving reboot-command provenance.
+- **Same-world Reaction Handoff** — Gwen and observers remain in the Earth-928 control room immediately afterward, so the reaction cut is not transit or arrival.
+- GitHub analysis: [`39-batch-035-earth928-field-regime-reset-localized-machine-interaction.md`](./39-batch-035-earth928-field-regime-reset-localized-machine-interaction.md).
+
+The combined BATCH-030–035 transport/system chain is:
+
+`diagnostic acquisition → origin identification → destination lock → occupied active field → progressive continuity loss / exit threshold → sub-completion / continued occupancy → explicit reboot/intervention affordance → [command execution unresolved] → field-regime reset with continued occupancy → localized machine/participant interaction → same-world observer reaction → [completed exit unresolved] → [transit unresolved] → [arrival unresolved]`.
+
 ## 4,000-frame selection policy
 
 The corpus must collectively cover all existing main chapters and actively balance Miles/Brooklyn, Gwen/Earth-65, Hobie, Miguel/Spider Society, Mumbattan, facial rendering, camera/composition, rendering construction, color/edge/texture, motion/temporal FX, world collision, visual silence and climax/authorship.
@@ -161,21 +216,21 @@ Every batch must answer:
 3. What production / Skill parameter follows?
 4. What remaining coverage gap should affect later sampling?
 
-## Current coverage pressure after BATCH-029
+## Current coverage pressure after BATCH-035
 
-BATCH-029 extends the Spider Society chase beyond B028's crowd/routing/zone-reset model into a distinct exterior regime: world-scale decompression, optional crowd visibility, single-interceptor pressure handoff, character-light host-world holds and direct host-transport action constraint.
+BATCH-030–035 substantially reduce the Spider Society **transport-system-state** gap: destination selection, field occupancy, exit threshold, sub-completion, reboot affordance, participant-local destabilization, field-regime reset, localized machine interaction and same-world reaction are now directly sampled. The decisive transport-completion evidence is still missing: no empty/absent chamber post-state, transit environment or destination-world arrival has been verified.
 
-The bounded Jess locator is closed for now: `01:45:45` remains only a represented/nested candidate, and later Earth-65 plus B023/B028-adjacent screening did not produce a live visual anchor. Those screening frames are not counted.
+The bounded Jess locator remains closed for now: `01:45:45` is only a represented/nested candidate, and screening-only frames are not counted.
 
 Highest marginal-value next targets are:
 
 - world collision outside Earth-65;
-- climax / agency / authorship;
-- explicit portal/transport entry-exit causality when a targeted sequence can be found;
+- later climax / authorship / control-transfer mechanisms not reducible to the already sampled machine intervention;
+- a narrowly targeted completed transport exit/transit/arrival sample only if direct evidence is available;
 - independent cross-world counterexamples;
 - Hobie temporal/frame-rate behavior only when directly visible.
 
-Revisit Spider Society only for a genuinely new mechanism such as explicit group coordination/order commands or portal infrastructure not already covered by B023/B028/B029.
+Immediate adjacency after `16:03:37` should be opened only long enough to seek an empty/absent post-state, explicit destination/world-reset, or a direct reboot action→result pair. If those do not appear, close this transport lineage to avoid redundant occupancy/system-state sampling.
 
 The captured bald adversary in B020 remains deliberately unnamed. The mechanically distinct B029 interceptor remains unnamed. Camera movement is never inferred from one still. Do not convert scene knowledge into evidence.
 
