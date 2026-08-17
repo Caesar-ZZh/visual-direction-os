@@ -21,37 +21,37 @@ Near-duplicates enter only when they contribute temporal, micro-performance, hel
 
 | GitHub chapter | Evidence obligation | Target tagged frames floor | Deep diagnostics floor | Current evidence status |
 |---|---|---:|---:|---|
-| `01-master-framework.md` | Validate causal chain across characters/worlds: space, color, edge, medium, time, focus, object, performance, light, event grammar and perceptual uncertainty. | 900 | 120 | EARLY — Earth-65 broad/saturated; Brooklyn, Hobie, Mumbattan and Spider Society calibrated. **B028 adds chase-mode crowd order; B029 adds world-scale chase decompression, single-interceptor pressure handoff and transport-object constraint.** |
-| `02-character-system.md` | Miles, Gwen, Hobie, Miguel and supporting identity systems; state changes; non-face identity; action signature; character-owned medium. | 1200 | 180 | GWEN STRONG; Vulture dense; Miles improving; Hobie first cluster verified; Miguel identity/system sampled. **B029 extends Miles identity invariants to extreme world-dominant scale and validates Miguel authority recompression in exterior chase. Live Jess remains unresolved.** |
-| `03-world-system.md` | Earth-1610/Brooklyn, Earth-65, Earth-928/Spider Society, Mumbattan, Hobie/punk, collision/transition states. | 1300 | 180 | Earth-65 overrepresented; Brooklyn improving; Hobie sampled; Mumbattan calibrated. **Earth-928 now has B023 command/system, B028 crowd/routing/zone-reset and B029 exterior macro-city/transport evidence.** |
-| `04-sequence-color.md` | Role-color, territory, migration, residue, merge, attack/hold/decay, light ownership, carrier handoff. | 1000 | 150 | Earth-65 strong; Brooklyn/Hobie/Mumbattan extend ownership logic. B028 adds hard host-zone palette reset; B029 shows chase-state continuity while world authority expands into a pale exterior macro field without requiring palette continuity. |
-| `05-production-system.md` | Composition, rendering deconstruction, detail strategy, medium assignment, material ontology, motion, source light, event rendering, force construction. | 850 | 130 | B024–027 add dense-world/action construction; B028 adds crowd detail bands/routing rails. **B029 adds world-scale decompression, optional crowd visibility, single-interceptor pressure handoff and direct web-to-host-transport action geometry.** |
-| `06-project-worksheets.md` | Convert mechanisms into explicit project fields/questions. | 500 | 60 | fields now include prior B028 crowd/routing controls plus `world_scale_decompression`, `target_invariant_set_under_world_dominance`, `world_authority_takeover_duration`, `single_interceptor_pressure_handoff`, `character_light_host_world_hold`, `host_transport_action_anchor`, `connector_to_transport_legibility`, `transport_material_lock_under_web_contact`, `world_target_pursuer_authority_oscillation`. |
+| `01-master-framework.md` | Validate causal chain across characters/worlds: space, color, edge, medium, time, focus, object, performance, light, event grammar and perceptual uncertainty. | 900 | 120 | EARLY — Earth-65 broad/saturated; Brooklyn, Hobie, Mumbattan and Spider Society calibrated. **B028–029 add chase/city-scale authority; B030–035 add the strongest explicit transport-system state chain so far: origin/destination lock → occupied field → exit threshold → sub-completion → reboot affordance → field-regime reset → localized interaction / same-world reaction. Completed exit/transit/arrival remain unproven.** |
+| `02-character-system.md` | Miles, Gwen, Hobie, Miguel and supporting identity systems; state changes; non-face identity; action signature; character-owned medium. | 1200 | 180 | GWEN STRONG; Vulture dense; Miles improving; Hobie first cluster verified; Miguel identity/system sampled. **B031–035 add Miles identity-landmark persistence under saturation, non-monotonic reappearance, Miguel participant-local fragmentation and Margo/Spider-Byte digital-operator locality. Live Jess remains unresolved.** |
+| `03-world-system.md` | Earth-1610/Brooklyn, Earth-65, Earth-928/Spider Society, Mumbattan, Hobie/punk, collision/transition states. | 1300 | 180 | Earth-65 overrepresented; Brooklyn improving; Hobie sampled; Mumbattan calibrated. **Earth-928 now has B023 command/system, B028–029 chase/macro-city evidence and B030–035 transport-machine state, bounded-event, reboot-affordance and post-intervention host-world continuity evidence.** |
+| `04-sequence-color.md` | Role-color, territory, migration, residue, merge, attack/hold/decay, light ownership, carrier handoff. | 1000 | 150 | Earth-65 strong; Brooklyn/Hobie/Mumbattan extend ownership logic. B028–029 add host-zone reset and world-scale chase continuity. **B031–035 add a bounded high-saturation transport field that later hands off to a dim green machine regime while the Earth-928 host room retains separate ownership.** |
+| `05-production-system.md` | Composition, rendering deconstruction, detail strategy, medium assignment, material ontology, motion, source light, event rendering, force construction. | 850 | 130 | B024–029 add dense-world/action construction, routing, world-scale decompression and host-transport contact. **B030–035 add system carrier handoff, transport-stage separation, exit-threshold topology loss, entity-local temporal multiplicity, affordance/result separation, participant-local distortion, field-regime reset and localized scan/contact ownership.** |
+| `06-project-worksheets.md` | Convert mechanisms into explicit project fields/questions. | 500 | 60 | fields now include prior chase/world-scale controls plus `transport_origin_detection_state`, `transport_destination_lock_state`, `occupied_transport_field_state`, `transport_exit_threshold_state`, `exit_threshold_visibility_non_monotonic`, `sub_completion_percentage_readout`, `explicit_system_reboot_affordance`, `command_execution_evidence_threshold`, `participant_local_distortion_intensity`, `field_regime_reset_without_exit`, `localized_system_scan_owner`, `command_provenance_guard`, `same_world_reaction_handoff`, `completed_exit_evidence_requirement`, `arrival_evidence_requirement`. |
 | `07-original-case-study.md` | Rebuild an original case with evidence-backed mechanisms beyond surface imitation. | 350 | 80 | not yet evidence-refactored |
-| `08-glossary.md` | Stable terms need frame evidence, scope, counterexample and production definition. | 600 | 60 | candidate terms include Structured Urban Density Bands, Host-world Autonomy, Temporal Identity Landmark Persistence, Relational Constraint-Line Persistence, Multi-medium Crowd Coexistence, Pursuit Depth-band Hierarchy, Shared Crowd-routing Rails, Host-zone Reset under Pursuit, World-scale Pursuit Decompression, Single-interceptor Pressure Handoff and Host Transport Action Anchor. |
-| `09-decision-tree.md` | Validate preserve/re-author, carrier, detail, medium/FX/material ontology, break/recovery, reveal decisions. | 700 | 100 | B028 adds target/crowd/routing/zone-reset questions. **B029 adds: when may world scale temporarily dominate the hero, when can crowd pressure compress to one interceptor, and when does host transport become a contacted constraint without material inheritance?** |
-| `10-master-workflow.md` | Validate narrative problem → planning → rendering → sequence → QA across quiet, action, transition and climax. | 900 | 140 | Cross-world workflow includes Brooklyn ownership, Hobie multi-medium identity, Spider Society command authority, Mumbattan density/action, B028 crowd chase organization and **B029 exterior world-scale/transport constraint logic**. Exact portal entry/exit and explicit group coordination remain pending. |
-| `11-visual-qa.md` | Positive/negative examples for global filters, wrong hierarchy, wrong ownership, FX/material confusion, over-description, leakage, blur-only motion. | 850 | 160 | B028 adds failures for equal-detail chase crowds/global crowd homogenization. **B029 adds failures for keeping crowd visible merely to signal pursuit, blurring away Earth-928 macro infrastructure, transferring Spider/web material into contacted transport and requiring face detail at tiny target scale.** |
+| `08-glossary.md` | Stable terms need frame evidence, scope, counterexample and production definition. | 600 | 60 | candidate terms include Structured Urban Density Bands, Host-world Autonomy, Temporal Identity Landmark Persistence, Relational Constraint-Line Persistence, Multi-medium Crowd Coexistence, World-scale Pursuit Decompression, Host Transport Action Anchor, **Transport Stage Separation, Non-monotonic Exit-threshold Visibility, Affordance-not-result Guard, Participant-local Destabilization, Field-regime Reset without Exit, Same-world Reaction Handoff**. |
+| `09-decision-tree.md` | Validate preserve/re-author, carrier, detail, medium/FX/material ontology, break/recovery, reveal decisions. | 700 | 100 | B028–029 add crowd/world-scale/transport-contact questions. **B030–035 add: when is destination lock only a system state, what counts as occupied field vs exit threshold, when does fragmentation fail to prove completion, when is a UI affordance not a command/result, when does field reset remain non-exit, and when is a reaction cut still same-world rather than arrival?** |
+| `10-master-workflow.md` | Validate narrative problem → planning → rendering → sequence → QA across quiet, action, transition and climax. | 900 | 140 | Cross-world workflow includes Brooklyn ownership, Hobie multi-medium identity, Spider Society command authority, Mumbattan density/action, B028–029 pursuit logic and **B030–035 evidence-calibrated transport/system staging from destination selection through post-intervention reaction. Exact completed exit/transit/arrival remains pending.** |
+| `11-visual-qa.md` | Positive/negative examples for global filters, wrong hierarchy, wrong ownership, FX/material confusion, over-description, leakage, blur-only motion. | 850 | 160 | B028–029 add crowd/world-scale QA. **B030–035 add failures for lock=arrival, field occupancy=completion, fragmentation=exit, near-100 UI=completion, reboot affordance=executed command, one distortion amount for all participants, field dimming/retraction=exit, and same-world reaction=arrival.** |
 
 ## Cross-cutting evidence domains
 
 | Domain | Minimum coverage intent | Why it matters |
 |---|---:|---|
 | Miles / Brooklyn daily life | 400+ | Prevent cyberpunk/graffiti shortcut; learn lived-in urban abstraction. B019–021 include mural memory, family communication and grounded social interior. |
-| Miles / Brooklyn action | 300+ | Direction, spatial authorship, motion and agency. B020–021 establish Spot presence, host-world lock and interrupted agency; strong portal/force-vector causality remains pending. |
+| Miles / Brooklyn action | 300+ | Direction, spatial authorship, motion and agency. B020–21 establish Spot presence, host-world lock and interrupted agency; strong portal/force-vector causality remains pending. |
 | Gwen / Earth-65 | 350+ | Emotional permeability, action identity, thresholds and state changes; already disproportionately sampled. |
 | Hobie / punk system | 350+ | Medium-time instability, collage, frame-rate/material behavior. B022 begins this domain; B023 independently validates live Hobie medium locality. Temporal/frame-rate instability is still pending. |
-| Miguel / Spider Society | 300+ | System/order, architecture and high-pressure composition. **B023 covers command/system authority; B028 adds crowd/routing/zone reset; B029 adds exterior macro-city authority, single-interceptor handoff and direct transport constraint.** Explicit portal entry/exit infrastructure and explicit group coordination/order commands remain pending. |
+| Miguel / Spider Society | 300+ | System/order, architecture and high-pressure composition. **B023 covers command/system authority; B028–029 add pursuit/macro-city/host-transport action; B030–035 add origin/destination lock, active field, exit threshold, digital operator mediation, reboot affordance, differential destabilization, field-regime reset and localized post-reset interaction. Completed exit/transit/arrival remain unresolved.** |
 | Mumbattan | 300+ | Vertical ecology, density, layered vitality and action readability. B024–027 provide 48 consecutive verified frames from `02:39:17–02:40:04`; immediate adjacency is closed. Exact portal/crowd/collision causality remains for targeted later sampling only. |
-| Cross-character facial rendering | 350+ | Separate landmark precision from surface realism across identities. Mumbattan adds Miles/Gwen cases; B029 reinforces that face detail is unnecessary when a compact invariant set preserves Miles at extreme world scale. |
-| Camera / composition families | 700+ | Re-authoring, scale, occlusion, depth, reveal, relationship carrier, threat-shell authority, action routing and recovery geometry. **B029 adds world-dominant target minimization, interceptor/target split and near-field pursuer recompression. Exact camera motion remains unclaimed.** |
-| Rendering construction | 700+ | Reality suppression, flattening, medium ownership, event modes, regional/owner-local detail, authored surfaces, UI layers, anomaly boundaries, governed multi-medium assembly and hard resets. B028 adds heterogeneous crowd-medium locality; **B029 adds host-transport material lock under direct web contact.** |
-| Color / edge / texture | 700+ | Mechanism rather than palette imitation. B028 demonstrates zone reset without material carryover; B029 keeps compact black/red/white identity/connectors readable against pale exterior Earth-928 fields. |
-| Motion / temporal FX | 500+ | Chase/action, reveal signatures, event envelopes, force vectors, instability, identity lock and recovery. B027 adds temporal identity/connector persistence; B028 adds pursuit continuity across zone reset; **B029 adds temporal authority oscillation and direct web-to-vehicle relation but does not reconstruct exact camera path or force magnitude.** |
-| World transition / collision | 300+ | Learn when grammar breaks, overlaps, hands off or resets. B028 supplies host-subzone reset; B029 supplies interior-to-exterior world-scale decompression within Earth-928. **Cross-world collision itself remains under-covered.** |
+| Cross-character facial rendering | 350+ | Separate landmark precision from surface realism across identities. Mumbattan adds Miles/Gwen cases; B029 reinforces compact invariants at tiny scale; **B031–035 add identity persistence through field saturation, re-coherence after fragmentation and masked-state continuation.** |
+| Camera / composition families | 700+ | Re-authoring, scale, occlusion, depth, reveal, relationship carrier, threat-shell authority, action routing and recovery geometry. B029 adds world-dominant target minimization/interceptor split; B031–035 add target-centered event geometry, operator/control intercuts and same-world reaction handoff. Exact camera motion remains unclaimed where not directly evidenced. |
+| Rendering construction | 700+ | Reality suppression, flattening, medium ownership, event modes, regional/owner-local detail, authored surfaces, UI layers, anomaly boundaries, governed multi-medium assembly and hard resets. B028–029 add heterogeneous crowd media and host-transport material lock; **B030–035 add digital-avatar locality, bounded transport-event ownership, participant-local distortion and local scan/contact ownership.** |
+| Color / edge / texture | 700+ | Mechanism rather than palette imitation. B028–29 demonstrate host-zone/world-scale continuity. **B031–35 add a high-saturation event field that remains bounded and later resets to a lower-saturation green system regime without host-world material takeover.** |
+| Motion / temporal FX | 500+ | Chase/action, reveal signatures, event envelopes, force vectors, instability, identity lock and recovery. B027–29 add temporal identity/connector/pursuit authority; **B032–35 add entity-local temporal multiplicity, progressive topology loss, non-monotonic identity reappearance, participant-local fragmentation and mechanism retraction.** |
+| World transition / collision | 300+ | Learn when grammar breaks, overlaps, hands off or resets. B028–29 supply Earth-928 host-zone/world-scale changes. **B030–35 resolve destination-selection and multiple transport-machine states but still do not provide an explicit completed exit, transit environment or destination-world arrival. Cross-world collision remains under-covered.** |
 | Visual silence / quiet | 250+ | Prevent constant escalation and establish authority/description-density reset. B029 character-light tower holds provide a small action-context example but do not close the quiet-domain gap. |
-| Climax / agency / authorship | 300+ | Validate visual reserve, escalation, transfer of control and residue. Still a high-priority gap. |
-| Counterexamples | 500+ multi-tag | Prevent local observations becoming false universal rules. B028 counters equal-detail/global-homogenization assumptions; **B029 counters “a chase must keep the crowd visible,” “the hero must remain large/centered,” and “contacted transport inherits hero material.”** |
+| Climax / agency / authorship | 300+ | Validate visual reserve, escalation, transfer of control and residue. **B031–35 materially improve agency coverage through Miguel bodily intervention, Margo interface mediation, explicit reboot affordance, localized machine contact and observer reaction; authorship/control-transfer beyond this machine sequence remains a high-value gap.** |
+| Counterexamples | 500+ multi-tag | Prevent local observations becoming false universal rules. B028–29 counter chase/crowd/world-scale assumptions; **B032–35 counter “fragmentation means exit,” “98% means completion,” “visible reboot prompt means executed command,” “shared field means uniform distortion,” “field reset means exit,” and “post-intervention reaction means arrival.”** |
 
 ## Batch rules under the 4,000-frame strategy
 
@@ -68,13 +68,13 @@ Each batch must answer:
 - **L2** — change point / representative / counterexample with mechanism analysis.
 - **L3 / Deep** — diagnostic frame/sequence used to revise theory, workflow, prompt schema or QA.
 
-## Current checkpoint after BATCH-029
+## Current checkpoint after BATCH-035
 
-- Selected/viewed/L1 frames: **418 / ~4,000**.
+- Selected/viewed/L1 frames: **494 / ~4,000**.
 - Latest Earth-65 dense chronological coverage remains **`01:45:23`**; the later Earth-65/Jess locator frames were screening-only and are not added to the corpus.
-- Latest coverage-pivot sample: **Earth-928 / Spider Society exterior chase, continuous `15:07:38–15:07:49`**, **12/12 source images actually opened, 10 at least L2, 4 deep diagnostics, 3 curated references**.
-- Spider Society active-lineage now includes B023 command/system authority, B028 crowd/routing/zone-reset evidence and B029 exterior world-scale/transport-action evidence.
-- B029 contains one near-duplicate held state (`15:07:41`) retained only because it proves character-light host-world continuity before target re-entry.
+- Latest coverage-pivot sample: **Earth-928 / Spider Society transport-system continuation, continuous `16:03:25–16:03:37`**, **13/13 source images actually opened, 12 at least L2, 4 deep diagnostics, 3 curated references**.
+- Spider Society active-lineage now includes B023 command/system authority, B028–029 chase/world-scale/transport-object evidence and B030–035 transport destination/field/exit-threshold/reboot/reset/intervention evidence.
+- B030–035 collectively cover 76 actually opened frames and explicitly preserve unresolved status for completed exit, transit and destination arrival.
 - Live Jess remains unresolved after a bounded locator pass; screened locator frames are not counted.
 - Mumbattan active-lineage remains B024–027, `02:39:17–02:40:04`, 48 actually selected/opened frames; immediate adjacency stays closed.
 - Source routing remains recoverable via read-only raw-root parent + narrow time/file-title discovery; metadata-only discovery does not count.
@@ -127,23 +127,66 @@ The B028 local chase model is: **target anchor → heterogeneous near pursuer si
 
 The combined B028/B029 chase model is now **state-dependent rather than one fixed composition**: crowd-depth/routing mode may hand off to `world-scale field → compact target invariant → single interceptor or target/pursuer split → contacted host-transport anchor → near-field pursuer recompression`.
 
+### BATCH-030 transport destination mechanisms
+
+- **DNA-origin-to-destination Binding** — explicit origin identification and adjacent destination lock form a readable state progression without proving completed transport.
+- **Diagnostic Carrier Handoff** — scan, eye diagnostic, graphic insert and confirmation UI may hand causal readability across carriers.
+- **Digital Avatar Medium Locality** — avatar, connector and host hardware remain separate visual owners under contact.
+- **Host-system Recovery after Digital Occupancy** — digital occupancy can disappear/reappear without permanent host conversion.
+
+### BATCH-031 active-field mechanisms
+
+- **Occupied Active Transport Field** — destination lock advances into a directly occupied energized field, not directly to arrival.
+- **Local High-energy Domain under Host Lock** — extreme event density remains bounded around the chamber.
+- **Directional Intrusion versus Target-centered Field** — Miguel bodily advance and Miles field-centering create opposed agency roles.
+- **Identity-landmark Lock under Transport Saturation** — compact identity channels survive peak effect density.
+
+### BATCH-032 exit-threshold mechanisms
+
+- **Progressive Material Discontinuity at Exit Threshold** — adjacent frames directly show topology loss into separated fragments/holes, but visible remnants block a completed-exit claim.
+- **Entity-local Temporal Multiplicity** — digital operator ghosting/multi-instance states remain local while host geometry stays singular.
+- **Character-local Destabilization without Host-world Rewrite** — Miguel can undergo heavy RGB/smear breakup without global room contamination.
+- **Multiplexed Agency Channels** — interface mediation and bodily intervention remain separately owned.
+
+### BATCH-033 near-completion mechanisms
+
+- **Non-monotonic Exit-threshold Visibility** — coherent Miles identity reappears after severe fragmentation, directly disproving a simple monotonic fade-to-exit model.
+- **Sub-100 Readout under Continued Occupancy** — `98.02%` is visible while Miles remains present; numeric UI and visual occupancy must be cross-checked.
+- **Interface/Physical Agency Intercut** — Margo monitoring and Miguel physical confrontation alternate without command-causality overclaim.
+
+### BATCH-034 reboot / differential-destabilization mechanisms
+
+- **Explicit Binary Reboot Affordance** — `INITIATE SYSTEM REBOOT / YES / no` proves available system intervention, not confirmed execution/result.
+- **Participant-local Distortion Intensity** — Miguel and Miles can carry sharply different topology-loss levels inside one shared active field.
+- **Reboot-prompt Exit Guard** — continued later occupancy proves the prompt itself is not an exit marker.
+
+### BATCH-035 field-reset / localized-interaction mechanisms
+
+- **Field-regime Reset with Continued Occupancy** — high-saturation lattice hands off to a dim green column / retracting mechanism while Miguel remains present.
+- **Localized Scan/Contact Interaction** — orange scan/emission and hand-to-apparatus burst establish local interaction without proving reboot provenance.
+- **Same-world Reaction Handoff** — Gwen/observer reaction remains inside Earth-928 and therefore cannot substitute for destination arrival.
+
+The combined B030–B035 transport model is:
+
+`diagnostic acquisition → origin identification → destination lock → occupied active field → progressive continuity loss / exit threshold → sub-completion / continued occupancy → explicit reboot/intervention affordance → [command execution unresolved] → field-regime reset with continued occupancy → localized machine/participant interaction → same-world observer reaction → [completed exit unresolved] → [transit unresolved] → [arrival unresolved]`.
+
 ## Current coverage pressure
 
-BATCH-029 adds the missing exterior-scale/transport-object layer to Spider Society chase evidence. Immediate Jess searching is now bounded and stopped unless a clearly indexed live-Jess sample becomes available; `01:45:45` remains only a represented/nested candidate and does not close live identity.
+BATCH-030–035 substantially reduce the Spider Society **transport-system-state** gap without closing the decisive transport-completion gap. Immediate adjacency after `16:03:37` is now justified only if it can supply an empty/absent post-state, an explicit destination/world-reset, or a direct reboot action→result pair. Otherwise this Earth-928 transport slice should close to avoid redundant occupancy/system-state sampling.
 
 Highest marginal-value next targets are:
 
 1. **world collision outside Earth-65** — direct evidence of grammar overlap/handoff between worlds;
-2. **climax / agency / authorship** — visual reserve, escalation and transfer of control;
-3. explicit portal/transport entry-exit causality if a targeted sequence can be found;
+2. **later climax / authorship / control transfer** — especially mechanisms not reducible to the already sampled machine intervention;
+3. a narrowly targeted **completed transport exit/transit/arrival** sample only if direct evidence is available;
 4. independent cross-world counterexamples;
 5. Hobie temporal/material/frame-rate behavior only when directly visible.
 
-Revisit Spider Society only for strong new portal infrastructure, explicit group coordination/order commands, or another mechanism not already covered by B023/B028/B029. Return to Mumbattan only for targeted portal entry/exit, explicit crowd/traffic reaction or infrastructure collision/destruction/re-authoring evidence.
+Revisit the B030–035 Spider Society transport lineage only for direct completed-exit/arrival evidence or an explicit action→reboot-result pair. Return to Mumbattan only for targeted portal entry/exit, explicit crowd/traffic reaction or infrastructure collision/destruction/re-authoring evidence.
 
 ## Source-discovery resilience note
 
-The canonical `00_SOURCE_CORPUS` folder may be empty. BATCH-024–029 demonstrate that later raw-source chronology can be recovered without modifying originals by searching the read-only raw root and resolving exact source images. Candidate metadata and screening-only locator frames never count; actual selected source images must still be opened before L1. All generated research artifacts remain in canonical `Sorted by Scence`.
+The canonical `00_SOURCE_CORPUS` folder may be empty. BATCH-024–035 demonstrate that later raw-source chronology can be recovered without modifying originals by searching the read-only raw root and resolving exact source images through parent-folder/time windows or exact file IDs. Candidate metadata and screening-only locator frames never count; actual selected source images must still be opened before L1. All generated research artifacts remain in canonical `Sorted by Scence`.
 
 ## Promotion policy
 
