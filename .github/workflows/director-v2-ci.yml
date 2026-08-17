@@ -53,7 +53,8 @@ jobs:
             './visual-direction-os/director-v2.css',
             './visual-direction-os/director-v2-tools.css',
             './visual-direction-os/visual-response.css',
-            './visual-direction-os/sequence-director.css'
+            './visual-direction-os/sequence-director.css',
+            './visual-direction-os/diagnostic-routing.css'
           ].map(path => fs.readFileSync(path,'utf8')).join('\n');
           const findings = qa.scanSource({html, css});
           findings.forEach(f => console.log(`${f.level} ${f.id}: ${f.message} ${f.detail || ''}`));
@@ -70,11 +71,13 @@ jobs:
           test -f visual-direction-os/sequence-director-model.js
           test -f visual-direction-os/sequence-director.js
           test -f visual-direction-os/diagnostic-routing.js
-          ! grep -E "transition:[[:space:]]*all" visual-direction-os/director-v2.css visual-direction-os/director-v2-tools.css visual-direction-os/visual-response.css visual-direction-os/sequence-director.css
+          test -f visual-direction-os/diagnostic-routing.css
+          ! grep -E "transition:[[:space:]]*all" visual-direction-os/director-v2.css visual-direction-os/director-v2-tools.css visual-direction-os/visual-response.css visual-direction-os/sequence-director.css visual-direction-os/diagnostic-routing.css
           grep -q "prefers-reduced-motion" visual-direction-os/director-v2.css
           grep -q "prefers-reduced-motion" visual-direction-os/director-v2-tools.css
           grep -q "prefers-reduced-motion" visual-direction-os/visual-response.css
           grep -q "prefers-reduced-motion" visual-direction-os/sequence-director.css
+          grep -q "prefers-reduced-motion" visual-direction-os/diagnostic-routing.css
       - name: Verify assembled Pages site
         run: |
           node visual-direction-os/build-pages-site.js visual-direction-os /tmp/vdos-site
@@ -88,6 +91,7 @@ jobs:
           test -f /tmp/vdos-site/sequence-director.js
           test -f /tmp/vdos-site/sequence-director.css
           test -f /tmp/vdos-site/diagnostic-routing.js
+          test -f /tmp/vdos-site/diagnostic-routing.css
       - name: Verify Pages workflow contract
         run: |
           grep -q "node visual-direction-os/build-pages-site.js visual-direction-os _site" .github/workflows/pages.yml
