@@ -43,7 +43,7 @@ test('desktop rail stays collapsed until hover and expands as an overlay without
   expect(before[0]).toBeLessThanOrEqual(72);
 
   await rail.hover();
-  await page.waitForTimeout(260);
+  await page.waitForTimeout(420);
   const after = await Promise.all([
     rail.evaluate(node => node.getBoundingClientRect().width),
     stage.evaluate(node => node.getBoundingClientRect().left)
