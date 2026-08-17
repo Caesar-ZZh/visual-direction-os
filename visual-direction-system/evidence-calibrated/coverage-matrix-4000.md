@@ -305,3 +305,42 @@ Highest marginal-value next targets are:
 5. a distinct transit environment only if directly visible.
 
 Reopen the B036–039 Earth-65 travel lineage only for evidence that directly changes one of the remaining unresolved states. The B030–035 Earth-928 transport lineage remains closed for ordinary continuation.
+
+## BATCH-040 coverage update — latest checkpoint supersedes B039 snapshot
+
+### Current checkpoint after BATCH-040
+
+- Selected/viewed/L1 frames: **559 / ~4,000**.
+- Latest admitted coverage pivot: **coalition assembly / distributed mission ownership, continuous `16:28:08–16:28:20`**, **13/13 source images actually opened, all 13 at least L2, 4 deep diagnostics, 3 curated references**.
+- Sparse minute-scale locator probes outside the admitted `16:28:08–20` window remain screening-only and are not counted.
+- B040 directly shows a solo Gwen/portal mission axis expanding into a materially heterogeneous multi-character coalition.
+- B040 supports distributed mission ownership but does **not** show a literal command/authority-token handoff.
+- Static simultaneous Hobie medium visibility still does **not** establish frame-rate or temporal cadence behavior.
+- Source-routing and count discipline remain unchanged: metadata-only discovery and screening probes do not count.
+
+### BATCH-040 new / strengthened mechanisms
+
+- **Progressive Coalition Assembly around a Stable Mission Axis** — membership accretes from the frame periphery while Gwen/portal remain a persistent mission-facing spatial anchor.
+- **Distributed Mission Ownership without Command Handoff** — visual agency broadens from one central agent to a team-owned objective field while command transfer remains a separately gated state.
+- **Leader Axis without Exclusive Ownership** — a centrally placed figure can preserve compositional leadership without remaining the sole agency owner.
+- **Heterogeneous Team Medium Lock** — radically different character media remain locally owned within one ensemble instead of being normalized into a common team texture.
+- **Shared Objective Geometry as Coalition Glue** — portal/objective orientation, silhouette hierarchy and staged depth supply coherence across incompatible rendering systems.
+- **Hobie Temporal Claim Guard** — medium coexistence in stills is not evidence of animation cadence/frame-rate behavior.
+
+The B040 team-agency model is:
+
+`single-agent portal-facing mission → first ally enters shared objective field → progressive coalition accretion → multi-medium team composition → distributed coalition mission ownership → [direct command handoff unresolved] → [team portal traversal unresolved] → [Hobie temporal/frame-rate behavior unresolved]`.
+
+### Updated coverage pressure after BATCH-040
+
+The question “does the late-film mission become a team-owned field?” is now directly answered within this narrow visual scope. Ordinary static lineup continuation is therefore closed.
+
+Highest marginal-value next targets are:
+
+1. direct **coordinated coalition movement / portal traversal**, where assembly becomes action;
+2. explicit **command/control carrier transfer**, only if a visible object/interface/authority state actually changes owner;
+3. **Hobie temporal/material-time behavior** using adjacent frames rather than single-still medium comparison;
+4. independent counterexamples where heterogeneous team coherence occurs without one dominant central objective axis;
+5. broader multi-agent climax authorship where different characters perform visibly distinct but coordinated functions.
+
+Do not promote team co-presence to command transfer, shared objective to shared material, or Hobie still-image medium variation to temporal cadence. Camera motion remains unclaimed from static frames.
