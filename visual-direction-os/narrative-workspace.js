@@ -12,6 +12,29 @@
     ['04', 'Sequence'],
     ['05', 'Apply']
   ];
+  const READING_FIELDS = [
+    ['narrativeProblem', 'Narrative Problem'],
+    ['coreConflict', 'Core Conflict'],
+    ['startingState', 'Starting State'],
+    ['endingState', 'Ending State'],
+    ['turningPoint', 'Turning Point'],
+    ['agencyTransition', 'Agency Transition']
+  ];
+  const SOURCE_LABELS = {
+    explicit: 'EXPLICIT',
+    inferred: 'INFERRED',
+    director_intent: 'DIRECTOR INTENT'
+  };
+
+  const escapeHtml = value => String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+
+  const displayValue = field => Array.isArray(field?.value) ? field.value.map(item => String(item).toUpperCase()).join(' → ') : String(field?.value ?? '');
+  const groundingLabel = field => field?.directorEdited ? 'DIRECTOR EDIT' : (SOURCE_LABELS[field?.sourceType] || 'INFERRED');
 
   function initNarrativeWorkspace(rootNode, options = {}) {
     if (!rootNode) throw new Error('Narrative workspace root is required.');
@@ -59,7 +82,7 @@
               <span class="narrative-counter" data-narrative-counter>0 / 2000</span>
               <button class="narrative-primary" type="submit" ${!demoMode && !configuredBase ? 'disabled' : ''}>Start interpretation</button>
             </div>
-            <div class="narrative-live" data-narrative-live aria-live="polite">${demoMode ? 'Demo fixture mode. Your input stays local until later AI stages are connected.' : configuredBase ? 'Narrative AI service configured.' : 'AI service not configured. Configure the Narrative API base or use explicit demo mode for UI review.'}</div>
+            <div class="narrative-live" data-narrative-live aria-live="polite">${demoMode ? 'Demo fixture mode. Results remain proposals until Apply.' : configuredBase ? 'Narrative AI service configured.' : 'AI service not configured. Configure the Narrative API base or use explicit demo mode for UI review.'}</div>
           </form>
           <aside class="narrative-aside" aria-label="Narrative Input principles">
             <div class="narrative-aside-block"><span>01 / Interpret</span><strong>Multiple readings, not one truth.</strong><p>系统会提出 2–3 个候选 Narrative Reading，而不是把一个模型判断伪装成唯一答案。</p></div>
@@ -67,6 +90,7 @@
             <div class="narrative-aside-block"><span>03 / Apply boundary</span><strong>Proposal first. Mutation later.</strong><p>生成结果先进入 Preview。只有明确 Apply 才会触碰 canonical Scene State。</p></div>
           </aside>
         </div>
+        <section class="narrative-output" data-narrative-output aria-live="polite"></section>
       </div>`;
 
     const form = rootNode.querySelector('[data-narrative-entry]');
@@ -74,15 +98,174 @@
     const intentInput = rootNode.querySelector('#narrative-intent');
     const counter = rootNode.querySelector('[data-narrative-counter]');
     const live = rootNode.querySelector('[data-narrative-live]');
+    const output = rootNode.querySelector('[data-narrative-output]');
+    const submitButton = form.querySelector('button[type="submit"]');
+
+    const setStage = index => {
+      rootNode.querySelectorAll('[data-narrative-stage]').forEach(node => {
+        if (Number(node.dataset.narrativeStage) === index) node.setAttribute('aria-current', 'step');
+        else node.removeAttribute('aria-current');
+      });
+    };
+
+    const setBusy = (busy, message) => {
+      submitButton.disabled = busy || (!demoMode && !configuredBase);
+      if (message) live.textContent = message;
+    };
 
     const syncDraft = () => {
       if (destroyed) return;
       counter.textContent = `${sceneInput.value.length} / 2000`;
       draft.setInput(sceneInput.value, intentInput.value);
     };
+
+    const failStage = (stageName, token, error) => {
+      draft.failRequest(stageName, token, { code: error?.code || 'UNKNOWN', message: error?.message || 'Narrative request failed.' });
+      setBusy(false, error?.message || 'Narrative request failed.');
+    };
+
+    const renderReadingEditor = () => {
+      const state = draft.getState();
+      const reading = state.selectedReading;
+      if (!reading) return;
+      setStage(2);
+      output.innerHTML = `
+        <div class="narrative-section-head"><p class="eyebrow">02 / Director edit</p><h3>Confirm the reading before visual translation.</h3><p>${escapeHtml(reading.title)} · Edit any field where the proposed interpretation is not yours.</p></div>
+        <div class="narrative-reading-editor" data-reading-editor>
+          ${READING_FIELDS.map(([key, label]) => {
+            const field = reading[key];
+            return `<div class="narrative-grounded-field" data-field="${key}">
+              <div class="narrative-grounded-head"><label for="reading-${key}">${label}</label><span data-grounding-badge>${groundingLabel(field)}</span></div>
+              <textarea id="reading-${key}" data-reading-field="${key}" rows="${key === 'agencyTransition' ? 2 : 3}">${escapeHtml(displayValue(field))}</textarea>
+              <p data-field-basis>${escapeHtml(field?.directorEdited ? field.directorEditBasis : field?.basis)}</p>
+            </div>`;
+          }).join('')}
+          <div class="narrative-actions"><button type="button" class="narrative-primary" data-confirm-reading>Confirm reading</button></div>
+        </div>`;
+
+      output.querySelectorAll('[data-reading-field]').forEach(textarea => {
+        textarea.addEventListener('input', event => {
+          const key = event.currentTarget.dataset.readingField;
+          draft.editSelectedReadingField(key, event.currentTarget.value);
+          const field = draft.getState().selectedReading[key];
+          const container = event.currentTarget.closest('[data-field]');
+          container.querySelector('[data-grounding-badge]').textContent = groundingLabel(field);
+          container.querySelector('[data-field-basis]').textContent = field.directorEditBasis || field.basis;
+        });
+      });
+
+      output.querySelector('[data-confirm-reading]').addEventListener('click', async () => {
+        draft.confirmReading();
+        setStage(3);
+        output.innerHTML = '<div class="narrative-loading">Building visual direction strategies…</div>';
+        const token = draft.beginRequest('strategy');
+        try {
+          const current = draft.getState();
+          const result = await api.strategy({
+            narrative: current.input,
+            directorIntent: current.directorIntent,
+            reading: current.confirmedReading
+          });
+          if (!draft.acceptResponse('strategy', token, result)) return;
+          renderStrategies();
+        } catch (error) {
+          failStage('strategy', token, error);
+          output.innerHTML = `<div class="narrative-error">${escapeHtml(error?.message || 'Strategy generation failed.')}</div>`;
+        }
+      });
+    };
+
+    const renderReadings = () => {
+      const state = draft.getState();
+      setStage(1);
+      output.innerHTML = `
+        <div class="narrative-section-head"><p class="eyebrow">01 / Interpretation</p><h3>Choose the reading you want to direct.</h3><p>Narrative signal · ${escapeHtml(String(state.signal || '').toUpperCase())}. These are candidate interpretations, not a single hidden truth.</p></div>
+        <div class="narrative-reading-grid">
+          ${state.readings.map(reading => `<button type="button" class="narrative-reading-card" data-reading-card data-reading-id="${escapeHtml(reading.id)}">
+            <span>${escapeHtml(String(reading.confidence).toUpperCase())} CONFIDENCE</span>
+            <strong>${escapeHtml(reading.title)}</strong>
+            <p>${escapeHtml(reading.narrativeProblem.value)}</p>
+            <small>${groundingLabel(reading.narrativeProblem)} · ${escapeHtml(reading.narrativeProblem.basis)}</small>
+          </button>`).join('')}
+        </div>`;
+      output.querySelectorAll('[data-reading-card]').forEach(card => {
+        card.addEventListener('click', () => {
+          draft.selectReading(card.dataset.readingId);
+          renderReadingEditor();
+        });
+      });
+    };
+
+    const renderStrategies = () => {
+      const state = draft.getState();
+      setStage(3);
+      output.innerHTML = `
+        <div class="narrative-section-head"><p class="eyebrow">03 / Visual strategy</p><h3>Choose what leads the image.</h3><p>Each strategy shares the confirmed narrative mechanism but assigns different variable ownership.</p></div>
+        <div class="narrative-strategy-grid">
+          ${state.strategies.map(strategy => `<button type="button" class="narrative-strategy-card" data-strategy-card data-strategy-id="${escapeHtml(strategy.id)}" aria-pressed="false">
+            <span>PRIMARY · ${escapeHtml(strategy.primaryVariable.toUpperCase())}</span>
+            <strong>${escapeHtml(strategy.title)}</strong>
+            <p>${escapeHtml(strategy.mechanism)}</p>
+            <small>SUPPORT · ${escapeHtml(strategy.supportingVariables.join(' / ').toUpperCase())}</small>
+            <small>RESTRAIN · ${escapeHtml(strategy.restrainedVariables.join(' / ').toUpperCase() || '—')}</small>
+          </button>`).join('')}
+        </div>
+        <div class="narrative-actions"><button type="button" class="narrative-primary" data-select-strategy disabled>Select strategy</button></div>`;
+      const selectButton = output.querySelector('[data-select-strategy]');
+      output.querySelectorAll('[data-strategy-card]').forEach(card => {
+        card.addEventListener('click', () => {
+          draft.selectStrategy(card.dataset.strategyId);
+          output.querySelectorAll('[data-strategy-card]').forEach(item => item.setAttribute('aria-pressed', String(item === card)));
+          selectButton.disabled = false;
+        });
+      });
+      selectButton.addEventListener('click', async () => {
+        const selected = draft.getState().selectedStrategy;
+        if (!selected) return;
+        setStage(4);
+        output.innerHTML = '<div class="narrative-loading">Building five-beat sequence proposal…</div>';
+        const token = draft.beginRequest('sequence');
+        try {
+          const current = draft.getState();
+          const result = await api.sequence({
+            narrative: current.input,
+            directorIntent: current.directorIntent,
+            reading: current.confirmedReading,
+            strategy: current.selectedStrategy
+          });
+          if (!draft.acceptResponse('sequence', token, result)) return;
+          renderSequence();
+        } catch (error) {
+          failStage('sequence', token, error);
+          output.innerHTML = `<div class="narrative-error">${escapeHtml(error?.message || 'Sequence generation failed.')}</div>`;
+        }
+      });
+    };
+
+    const renderSequence = () => {
+      const state = draft.getState();
+      setStage(4);
+      const beats = state.sequenceProposal?.beats || [];
+      output.innerHTML = `
+        <div class="narrative-section-head"><p class="eyebrow">04 / Proposal preview</p><h3>Sequence before state mutation.</h3><p>The proposal remains isolated from canonical Scene State until an explicit Apply action.</p></div>
+        <div class="narrative-sequence-grid">
+          ${beats.map((beat, index) => `<article class="narrative-sequence-beat" data-sequence-proposal-beat data-beat-id="${escapeHtml(beat.id)}">
+            <div class="narrative-beat-index">${String(index + 1).padStart(2, '0')}</div>
+            <div class="narrative-beat-copy">
+              <div class="narrative-beat-head"><strong data-beat-label>${escapeHtml(beat.label)}</strong><span>AGENCY · ${escapeHtml(beat.agency.toUpperCase())}</span></div>
+              <p>${escapeHtml(beat.narrativeBeat)}</p>
+              <div class="narrative-beat-variables"><b>PRIMARY · ${escapeHtml(beat.primaryVariable.toUpperCase())}</b><span>SUPPORT · ${escapeHtml(beat.supportingVariables.join(' / ').toUpperCase() || '—')}</span><span>RESTRAIN · ${escapeHtml(beat.restrainedVariables.join(' / ').toUpperCase() || '—')}</span></div>
+              <div class="narrative-events">${beat.visualEvents.length ? beat.visualEvents.map(event => `<span>${escapeHtml(typeof event === 'string' ? event : event.type)}</span>`).join('') : '<span>NO EVENT</span>'}</div>
+            </div>
+          </article>`).join('')}
+        </div>
+        <div class="narrative-apply-preview"><span>05 / APPLY</span><strong>Not applied yet.</strong><p>DIRECT and Sequence Director remain unchanged in Preview mode.</p></div>`;
+      live.textContent = 'Sequence proposal ready. Canonical Scene State is still unchanged.';
+    };
+
     sceneInput.addEventListener('input', syncDraft);
     intentInput.addEventListener('input', syncDraft);
-    form.addEventListener('submit', event => {
+    form.addEventListener('submit', async event => {
       event.preventDefault();
       syncDraft();
       if (!sceneInput.value.trim()) {
@@ -90,7 +273,24 @@
         sceneInput.focus();
         return;
       }
-      live.textContent = 'Interpretation stage is ready. Candidate Reading rendering follows in the next implementation slice.';
+      output.innerHTML = '<div class="narrative-loading">Interpreting narrative problem, conflict and agency…</div>';
+      setBusy(true, 'Interpreting the scene…');
+      setStage(1);
+      const token = draft.beginRequest('interpret');
+      try {
+        const current = draft.getState();
+        const result = await api.interpret({
+          narrative: current.input,
+          directorIntent: current.directorIntent,
+          clarificationAnswer: current.clarificationAnswer
+        });
+        if (!draft.acceptResponse('interpret', token, result)) return;
+        renderReadings();
+        setBusy(false, `${result.readings.length} candidate Narrative Readings ready.`);
+      } catch (error) {
+        failStage('interpret', token, error);
+        output.innerHTML = `<div class="narrative-error">${escapeHtml(error?.message || 'Interpretation failed.')}</div>`;
+      }
     });
 
     return {
