@@ -166,6 +166,47 @@ test('desktop active OWNERSHIP label stays centered directly beneath its event n
   expect(geometry.insideRail).toBe(true);
 });
 
+test('sequence controller replaces beats and events without mutating canonical scene state', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto(url);
+  await page.locator('#sequence-root .sequence-beat-band').waitFor();
+
+  const result = await page.evaluate(() => {
+    const controller = window.VDOSSequenceDirectorController;
+    const beforeScene = window.VDOSScene.getSceneState();
+    const current = controller.getSequence();
+    const next = JSON.parse(JSON.stringify(current));
+    const rupture = next.beats.find(beat => beat.id === 'rupture');
+    rupture.narrativePurpose = 'Narrative replacement contract.';
+    rupture.primaryVariable = 'camera';
+    next.events = next.events.filter(event => event.beatId !== 'rupture');
+    next.events.push({
+      id: 'rupture-proposal-0',
+      type: 'CAMERA BREAK',
+      at: .46,
+      beatId: 'rupture',
+      cause: 'Test replacement.',
+      primaryChange: 'Camera changes.',
+      supportingChanges: [],
+      heldBack: [],
+      targetPatch: { variables: { camera: { perspective: 'mixed' } } }
+    });
+    controller.setSequence(next, { playhead: .5 });
+    return {
+      sequence: controller.getSequence(),
+      sceneBefore: beforeScene,
+      sceneAfter: window.VDOSScene.getSceneState()
+    };
+  });
+
+  expect(result.sequence.beats.find(beat => beat.id === 'rupture').narrativePurpose).toBe('Narrative replacement contract.');
+  expect(result.sequence.events.filter(event => event.beatId === 'rupture')).toHaveLength(1);
+  expect(result.sceneAfter).toEqual(result.sceneBefore);
+  await expect(page.locator('[data-sequence-beat="rupture"] small')).toHaveText('Narrative replacement contract.');
+  await expect(page.locator('[data-sequence-event="rupture-proposal-0"]')).toHaveCount(1);
+  await expect(page.locator('#sequence-beat')).toHaveText('RUPTURE');
+});
+
 test('reduced motion still advances sequence state while suppressing non-essential transitions', async ({ browser }) => {
   const context = await browser.newContext({ reducedMotion: 'reduce', viewport: { width: 390, height: 844 } });
   const page = await context.newPage();
