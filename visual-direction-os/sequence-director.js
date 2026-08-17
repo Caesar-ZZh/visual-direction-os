@@ -6,6 +6,7 @@
   'use strict';
 
   const TRACKS = ['color', 'space', 'camera', 'line', 'texture', 'agency'];
+  const PLAYBACK_DURATION = 12000;
   const clone = value => JSON.parse(JSON.stringify(value));
 
   const model = () => {
@@ -35,16 +36,26 @@
   }
 
   function initSequenceDirector(rootNode, scene) {
-    if (!rootNode || !scene) return { destroy() {} };
+    if (!rootNode || !scene) return { play() {}, pause() {}, isPlaying: () => false, destroy() {} };
     const sequenceModel = model();
     const sequence = sequenceModel.DEFAULT_SEQUENCE;
+    const doc = rootNode.ownerDocument;
     let selectedEventId = null;
+    let playing = false;
+    let frameId = 0;
+    let lastTimestamp = null;
 
     rootNode.innerHTML = `
       <div class="sequence-director-toolbar">
         <div class="sequence-playhead-copy"><span>SEQUENCE PLAYHEAD</span><output id="sequence-beat">SETUP</output></div>
-        <label class="sr-only" for="sequence-playhead">Sequence playhead</label>
-        <input id="sequence-playhead" type="range" min="0" max="100" value="0" step="1" aria-label="Sequence playhead">
+        <div class="sequence-control-row">
+          <label class="sr-only" for="sequence-playhead">Sequence playhead</label>
+          <input id="sequence-playhead" type="range" min="0" max="100" value="0" step="1" aria-label="Sequence playhead">
+          <div class="sequence-transport" aria-label="Sequence playback controls">
+            <button type="button" data-sequence-action="play" aria-pressed="false">Play</button>
+            <button type="button" data-sequence-action="pause" disabled>Pause</button>
+          </div>
+        </div>
       </div>
 
       <section class="sequence-tension" aria-label="Narrative tension curve" data-tension="low">
@@ -89,6 +100,15 @@
 
     const input = rootNode.querySelector('#sequence-playhead');
     const beatOutput = rootNode.querySelector('#sequence-beat');
+    const playButton = rootNode.querySelector('[data-sequence-action="play"]');
+    const pauseButton = rootNode.querySelector('[data-sequence-action="pause"]');
+
+    function setPlaybackUI() {
+      playButton.setAttribute('aria-pressed', String(playing));
+      playButton.disabled = playing;
+      pauseButton.disabled = !playing;
+      rootNode.dataset.playing = String(playing);
+    }
 
     function selectedEventFor(view) {
       if (selectedEventId) {
@@ -157,7 +177,53 @@
       }, source);
     }
 
-    input.addEventListener('input', () => publish(Number(input.value) / 100));
+    function pause() {
+      if (frameId) cancelAnimationFrame(frameId);
+      frameId = 0;
+      lastTimestamp = null;
+      playing = false;
+      setPlaybackUI();
+    }
+
+    function playbackFrame(timestamp) {
+      if (!playing) return;
+      if (lastTimestamp == null) {
+        lastTimestamp = timestamp;
+        frameId = requestAnimationFrame(playbackFrame);
+        return;
+      }
+      const elapsed = Math.max(0, timestamp - lastTimestamp);
+      lastTimestamp = timestamp;
+      const current = Number(scene.getSceneState().playhead) || 0;
+      const next = sequenceModel.clamp01(current + elapsed / PLAYBACK_DURATION);
+      publish(next, 'sequence-director:playback');
+      if (next >= 1) {
+        pause();
+        return;
+      }
+      frameId = requestAnimationFrame(playbackFrame);
+    }
+
+    function play() {
+      if (playing) return;
+      const current = Number(scene.getSceneState().playhead) || 0;
+      if (current >= 1) return;
+      playing = true;
+      lastTimestamp = null;
+      setPlaybackUI();
+      frameId = requestAnimationFrame(playbackFrame);
+    }
+
+    function isPlaying() {
+      return playing;
+    }
+
+    input.addEventListener('input', () => {
+      pause();
+      publish(Number(input.value) / 100);
+    });
+    playButton.addEventListener('click', play);
+    pauseButton.addEventListener('click', pause);
 
     rootNode.querySelectorAll('[data-sequence-event]').forEach(button => button.addEventListener('click', () => {
       selectedEventId = button.dataset.sequenceEvent;
@@ -165,17 +231,35 @@
       renderView(current);
     }));
 
+    const manualControlSelector = '[data-variable-family][data-variable-key][data-variable-value],[data-owner-choice],[data-case]';
+    const pauseForManualClick = event => {
+      if (!playing || !event.target.closest?.(manualControlSelector)) return;
+      pause();
+    };
+    const pauseForManualInput = event => {
+      if (playing && event.target?.matches?.('#case-playhead')) pause();
+    };
+    doc.addEventListener('click', pauseForManualClick, true);
+    doc.addEventListener('input', pauseForManualInput, true);
+
     const unsubscribe = scene.subscribeSceneState((state, source) => {
-      if (source === 'sequence-director:playhead') return;
+      if (source === 'sequence-director:playhead' || source === 'sequence-director:playback') return;
       const view = sequenceModel.deriveSequenceState(sequence, state.playhead);
       renderView(view);
     });
 
     renderView(sequenceModel.deriveSequenceState(sequence, scene.getSceneState().playhead));
+    setPlaybackUI();
 
     return {
+      play,
+      pause,
+      isPlaying,
       destroy() {
+        pause();
         unsubscribe();
+        doc.removeEventListener('click', pauseForManualClick, true);
+        doc.removeEventListener('input', pauseForManualInput, true);
       }
     };
   }
