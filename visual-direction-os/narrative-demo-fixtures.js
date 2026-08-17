@@ -47,3 +47,20 @@
   })) } };
   return { interpret, strategy, sequence };
 });
+
+(() => {
+  if (typeof document === 'undefined') return;
+  const load = (src, globalName) => {
+    if (window[globalName]) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = src;
+      script.onload = () => window[globalName] ? resolve() : reject(new Error(`${globalName} unavailable after ${src}`));
+      script.onerror = () => reject(new Error(`Failed to load ${src}`));
+      document.head.appendChild(script);
+    });
+  };
+  load('narrative-apply.js?v=20260817-1928', 'VDOSNarrativeApply')
+    .then(() => load('narrative-apply-ui.js?v=20260817-1928', 'VDOSNarrativeApplyUI'))
+    .catch(error => console.error(error));
+})();
