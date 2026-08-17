@@ -23,6 +23,23 @@
     doc.querySelectorAll('.is-route-target').forEach(node => node.classList.remove('is-route-target'));
   }
 
+  function scrollTargetIntoViewSync(doc, target) {
+    const win = doc?.defaultView;
+    const root = doc?.documentElement;
+    if (!win || !root || !target?.getBoundingClientRect) return;
+
+    const previousInlineBehavior = root.style.scrollBehavior;
+    root.style.scrollBehavior = 'auto';
+    win.getComputedStyle(root).scrollBehavior;
+
+    const rect = target.getBoundingClientRect();
+    const visibleHeight = Math.min(rect.height, win.innerHeight);
+    const centeredTop = win.scrollY + rect.top - Math.max(0, (win.innerHeight - visibleHeight) / 2);
+    win.scrollTo(win.scrollX, Math.max(0, centeredTop));
+
+    root.style.scrollBehavior = previousInlineBehavior;
+  }
+
   function goToControl(route, options = {}) {
     const doc = options.doc || (typeof document !== 'undefined' ? document : null);
     const selector = selectorForRoute(route);
@@ -38,11 +55,11 @@
     if (typeof options.setMode === 'function') options.setMode('direct');
 
     const selected = controls.find(control => control.getAttribute('aria-pressed') === 'true') || controls[0];
-    if (group?.scrollIntoView) group.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'auto' });
+    scrollTargetIntoViewSync(doc, group || selected);
     if (selected?.focus) selected.focus({ preventScroll: true });
 
     return { found: true, target: group || selected, control: selected };
   }
 
-  return { selectorForRoute, learnHref, goToControl, clearRouteTargets };
+  return { selectorForRoute, learnHref, goToControl, clearRouteTargets, scrollTargetIntoViewSync };
 });
