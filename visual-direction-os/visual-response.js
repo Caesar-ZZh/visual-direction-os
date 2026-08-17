@@ -154,13 +154,21 @@
       const active = doc?.activeElement;
       if (!pointerInside && !(active && rail.contains(active))) rail.removeAttribute('data-expanded');
     };
-    const onPointerEnter = () => {
-      pointerInside = true;
+    const scheduleExpand = () => {
+      if (rail.getAttribute('data-expanded') === 'true' || revealTimer !== null) return;
       clearRevealTimer();
       revealTimer = global.setTimeout?.(() => {
         revealTimer = null;
         if (pointerInside) expand();
       }, 100) ?? null;
+    };
+    const onPointerEnter = () => {
+      pointerInside = true;
+      scheduleExpand();
+    };
+    const onPointerMove = () => {
+      pointerInside = true;
+      scheduleExpand();
     };
     const onPointerLeave = () => {
       pointerInside = false;
@@ -172,6 +180,7 @@
 
     rail.removeAttribute('data-expanded');
     rail.addEventListener('pointerenter', onPointerEnter);
+    rail.addEventListener('pointermove', onPointerMove);
     rail.addEventListener('pointerleave', onPointerLeave);
     rail.addEventListener('focusin', onFocusIn);
     rail.addEventListener('focusout', onFocusOut);
@@ -179,6 +188,7 @@
     return () => {
       clearRevealTimer();
       rail.removeEventListener('pointerenter', onPointerEnter);
+      rail.removeEventListener('pointermove', onPointerMove);
       rail.removeEventListener('pointerleave', onPointerLeave);
       rail.removeEventListener('focusin', onFocusIn);
       rail.removeEventListener('focusout', onFocusOut);
