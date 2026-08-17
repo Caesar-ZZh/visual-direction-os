@@ -29,13 +29,8 @@
     if (options.scroll === false) return;
     const target = modeTarget(safe);
     if (!target) return;
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (window.innerWidth <= 900 || reduced) {
-      const top = target.getBoundingClientRect().top + window.scrollY;
-      window.scrollTo({ top, left: 0, behavior: 'auto' });
-    } else {
-      target.scrollIntoView({ block: 'start', behavior: 'smooth' });
-    }
+    const top = target.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo({ top, left: 0, behavior: 'auto' });
   }
 
   $$('[data-mode]').forEach((control) => control.addEventListener('click', (event) => {
