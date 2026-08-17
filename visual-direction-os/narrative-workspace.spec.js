@@ -52,6 +52,33 @@ test('Narrative mode exposes editorial story input instead of chat', async ({ pa
   await expect(page.locator('[data-narrative-stage]')).toHaveCount(5);
 });
 
+test('desktop primary mode targets keep their vertical centers when the rail expands', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto(url);
+  await page.mouse.move(1200, 500);
+  await page.waitForTimeout(260);
+  const positions = await page.evaluate(async () => {
+    const rail = document.querySelector('.v2-rail');
+    const read = () => [...rail.querySelectorAll('.mode-btn')].map(button => {
+      const rect = button.getBoundingClientRect();
+      return { mode: button.dataset.mode, left: rect.left, top: rect.top, width: rect.width, height: rect.height, centerX: rect.left + rect.width / 2, centerY: rect.top + rect.height / 2 };
+    });
+    rail.dataset.expanded = 'false';
+    await new Promise(resolve => setTimeout(resolve, 280));
+    const collapsed = read();
+    rail.dataset.expanded = 'true';
+    await new Promise(resolve => setTimeout(resolve, 320));
+    const expanded = read();
+    return { collapsed, expanded };
+  });
+  console.log('RAIL_TARGET_STABILITY', JSON.stringify(positions));
+  positions.collapsed.forEach((before, index) => {
+    const after = positions.expanded[index];
+    expect(after.mode).toBe(before.mode);
+    expect(Math.abs(after.centerY - before.centerY)).toBeLessThanOrEqual(4);
+  });
+});
+
 test('mobile exposes four primary modes without horizontal overflow', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(url);
