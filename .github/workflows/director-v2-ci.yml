@@ -24,6 +24,7 @@ jobs:
         run: |
           node visual-direction-os/director-v2-models.test.js
           node visual-direction-os/sequence-director-model.test.js
+          node visual-direction-os/diagnostic-routing.test.js
           node visual-direction-os/visual-response.test.js
           node visual-direction-os/visual-qa.test.js
           node visual-direction-os/site-publish.test.js
