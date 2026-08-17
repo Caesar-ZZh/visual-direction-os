@@ -490,3 +490,19 @@ A claim moves from `PROVISIONAL` to stable methodology only after:
 3. explicit scope definition;
 4. production implications survive constraint reconstruction;
 5. generative tests show the mechanism matters beyond palette/texture imitation.
+
+## BATCH-036 — Earth-65 relationship reactivation / web-carried agency
+
+| ID | Evidence claim | Status / scope |
+|---|---|---|
+| `EV-E65-086` | Within a stable Earth-65 bedroom, broad expressive color migrates from cool violet/blue solitary hold toward warm salmon/red relationship/action activation while location and identity anchors remain recognizable. | VALIDATES + EXTENDS EV-E65-020 / EV-E65-023; later Earth-65 state |
+| `EV-E65-087` | Gwen’s window alignment plus one thick white web line makes agency legible across a simplified painterly room; threshold alignment itself is not portal-travel evidence. | NEW DIRECT AGENCY SUPPORT; threshold/action scope |
+| `EV-AGENCY-005` | George’s compact green-blue web-wrapped object becomes a salient shared relationship/agency carrier without a visible completed hand-to-hand transfer or directly established system identity/function. | NEW DIRECT OBJECT-AGENCY SUPPORT; transfer guard |
+
+BATCH-036 adds a strict state decomposition for object-mediated agency: **object introduction → possession/presentation → shared attention → [transfer only when directly evidenced]**. It also strengthens Earth-65 color as a state-responsive relational field rather than a reusable palette recipe.
+
+### B036 production / QA addendum
+
+The production system must additionally support `relationship_color_field_reactivation`, `earth65_color_state_migration`, `stable_room_under_color_reauthoring`, `threshold_aligned_agency`, `window_boundary_as_action_axis`, `minimal_web_action_carrier`, `high_contrast_relation_line`, `object_mediated_agency_affordance`, `shared_attention_object`, `possession_vs_transfer_state`, `transfer_evidence_requirement` and `device_identity_guard`.
+
+Reject: fixed-palette Gwen stylization; window=portal inference; global FX inflation when one relation/action line already carries agency; naming the compact object from scene memory; and possession/presentation=completed control transfer.
