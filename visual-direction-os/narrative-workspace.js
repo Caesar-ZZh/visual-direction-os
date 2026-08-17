@@ -29,6 +29,7 @@
     const configuredBase = options.baseUrl ?? document.querySelector('meta[name="vdos-narrative-api-base"]')?.content?.trim() ?? '';
     const draft = options.draft || stateFactory.createNarrativeState();
     const api = options.api || apiFactory.createNarrativeApiClient({ baseUrl: configuredBase, demoMode, fixtures });
+    const controllers = { interpret:null, strategy:null, sequence:null };
     let destroyed = false;
 
     rootNode.innerHTML = `
@@ -68,27 +69,83 @@
 
     const setStage = index => rootNode.querySelectorAll('[data-narrative-stage]').forEach(node => Number(node.dataset.narrativeStage) === index ? node.setAttribute('aria-current','step') : node.removeAttribute('aria-current'));
     const setBusy = (busy,message) => { submitButton.disabled = busy || (!demoMode && !configuredBase); if (message) live.textContent = message; };
-    const syncDraft = () => { if (destroyed) return; counter.textContent = `${sceneInput.value.length} / 2000`; draft.setInput(sceneInput.value,intentInput.value); };
-    const failStage = (stage,token,error) => {
-      draft.failRequest(stage,token,{ code:error?.code || 'UNKNOWN', message:error?.message || 'Narrative request failed.' });
+
+    function abortStage(stage) {
+      const controller = controllers[stage];
+      if (!controller) return;
+      controller.abort();
+      controllers[stage] = null;
+    }
+
+    function abortAll() {
+      Object.keys(controllers).forEach(abortStage);
+    }
+
+    function beginRequest(stage) {
+      abortStage(stage);
+      const controller = new AbortController();
+      controllers[stage] = controller;
+      return { controller, token:draft.beginRequest(stage) };
+    }
+
+    function finishRequest(stage,controller) {
+      if (controllers[stage] === controller) controllers[stage] = null;
+    }
+
+    function syncDraft() {
+      if (destroyed) return;
+      counter.textContent = `${sceneInput.value.length} / 2000`;
+      draft.setInput(sceneInput.value,intentInput.value);
+    }
+
+    function handleInputEdit() {
+      abortAll();
+      syncDraft();
+      output.replaceChildren();
+      setStage(1);
+      setBusy(false,'Input changed. Start a new interpretation when ready.');
+    }
+
+    function renderStageError(stage,error,retry) {
+      const label = stage === 'interpret' ? 'Interpret' : stage === 'strategy' ? 'Strategy' : 'Sequence';
+      output.innerHTML = `<div class="narrative-stage-error" data-narrative-error role="alert"><span>${escapeHtml(label.toUpperCase())} · RECOVERABLE ERROR</span><strong>${escapeHtml(error?.message || `${label} failed.`)}</strong><p>Your confirmed upstream work is preserved. Retry only this stage.</p><button type="button" class="narrative-primary" data-retry-stage="${stage}">Retry ${label}</button></div>`;
+      output.querySelector('[data-retry-stage]')?.addEventListener('click',retry);
+    }
+
+    function failStage(stage,token,controller,error,retry) {
+      finishRequest(stage,controller);
+      if (controller.signal.aborted || error?.name === 'AbortError') {
+        setBusy(false,'Request cancelled. Your latest input is ready.');
+        return false;
+      }
+      const accepted = draft.failRequest(stage,token,{ code:error?.code || 'UNKNOWN', message:error?.message || 'Narrative request failed.' });
+      if (!accepted) {
+        setBusy(false,'A stale response was ignored. Your latest input remains authoritative.');
+        return false;
+      }
       setBusy(false,error?.message || 'Narrative request failed.');
-    };
+      renderStageError(stage,error,retry);
+      return true;
+    }
 
     async function requestInterpret(message = 'Interpreting the scene…') {
       output.innerHTML = '<div class="narrative-loading">Interpreting narrative problem, conflict and agency…</div>';
       setBusy(true,message);
       setStage(1);
-      const token = draft.beginRequest('interpret');
+      const { token,controller } = beginRequest('interpret');
       try {
         const current = draft.getState();
-        const result = await api.interpret({ narrative:current.input, directorIntent:current.directorIntent, clarificationAnswer:current.clarificationAnswer });
-        if (!draft.acceptResponse('interpret',token,result)) return false;
+        const result = await api.interpret({ narrative:current.input, directorIntent:current.directorIntent, clarificationAnswer:current.clarificationAnswer },controller.signal);
+        finishRequest('interpret',controller);
+        if (!draft.acceptResponse('interpret',token,result)) {
+          setBusy(false,'A stale response was ignored. Your latest input remains authoritative.');
+          return false;
+        }
         renderReadings();
         setBusy(false,result.clarification ? 'One clarification can materially sharpen the interpretation.' : `${result.readings.length} candidate Narrative Readings ready.`);
         return true;
       } catch (error) {
-        failStage('interpret',token,error);
-        output.innerHTML = `<div class="narrative-error">${escapeHtml(error?.message || 'Interpretation failed.')}</div>`;
+        failStage('interpret',token,controller,error,() => requestInterpret('Retrying Interpret…'));
         return false;
       }
     }
@@ -115,21 +172,26 @@
         container.querySelector('[data-grounding-badge]').textContent = groundingLabel(field);
         container.querySelector('[data-field-basis]').textContent = field.directorEditBasis || field.basis;
       }));
-      output.querySelector('[data-confirm-reading]').addEventListener('click',async () => {
-        draft.confirmReading();
-        setStage(3);
-        output.innerHTML = '<div class="narrative-loading">Building visual direction strategies…</div>';
-        const token = draft.beginRequest('strategy');
-        try {
-          const current = draft.getState();
-          const result = await api.strategy({ narrative:current.input, directorIntent:current.directorIntent, reading:current.confirmedReading });
-          if (!draft.acceptResponse('strategy',token,result)) return;
-          renderStrategies();
-        } catch (error) {
-          failStage('strategy',token,error);
-          output.innerHTML = `<div class="narrative-error">${escapeHtml(error?.message || 'Strategy generation failed.')}</div>`;
+      output.querySelector('[data-confirm-reading]').addEventListener('click',requestStrategy);
+    }
+
+    async function requestStrategy() {
+      if (!draft.getState().confirmedReading) draft.confirmReading();
+      setStage(3);
+      output.innerHTML = '<div class="narrative-loading">Building visual direction strategies…</div>';
+      const { token,controller } = beginRequest('strategy');
+      try {
+        const current = draft.getState();
+        const result = await api.strategy({ narrative:current.input, directorIntent:current.directorIntent, reading:current.confirmedReading },controller.signal);
+        finishRequest('strategy',controller);
+        if (!draft.acceptResponse('strategy',token,result)) {
+          setBusy(false,'A stale response was ignored.');
+          return;
         }
-      });
+        renderStrategies();
+      } catch (error) {
+        failStage('strategy',token,controller,error,requestStrategy);
+      }
     }
 
     function renderReadings() {
@@ -162,21 +224,26 @@
         output.querySelectorAll('[data-strategy-card]').forEach(item => item.setAttribute('aria-pressed',String(item===card)));
         selectButton.disabled = false;
       }));
-      selectButton.addEventListener('click',async () => {
-        if (!draft.getState().selectedStrategy) return;
-        setStage(4);
-        output.innerHTML = '<div class="narrative-loading">Building five-beat sequence proposal…</div>';
-        const token = draft.beginRequest('sequence');
-        try {
-          const current = draft.getState();
-          const result = await api.sequence({ narrative:current.input, directorIntent:current.directorIntent, reading:current.confirmedReading, strategy:current.selectedStrategy });
-          if (!draft.acceptResponse('sequence',token,result)) return;
-          renderSequence();
-        } catch (error) {
-          failStage('sequence',token,error);
-          output.innerHTML = `<div class="narrative-error">${escapeHtml(error?.message || 'Sequence generation failed.')}</div>`;
+      selectButton.addEventListener('click',requestSequence);
+    }
+
+    async function requestSequence() {
+      if (!draft.getState().selectedStrategy) return;
+      setStage(4);
+      output.innerHTML = '<div class="narrative-loading">Building five-beat sequence proposal…</div>';
+      const { token,controller } = beginRequest('sequence');
+      try {
+        const current = draft.getState();
+        const result = await api.sequence({ narrative:current.input, directorIntent:current.directorIntent, reading:current.confirmedReading, strategy:current.selectedStrategy },controller.signal);
+        finishRequest('sequence',controller);
+        if (!draft.acceptResponse('sequence',token,result)) {
+          setBusy(false,'A stale response was ignored.');
+          return;
         }
-      });
+        renderSequence();
+      } catch (error) {
+        failStage('sequence',token,controller,error,requestSequence);
+      }
     }
 
     function renderSequence() {
@@ -190,8 +257,8 @@
       live.textContent = 'Sequence proposal ready. Canonical Scene State is still unchanged.';
     }
 
-    sceneInput.addEventListener('input',syncDraft);
-    intentInput.addEventListener('input',syncDraft);
+    sceneInput.addEventListener('input',handleInputEdit);
+    intentInput.addEventListener('input',handleInputEdit);
     form.addEventListener('submit',async event => {
       event.preventDefault();
       syncDraft();
@@ -199,7 +266,12 @@
       await requestInterpret();
     });
 
-    return { api, scene, getDraftState:() => draft.getState(), destroy(){ destroyed=true; rootNode.replaceChildren(); } };
+    return {
+      api,
+      scene,
+      getDraftState:() => draft.getState(),
+      destroy(){ destroyed=true; abortAll(); rootNode.replaceChildren(); }
+    };
   }
 
   function autoInit() {
