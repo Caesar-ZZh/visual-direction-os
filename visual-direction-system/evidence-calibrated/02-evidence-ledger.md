@@ -506,3 +506,27 @@ BATCH-036 adds a strict state decomposition for object-mediated agency: **object
 The production system must additionally support `relationship_color_field_reactivation`, `earth65_color_state_migration`, `stable_room_under_color_reauthoring`, `threshold_aligned_agency`, `window_boundary_as_action_axis`, `minimal_web_action_carrier`, `high_contrast_relation_line`, `object_mediated_agency_affordance`, `shared_attention_object`, `possession_vs_transfer_state`, `transfer_evidence_requirement` and `device_identity_guard`.
 
 Reject: fixed-palette Gwen stylization; window=portal inference; global FX inflation when one relation/action line already carries agency; naming the compact object from scene memory; and possession/presentation=completed control transfer.
+
+## BATCH-037 — Earth-65 direct handoff / Hobie-signed destination carrier
+
+| ID | Evidence claim | Status / scope |
+|---|---|---|
+| `EV-AGENCY-006` | George-side possession/presentation progresses through visible shared hand/object contact into Gwen-only possession, directly supporting completed **physical possession transfer**. | RESOLVES B036 transfer guard; possession ≠ command/control execution |
+| `EV-HOBIE-005` | A yellow contingency note visibly signed `Hobie` carries Hobie-linked agency into Earth-65 while Hobie is absent; the portable collage/print carrier remains local rather than globally rewriting the host world. | NEW DIRECT CROSS-WORLD AUTHORSHIP / AGENCY SUPPORT; manufacture attribution remains bounded |
+| `EV-TRANS-016` | After transfer, Gwen holds an active device whose interface visibly reads `PROJECT: BOOTLEG` and `DESTINATION--1610`; this establishes a recipient-held explicit destination state without proving execution, departure, transit or arrival. | NEW DIRECT DESTINATION-AFFORDANCE SUPPORT / TRAVEL GUARD |
+
+BATCH-037 resolves the **physical possession** portion of B036's state machine:
+
+`object introduction → donor possession/presentation → shared-contact handoff → recipient-only possession`.
+
+It then adds a second separable carrier chain:
+
+`recipient possession → Hobie-signed contingency note → active destination interface → [command execution unresolved] → [portal/departure unresolved] → [transit unresolved] → [arrival unresolved]`.
+
+Physical possession is therefore no longer the open question. System permissions, command execution and travel remain independently gated.
+
+### B037 production / QA addendum
+
+The production system must additionally support `transfer_state_machine`, `donor_possession_state`, `shared_contact_handoff`, `recipient_only_possession`, `handoff_completion_evidence_requirement`, `possession_vs_control_guard`, `signed_contingency_carrier`, `offscreen_agency_via_object`, `portable_medium_owner_lock`, `hobie_linked_object_medium`, `note_to_interface_carrier_handoff`, `recipient_device_affordance`, `explicit_destination_1610_state`, `destination_not_execution_guard`, `travel_completion_evidence_requirement` and `device_manufacture_guard`.
+
+Reject: retroactively calling B036 presentation a completed transfer; treating the `Hobie` signature as proof he fabricated every hardware component; globalizing the portable collage object into a whole-room punk takeover; reading `DESTINATION--1610` as executed travel; or collapsing possession, control affordance, command execution and arrival into one state.
