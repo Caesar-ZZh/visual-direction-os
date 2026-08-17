@@ -59,6 +59,8 @@ test('desktop rail stays collapsed until hover and expands as an overlay without
 test('desktop rail remains a viewport-edge hover target after deep page scroll', async ({ page }) => {
   await page.setViewportSize({ width: 1680, height: 900 });
   await page.goto(url);
+  await page.mouse.move(1200, 500);
+  await page.waitForTimeout(180);
   await page.locator('#sequence-root').scrollIntoViewIfNeeded();
   await page.waitForTimeout(120);
 
