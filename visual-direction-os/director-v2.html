@@ -4,9 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="description" content="Visual Direction OS Director Workspace v2.1 staging shell">
+  <meta name="vdos-narrative-api-base" content="">
   <title>Visual Direction OS · Director Workspace v2.1</title>
   <link rel="stylesheet" href="director-v2.css?v=20260816-1951">
   <link rel="stylesheet" href="director-v2-tools.css?v=20260816-1951">
+  <link rel="stylesheet" href="narrative-workspace.css?v=20260817-1740">
 </head>
 <body>
   <a class="skip" href="#main">跳到主要内容</a>
@@ -17,13 +19,17 @@
         <p class="mode-label">Learn</p>
         <button class="mode-btn" type="button" data-mode="learn" aria-current="page"><strong>01</strong>Understand the grammar</button>
       </nav>
+      <nav class="mode-group" aria-label="NARRATIVE">
+        <p class="mode-label">Narrative</p>
+        <button class="mode-btn" type="button" data-mode="narrative"><strong>02</strong>Turn story into direction</button>
+      </nav>
       <nav class="mode-group" aria-label="DIRECT">
         <p class="mode-label">Direct</p>
-        <button class="mode-btn" type="button" data-mode="direct"><strong>02</strong>Make visual decisions</button>
+        <button class="mode-btn" type="button" data-mode="direct"><strong>03</strong>Make visual decisions</button>
       </nav>
       <nav class="mode-group" aria-label="DIAGNOSE">
         <p class="mode-label">Diagnose</p>
-        <button class="mode-btn" type="button" data-mode="diagnose"><strong>03</strong>Test coherence</button>
+        <button class="mode-btn" type="button" data-mode="diagnose"><strong>04</strong>Test coherence</button>
       </nav>
       <p class="rail-note">Narrative becomes visual behavior.<br>Decoration is not direction.</p>
     </aside>
@@ -97,6 +103,10 @@
         </div>
       </section>
 
+      <section class="workspace narrative-workspace" id="narrative-panel" aria-labelledby="narrative-title">
+        <div id="narrative-root"></div>
+      </section>
+
       <section class="workspace" id="direct-panel" aria-labelledby="workspace-title">
         <p class="eyebrow">Direct / Workspace</p>
         <h2 id="workspace-title">Direct the visual state.</h2>
@@ -159,6 +169,7 @@
 
   <nav class="mobile-modes" aria-label="Primary modes">
     <a href="#learn-panel" data-mode="learn" aria-current="page">Learn</a>
+    <a href="#narrative-panel" data-mode="narrative">Narrative</a>
     <a href="#direct-panel" data-mode="direct">Direct</a>
     <a href="#diagnose-panel" data-mode="diagnose">Diagnose</a>
   </nav>
@@ -169,6 +180,11 @@
   <script src="color-ownership.js?v=20260816-1951"></script>
   <script src="diagnostic.js?v=20260816-1951"></script>
   <script src="timeline-sync.js?v=20260816-1951"></script>
+  <script src="narrative-contracts.js?v=20260817-1740"></script>
+  <script src="narrative-state.js?v=20260817-1740"></script>
+  <script src="narrative-demo-fixtures.js?v=20260817-1740"></script>
+  <script src="narrative-api-client.js?v=20260817-1740"></script>
   <script src="director-v2-app.js?v=20260816-1951"></script>
+  <script src="narrative-workspace.js?v=20260817-1740"></script>
 </body>
 </html>
