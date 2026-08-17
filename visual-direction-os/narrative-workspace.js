@@ -13,51 +13,6 @@
     ['05', 'Apply']
   ];
 
-  function updatePrimaryModeUI(mode) {
-    document.querySelectorAll('[data-mode]').forEach(control => {
-      if (control.dataset.mode === mode) control.setAttribute('aria-current', 'page');
-      else control.removeAttribute('aria-current');
-    });
-  }
-
-  function installNarrativeModeOverride(scene) {
-    document.querySelectorAll('[data-mode="narrative"]').forEach(control => {
-      control.addEventListener('click', event => {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        if (control.tagName === 'A') history.replaceState(null, '', '#narrative-panel');
-        scene?.updateSceneState?.({ mode: 'narrative' }, 'narrative-mode');
-        updatePrimaryModeUI('narrative');
-        const panel = document.querySelector('#narrative-panel');
-        if (!panel) return;
-        const reduced = root.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-        if (root.innerWidth <= 900 || reduced) {
-          root.scrollTo({ top: panel.getBoundingClientRect().top + root.scrollY, left: 0, behavior: 'auto' });
-        } else {
-          panel.scrollIntoView({ block: 'start', behavior: 'smooth' });
-        }
-      }, true);
-    });
-
-    let ticking = false;
-    root.addEventListener('scroll', () => {
-      if (ticking) return;
-      ticking = true;
-      root.requestAnimationFrame(() => {
-        ticking = false;
-        const narrative = document.querySelector('#narrative-panel');
-        const direct = document.querySelector('#direct-panel');
-        if (!narrative || !direct) return;
-        const probe = root.scrollY + Math.min(180, root.innerHeight * .24);
-        if (probe >= narrative.offsetTop && probe < direct.offsetTop) {
-          updatePrimaryModeUI('narrative');
-          const current = scene?.getSceneState?.();
-          if (current && current.mode !== 'narrative') scene.updateSceneState({ mode: 'narrative' }, 'narrative-scroll-spy');
-        }
-      });
-    }, { passive: true });
-  }
-
   function initNarrativeWorkspace(rootNode, options = {}) {
     if (!rootNode) throw new Error('Narrative workspace root is required.');
     const scene = options.scene || root.VDOSScene;
@@ -140,6 +95,7 @@
 
     return {
       api,
+      scene,
       getDraftState: () => draft.getState(),
       destroy() { destroyed = true; rootNode.replaceChildren(); }
     };
@@ -149,7 +105,6 @@
     const rootNode = document.querySelector('#narrative-root');
     if (!rootNode || rootNode.dataset.narrativeInitialized === 'true') return;
     rootNode.dataset.narrativeInitialized = 'true';
-    installNarrativeModeOverride(root.VDOSScene);
     root.VDOSNarrativeWorkspaceController = initNarrativeWorkspace(rootNode);
   }
 
