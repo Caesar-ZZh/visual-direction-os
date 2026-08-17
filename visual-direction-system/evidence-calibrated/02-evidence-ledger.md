@@ -530,3 +530,23 @@ Physical possession is therefore no longer the open question. System permissions
 The production system must additionally support `transfer_state_machine`, `donor_possession_state`, `shared_contact_handoff`, `recipient_only_possession`, `handoff_completion_evidence_requirement`, `possession_vs_control_guard`, `signed_contingency_carrier`, `offscreen_agency_via_object`, `portable_medium_owner_lock`, `hobie_linked_object_medium`, `note_to_interface_carrier_handoff`, `recipient_device_affordance`, `explicit_destination_1610_state`, `destination_not_execution_guard`, `travel_completion_evidence_requirement` and `device_manufacture_guard`.
 
 Reject: retroactively calling B036 presentation a completed transfer; treating the `Hobie` signature as proof he fabricated every hardware component; globalizing the portable collage object into a whole-room punk takeover; reading `DESTINATION--1610` as executed travel; or collapsing possession, control affordance, command execution and arrival into one state.
+
+## BATCH-038 — Earth-65 device action / portal opening / threshold hold
+
+| ID | Evidence claim | Status / scope |
+|---|---|---|
+| `EV-AGENCY-007` | Gwen visibly manipulates the recipient-held device at `16:11:07`; a small bright aperture appears at `16:11:08` and grows at `16:11:09`, directly supporting a device-interaction → external-state-change pair. | NEW DIRECT ACTION→OBSERVED-RESULT SUPPORT; hidden command semantics bounded |
+| `EV-TRANS-017` | A bright aperture forms and expands inside still-recognizable Earth-65 room geometry while strong collage/cutout/glitch treatment overwrites local regions. | NEW DIRECT PORTAL-OPEN SUPPORT / ORIGIN HOST-LOCK REFINEMENT |
+| `EV-TRANS-018` | Gwen stands directly before the open aperture at `16:11:17–18` while George and Earth-65 room geometry remain visible; portal-open threshold occupancy is established without completed departure. | NEW DIRECT THRESHOLD SUPPORT / DEPARTURE GUARD |
+
+BATCH-038 advances the late Earth-65 control/transport chain from a displayed destination to a directly observed action/result sequence:
+
+`recipient possession → explicit DESTINATION--1610 state → direct device interaction → observed portal opening → portal growth / local event-domain intrusion → threshold occupancy → [completed departure unresolved] → [transit unresolved] → [Gwen-attributed arrival unresolved]`.
+
+The causal upgrade is deliberately narrow. The evidence supports a visible physical device interaction immediately followed by an external aperture state change; it does **not** expose the exact software command, permission model, internal protocol or device electronics. Likewise, portal activation and threshold occupancy do not by themselves establish departure.
+
+### B038 production / QA addendum
+
+The production system must additionally support `direct_device_interaction_state`, `action_to_observed_result_pair`, `command_semantics_guard`, `external_state_change_requirement`, `portal_aperture_formation`, `portal_scale_growth`, `origin_world_host_lock`, `portal_event_owner`, `local_collage_boundary_invasion`, `event_overlay_without_global_world_rewrite`, `threshold_occupancy_state`, `portal_open_not_departure_guard`, `origin_side_absence_requirement`, `traveler_world_reset_attribution_guard`, and `departure_transit_arrival_state_machine`.
+
+Reject: destination display=execution; visible finger interaction=known hidden command; portal open=completed departure; local collage/glitch=global world replacement; or later city establishing imagery=Gwen arrival without a directly attributable crossing/world-reset bridge.
