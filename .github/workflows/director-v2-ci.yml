@@ -7,6 +7,7 @@ on:
     paths:
       - "visual-direction-os/**"
       - "api/narrative/**"
+      - "vercel.json"
       - ".github/workflows/director-v2-ci.yml"
       - ".github/workflows/pages.yml"
       - "README.md"
@@ -109,4 +110,4 @@ jobs:
           python3 -m http.server 4173 --directory visual-direction-os >/tmp/vdos-server.log 2>&1 &
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
-          npx playwright test visual-direction-os/director-v2-browser.spec.js visual-direction-os/director-v2-desktop-polish.spec.js visual-direction-os/sequence-director-playback.spec.js visual-direction-os/diagnostic-routing.spec.js visual-direction-os/narrative-workspace.spec.js --reporter=line --workers=1
+          npx playwright test visual-direction-os/director-v2-browser.spec.js visual-direction-os/director-v2-desktop-polish.spec.js visual-direction-os/sequence-director-playback.spec.js visual-direction-os/diagnostic-routing.spec.js visual-direction-os/narrative-workspace.spec.js visual-direction-os/narrative-clarification.spec.js --reporter=line --workers=1
