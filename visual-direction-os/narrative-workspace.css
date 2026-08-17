@@ -37,6 +37,9 @@
 .narrative-aside-block strong{font:700 1.05rem/1.2 var(--serif)}
 .narrative-aside-block p{margin:0;color:var(--muted);font-size:.82rem;line-height:1.55}
 .narrative-live{min-height:1.4em;color:var(--muted);font:600 .62rem/1.4 var(--mono);letter-spacing:.04em}
+@media(min-width:901px){
+  .v2-rail[data-expanded='false'] .mode-label{display:block;min-height:.7rem}
+}
 @media(max-width:900px){
   .mobile-modes{grid-template-columns:repeat(4,minmax(0,1fr))}
   .narrative-workspace{padding:34px 18px 56px}
