@@ -302,6 +302,69 @@ BATCH-028 extends Spider Society from command-room authority into chase organiza
 
 BATCH-029 revises an over-narrow Spider Society chase model. B028 established heterogeneous crowd media, target/depth hierarchy, routing rails and zone reset; B029 shows that the chase can hand off into **world-scale decompression**, compress crowd pressure into one high-authority interceptor, hold a character-light host field, use host transport as a contacted action constraint, and recompress pursuit authority into Miguel's near-field mass. The mechanically distinct `15:07:39` pursuer remains intentionally unnamed, and the sequence does not establish exact camera trajectory or force magnitude.
 
+## BATCH-030 — Earth-928 transport destination resolution / digital operator locality
+
+| ID | Evidence claim | Status / scope |
+|---|---|---|
+| `EV-TRANS-001` | Adjacent system states bind `TARGET DNA IDENTIFIED / DNA ORIGIN: EARTH_0042` to `DESTINATION LOCKED EARTH-42`; origin resolution and destination selection form a readable causal system progression. | NEW DIRECT TRANSPORT SUPPORT; entry/transit/arrival unresolved |
+| `EV-TRANS-002` | Transport-system readability can hand off from diegetic scan to eye diagnostic carrier to full-frame graphic transition to explicit confirmation UI. | PROVISIONAL carrier-handoff model; full-frame insert ownership unresolved |
+| `EV-TRANS-003` | A cyan/magenta digital Spider operator/avatar, connector strands and Earth-928 host machinery remain materially separate under dense contact/overlap. | VALIDATES + EXTENDS medium locality |
+| `EV-TRANS-004` | Earth-928 host-system material can recover/hold when digital-avatar occupancy disappears and reappears, without mandatory residue or host-surface conversion. | VALIDATES host-system material lock |
+
+BATCH-030 closes **destination-selection causality**, not physical transport completion. The safe chain becomes `diagnostic acquisition → origin identification → destination lock → [physical transport unresolved]`.
+
+## BATCH-031 — Earth-928 active transport field / agency opposition
+
+| ID | Evidence claim | Status / scope |
+|---|---|---|
+| `EV-TRANS-005` | Miles is visibly present inside an activated transport field after the destination-lock state, advancing the chain from system selection into physical field occupancy. | NEW DIRECT PHYSICAL-STAGE SUPPORT; completed exit/arrival unresolved |
+| `EV-TRANS-006` | The high-energy transport event remains spatially concentrated around the chamber while Earth-928 architecture outside the field stays comparatively stable. | VALIDATES bounded event-domain / host lock |
+| `EV-AGENCY-001` | Miguel’s forward intrusion toward the machine opposes Miles’ target-centered field occupancy, making conflict agency legible through spatial roles and body vectors. | PROVISIONAL climax-agency staging |
+| `EV-TRANS-007` | Miles and Miguel preserve compact face/hair/silhouette/emblem identity anchors under extreme transport-field saturation. | VALIDATES identity-landmark lock under effect density |
+
+BATCH-031 establishes `destination lock → occupied active field` but explicitly does **not** prove completed exit, transit or arrival.
+
+## BATCH-032 — Earth-928 exit threshold / digital operator mediation
+
+| ID | Evidence claim | Status / scope |
+|---|---|---|
+| `EV-TRANS-008` | Adjacent frames show progressive subject topology loss into separated fragments/holes inside the active field, supporting a distinct dematerialization / exit-threshold state. | NEW DIRECT EXIT-THRESHOLD SUPPORT; completed exit unresolved |
+| `EV-DIGITAL-001` | Multiple offset translucent limb/body states are locally owned by the digital operator while host consoles/geometry remain singular. | DIRECT TEMPORAL SUPPORT; entity-local multiplicity |
+| `EV-TRANS-009` | Miguel can undergo strong RGB/pixel displacement and smear while Earth-928 host structure remains comparatively stable. | VALIDATES character-local destabilization |
+| `EV-AGENCY-002` | Interface-mediated operator oversight and Miguel’s bodily intervention remain visually distinct agency channels in one transport sequence. | NEW CLIMAX SUPPORT; exact command causality unresolved |
+
+BATCH-032 adds `progressive continuity loss / exit threshold`, but the endpoint still contains visible fragments; empty post-state, transit and arrival remain unresolved.
+
+## BATCH-033 — Earth-928 near-completion hold / interface progress readout
+
+| ID | Evidence claim | Status / scope |
+|---|---|---|
+| `EV-TRANS-010` | Coherent Miles identity views reappear immediately after severe fragmentation, proving exit-threshold visibility is non-monotonic and fragmentation intensity alone cannot certify completion. | DIRECT CROSS-BATCH REFINEMENT |
+| `EV-TRANS-011` | A directly visible `98.02%` system readout coexists with continued Miles occupancy; below-100 UI state may stage near-completion without identifying the exact measured variable. | NEW DIRECT UI/TRANSPORT SUPPORT; percentage semantics bounded |
+| `EV-AGENCY-003` | Margo’s interface monitoring alternates with Miguel’s bodily confrontation while agency ownership stays distinct. | VALIDATES + EXTENDS EV-AGENCY-002 |
+
+BATCH-033 strengthens the completion guard: **near-100 readout + fragmentation is still not completed exit** while direct visual occupancy persists.
+
+## BATCH-034 — Earth-928 explicit reboot affordance / differential destabilization
+
+| ID | Evidence claim | Status / scope |
+|---|---|---|
+| `EV-AGENCY-004` | The interface explicitly presents `INITIATE SYSTEM REBOOT / YES / no`, proving a binary intervention affordance but not confirmed execution or result. | NEW DIRECT SYSTEM-AGENCY SUPPORT |
+| `EV-TRANS-012` | Miles and Miguel carry sharply different distortion/topology-loss intensity inside the same active-field sequence; destabilization is participant-local rather than uniform. | SAME-SEQUENCE COUNTEREXAMPLE to global distortion |
+| `EV-TRANS-013` | Later frames after the reboot prompt still show Miles/Miguel inside the active field, so the prompt itself cannot be treated as an exit marker. | NEW DIRECT COMPLETION GUARD |
+
+BATCH-034 separates **available interface action**, **command execution**, and **observed result**. Reboot execution, completed exit, transit and arrival remain unresolved.
+
+## BATCH-035 — Earth-928 field-regime reset / localized machine interaction
+
+| ID | Evidence claim | Status / scope |
+|---|---|---|
+| `EV-TRANS-014` | The high-saturation transport lattice hands off to a dimmer green-column/mechanical-retraction regime while Miguel remains visibly present; system visual regime and participant occupancy are independent state variables. | NEW DIRECT SYSTEM-STATE REFINEMENT; field reset ≠ exit |
+| `EV-SYSTEM-001` | A localized orange scan/emission is followed by direct hand-to-apparatus contact and a bright contact burst around Miguel. | NEW DIRECT LOCAL INTERACTION SUPPORT; subsystem/reboot provenance unresolved |
+| `EV-TRANS-015` | The post-interaction cut shows Gwen and other observers inside the same Earth-928 control room, establishing a same-world reaction handoff rather than transit/arrival. | NEW DIRECT ARRIVAL GUARD |
+
+BATCH-035 advances the chain to `field-regime reset with continued occupancy → localized machine/participant interaction → same-world observer reaction`. It still does **not** establish the missing action→reboot-result link, completed exit, transit or arrival.
+
 ## Current production consequences
 
 The evidence now requires the system to support, at minimum:
