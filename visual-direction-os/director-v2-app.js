@@ -295,6 +295,7 @@
     if (diagnose && !diagnose.querySelector('.tool-error')) diagnose.insertAdjacentHTML('beforeend', `<p class="tool-error" role="alert">Advanced tools failed to initialize. Reload this preview to retry.</p>`);
   }
 
+  ensureKnowledgeAtlas();
   initDesktopRail();
   scene.subscribeSceneState(render);
   scene.createSceneState({ mode: 'learn' });
