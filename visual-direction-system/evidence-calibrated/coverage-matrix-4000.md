@@ -268,3 +268,40 @@ The immediate next high-value evidence is narrower than before. Start immediatel
 3. a distinct **transit environment**, if visually present.
 
 Sparse screening already shows distinct city geometry at `16:11:30` and masked Miles in a city at `16:11:39`, but these do not yet satisfy traveler attribution and remain outside the counted corpus. If a short continuous probe cannot bridge Gwen to the new world, close this adjacency and pivot to later climax/team authorship or Hobie temporal behavior.
+
+## BATCH-039 coverage update — latest checkpoint supersedes B038 snapshot
+
+### Current checkpoint after BATCH-039
+
+- Selected/viewed/L1 frames: **546 / ~4,000**.
+- Latest admitted coverage pivot: **Earth-65 completed departure / unassigned city reset, continuous `16:11:19–16:11:31`**, **13/13 source images actually opened, all 13 at least L2, 4 deep diagnostics, 3 curated references**.
+- Screening-only `16:11:32` confirms George-only Earth-65 continuation and is not counted.
+- B039 closes completed origin-side departure through a direct `last-present traveler → same-origin-host absent post-state` transition.
+- A distinct city host reset and local transition-residue decay are directly observed, but Gwen-attributed arrival, exact city-world identity and any distinct transit environment remain unresolved.
+- Source-routing and count discipline remain unchanged: metadata-only discovery and screening probes do not count.
+
+### BATCH-039 new / strengthened mechanisms
+
+- **Completed Origin-side Departure by Last-present → Absent Post-state** — Gwen remains visible at the active threshold at `16:11:25`; at `16:11:26` the same Earth-65 host and active aperture remain while Gwen is absent.
+- **Post-departure Origin Reaction Hold** — George-only `16:11:27–28` frames preserve the origin world after the traveler leaves and reinforce continued absence.
+- **New-host Reset with Local Transition Residue Decay** — a distinct city host appears at `16:11:29–30` with a compact collage/cutout transition-residue cluster that is gone by `16:11:31` while host geometry remains stable.
+- **Departure ≠ Traveler-attributed Arrival Guard** — completed departure and a new host reset are independent evidence states; the new host cannot inherit Gwen's identity without traveler presence or a unique bridge.
+- **World-identity Guard** — the admitted city frames are kept as an unassigned city host because no direct world-identity anchor in the slice establishes Earth-1610.
+
+The B036–039 Earth-65 agency/transport chain is now:
+
+`relationship reactivation → object presentation → shared-contact handoff → recipient-only possession → Hobie-signed contingency carrier → explicit DESTINATION--1610 interface → direct device interaction → observed portal opening → portal growth / local event-domain intrusion → threshold occupancy → last-present origin-side state → completed origin-side departure → origin-side reaction hold → distinct unassigned city host reset + local transition-residue decay → [Gwen-attributed arrival unresolved] → [transit environment unresolved]`.
+
+### Updated coverage pressure after BATCH-039
+
+The Earth-65 immediate adjacency is now closed for ordinary continuation. Do not spend corpus budget on further George-only reaction frames or generic city establishment unless a directly visible bridge resolves traveler attribution.
+
+Highest marginal-value next targets are:
+
+1. later team/climax **authorship/control transfer** beyond single-object possession;
+2. directly visible **Hobie temporal/frame-rate/material-time behavior**;
+3. independent cross-world counterexamples;
+4. a direct **Gwen-in-city / unique arrival bridge** only if specifically located;
+5. a distinct transit environment only if directly visible.
+
+Reopen the B036–039 Earth-65 travel lineage only for evidence that directly changes one of the remaining unresolved states. The B030–035 Earth-928 transport lineage remains closed for ordinary continuation.
