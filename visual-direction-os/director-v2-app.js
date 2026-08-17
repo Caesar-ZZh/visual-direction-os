@@ -19,10 +19,11 @@
     return mode === 'learn' ? $('#learn-panel') : mode === 'direct' ? $('#direct-panel') : $('#diagnose-panel');
   }
 
-  function setMode(mode) {
+  function setMode(mode, options = {}) {
     const safe = modeOrder.includes(mode) ? mode : 'learn';
     scene.updateSceneState({ mode: safe }, 'mode-switch');
     updateModeUI(safe);
+    if (options.scroll === false) return;
     const target = modeTarget(safe);
     if (!target) return;
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -276,7 +277,10 @@
     window.VDOSStateMachine.initStateMachine($('#state-machine-root'), scene);
     window.VDOSSequenceDirectorController = window.VDOSSequenceDirector.initSequenceDirector($('#sequence-root'), scene);
     window.VDOSColorOwnership.initColorOwnership($('#color-ownership-root'), scene);
-    window.VDOSDiagnostic.initDiagnostic($('#diagnostic-root'), scene, { routing: window.VDOSDiagnosticRouting, setMode });
+    window.VDOSDiagnostic.initDiagnostic($('#diagnostic-root'), scene, {
+      routing: window.VDOSDiagnosticRouting,
+      setMode: mode => setMode(mode, { scroll: false })
+    });
     window.VDOSTimelineSync.syncTimelines(scene, window.VDOSStateMachine, window.VDOSSequenceScore, document);
   }
 
@@ -291,13 +295,13 @@
   scene.createSceneState({ mode: 'learn' });
 
   Promise.all([
-    loadStylesheet('visual-response.css?v=20260817-1208'),
-    loadStylesheet('sequence-director.css?v=20260817-1208'),
-    loadStylesheet('diagnostic-routing.css?v=20260817-1208'),
-    loadScript('sequence-director-model.js?v=20260817-1208', 'VDOSSequenceDirectorModel'),
-    loadScript('sequence-director.js?v=20260817-1208', 'VDOSSequenceDirector'),
-    loadScript('diagnostic-routing.js?v=20260817-1208', 'VDOSDiagnosticRouting'),
-    loadScript('visual-response.js?v=20260817-1208', 'VDOSVisualResponse')
+    loadStylesheet('visual-response.css?v=20260817-1218'),
+    loadStylesheet('sequence-director.css?v=20260817-1218'),
+    loadStylesheet('diagnostic-routing.css?v=20260817-1218'),
+    loadScript('sequence-director-model.js?v=20260817-1218', 'VDOSSequenceDirectorModel'),
+    loadScript('sequence-director.js?v=20260817-1218', 'VDOSSequenceDirector'),
+    loadScript('diagnostic-routing.js?v=20260817-1218', 'VDOSDiagnosticRouting'),
+    loadScript('visual-response.js?v=20260817-1218', 'VDOSVisualResponse')
   ]).then(() => {
     initAdvancedTools();
     syncModeFromScroll();
