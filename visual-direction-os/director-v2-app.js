@@ -67,6 +67,49 @@
   }
   window.addEventListener('scroll', syncModeFromScroll, { passive: true });
 
+  function initDesktopRail() {
+    const rail = $('.v2-rail');
+    if (!rail) return;
+    let revealTimer = 0;
+
+    const cancelReveal = () => {
+      if (revealTimer) window.clearTimeout(revealTimer);
+      revealTimer = 0;
+    };
+
+    const expandSoon = () => {
+      if (window.innerWidth <= 900 || rail.dataset.expanded === 'true') return;
+      cancelReveal();
+      revealTimer = window.setTimeout(() => {
+        rail.dataset.expanded = 'true';
+        revealTimer = 0;
+      }, 100);
+    };
+
+    const collapse = () => {
+      cancelReveal();
+      window.requestAnimationFrame(() => {
+        if (!rail.matches(':focus-within')) rail.dataset.expanded = 'false';
+      });
+    };
+
+    rail.dataset.expanded = 'false';
+    rail.addEventListener('pointerenter', expandSoon);
+    rail.addEventListener('pointermove', expandSoon, { passive: true });
+    rail.addEventListener('pointerleave', collapse);
+    rail.addEventListener('focusin', () => {
+      cancelReveal();
+      rail.dataset.expanded = 'true';
+    });
+    rail.addEventListener('focusout', collapse);
+    window.addEventListener('resize', () => {
+      if (window.innerWidth <= 900) {
+        cancelReveal();
+        rail.dataset.expanded = 'false';
+      }
+    }, { passive: true });
+  }
+
   const ownerPatches = {
     world: { agency: 'world', ownership: { character: 'low', world: 'high', narrative: 'medium' }, variables: { color: { temperature: 'cool', territory: 'world' }, camera: { perspective: 'world', stability: 'high' }, line: { stability: 'high' }, space: { compression: 'low' } } },
     contested: { agency: 'contested', ownership: { character: 'medium', world: 'medium', narrative: 'high' }, variables: { color: { temperature: 'neutral', territory: 'contested' }, camera: { perspective: 'mixed', stability: 'medium' }, line: { stability: 'medium' }, space: { compression: 'medium' } } },
@@ -241,6 +284,7 @@
     if (diagnose && !diagnose.querySelector('.tool-error')) diagnose.insertAdjacentHTML('beforeend', `<p class="tool-error" role="alert">Advanced tools failed to initialize. Reload this preview to retry.</p>`);
   }
 
+  initDesktopRail();
   scene.subscribeSceneState(render);
   scene.createSceneState({ mode: 'learn' });
 
