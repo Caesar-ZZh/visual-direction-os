@@ -119,17 +119,6 @@ node visual-direction-os/qa-check.js   # 期望输出：50 passed, 0 failed
 
 ---
 
-## 🏷️ 改名提案：从「123」到「Visual Direction OS」
-
-当前仓库名 `123` + 简介「乱七八糟」已与实际内容严重不符（命理应用已移除）。建议重命名：
-
-> **仓库名：`visual-direction-os`**
-> **简介：** 🎬 Narrative Visual Direction System + 交互式导演操作系统 · 中英双语知识库，零构建可交互网页，Sequence Score / State Machine / Color Territory 一应俱全
-
-> 💡 改名路径：仓库页 **Settings → General → Repository name**，旧地址自动跳转，不影响克隆记录。建议同步把默认分支 `master` → `main`，并更新仓库 Description 为上方首选简介。
-
----
-
 ## 🤝 贡献指南
 
 这是个个人知识项目，欢迎一切交流：
