@@ -16,6 +16,47 @@ test('Narrative mode exposes editorial story input instead of chat', async ({ pa
   await expect(page.locator('[data-narrative-stage]')).toHaveCount(5);
 });
 
+test('Narrative demo flows through editable Reading and Strategy into a five-beat preview without mutating Scene State', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1100 });
+  await page.goto(url);
+  await page.getByRole('button', { name: /Turn story into direction/i }).click();
+  await page.getByLabel('Scene description').fill('He enters the office expecting to accept an assignment. During the conversation he realizes the assignment itself is a mechanism of control. He refuses and leaves.');
+  await page.getByLabel('Director intent').fill('End with the character reclaiming control.');
+
+  const before = await page.evaluate(() => window.VDOSScene.getSceneState());
+  await page.getByRole('button', { name: /Start interpretation/i }).click();
+
+  await expect(page.locator('[data-reading-card]')).toHaveCount(2);
+  await expect(page.locator('[data-narrative-stage="1"]')).toHaveAttribute('aria-current', 'step');
+  await page.locator('[data-reading-card]').first().click();
+  await expect(page.getByLabel('Narrative Problem')).toBeVisible();
+  await expect(page.getByLabel('Core Conflict')).toBeVisible();
+  await expect(page.getByLabel('Starting State')).toBeVisible();
+  await expect(page.getByLabel('Ending State')).toBeVisible();
+  await expect(page.getByLabel('Turning Point')).toBeVisible();
+  await expect(page.getByLabel('Agency Transition')).toBeVisible();
+  await expect(page.locator('[data-field="endingState"] [data-grounding-badge]')).toHaveText('DIRECTOR INTENT');
+
+  await page.getByLabel('Ending State').fill('The character defines the next action and leaves on their own terms.');
+  await expect(page.locator('[data-field="endingState"] [data-grounding-badge]')).toHaveText('DIRECTOR EDIT');
+  await page.getByRole('button', { name: /Confirm reading/i }).click();
+
+  await expect(page.locator('[data-strategy-card]')).toHaveCount(3);
+  await expect(page.locator('[data-narrative-stage="3"]')).toHaveAttribute('aria-current', 'step');
+  await page.locator('[data-strategy-card][data-strategy-id="camera"]').click();
+  await page.getByRole('button', { name: /Select strategy/i }).click();
+
+  await expect(page.locator('[data-sequence-proposal-beat]')).toHaveCount(5);
+  await expect(page.locator('[data-narrative-stage="4"]')).toHaveAttribute('aria-current', 'step');
+  const beatLabels = await page.locator('[data-sequence-proposal-beat] [data-beat-label]').allTextContents();
+  expect(beatLabels).toEqual(['SETUP', 'PRESSURE', 'RUPTURE', 'RELEASE', 'NEW OWNERSHIP']);
+  await expect(page.getByText('CAMERA BREAK', { exact: true })).toBeVisible();
+  await expect(page.getByText('OWNERSHIP SHIFT', { exact: true })).toBeVisible();
+
+  const after = await page.evaluate(() => window.VDOSScene.getSceneState());
+  expect(after).toEqual(before);
+});
+
 test('desktop primary mode targets keep their vertical centers when the rail expands', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(url);
