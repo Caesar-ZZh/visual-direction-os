@@ -133,6 +133,39 @@ for (const viewport of [{ name: 'mobile', width: 390, height: 844 }, { name: 'de
   });
 }
 
+test('desktop active OWNERSHIP label stays centered directly beneath its event node', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto(url);
+  await page.locator('#sequence-root .sequence-events').waitFor();
+
+  await page.locator('#sequence-playhead').evaluate(input => {
+    input.value = '90';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+
+  const active = page.locator('#sequence-root [data-sequence-event][aria-pressed="true"]');
+  await expect(active).toHaveAttribute('data-sequence-event', 'evt-ownership-shift');
+
+  const geometry = await active.evaluate(button => {
+    const node = button.querySelector('i');
+    const label = button.querySelector('.sequence-event-visible-label');
+    const rail = button.closest('.sequence-events');
+    const n = node.getBoundingClientRect();
+    const l = label.getBoundingClientRect();
+    const r = rail.getBoundingClientRect();
+    return {
+      centerDelta: Math.abs((n.left + n.width / 2) - (l.left + l.width / 2)),
+      verticalGap: l.top - n.bottom,
+      insideRail: l.left >= r.left && l.right <= r.right
+    };
+  });
+
+  expect(geometry.centerDelta).toBeLessThanOrEqual(2);
+  expect(geometry.verticalGap).toBeGreaterThanOrEqual(6);
+  expect(geometry.verticalGap).toBeLessThanOrEqual(22);
+  expect(geometry.insideRail).toBe(true);
+});
+
 test('reduced motion still advances sequence state while suppressing non-essential transitions', async ({ browser }) => {
   const context = await browser.newContext({ reducedMotion: 'reduce', viewport: { width: 390, height: 844 } });
   const page = await context.newPage();
