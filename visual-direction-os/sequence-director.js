@@ -8,6 +8,14 @@
   const TRACKS = ['color', 'space', 'camera', 'line', 'texture', 'agency'];
   const PLAYBACK_DURATION = 12000;
   const clone = value => JSON.parse(JSON.stringify(value));
+  const EVENT_SHORT_LABELS = {
+    'SPACE COLLAPSE': 'SPACE',
+    'CAMERA BREAK': 'CAMERA',
+    'TEXTURE PEAK': 'TEXTURE',
+    'COLOR MIGRATION': 'COLOR',
+    'AGENCY TRANSFER': 'AGENCY',
+    'OWNERSHIP SHIFT': 'OWNERSHIP'
+  };
 
   const model = () => {
     const current = resolveModel();
@@ -17,6 +25,51 @@
 
   function eventLabel(event = {}) {
     return event.type || 'VISUAL EVENT';
+  }
+
+  function eventShortLabel(event = {}) {
+    const full = eventLabel(event);
+    return EVENT_SHORT_LABELS[full] || full.split(/\s+/)[0] || 'EVENT';
+  }
+
+  function pointOnPathAtProgress(path, progress) {
+    if (!path?.getTotalLength || !path?.getPointAtLength) return null;
+    const targetX = Math.max(0, Math.min(1, Number(progress) || 0)) * 100;
+    const total = path.getTotalLength();
+    let low = 0;
+    let high = total;
+    let point = path.getPointAtLength(0);
+    for (let index = 0; index < 24; index += 1) {
+      const length = (low + high) / 2;
+      point = path.getPointAtLength(length);
+      if (point.x < targetX) low = length;
+      else high = length;
+    }
+    return path.getPointAtLength((low + high) / 2);
+  }
+
+  function positionTensionMarker(rootNode, playhead) {
+    const path = rootNode.querySelector('[data-tension-path]');
+    const marker = rootNode.querySelector('[data-tension-marker]');
+    const point = pointOnPathAtProgress(path, playhead);
+    if (!path || !marker || !point) return;
+
+    const x = Number(point.x.toFixed(3));
+    const y = Number(point.y.toFixed(3));
+    marker.setAttribute('cx', String(x));
+    marker.setAttribute('cy', String(y));
+
+    // preserveAspectRatio="none" stretches the chart differently on x/y.
+    // Counter-scale the SVG circle around its path point so it stays visually circular in screen pixels.
+    const svg = path.ownerSVGElement;
+    const width = svg?.clientWidth || svg?.getBoundingClientRect?.().width || 100;
+    const height = svg?.clientHeight || svg?.getBoundingClientRect?.().height || 34;
+    const xScale = width / 100 || 1;
+    const yScale = height / 34 || 1;
+    const screenRadius = 6;
+    const localScaleX = screenRadius / xScale;
+    const localScaleY = screenRadius / yScale;
+    marker.setAttribute('transform', `translate(${x} ${y}) scale(${localScaleX} ${localScaleY}) translate(${-x} ${-y})`);
   }
 
   function eventDetailMarkup(event) {
@@ -40,6 +93,7 @@
     const sequenceModel = model();
     const sequence = sequenceModel.DEFAULT_SEQUENCE;
     const doc = rootNode.ownerDocument;
+    const viewWindow = doc.defaultView || (typeof window !== 'undefined' ? window : null);
     let selectedEventId = null;
     let playing = false;
     let frameId = 0;
@@ -64,8 +118,8 @@
           <svg viewBox="0 0 100 34" preserveAspectRatio="none">
             <path class="sequence-tension-base" d="M0 27 C14 27 20 23 30 18 C38 14 42 4 50 4 C58 4 62 17 70 21 C80 25 86 17 100 16"></path>
             <path class="sequence-tension-active" data-tension-path d="M0 27 C14 27 20 23 30 18 C38 14 42 4 50 4 C58 4 62 17 70 21 C80 25 86 17 100 16"></path>
+            <circle class="sequence-tension-marker" data-tension-marker cx="0" cy="27" r="1"></circle>
           </svg>
-          <i class="sequence-tension-marker" data-tension-marker></i>
           <div class="sequence-tension-axis"><span>LOW</span><span>MEDIUM</span><span>HIGH</span></div>
         </div>
       </section>
@@ -76,7 +130,7 @@
 
       <div class="sequence-events" aria-label="Visual events">
         <div class="sequence-event-line" aria-hidden="true"></div>
-        ${sequence.events.map(event => `<button type="button" data-sequence-event="${event.id}" data-event-at="${event.at}" style="--event-at:${event.at * 100}%" aria-pressed="false"><i aria-hidden="true"></i><span>${eventLabel(event)}</span></button>`).join('')}
+        ${sequence.events.map((event, index) => `<button type="button" data-sequence-event="${event.id}" data-event-at="${event.at}" style="--event-at:${event.at * 100}%;--event-lane:${index % 3}" aria-label="${eventLabel(event)}" aria-pressed="false"><i aria-hidden="true"></i><span class="sequence-event-visible-label">${eventShortLabel(event)}</span></button>`).join('')}
       </div>
 
       <div class="score-tracks" role="img" aria-describedby="sequence-text-state">
@@ -131,7 +185,7 @@
       const tension = rootNode.querySelector('.sequence-tension');
       tension.dataset.tension = view.tension;
       rootNode.querySelector('[data-tension-value]').textContent = String(view.tension).toUpperCase();
-      rootNode.querySelector('[data-tension-marker]').style.left = `${view.playhead * 100}%`;
+      positionTensionMarker(rootNode, view.playhead);
 
       Object.entries(view.tracks).forEach(([name, value]) => {
         const fill = rootNode.querySelector(`[data-score-fill="${name}"]`);
@@ -248,6 +302,15 @@
       renderView(view);
     });
 
+    const onResize = () => {
+      if (!viewWindow?.requestAnimationFrame) return;
+      viewWindow.requestAnimationFrame(() => {
+        const view = sequenceModel.deriveSequenceState(sequence, scene.getSceneState().playhead);
+        positionTensionMarker(rootNode, view.playhead);
+      });
+    };
+    viewWindow?.addEventListener?.('resize', onResize, { passive: true });
+
     renderView(sequenceModel.deriveSequenceState(sequence, scene.getSceneState().playhead));
     setPlaybackUI();
 
@@ -260,6 +323,7 @@
         unsubscribe();
         doc.removeEventListener('click', pauseForManualClick, true);
         doc.removeEventListener('input', pauseForManualInput, true);
+        viewWindow?.removeEventListener?.('resize', onResize);
       }
     };
   }
