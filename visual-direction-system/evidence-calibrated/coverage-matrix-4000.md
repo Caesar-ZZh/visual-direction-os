@@ -198,3 +198,38 @@ The canonical `00_SOURCE_CORPUS` folder may be empty. BATCH-024–036 demonstrat
 ## Promotion policy
 
 A mechanism should be promoted only after independent support or a clearly bounded narrow scope, active counterexample search, a production consequence, successful generative/constraint reconstruction, and explicit scope.
+
+## BATCH-037 coverage update — latest checkpoint supersedes B036 snapshot
+
+### Current checkpoint after BATCH-037
+
+- Selected/viewed/L1 frames: **520 / ~4,000**.
+- Latest admitted coverage pivot: **Earth-65 direct handoff / Hobie-signed destination carrier, continuous `16:10:53–16:11:05`**, **13/13 source images actually opened, all 13 at least L2, 4 deep diagnostics, 3 curated references**.
+- Earlier post-B036 transfer/world-reset locator frames before `16:10:53` were screening-only and are not counted.
+- B037 directly closes the physical possession-transfer gap left open by B036, while keeping system-command execution and travel completion separately unresolved.
+- The B030–035 Earth-928 transport lineage remains closed for ordinary adjacency.
+- Source-routing and count discipline remain unchanged: metadata-only discovery and screening probes do not count.
+
+### BATCH-037 new / strengthened mechanisms
+
+- **Completed Possession Transfer through Shared Contact** — donor-side possession/presentation progresses through shared hand/object contact to recipient-only possession; recipient-only post-state is the completion marker.
+- **Possession versus Control Execution Separation** — physical transfer can be complete while permissions, interface command execution and subsequent travel remain unresolved.
+- **Off-screen Agency via Signed Contingency Carrier** — a portable note visibly signed `Hobie` carries Hobie-linked agency into Earth-65 without requiring Hobie’s physical presence.
+- **Portable Medium Owner Lock** — collage/print treatment remains locally attached to the portable carrier instead of converting the pale Earth-65 room into a global punk domain.
+- **Note-to-Interface Carrier Handoff** — attention and actionable information hand off from shared relationship object to signed note to active device interface.
+- **Recipient-held Explicit Destination State** — Gwen holds the device while `PROJECT: BOOTLEG` and `DESTINATION--1610` are visible; destination availability is direct evidence, execution/travel is not.
+
+The B036–037 Earth-65 agency chain is now:
+
+`relationship reactivation → object presentation → shared-contact handoff → recipient-only possession → Hobie-signed contingency carrier → explicit DESTINATION--1610 interface → [device execution unresolved] → [portal/departure unresolved] → [transit unresolved] → [arrival unresolved]`.
+
+### Updated coverage pressure after BATCH-037
+
+The direct object-transfer gap is now closed. Highest marginal-value immediate evidence is therefore **not another possession frame**. Open post-`16:11:05` adjacency only long enough to seek:
+
+1. direct device action / command execution;
+2. portal opening or departure;
+3. transit environment;
+4. explicit host-world reset / Earth-1610 arrival with both sides of the transition opened.
+
+If those states do not appear quickly, pivot to later team/climax authorship-control transfer or directly visible Hobie temporal/frame-rate behavior. Do not spend corpus budget on repeated post-handoff reaction frames.
