@@ -7,17 +7,17 @@
 - Source corpus: user Google Drive screenshot archive; canonical research workspace is private `Sorted by Scence` plus a read-only raw-source fallback.
 - Research target: **approximately 4,000 high-coverage evidence frames** selected for chapter, character/world, mechanism, transition and counterexample coverage.
 - Detailed obligations: [`coverage-matrix-4000.md`](./coverage-matrix-4000.md).
-- **Cumulative frames actually viewed:** **546**.
-- **Cumulative frames with at least L1 annotation:** **546**.
-- **Latest completed batch:** **BATCH-039**.
+- **Cumulative frames actually viewed:** **559**.
+- **Cumulative frames with at least L1 annotation:** **559**.
+- **Latest completed batch:** **BATCH-040**.
 - Latest Earth-65 dense early chronological coverage remains **`01:45:23`**; later screening-only locator images are not part of the selected corpus.
-- Latest coverage pivot: **Earth-65 completed departure → unassigned city host reset**, continuous raw-fallback slice `16:11:19–16:11:31`.
-- BATCH-039 contains **13 consecutive admitted source screenshots**, all individually opened and visually inspected; all 13 received at least L2, with 4 L3/Deep frames and 3 curated references.
-- Screening-only `16:11:32` confirms George-only Earth-65 continuation and is excluded from cumulative counts.
+- Latest coverage pivot: **coalition assembly / distributed mission ownership**, continuous raw-fallback slice `16:28:08–16:28:20`.
+- BATCH-040 contains **13 consecutive admitted source screenshots**, all individually opened and visually inspected; all 13 received at least L2, with 4 L3/Deep frames and 3 curated references.
+- Sparse minute-scale locator probes outside `16:28:08–16:28:20` remain screening-only and are excluded from cumulative counts.
 
 ## Source-discovery resilience
 
-The canonical Drive `00_SOURCE_CORPUS` slot may be empty and Sorted-by-Scene routing may fail without blocking the research. BATCH-024 established a recovery path: the read-only raw root can be sliced with a **parent-folder + `modifiedTime` window**. BATCH-025–039 continue the raw-fallback lineage; exact filename/time/file-ID discovery is also valid when needed. Candidate metadata and screening-only locator images never count until selected source images are opened and admitted to the evidence corpus. Source originals remain read-only; manifests, analysis, curated references, contact sheets and progress artifacts write only to canonical `Sorted by Scence`.
+The canonical Drive `00_SOURCE_CORPUS` slot may be empty and Sorted-by-Scene routing may fail without blocking the research. BATCH-024 established a recovery path: the read-only raw root can be sliced with a **parent-folder + `modifiedTime` window**. BATCH-025–040 continue the raw-fallback lineage; exact filename/time/file-ID discovery is also valid when needed. Candidate metadata and screening-only locator images never count until selected source images are opened and admitted to the evidence corpus. Source originals remain read-only; manifests, analysis, curated references, contact sheets and progress artifacts write only to canonical `Sorted by Scence`.
 
 ## Batch log
 
@@ -61,11 +61,12 @@ The canonical Drive `00_SOURCE_CORPUS` slot may be empty and Sorted-by-Scene rou
 | BATCH-036 | Earth-65 relationship reactivation / web-carried agency · continuous 16:07:57–16:08:09 | 13 | 13 | 12 | 4 | 3 | complete first-pass |
 | BATCH-037 | Earth-65 direct handoff / Hobie-signed destination carrier · continuous 16:10:53–16:11:05 | 13 | 13 | 13 | 4 | 3 | complete first-pass |
 | BATCH-038 | Earth-65 device action / portal opening / threshold hold · continuous 16:11:06–16:11:18 | 13 | 13 | 13 | 4 | 3 | complete first-pass |
-| **BATCH-039** | **Earth-65 completed departure / unassigned city reset · continuous 16:11:19–16:11:31** | **13** | **13** | **13** | **4** | **3** | **complete first-pass** |
+| BATCH-039 | Earth-65 completed departure / unassigned city reset · continuous 16:11:19–16:11:31 | 13 | 13 | 13 | 4 | 3 | complete first-pass |
+| **BATCH-040** | **Coalition assembly / distributed mission ownership · continuous 16:28:08–16:28:20** | **13** | **13** | **13** | **4** | **3** | **complete first-pass** |
 
-## Cumulative learning through BATCH-039
+## Cumulative learning through BATCH-040
 
-The evidence base is in an explicit cross-world calibration phase. Earth-65 established a dense causal layered system; BATCH-019–021 calibrated Brooklyn ownership/attention/anomaly behavior; BATCH-022 revised character-medium logic through Hobie; BATCH-023 added the first native Spider Society command/system sample; BATCH-024–027 established Mumbattan density/anomaly/action mechanisms; BATCH-028–029 added Earth-928 crowd/routing/world-scale/transport-object chase evidence; BATCH-030–035 added the strongest explicit Earth-928 transport-system state chain while deliberately keeping completed exit, transit and arrival unresolved; BATCH-036 returned to later Earth-65 relationship/action; BATCH-037 closed physical object transfer and added a Hobie-signed destination carrier; BATCH-038 added direct device interaction → portal opening → threshold occupancy; **BATCH-039 now closes completed origin-side departure through a last-present → same-host absent post-state and separately records a new city-host reset with decaying local transition residue while preserving Gwen-attributed arrival as unresolved.**
+The evidence base is in an explicit cross-world calibration and climax/agency expansion phase. Earth-65 established a dense causal layered system; BATCH-019–021 calibrated Brooklyn ownership/attention/anomaly behavior; BATCH-022 revised character-medium logic through Hobie; BATCH-023 added the first native Spider Society command/system sample; BATCH-024–027 established Mumbattan density/anomaly/action mechanisms; BATCH-028–029 added Earth-928 crowd/routing/world-scale/transport-object chase evidence; BATCH-030–035 added the strongest explicit Earth-928 transport-system state chain; BATCH-036–039 built a later Earth-65 object→device→portal→departure chain while preserving traveler-arrival guards; **BATCH-040 now adds the first continuous team-level agency state change: one portal-facing agent expands into a materially heterogeneous coalition whose mission ownership is distributed without a directly evidenced command handoff.**
 
 ### BATCH-019 additions — first active-lineage Miles/Brooklyn calibration
 
@@ -240,13 +241,26 @@ The evidence base is in an explicit cross-world calibration phase. Earth-65 esta
 - **Departure ≠ Traveler-attributed Arrival** — the city frames contain no visible Gwen; completed departure and new-host appearance are direct, but Gwen arrival and exact city-world identity remain separately unresolved.
 - GitHub analysis: [`43-batch-039-earth65-completed-departure-unassigned-city-reset.md`](./43-batch-039-earth65-completed-departure-unassigned-city-reset.md).
 
+### BATCH-040 additions — coalition assembly / distributed mission ownership
+
+- **Progressive Coalition Assembly around a Stable Mission Axis** — a clean Gwen-alone portal-facing state expands into a multi-character coalition while the portal/Gwen axis remains comparatively stable; membership accrues from the frame periphery rather than requiring a compositional reset.
+- **Mission Ownership Expansion without Direct Command Handoff** — the visual mission broadens from one central agent into a distributed team-owned objective field, while explicit authority-token or command-carrier transfer remains unobserved.
+- **Heterogeneous Team Coherence through Shared Objective Geometry** — Hobie punk/collage, Margo digital, Peni anime-like, Noir graphic-black, Spider-Ham cartoon and other character systems remain locally owned inside one team composition instead of being homogenized.
+- **Leader axis ≠ exclusive ownership** — Gwen can remain near the portal center while mission ownership is visibly distributed across the coalition.
+- **Hobie presence ≠ temporal proof** — static multi-medium coexistence strengthens medium-locality evidence but still does not establish frame-rate or temporal cadence differences.
+- GitHub analysis: [`44-batch-040-coalition-assembly-distributed-mission-ownership.md`](./44-batch-040-coalition-assembly-distributed-mission-ownership.md).
+
 The combined BATCH-030–035 Earth-928 transport/system chain remains:
 
 `diagnostic acquisition → origin identification → destination lock → occupied active field → progressive continuity loss / exit threshold → sub-completion / continued occupancy → explicit reboot/intervention affordance → [command execution unresolved] → field-regime reset with continued occupancy → localized machine/participant interaction → same-world observer reaction → [completed exit unresolved] → [transit unresolved] → [arrival unresolved]`.
 
-B036–039 establish a separate later Earth-65 agency/transport chain:
+B036–039 establish a later Earth-65 agency/transport chain:
 
 `relationship reactivation → object presentation → shared-contact handoff → recipient-only possession → Hobie-signed contingency carrier → explicit DESTINATION--1610 interface → direct device interaction → observed portal opening → portal growth / local event-domain intrusion → threshold occupancy → last-present origin-side state → completed origin-side departure → origin-side reaction hold → distinct unassigned city host reset + local transition-residue decay → [Gwen-attributed arrival unresolved] → [transit environment unresolved]`.
+
+B040 adds a separate team-level agency chain:
+
+`single-agent portal-facing mission → first ally enters shared objective field → progressive coalition accretion → multi-medium team composition → distributed coalition mission ownership → [direct command handoff unresolved] → [team portal traversal unresolved] → [Hobie temporal/frame-rate behavior unresolved]`.
 
 ## 4,000-frame selection policy
 
@@ -259,21 +273,21 @@ Every batch must answer:
 3. What production / Skill parameter follows?
 4. What remaining coverage gap should affect later sampling?
 
-## Current coverage pressure after BATCH-039
+## Current coverage pressure after BATCH-040
 
-BATCH-039 closes the immediate B038 **origin-side departure** gap. The critical completion evidence is not portal brightness or collage intensity but a state transition: **last-present traveler → same-origin-host absent post-state**. The later city reset adds a separate host-state transition with local event residue decay, but it does not automatically inherit Gwen's identity.
+BATCH-040 closes the immediate question of whether the late-film mission remains visually owned by one agent or expands into a coalition: **the admitted continuous sequence directly shows progressive team assembly and a distributed objective-facing action field.** It does not show a literal command handoff, and the correct model is ownership expansion rather than authority-token transfer.
 
-The Earth-65 immediate adjacency is now closed for ordinary continuation. Reopen it only if a directly visible later frame shows Gwen in the city or another unique bridge attributes that city reset to her.
+Ordinary static team-lineup adjacency is now closed. Reopen this sequence only when later frames directly change the state from assembly into coordinated movement/traversal or expose a control carrier changing hands.
 
 Highest marginal-value next targets are:
 
-- later team/climax **authorship/control transfer** beyond single-object possession;
-- directly visible **Hobie temporal/frame-rate/material-time behavior**;
-- independent cross-world counterexamples;
-- a direct Gwen-in-city / unique arrival bridge only if specifically located;
-- a distinct transit environment only if directly visible.
+- direct **coordinated coalition movement / portal traversal**;
+- explicit **command/control carrier transfer**, if directly visible;
+- directly visible **Hobie temporal/frame-rate/material-time behavior** using adjacent frames;
+- independent counterexamples where heterogeneous team coherence is achieved without one central portal/objective axis;
+- broader climax/action authorship where multiple agents perform distinct but coordinated functions.
 
-The B030–035 Earth-928 transport lineage remains closed for ordinary continuation. The bounded Jess locator remains closed. The captured bald adversary in B020 and mechanically distinct B029 interceptor remain deliberately unnamed. Camera movement is never inferred from one still. Do not convert scene knowledge into evidence.
+The B030–035 Earth-928 transport lineage remains closed for ordinary continuation. B036–039 Earth-65 travel adjacency remains closed unless traveler attribution is directly resolved. The bounded Jess locator remains closed. Camera movement is never inferred from one still. Do not convert scene knowledge into evidence.
 
 ## Promotion rule
 
