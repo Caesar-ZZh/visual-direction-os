@@ -5,7 +5,7 @@
 
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
-  const modeOrder = ['learn', 'direct', 'diagnose'];
+  const modeOrder = ['learn', 'narrative', 'direct', 'diagnose'];
   const explicitVariables = new Set();
 
   function updateModeUI(mode) {
@@ -16,7 +16,10 @@
   }
 
   function modeTarget(mode) {
-    return mode === 'learn' ? $('#learn-panel') : mode === 'direct' ? $('#direct-panel') : $('#diagnose-panel');
+    if (mode === 'learn') return $('#learn-panel');
+    if (mode === 'narrative') return $('#narrative-panel');
+    if (mode === 'direct') return $('#direct-panel');
+    return $('#diagnose-panel');
   }
 
   function setMode(mode, options = {}) {
@@ -45,12 +48,14 @@
   }));
 
   function modeFromScroll() {
+    const narrative = $('#narrative-panel');
     const direct = $('#direct-panel');
     const diagnose = $('#diagnose-panel');
-    if (!direct || !diagnose) return 'learn';
+    if (!narrative || !direct || !diagnose) return 'learn';
     const probe = window.scrollY + Math.min(180, window.innerHeight * .24);
     if (probe >= diagnose.offsetTop) return 'diagnose';
     if (probe >= direct.offsetTop) return 'direct';
+    if (probe >= narrative.offsetTop) return 'narrative';
     return 'learn';
   }
 
