@@ -53,7 +53,40 @@ for (const viewport of [{ name: 'mobile', width: 390, height: 844 }, { name: 'de
     await page.locator('[data-variable-family="camera"][data-variable-key="perspective"][data-variable-value="character"]').click();
     await expect(finding).toHaveAttribute('data-level', 'PASS');
     await expect(finding.locator('[data-fix-route]')).toHaveCount(0);
+    await expect(page.locator('#diagnostic-root .diagnostic-status')).toHaveAttribute('data-level', 'PASS');
     const corrected = await page.evaluate(() => window.VDOSScene.getSceneState().variables.camera.perspective);
     expect(corrected).toBe('character');
   });
 }
+
+test('real sequence-context route reports the targeted fix even when another warning legitimately remains', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto(url);
+  await page.locator('#sequence-root .sequence-beat-band').waitFor();
+  await page.locator('[data-diagnostic="current"]').click();
+
+  // Enter RELEASE through the real Sequence Director so sequence-aware diagnostics remain active.
+  await page.locator('#sequence-playhead').evaluate(input => {
+    input.value = '62';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  await expect(page.locator('#sequence-beat')).toHaveText('RELEASE');
+
+  // Create a real current-scene ownership mismatch using DIRECT controls while preserving release context.
+  await page.locator('[data-owner-choice="character"]').click();
+  await page.locator('[data-variable-family="camera"][data-variable-key="perspective"][data-variable-value="world"]').click();
+
+  const cameraFinding = page.locator('[data-finding-id="camera-ownership"]');
+  await expect(cameraFinding).toHaveAttribute('data-level', 'WARN');
+  await expect(page.locator('[data-finding-id="sequence-recovery"]')).toHaveAttribute('data-level', 'WARN');
+
+  await cameraFinding.locator('[data-fix-route]').click();
+  await page.locator('[data-variable-family="camera"][data-variable-key="perspective"][data-variable-value="character"]').click();
+
+  await expect(cameraFinding).toHaveAttribute('data-level', 'PASS');
+  await expect(page.locator('.diagnostic-route-resolution')).toContainText('ROUTE RESOLVED');
+  await expect(page.locator('.diagnostic-route-resolution')).toContainText('CAMERA');
+  await expect(page.locator('#diagnostic-root .diagnostic-status')).toHaveAttribute('data-level', 'WARN');
+  await expect(page.locator('#diagnostic-root .diagnostic-status')).toContainText('1 WARN REMAINS');
+  await expect(page.locator('[data-finding-id="sequence-recovery"]')).toHaveAttribute('data-level', 'WARN');
+});
