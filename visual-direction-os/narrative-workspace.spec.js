@@ -2,6 +2,20 @@ const { test, expect } = require('@playwright/test');
 
 const url = 'http://127.0.0.1:4173/director-v2.html?narrativeDemo=1';
 
+async function reachSequencePreview(page) {
+  await page.getByRole('button', { name: /Turn story into direction/i }).click();
+  await page.getByLabel('Scene description').fill('He enters the office expecting to accept an assignment. During the conversation he realizes the assignment itself is a mechanism of control. He refuses and leaves.');
+  await page.getByLabel('Director intent').fill('End with the character reclaiming control.');
+  await page.getByRole('button', { name: /Start interpretation/i }).click();
+  await expect(page.locator('[data-reading-card]')).toHaveCount(2);
+  await page.locator('[data-reading-card]').first().click();
+  await page.getByRole('button', { name: /Confirm reading/i }).click();
+  await expect(page.locator('[data-strategy-card]')).toHaveCount(3);
+  await page.locator('[data-strategy-card][data-strategy-id="camera"]').click();
+  await page.getByRole('button', { name: /Select strategy/i }).click();
+  await expect(page.locator('[data-sequence-proposal-beat]')).toHaveCount(5);
+}
+
 test('Narrative mode exposes editorial story input instead of chat', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(url);
@@ -55,6 +69,61 @@ test('Narrative demo flows through editable Reading and Strategy into a five-bea
 
   const after = await page.evaluate(() => window.VDOSScene.getSceneState());
   expect(after).toEqual(before);
+});
+
+test('Apply selected mutates only selected Sequence beats at the explicit Apply boundary and leaves DIRECT editable', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1100 });
+  await page.goto(url);
+  await reachSequencePreview(page);
+
+  const before = await page.evaluate(() => ({
+    scene: window.VDOSScene.getSceneState(),
+    sequence: window.VDOSSequenceDirectorController.getSequence()
+  }));
+
+  await page.getByRole('button', { name: /^Apply selected$/i }).click();
+  await page.locator('[data-apply-beat="setup"]').click();
+  await page.locator('[data-apply-beat="pressure"]').click();
+  await page.locator('[data-apply-beat="new-ownership"]').click();
+  await expect(page.locator('[data-apply-beat="rupture"]')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('[data-apply-beat="release"]')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('[data-apply-beat="setup"]')).toHaveAttribute('aria-pressed', 'false');
+
+  const stillPreview = await page.evaluate(() => ({
+    scene: window.VDOSScene.getSceneState(),
+    sequence: window.VDOSSequenceDirectorController.getSequence()
+  }));
+  expect(stillPreview).toEqual(before);
+
+  await page.evaluate(() => {
+    window.__narrativeApplySources = [];
+    window.addEventListener('vdos:scene-state', event => window.__narrativeApplySources.push(event.detail?.source));
+  });
+  await page.getByRole('button', { name: /^Apply to Director$/i }).click();
+
+  await expect(page.locator('[data-narrative-stage="5"]')).toHaveAttribute('aria-current', 'step');
+  await expect(page.locator('[data-apply-status]')).toContainText('RUPTURE');
+  await expect(page.locator('[data-apply-status]')).toContainText('RELEASE');
+
+  const after = await page.evaluate(beforeSequence => {
+    const sequence = window.VDOSSequenceDirectorController.getSequence();
+    return {
+      scene: window.VDOSScene.getSceneState(),
+      sequence,
+      impact: window.VDOSNarrativeApply.summarizeImpact(beforeSequence, sequence),
+      sources: window.__narrativeApplySources
+    };
+  }, before.sequence);
+
+  expect(after.impact.changedBeatIds).toEqual(['rupture', 'release']);
+  expect(after.impact.changedEventBeatIds).toEqual(expect.arrayContaining(['rupture', 'release']));
+  expect(after.sequence.beats.find(beat => beat.id === 'setup')).toEqual(before.sequence.beats.find(beat => beat.id === 'setup'));
+  expect(after.sequence.events.some(event => event.id === 'rupture-proposal-0')).toBe(true);
+  expect(after.sources).toContain('narrative:apply');
+  expect(after.scene).not.toEqual(before.scene);
+
+  await page.locator('[data-variable-family="camera"][data-variable-key="perspective"][data-variable-value="character"]').click();
+  await expect.poll(() => page.evaluate(() => window.VDOSScene.getSceneState().variables.camera.perspective)).toBe('character');
 });
 
 test('desktop primary mode targets keep their vertical centers when the rail expands', async ({ page }) => {
