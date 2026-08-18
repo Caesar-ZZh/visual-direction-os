@@ -102,6 +102,16 @@ test('Project metadata and directed Scene state survive a reload without inventi
   await expect(beforeCells.nth(0)).not.toHaveText('—');
   await expect(beforeCells.nth(1)).toHaveText('—');
 
+  const beforeStoredState = await page.evaluate(() => {
+    const project = window.VDOSProjectContext.store.getProject();
+    return {
+      sceneOne: project.scenes['scene-01'].workspace.sceneState,
+      sceneTwo: project.scenes['scene-02'].workspace.sceneState
+    };
+  });
+  expect(beforeStoredState.sceneOne).not.toBeNull();
+  expect(beforeStoredState.sceneTwo).toBeNull();
+
   await page.reload();
   await expect(page.getByRole('heading', { name:'Agency Recovery Study' })).toBeVisible();
   await expect(page.locator('.project-progress')).toContainText('05 SCENES');
@@ -111,16 +121,21 @@ test('Project metadata and directed Scene state survive a reload without inventi
   await expect(afterCells.nth(0)).not.toHaveText('—');
   await expect(afterCells.nth(1)).toHaveText('—');
 
+  const afterStoredState = await page.evaluate(() => {
+    const project = window.VDOSProjectContext.store.getProject();
+    return {
+      sceneOne: project.scenes['scene-01'].workspace.sceneState,
+      sceneTwo: project.scenes['scene-02'].workspace.sceneState
+    };
+  });
+  expect(afterStoredState.sceneOne).not.toBeNull();
+  expect(afterStoredState.sceneTwo).toBeNull();
+
   await page.locator('.project-scene-node').first().click();
   const afterReload = await page.evaluate(() => window.VDOSScene.getSceneState());
   expect(afterReload.agency).toBe(beforeReload.agency);
   expect(afterReload.variables.camera.perspective).toBe(beforeReload.variables.camera.perspective);
   expect(afterReload.variables.color.territory).toBe(beforeReload.variables.color.territory);
-
-  await page.getByRole('button', { name:/PROJECT ARC/i }).click();
-  await page.locator('.project-scene-node').nth(1).click();
-  const sceneTwo = await page.evaluate(() => window.VDOSScene.getSceneState());
-  expect(sceneTwo.variables.camera.perspective).not.toBe(beforeReload.variables.camera.perspective);
 });
 
 test('Continuity routes a deterministic rupture boundary without auto-fix', async ({ page }) => {
