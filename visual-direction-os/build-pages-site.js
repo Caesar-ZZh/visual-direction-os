@@ -39,7 +39,8 @@ function createStudioDocument(directorHtml) {
   html = injectReleaseStyles(html);
   html = html
     .replace(/Director Workspace · v2\.1 staging/g, 'Director Workspace · v2.1')
-    .replace(/Director Control Room \/ staging build/g, 'Director Control Room');
+    .replace(/Director Control Room \/ staging build/g, 'Director Control Room')
+    .replace(/href="#([^"]+)"/g, 'href="studio/#$1"');
   if (!html.includes('data-system-home')) {
     const marker = '      <div class="brand">Visual Direction OS<small>Director Workspace · v2.1</small></div>';
     if (!html.includes(marker)) throw new Error('Studio brand marker is unavailable.');
