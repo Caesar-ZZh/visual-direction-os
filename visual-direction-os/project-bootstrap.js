@@ -5,7 +5,7 @@
 })(typeof window !== 'undefined' ? window : globalThis, root => {
   'use strict';
 
-  const VERSION = '20260818-1420';
+  const VERSION = '20260818-1855';
   const DEMO_STORY = 'A young employee enters a routine assignment meeting expecting to comply. During the conversation, he realizes the assignment itself is a mechanism of control. Recognition turns into explicit refusal, and he leaves the institution acting from self-authored agency.';
   const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const clone = value => value == null ? value : JSON.parse(JSON.stringify(value));
@@ -109,6 +109,7 @@
     ]);
     await Promise.all([
       loadScript(`project-state.js?v=${VERSION}`, 'VDOSProjectState'),
+      loadScript(`project-persistence.js?v=${VERSION}`, 'VDOSProjectPersistence'),
       loadScript(`project-breakdown-state.js?v=${VERSION}`, 'VDOSProjectBreakdownState'),
       loadScript(`project-breakdown-api-client.js?v=${VERSION}`, 'VDOSProjectBreakdownApiClient'),
       loadScript(`project-breakdown-fixtures.js?v=${VERSION}`, 'VDOSProjectBreakdownFixtures'),
@@ -233,6 +234,15 @@
     document.querySelector('#narrative-panel')?.scrollIntoView({ behavior:'auto', block:'start' });
   }
 
+  function createPersistence(options, demoMode) {
+    if (options.projectPersistence) return options.projectPersistence;
+    const persistenceOptions = {};
+    if (Object.prototype.hasOwnProperty.call(options, 'storage')) persistenceOptions.storage = options.storage;
+    if (options.persistenceKey) persistenceOptions.key = options.persistenceKey;
+    else if (demoMode) persistenceOptions.key = 'vdos-project-v2.1-demo';
+    return root.VDOSProjectPersistence.createProjectPersistence(persistenceOptions);
+  }
+
   async function initProjectShell(options = {}) {
     await loadProjectDependencies();
     if (root.VDOSProjectContext) return root.VDOSProjectContext;
@@ -242,8 +252,11 @@
     const demoMode = options.demoMode ?? params.get('projectDemo') === '1';
     const rootNode = options.rootNode || ensureRoot();
     const sceneContextRoot = ensureSceneContextRoot(rootNode);
-    const store = options.projectStore || root.VDOSProjectState.createProjectStore();
+    const persistence = createPersistence(options, demoMode);
+    const hydratedProject = options.projectStore ? null : persistence.load();
+    const store = options.projectStore || root.VDOSProjectState.createProjectStore(hydratedProject);
     if (!store.getProject()) store.createProject(createInitialProjectInput(demoMode));
+    const unbindPersistence = options.disablePersistence ? () => {} : persistence.bind(store);
     const breakdownState = options.breakdownState || root.VDOSProjectBreakdownState.createProjectBreakdownState();
     const apiClient = options.apiClient || root.VDOSProjectBreakdownApiClient.createProjectBreakdownApiClient({
       baseUrl:options.baseUrl ?? configuredBase(),
@@ -264,7 +277,7 @@
       projectRuntime:runtime,
       apiClient
     });
-    const context = { store, breakdownState, apiClient, runtime, workspace, demoMode, rootNode, sceneContextRoot };
+    const context = { store, persistence, unbindPersistence, breakdownState, apiClient, runtime, workspace, demoMode, rootNode, sceneContextRoot };
     root.VDOSProjectContext = context;
 
     function syncSceneContext() {
@@ -300,11 +313,11 @@
       const source = String(event?.detail?.source || '');
       const loadedSceneId = runtime.getLoadedSceneId?.();
       if (!loadedSceneId) return;
-      const persistence = shouldPersistSceneEvent(source, runtime);
-      if (!persistence) return;
+      const persistenceMode = shouldPersistSceneEvent(source, runtime);
+      if (!persistenceMode) return;
       sceneSyncChain = sceneSyncChain.then(async () => {
         await runtime.captureActiveScene();
-        if (persistence === 'directed') runtime.markVisualDirected(loadedSceneId);
+        if (persistenceMode === 'directed') runtime.markVisualDirected(loadedSceneId);
         else runtime.markVisualInProgress(loadedSceneId);
       }).catch(error => console.error(error));
     });
