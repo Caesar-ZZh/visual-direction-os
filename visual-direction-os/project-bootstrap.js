@@ -95,6 +95,7 @@
   async function loadProjectDependencies() {
     await Promise.all([
       loadStyle(`project-workspace.css?v=${VERSION}`),
+      loadStyle(`project-context.css?v=${VERSION}`),
       loadScript(`project-contracts.js?v=${VERSION}`, 'VDOSProjectContracts'),
       loadScript(`project-context.js?v=${VERSION}`, 'VDOSProjectContextContract')
     ]);
