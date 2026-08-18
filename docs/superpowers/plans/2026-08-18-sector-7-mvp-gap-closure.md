@@ -20,6 +20,10 @@
 - Continuity remains deterministic PASS/WARN/FAIL guidance with no automatic repair.
 - Keep Vanilla HTML/CSS/JS and zero-build delivery.
 
+## Current verification note
+
+Implementation work is complete on the development branch. Focused local execution has passed for Project Store metadata, Project persistence (including storage-write failure isolation), and Project Workspace rendering. Exact-head Chromium/Playwright acceptance is intentionally not marked complete: the current managed execution environment blocks both localhost and `file://` browser navigation, and PR #1 is currently not mergeable so a newly-added `pull_request` gate cannot produce a merge-ref run. The existing push CI and the new Sector 7 gate contain the required browser checks for the next runnable GitHub Actions environment.
+
 ---
 
 ### Task 1: Local Project persistence
@@ -34,12 +38,13 @@
 - Produces: `createProjectPersistence({ storage, key, validateProjectState })`
 - Produces methods: `load()`, `save(project)`, `clear()`, `bind(projectStore)`
 
-- [ ] Write a failing Node test proving valid Project snapshots round-trip, corrupt/invalid payloads are ignored, and store subscription autosaves.
-- [ ] Add the test to Director v2.1 CI and confirm RED while `project-persistence.js` is absent.
-- [ ] Implement the minimal persistence module using injected Storage and existing Project validation.
-- [ ] Load persistence before Project Store initialization, hydrate valid saved state, otherwise create the current demo/default Project.
-- [ ] Bind Project Store subscription after initialization so Project mutations and Scene snapshots persist.
-- [ ] Add syntax/staging/Pages checks for the new module and verify GREEN.
+- [x] Write a failing Node contract proving valid Project snapshots round-trip, corrupt/invalid payloads are ignored, and store subscription autosaves.
+- [x] Wire the persistence contract into Director v2.1 CI before adding the implementation.
+- [x] Implement the minimal persistence module using injected Storage and existing Project validation.
+- [x] Load persistence before Project Store initialization, hydrate valid saved state, otherwise create the current demo/default Project.
+- [x] Bind Project Store subscription after initialization so Project mutations and Scene snapshots persist.
+- [x] Add syntax/staging/Pages checks for the new module.
+- [x] Ensure autosave storage failures are observable but cannot destabilize Project Store mutations.
 
 ### Task 2: Project metadata editing
 
@@ -53,22 +58,24 @@
 **Interfaces:**
 - Produces: `projectStore.updateProjectMetadata({ title, projectIntent, sourceNarrative? })`
 
-- [ ] Write failing tests for renaming the Project and editing Director Intent without changing Scene state.
-- [ ] Implement the minimal Project Store metadata mutation with existing validation/notify semantics.
-- [ ] Add compact editable Project title and intent controls to Project Workspace; preserve existing editorial/workstation visual grammar.
-- [ ] Verify edits persist through Task 1 autosave and never touch Scene workspace snapshots.
+- [x] Write tests for renaming the Project and editing Director Intent without changing Scene state.
+- [x] Implement the minimal Project Store metadata mutation with existing validation/notify semantics.
+- [x] Add compact editable Project title and intent controls to Project Workspace; preserve existing editorial/workstation visual grammar.
+- [x] Persist Breakdown Story and Director Intent into Project Store before the AI structure request.
+- [x] Verify Project metadata mutation leaves Scene records and workspace snapshots unchanged.
 
 ### Task 3: Browser regression and MVP gate
 
 **Files:**
 - Modify: `visual-direction-os/project-workspace.spec.js`
-- Modify: `visual-direction-os/project-bootstrap.test.js`
-- Modify: `.github/workflows/director-v2-ci.yml` only if coverage wiring is required
+- Add: `.github/workflows/sector-7-mvp-gate.yml`
 
 **Interfaces:**
 - Consumes the persistence and metadata interfaces from Tasks 1–2.
 
-- [ ] Add browser coverage: edit Project title, open/direct a Scene, reload, and verify Project/Scene state survives.
-- [ ] Add coverage that undirected Project Arc cells remain `—` after reload.
-- [ ] Add coverage that switching Scenes restores each Scene independently without cross-scene pollution.
-- [ ] Run the complete Director Workspace v2.1 CI gate and stop feature work when all checks pass.
+- [x] Add browser coverage: edit Project title, open/direct a Scene, reload, and verify Project/Scene state survives.
+- [x] Add coverage that undirected Project Arc cells remain `—` after reload.
+- [x] Add structural coverage proving an undirected Scene remains `workspace.sceneState === null` rather than relying on incidental camera differences.
+- [x] Preserve the existing Scene-switch isolation coverage for independently restored Scene snapshots.
+- [x] Add a narrow exact-head Sector 7 PR gate for Project Node/syntax/Chromium verification.
+- [ ] Observe a complete exact-head Chromium/Playwright gate in a runnable environment before merge/readiness is claimed.
