@@ -19,26 +19,34 @@
 
 ## 🎛️ Director Workspace v2.1（开发分支）
 
-`agent/director-workspace-v2-1` 正在把现有知识浏览器升级为真正的导演工作台。前端继续保持 Vanilla HTML/CSS/JS 与零打包器；Narrative AI 通过独立 Serverless API 接入，不把模型密钥放进浏览器。
+`agent/director-workspace-v2-1` 正在把现有知识浏览器升级为真正的导演工作台。前端继续保持 Vanilla HTML/CSS/JS 与零打包器；Narrative / Project AI 通过独立 Serverless API 接入，模型密钥只存在服务端。
 
+**Project 不是第五个 mode。** 它是 LEARN / NARRATIVE / DIRECT / DIAGNOSE 之上的 context layer：先把长叙事拆成可确认的 Scene 结构，再逐 Scene 导演，并在 Project Arc 与 Cross-Scene Continuity 中检查整个项目的视觉因果关系。
+
+- **PROJECT CONTEXT** — Project Breakdown → Director Edit / Add / Split / Merge / Remove / Reorder → Confirm Scene Structure → Scene Rail → Project Arc → Cross-Scene Continuity。
 - **LEARN** — 通过 Knowledge Atlas 进入原有 11 个知识视图，不改写知识源。
-- **NARRATIVE** — Scene Description + 可选 Director Intent → 2–3 个 Narrative Reading → 可编辑确认 → 2–3 个 Visual Direction Strategy → 五段 Sequence Proposal → Preview / Apply。
-- **DIRECT** — 共享 Scene State、Director Workspace、Visual State Machine、Sequence Score、Color Ownership Map。
-- **DIAGNOSE** — 使用与 DIRECT 相同的 scene state，输出确定性的 `PASS / WARN / FAIL`，不制造总分。
-- **TDD + CI** — Node 合同/状态/API/Apply/Serverless 测试、Visual QA、JS syntax check、Pages 组装测试、Playwright Chromium 验收。
-- **响应式验收** — 390 / 768 / 1024 / 1440；移动端保留 Learn / Narrative / Direct / Diagnose；Reduced Motion 保留等价信息。
+- **NARRATIVE** — 当前 Scene 的 Description + 可选 Director Intent + 上游 Project Context → 2–3 个 Narrative Reading → 可编辑确认 → 2–3 个 Visual Direction Strategy → 五段 Sequence Proposal → Preview / Apply。
+- **DIRECT** — 当前 Scene 独立的 canonical Scene State、Director Workspace、Visual State Machine、Sequence Score、Color Ownership Map。
+- **DIAGNOSE** — 使用当前 Scene 的同一份 Scene State 输出确定性的 `PASS / WARN / FAIL`，不制造总分。
+- **PROJECT ARC** — 横向压缩每个已导演 Scene 的 Narrative Role / Agency / Camera / Color / Space / Density / Rhythm；未导演视觉字段保持 `—`，不伪造默认方向。
+- **CONTINUITY** — 只做可解释的跨 Scene 规则诊断，给出涉及 Scene 的路由入口，不提供自动修复。
+- **TDD + CI** — Node contracts/state/runtime/API/Serverless、Visual QA、JS syntax、Pages 组装和 Playwright Chromium 验收。
 
 开发预览入口：
 
 ```text
+# 单 Scene Narrative review
 visual-direction-os/director-v2.html?narrativeDemo=1
+
+# Multi-Scene Project review
+visual-direction-os/director-v2.html?narrativeDemo=1&projectDemo=1
 ```
 
-`?narrativeDemo=1` 只用于明确标记的本地/Review fixture，不会伪装成真实 AI 结果。发布策略不会覆盖旧知识库源码：GitHub Pages 构建时把 `director-v2.html` 提升为线上 `index.html`，同时把现有稳定版 `index.html` 原样保留为线上 `knowledge.html`。在 Draft PR 合并前，当前线上站点不会被替换。
+`narrativeDemo=1` 与 `projectDemo=1` 都是**显式 fixture 模式**，只用于本地 / PR Review，不会伪装成生产 AI。发布策略不会覆盖旧知识库源码：GitHub Pages 构建时把 `director-v2.html` 提升为线上 `index.html`，同时把现有稳定版 `index.html` 原样保留为线上 `knowledge.html`。Draft PR 合并前不替换当前线上站点。
 
-### Narrative API configuration
+### Serverless API configuration
 
-正常 Narrative 模式需要一个独立的 Serverless API base，例如：
+Narrative API base 示例：
 
 ```text
 https://your-serverless-host.example/api/narrative
@@ -50,12 +58,24 @@ https://your-serverless-host.example/api/narrative
 <meta name="vdos-narrative-api-base" content="https://your-serverless-host.example/api/narrative">
 ```
 
-调用三个端点：
+调用：
 
 ```text
 POST /api/narrative/interpret
 POST /api/narrative/strategy
 POST /api/narrative/sequence
+```
+
+Project Breakdown 使用：
+
+```text
+POST /api/project/breakdown
+```
+
+如果 Project 与 Narrative API 部署在同一个 origin，Project client 会从 Narrative API base 自动派生 server root；也可以显式配置：
+
+```html
+<meta name="vdos-project-api-base" content="https://your-serverless-host.example">
 ```
 
 Serverless 环境变量：
@@ -66,7 +86,27 @@ OPENAI_MODEL=gpt-5.6
 VDOS_ALLOWED_ORIGIN=https://caesar-zzh.github.io
 ```
 
-`OPENAI_API_KEY` **只能存在服务端环境变量中，不能写入 HTML、浏览器 JS、Git 或 GitHub Pages**。未配置 API base 的正常模式会显示 `AI SERVICE NOT CONFIGURED`；只有显式 `?narrativeDemo=1` 才启用 `DEMO FIXTURE`。`vercel.json` 已包含 `/api/narrative/*.js` 的 Serverless function 配置；也可以把同样的 Node handlers 部署到兼容平台。
+`OPENAI_API_KEY` **只能存在服务端环境变量中，不能写入 HTML、浏览器 JS、Git 或 GitHub Pages**。正常模式未配置服务时会明确显示不可用状态，不做 silent fake fallback。`vercel.json` 同时声明 `api/narrative/*.js` 与 `api/project/*.js` 的 Serverless functions。
+
+### Multi-Scene state boundary
+
+Project 层和 Scene 层分开保存：
+
+```text
+Project Store
+├── sceneOrder
+├── activeSceneId
+└── SceneRecord[]
+    ├── narrativeRole
+    ├── workspace.narrativeState
+    ├── workspace.sceneState
+    ├── workspace.sequenceState
+    └── visual status
+```
+
+Scene switch 通过 `ProjectRuntime.switchScene(sceneId)` 完成事务：先保存当前 Scene snapshot，终止 transient Narrative work，再恢复目标 Scene 的 Narrative / Scene State / Sequence。Restore 期间产生的技术性 Scene events 不会被当成用户编辑重新持久化，从而避免跨 Scene 污染。
+
+Project Context 只进入 **Interpret**，并被明确视为 upstream intent，而不是已确认 Scene truth；Strategy / Sequence 不重复携带 Project Context。AI Project Breakdown 也只允许叙事结构字段，不允许输出 Camera / Color / Space 等视觉方向。
 
 ---
 
@@ -76,11 +116,11 @@ VDOS_ALLOWED_ORIGIN=https://caesar-zzh.github.io
 
 > **什么可以变、何时变、为什么变、以及谁拥有这个“变”的权力。**
 
-Visual Direction OS（视觉导演操作系统）把这套规则拆成知识系统与可交互导演工作台。核心方法不是“模仿某种画风”，而是：
+Visual Direction OS 把这套规则拆成知识系统与可交互导演工作台。核心方法不是“模仿某种画风”，而是：
 
 > **Narrative → Primary Variable → State → Sequence → Agency**
 
-知识是源（Markdown），网页是窗（HTML），Director Workspace 则把方法论变成可以选择、预览、应用与诊断的状态系统。
+Project 层进一步回答：**不同 Scene 为什么发生变化、变化是否有叙事原因、谁在跨 Scene 获得或失去视觉所有权。**
 
 ---
 
@@ -92,14 +132,17 @@ Visual Direction OS（视觉导演操作系统）把这套规则拆成知识系�
 - 🌐 **中英术语表**：统一对译，写 Brief 不词穷
 
 ### 🖥️ Director Workspace（visual-direction-os/）
-- 🧭 **System Map 主链路**：Narrative → Primary Variable → State → Sequence → Agency
-- ✍️ **Narrative Input**：自由文本场景 + Director Intent，候选 Reading 与 Grounding、Strategy、Sequence Preview、Apply Selected
+- 🧩 **Project Breakdown**：长叙事先形成 Project Reading 和 Scene Structure Proposal，Director 确认后才写入 Project Store
+- 🧭 **Scene Context Bar**：项目名、当前 Scene、位置、角色/agency，以及 Project Arc / Previous / Next 路由
+- 📊 **Project Arc**：七行语义矩阵检查整个项目的视觉变化
+- 🔎 **Cross-Scene Continuity**：检查 agency alignment、无叙事原因的视觉权力跳变、rupture 无视觉响应、同时多系统峰值等规则
+- ✍️ **Narrative Input**：自由文本场景 + Director Intent + Project Context，候选 Reading 与 Grounding、Strategy、Sequence Preview、Apply Selected
 - 📈 **Sequence Director / Sequence Score**：五段导演序列、视觉事件、tension probe、动态 Beat/Event replacement
 - 🎭 **Visual State Machine**：角色视觉状态机，可交互推演
 - 🌈 **Color Territory & Ownership**：色彩所有权矩阵——谁的画面，谁说了算
 - 🧪 **DIAGNOSE**：在共享 Scene State 上做确定性一致性诊断，并可路由回精确 DIRECT 控件
-- ♿ **可访问性**：键盘导航、`prefers-reduced-motion`、语义控件、`aria-live` 状态与错误
-- 📱 **四档响应式**：1440 / 1024 / 768 / 390 无横向溢出
+- ♿ **可访问性**：键盘导航、显式 move-left / move-right、`prefers-reduced-motion`、语义控件、`aria-live` 状态与错误
+- 📱 **响应式目标**：390 / 768 / 1024 / 1440；Project Arc 自身可横向滚动，禁止页面级横向溢出
 
 ---
 
@@ -109,8 +152,11 @@ Visual Direction OS（视觉导演操作系统）把这套规则拆成知识系�
 # 稳定知识浏览器
 visual-direction-os/index.html
 
-# v2.1 导演工作台 Demo Review
+# v2.1 单 Scene Demo Review
 visual-direction-os/director-v2.html?narrativeDemo=1
+
+# v2.1 Multi-Scene Project Demo Review
+visual-direction-os/director-v2.html?narrativeDemo=1&projectDemo=1
 
 # 或起本地静态服务器
 python3 -m http.server 4173 --directory visual-direction-os
@@ -124,7 +170,7 @@ python3 -m http.server 4173 --directory visual-direction-os
 node visual-direction-os/qa-check.js
 ```
 
-v2.1 的模型、Narrative contracts/state/client、Apply、Serverless handlers、源码 QA、发布组装与浏览器验收由 `.github/workflows/director-v2-ci.yml` 自动执行。
+v2.1 的 Scene / Project / Narrative contracts、state/runtime、Apply、Serverless handlers、源码 QA、发布组装与浏览器验收由 `.github/workflows/director-v2-ci.yml` 自动执行。
 
 ---
 
@@ -135,9 +181,9 @@ v2.1 的模型、Narrative contracts/state/client、Apply、Serverless handlers�
 | 🔁 克隆 | `git clone https://github.com/Caesar-ZZh/visual-direction-os.git` | 完整仓库 |
 | 📥 下载 | GitHub **Code → Download ZIP** | 静态知识库与 Demo 可直接查看 |
 | 🌐 前端 | GitHub Pages / 任意静态服务器 | 发布 `visual-direction-os/` 装配站点 |
-| 🤖 Narrative AI | Vercel / 兼容 Node Serverless | 部署 `api/narrative/`，服务端配置 API Key |
+| 🤖 Narrative / Project AI | Vercel / 兼容 Node Serverless | 部署 `api/narrative/` + `api/project/`，服务端配置 API Key |
 
-前端没有 React / Vue / 打包器运行时。真实 AI Narrative 模式需要 Serverless 网络请求；Demo fixture 不需要模型服务。
+前端没有 React / Vue / 打包器运行时。真实 AI 模式需要 Serverless 网络请求；显式 Demo fixture 不需要模型服务。
 
 ---
 
@@ -145,12 +191,15 @@ v2.1 的模型、Narrative contracts/state/client、Apply、Serverless handlers�
 
 | 你想做的事 | 去哪看 |
 |---|---|
-| 从一段剧情形成导演判断 | **Narrative → Interpret → Strategy → Sequence Preview** |
+| 把一段长故事拆成可导演的 Scene | **Project → Break Down Story → Confirm Scene Structure** |
+| 看多个 Scene 的整体视觉弧线 | **Project Arc** |
+| 检查两个 Scene 之间是否有因果断裂 | **Cross-Scene Continuity** |
+| 从一段场景形成导演判断 | **Narrative → Interpret → Strategy → Sequence Preview** |
 | 一眼看懂整个视觉框架 | **Learn → Knowledge Atlas / System Map** |
 | 看一个角色如何“长大” | **Character → State Machine** |
 | 给一段戏排视觉节奏 | **Sequence Director / Sequence Score** |
 | 决定这场戏谁掌镜 | **Color / Ownership** |
-| 检查导演变量是否互相打架 | **Diagnose** |
+| 检查单 Scene 导演变量是否互相打架 | **Diagnose** |
 | 查一个术语 | **Glossary**（中英对照） |
 
 ---
@@ -164,15 +213,22 @@ v2.1 的模型、Narrative contracts/state/client、Apply、Serverless handlers�
 │   ├── director-v2.html / director-v2-app.js / director-v2*.css
 │   ├── scene-state.js / state-machine.js / sequence-director*.js
 │   ├── narrative-contracts.js / narrative-state.js / narrative-api-client.js
-│   ├── narrative-workspace.js / narrative-workspace.css
-│   ├── narrative-apply.js / narrative-apply-ui.js
+│   ├── narrative-workspace.js / narrative-apply*.js
+│   ├── project-contracts.js / project-context.js / project-state.js
+│   ├── project-runtime.js / project-arc.js / project-continuity.js
+│   ├── project-breakdown-state.js / project-breakdown-api-client.js
+│   ├── project-workspace.js / project-workspace.css / project-context.css
+│   ├── project-bootstrap.js
 │   └── visual-qa.js / build-pages-site.js / tests
 ├── 🤖 api/narrative/
 │   ├── _contracts.js / _prompts.js / _openai-adapter.js / _handler.js
 │   └── interpret.js / strategy.js / sequence.js
+├── 🤖 api/project/
+│   ├── _contracts.js / _prompts.js / _openai-adapter.js / _handler.js
+│   └── breakdown.js
 ├── 📚 visual-direction-system/      # 知识文档内容源
 ├── 📐 docs/superpowers/             # v2.1 设计规格 + 实施计划
-├── vercel.json                      # Narrative Serverless function 配置
+├── vercel.json                      # Narrative + Project Serverless functions
 └── 📋 CONTEXT.md
 ```
 
@@ -183,8 +239,9 @@ v2.1 的模型、Narrative contracts/state/client、Apply、Serverless handlers�
 | 层 | 选型 | 为什么 |
 |---|---|---|
 | 前端 | Vanilla HTML / CSS / JS + Inline SVG | 零打包器、永久可读、静态发布友好 |
-| 状态 | Canonical Scene State + isolated Narrative Draft | AI 提案与导演最终状态明确隔离 |
-| Narrative AI | Node Serverless + OpenAI Responses API Structured Outputs | API Key 留服务端；三阶段结构化合同可替换 provider |
+| Project 状态 | Project Store + independent Scene snapshots + Project Runtime | Scene 可独立保存/恢复，Project 只做 context 与跨 Scene 关系 |
+| Scene 状态 | Canonical Scene State + isolated Narrative Draft | AI 提案与导演最终状态明确隔离 |
+| AI | Node Serverless + OpenAI Responses API Structured Outputs | API Key 留服务端；Project Breakdown 与 Narrative 三阶段分别有结构化合同 |
 | 知识源 | Markdown（中英双语） | 可维护、可检索、可继续扩展 |
 | 质量 | Node tests + Visual QA + Playwright Chromium + GitHub Actions | TDD 与真实浏览器回归共同守住行为边界 |
 
@@ -198,7 +255,7 @@ v2.1 的模型、Narrative contracts/state/client、Apply、Serverless handlers�
 
 建议仓库 Description 保持：
 
-> 🎬 Narrative Visual Direction System + 交互式导演操作系统 · 中英双语知识库，Sequence Director / State Machine / Narrative Input / Diagnostic 一应俱全
+> 🎬 Narrative Visual Direction System + 交互式导演操作系统 · 中英双语知识库，Project / Sequence Director / State Machine / Narrative Input / Diagnostic
 
 ---
 
@@ -210,8 +267,8 @@ v2.1 的模型、Narrative contracts/state/client、Apply、Serverless handlers�
 - 💡 **提点子** — 新模块、新案例、新可视化可以开 Issue 讨论
 - 🔧 **提 PR** — 请遵守两条原则：
   1. [`visual-direction-system/`](./visual-direction-system/) 的 Markdown 是**内容唯一源**，只追加、不无依据改写语义
-  2. 保持前端**零打包器依赖**，不要把 Narrative Serverless secret 移进浏览器
-- ✅ **自检** — 修改 Director Workspace 后跑对应 Node + Playwright 测试，并以 GitHub Actions exact-head success 为合并前证据
+  2. 保持前端**零打包器依赖**，不要把 Serverless secret 移进浏览器
+- ✅ **自检** — 修改 Director Workspace 后跑对应 Node + Playwright 测试，并以 GitHub Actions exact-head success 作为合并前证据
 
 ---
 
