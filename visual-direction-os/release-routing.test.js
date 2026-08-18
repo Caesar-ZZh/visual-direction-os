@@ -11,9 +11,11 @@ const systemFixture = `<!doctype html>
 
 const studioFixture = `<!doctype html>
 <html><head><title>Visual Direction OS · Director Workspace v2.1 staging</title></head><body>
+<a class="skip" href="#main">Skip</a>
 <aside class="v2-rail">
       <div class="brand">Visual Direction OS<small>Director Workspace · v2.1 staging</small></div>
 </aside>
+<main id="main"></main>
 <p class="eyebrow">Director Control Room / staging build</p>
 </body></html>`;
 
@@ -27,6 +29,7 @@ const studio = createStudioDocument(studioFixture);
 assert.match(studio, /<base href="\.\.\/">/);
 assert.match(studio, /data-system-home/);
 assert.match(studio, /href="\.\/"/);
+assert.match(studio, /href="studio\/#main"/, 'Studio-local hash links must remain inside /studio/ even with the parent asset base');
 assert.match(studio, /Director Workspace · v2\.1/);
 assert.match(studio, /Director Control Room/);
 assert.doesNotMatch(studio, /v2\.1 staging|staging build/i);
