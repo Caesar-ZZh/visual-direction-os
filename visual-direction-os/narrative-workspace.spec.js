@@ -53,7 +53,9 @@ test('Narrative typography separates directing decisions readable copy and syste
   const stageLabel = await computedFont(page, '[data-narrative-stage="1"] strong');
   const startAction = await computedFont(page, '[data-narrative-entry] button[type="submit"]');
   const liveCopy = await computedFont(page, '[data-narrative-live]');
-  const fieldMeta = await computedFont(page, '.narrative-field label');
+  const fieldLabel = await computedFont(page, '.narrative-field label');
+  const optionalMeta = await computedFont(page, '.narrative-field--intent label span');
+  const counterMeta = await computedFont(page, '[data-narrative-counter]');
 
   expect(fontRole(stageLabel.family)).toBe('serif');
   expect(stageLabel.size).toBeGreaterThanOrEqual(13);
@@ -61,7 +63,20 @@ test('Narrative typography separates directing decisions readable copy and syste
   expect(startAction.size).toBeGreaterThanOrEqual(14);
   expect(fontRole(liveCopy.family)).toBe('sans');
   expect(liveCopy.size).toBeGreaterThanOrEqual(12);
-  expect(fontRole(fieldMeta.family)).toBe('mono');
+  expect(fontRole(fieldLabel.family)).toBe('sans');
+  expect(fieldLabel.size).toBeGreaterThanOrEqual(12);
+  expect(fontRole(optionalMeta.family)).toBe('mono');
+  expect(optionalMeta.size).toBeGreaterThanOrEqual(10);
+  expect(fontRole(counterMeta.family)).toBe('mono');
+  expect(counterMeta.size).toBeGreaterThanOrEqual(12);
+
+  await expect(page.locator('[data-aside-index]')).toHaveCount(3);
+  await expect(page.locator('[data-aside-label]')).toHaveCount(3);
+  const asideIndex = await computedFont(page, '[data-aside-index]');
+  const asideLabel = await computedFont(page, '[data-aside-label]');
+  expect(fontRole(asideIndex.family)).toBe('mono');
+  expect(fontRole(asideLabel.family)).toBe('sans');
+  expect(asideLabel.size).toBeGreaterThanOrEqual(12);
 
   await reachSequencePreview(page);
 
