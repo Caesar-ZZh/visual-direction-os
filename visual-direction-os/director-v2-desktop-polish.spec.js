@@ -206,6 +206,8 @@ test('site-wide metadata uses one clean sans family while display and director c
   expect(typography.eyebrowWeight).toBeGreaterThanOrEqual(550);
   expect(typography.eyebrowWeight).toBeLessThanOrEqual(700);
 
+  await page.mouse.move(1000, 500);
+  await expect(page.locator('.v2-rail')).toHaveAttribute('data-expanded', 'false');
   await page.locator('[data-color-view="base"]').click();
   const basePaletteFamily = await page.locator('.palette-readout dt').first().evaluate(node => getComputedStyle(node).fontFamily);
   expect(basePaletteFamily).toBe(typography.bodyFamily);
