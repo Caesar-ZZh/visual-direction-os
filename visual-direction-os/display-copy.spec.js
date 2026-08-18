@@ -40,6 +40,6 @@ test('Director display copy omits terminal periods while prose keeps normal punc
   await expect(page.locator('[data-sequence-proposal-beat]')).toHaveCount(5);
   expectNoTerminalPeriod([
     (await page.locator('.narrative-section-head h3').textContent()).trim(),
-    (await page.locator('.narrative-apply-preview>strong').textContent()).trim()
+    (await page.locator('.narrative-apply-title>div>strong').textContent()).trim()
   ]);
 });
