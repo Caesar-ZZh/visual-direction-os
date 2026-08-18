@@ -11,18 +11,29 @@ function copyTree(source, output) {
   }
 }
 
+function createStudioDocument(directorHtml) {
+  const html = String(directorHtml || '');
+  if (!html.includes('<head>')) throw new Error('Director v2.1 document is missing <head>.');
+  if (html.includes('<base ')) return html;
+  return html.replace('<head>', '<head>\n  <base href="../">');
+}
+
 function buildSite(sourceDir, outputDir) {
   const source = path.resolve(sourceDir);
   const output = path.resolve(outputDir);
-  const legacyIndex = path.join(source, 'index.html');
+  const systemIndex = path.join(source, 'index.html');
   const directorIndex = path.join(source, 'director-v2.html');
-  if (!fs.existsSync(legacyIndex)) throw new Error(`Legacy index missing: ${legacyIndex}`);
+  if (!fs.existsSync(systemIndex)) throw new Error(`SYSTEM index missing: ${systemIndex}`);
   if (!fs.existsSync(directorIndex)) throw new Error(`Director v2.1 entry missing: ${directorIndex}`);
 
   fs.rmSync(output, { recursive: true, force: true });
   copyTree(source, output);
-  fs.copyFileSync(legacyIndex, path.join(output, 'knowledge.html'));
-  fs.copyFileSync(directorIndex, path.join(output, 'index.html'));
+
+  const studioDir = path.join(output, 'studio');
+  fs.mkdirSync(studioDir, { recursive: true });
+  const directorHtml = fs.readFileSync(directorIndex, 'utf8');
+  fs.writeFileSync(path.join(studioDir, 'index.html'), createStudioDocument(directorHtml));
+
   return output;
 }
 
@@ -32,4 +43,4 @@ if (require.main === module) {
   console.log(`Visual Direction OS Pages site assembled at ${output}`);
 }
 
-module.exports = { buildSite };
+module.exports = { buildSite, createStudioDocument };
