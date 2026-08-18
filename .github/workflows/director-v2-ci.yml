@@ -31,6 +31,8 @@ jobs:
           node visual-direction-os/visual-response.test.js
           node visual-direction-os/visual-qa.test.js
           node visual-direction-os/site-publish.test.js
+          node visual-direction-os/build-pages-site.test.js
+          node visual-direction-os/release-routing.test.js
           node visual-direction-os/narrative-contracts.test.js
           node visual-direction-os/narrative-state.test.js
           node visual-direction-os/narrative-api-client.test.js
@@ -68,6 +70,8 @@ jobs:
           node --check visual-direction-os/timeline-sync.js
           node --check visual-direction-os/visual-qa.js
           node --check visual-direction-os/build-pages-site.js
+          node --check visual-direction-os/build-pages-site.test.js
+          node --check visual-direction-os/release-routing.test.js
           node --check visual-direction-os/narrative-contracts.js
           node --check visual-direction-os/narrative-state.js
           node --check visual-direction-os/narrative-demo-fixtures.js
@@ -113,7 +117,8 @@ jobs:
             './visual-direction-os/diagnostic-routing.css',
             './visual-direction-os/narrative-workspace.css',
             './visual-direction-os/project-workspace.css',
-            './visual-direction-os/project-context.css'
+            './visual-direction-os/project-context.css',
+            './visual-direction-os/release-routing.css'
           ].map(path => fs.readFileSync(path,'utf8')).join('\n');
           const findings = qa.scanSource({html, css});
           findings.forEach(f => console.log(`${f.level} ${f.id}: ${f.message} ${f.detail || ''}`));
@@ -153,7 +158,9 @@ jobs:
           test -f visual-direction-os/project-workspace.css
           test -f visual-direction-os/project-context.css
           test -f visual-direction-os/project-bootstrap.js
-          ! grep -E "transition:[[:space:]]*all" visual-direction-os/director-v2.css visual-direction-os/director-v2-tools.css visual-direction-os/visual-response.css visual-direction-os/sequence-director.css visual-direction-os/diagnostic-routing.css visual-direction-os/narrative-workspace.css visual-direction-os/project-workspace.css visual-direction-os/project-context.css
+          test -f visual-direction-os/release-routing.css
+          test -f visual-direction-os/studio/index.html
+          ! grep -E "transition:[[:space:]]*all" visual-direction-os/director-v2.css visual-direction-os/director-v2-tools.css visual-direction-os/visual-response.css visual-direction-os/sequence-director.css visual-direction-os/diagnostic-routing.css visual-direction-os/narrative-workspace.css visual-direction-os/project-workspace.css visual-direction-os/project-context.css visual-direction-os/release-routing.css
           grep -q "prefers-reduced-motion" visual-direction-os/director-v2.css
           grep -q "prefers-reduced-motion" visual-direction-os/director-v2-tools.css
           grep -q "prefers-reduced-motion" visual-direction-os/visual-response.css
@@ -162,11 +169,18 @@ jobs:
           grep -q "prefers-reduced-motion" visual-direction-os/narrative-workspace.css
           grep -q "prefers-reduced-motion" visual-direction-os/project-workspace.css
           grep -q "prefers-reduced-motion" visual-direction-os/project-context.css
+          grep -q "prefers-reduced-motion" visual-direction-os/release-routing.css
       - name: Verify assembled Pages site
         run: |
           node visual-direction-os/build-pages-site.js visual-direction-os /tmp/vdos-site
-          cmp visual-direction-os/director-v2.html /tmp/vdos-site/index.html
-          cmp visual-direction-os/index.html /tmp/vdos-site/knowledge.html
+          grep -q 'studio-entry' /tmp/vdos-site/index.html
+          grep -q 'href="studio/"' /tmp/vdos-site/index.html
+          test -f /tmp/vdos-site/studio/index.html
+          grep -q '<base href="../">' /tmp/vdos-site/studio/index.html
+          grep -q 'data-system-home' /tmp/vdos-site/studio/index.html
+          ! grep -Eqi 'v2\.1 staging|staging build' /tmp/vdos-site/studio/index.html
+          cmp visual-direction-os/director-v2.html /tmp/vdos-site/director-v2.html
+          test -f /tmp/vdos-site/release-routing.css
           test -f /tmp/vdos-site/director-v2-app.js
           test -f /tmp/vdos-site/scene-state.js
           test -f /tmp/vdos-site/visual-response.js
@@ -208,6 +222,9 @@ jobs:
           npm install --no-save @playwright/test@1.55.0
           npx playwright install --with-deps chromium
           python3 -m http.server 4173 --directory visual-direction-os >/tmp/vdos-server.log 2>&1 &
-          SERVER_PID=$!
-          trap 'kill $SERVER_PID || true' EXIT
-          npx playwright test visual-direction-os/director-v2-browser.spec.js visual-direction-os/director-v2-desktop-polish.spec.js visual-direction-os/sequence-director-playback.spec.js visual-direction-os/diagnostic-routing.spec.js visual-direction-os/narrative-workspace.spec.js visual-direction-os/narrative-clarification.spec.js visual-direction-os/narrative-recovery.spec.js visual-direction-os/display-copy.spec.js visual-direction-os/project-workspace.spec.js --reporter=line --workers=1
+          SOURCE_SERVER_PID=$!
+          node visual-direction-os/build-pages-site.js visual-direction-os /tmp/vdos-site
+          python3 -m http.server 4180 --directory /tmp/vdos-site >/tmp/vdos-release-server.log 2>&1 &
+          RELEASE_SERVER_PID=$!
+          trap 'kill $SOURCE_SERVER_PID $RELEASE_SERVER_PID || true' EXIT
+          npx playwright test visual-direction-os/director-v2-browser.spec.js visual-direction-os/director-v2-desktop-polish.spec.js visual-direction-os/sequence-director-playback.spec.js visual-direction-os/diagnostic-routing.spec.js visual-direction-os/narrative-workspace.spec.js visual-direction-os/narrative-clarification.spec.js visual-direction-os/narrative-recovery.spec.js visual-direction-os/display-copy.spec.js visual-direction-os/project-workspace.spec.js visual-direction-os/release-routing.spec.js --reporter=line --workers=1
