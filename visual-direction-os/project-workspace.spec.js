@@ -81,6 +81,48 @@ test('Project Breakdown becomes an isolated five-Scene directing workflow', asyn
   expect(restoredSceneOne.variables.color.territory).toBe(sceneOneSnapshot.variables.color.territory);
 });
 
+test('Project metadata and directed Scene state survive a reload without inventing undirected Arc values', async ({ page }) => {
+  await page.setViewportSize({ width:1280, height:960 });
+  await page.goto(url);
+  await confirmFiveSceneProject(page);
+
+  await page.getByRole('button', { name:'EDIT PROJECT' }).click();
+  await expect(page.getByRole('heading', { name:'EDIT PROJECT' })).toBeVisible();
+  await page.locator('[data-project-meta-field="title"]').fill('Agency Recovery Study');
+  await page.locator('[data-project-meta-field="projectIntent"]').fill('Track when visual authority moves from institution to character.');
+  await page.getByRole('button', { name:'SAVE PROJECT' }).click();
+  await expect(page.getByRole('heading', { name:'Agency Recovery Study' })).toBeVisible();
+
+  await page.locator('.project-scene-node').first().click();
+  await applyNarrativeDemo(page, 'The institution still owns the frame until recognition begins to destabilize compliance.');
+  const beforeReload = await page.evaluate(() => window.VDOSScene.getSceneState());
+
+  await page.getByRole('button', { name:/PROJECT ARC/i }).click();
+  const beforeCells = page.locator('[data-project-arc-row="camera"] [data-scene-id]');
+  await expect(beforeCells.nth(0)).not.toHaveText('—');
+  await expect(beforeCells.nth(1)).toHaveText('—');
+
+  await page.reload();
+  await expect(page.getByRole('heading', { name:'Agency Recovery Study' })).toBeVisible();
+  await expect(page.locator('.project-progress')).toContainText('05 SCENES');
+
+  const afterCells = page.locator('[data-project-arc-row="camera"] [data-scene-id]');
+  await expect(afterCells).toHaveCount(5);
+  await expect(afterCells.nth(0)).not.toHaveText('—');
+  await expect(afterCells.nth(1)).toHaveText('—');
+
+  await page.locator('.project-scene-node').first().click();
+  const afterReload = await page.evaluate(() => window.VDOSScene.getSceneState());
+  expect(afterReload.agency).toBe(beforeReload.agency);
+  expect(afterReload.variables.camera.perspective).toBe(beforeReload.variables.camera.perspective);
+  expect(afterReload.variables.color.territory).toBe(beforeReload.variables.color.territory);
+
+  await page.getByRole('button', { name:/PROJECT ARC/i }).click();
+  await page.locator('.project-scene-node').nth(1).click();
+  const sceneTwo = await page.evaluate(() => window.VDOSScene.getSceneState());
+  expect(sceneTwo.variables.camera.perspective).not.toBe(beforeReload.variables.camera.perspective);
+});
+
 test('Continuity routes a deterministic rupture boundary without auto-fix', async ({ page }) => {
   await page.setViewportSize({ width:1024, height:900 });
   await page.goto(url);
