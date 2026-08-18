@@ -34,10 +34,18 @@ async function run(handler, req) {
     production: true
   });
 
+  const projectContext = {
+    projectIntent: 'End with reclaimed agency.',
+    sceneRole: 'rupture',
+    narrativeFunction: 'Recognition becomes explicit refusal.',
+    startingState: 'Agency is contested.',
+    endingState: 'The character refuses.',
+    agencyTransition: ['contested', 'character']
+  };
   const request = {
     method: 'POST',
     headers: { origin: 'https://caesar-zzh.github.io' },
-    body: { narrative: 'A character recognizes an assignment as control and refuses it.', directorIntent: 'End with reclaimed agency.' }
+    body: { narrative: 'A character recognizes an assignment as control and refuses it.', directorIntent: 'End with reclaimed agency.', projectContext }
   };
   const ok = await run(handler, request);
   assert.equal(ok.statusCode, 200);
@@ -46,6 +54,11 @@ async function run(handler, req) {
   assert.equal(ok.jsonBody.readings.length, 2);
   assert.equal(calls[0].stage, 'interpret');
   assert.equal(calls[0].input.narrative, request.body.narrative);
+  assert.deepEqual(calls[0].input.projectContext, projectContext, 'Interpret provider must receive validated Project Context');
+
+  const invalidContext = await run(handler, { ...request, body: { ...request.body, projectContext: { ...projectContext, camera: { perspective: 'character' } } } });
+  assert.equal(invalidContext.statusCode, 400);
+  assert.equal(invalidContext.jsonBody.error.code, 'BAD_REQUEST');
 
   const blocked = await run(handler, { ...request, headers: { origin: 'https://evil.example' } });
   assert.equal(blocked.statusCode, 403);
