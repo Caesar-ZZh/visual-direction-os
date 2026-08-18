@@ -4,6 +4,8 @@
 
 Approved direction: **SYSTEM remains the public homepage; STUDIO becomes the dedicated Director Workspace at `/studio/`.**
 
+Implementation note: release-space navigation is injected into the assembled `_site` output rather than rewriting the large SYSTEM / Director source documents. This keeps the source experiences stable while giving production Pages the two-space chrome.
+
 ## Goal
 
 Publish Visual Direction OS as two coordinated product spaces without sacrificing the current editorial knowledge experience or exposing unfinished staging behavior as the default homepage.
@@ -36,10 +38,10 @@ STUDIO exposes a visible route back to SYSTEM. Returning to SYSTEM must not eras
 Production Pages routes:
 
 ```text
-/                         SYSTEM
-/studio/                  STUDIO
-/studio/?projectDemo=1&narrativeDemo=1   explicit review fixture
-/director-v2.html         retained as a non-primary compatibility/staging artifact
+/                                      SYSTEM
+/studio/                               STUDIO
+/studio/?projectDemo=1&narrativeDemo=1 explicit review fixture
+/director-v2.html                      compatibility / exact-commit staging artifact
 ```
 
 The public root must never be replaced by `director-v2.html` during Pages assembly.
@@ -51,50 +53,47 @@ The public root must never be replaced by `director-v2.html` during Pages assemb
 The assembler must:
 
 1. Copy the current `visual-direction-os/` tree into the output directory.
-2. Preserve `index.html` as the deployed root `index.html` unchanged.
+2. Keep SYSTEM as the deployed root and inject only the restrained SYSTEM → STUDIO release bridge plus the shared release stylesheet.
 3. Create `_site/studio/index.html` from `director-v2.html`.
 4. Make the generated Studio document resolve existing CSS/JS assets from the parent directory without duplicating the whole asset tree.
-5. Preserve `director-v2.html` in the output as a compatibility/staging entry.
+5. Add desktop and mobile STUDIO → SYSTEM release routes without making SYSTEM a fifth Director mode.
+6. Remove staging-only wording from the published Studio chrome while keeping the source staging entry intact.
+7. Preserve `director-v2.html` in the output as a compatibility / exact-commit entry.
 
-The preferred implementation is to inject `<base href="../">` into the generated Studio document immediately after `<head>`, so all existing relative asset URLs resolve to the shared root assets. Query parameters remain on `/studio/` and continue to drive explicit demo modes.
+The generated Studio injects `<base href="../">` so existing CSS/JS and Project bootstrap dynamic dependencies resolve to the shared root assets. Because a base element changes hash-link resolution, generated `href="#..."` links are rewritten to `href="studio/#..."` so skip links and mobile Director-mode anchors stay inside `/studio/`.
 
 ## Development preview behavior
 
-RawGitHack and direct branch review still use `director-v2.html` as the exact-commit Studio staging entry. SYSTEM may link to a small source-level `/studio/` redirect shim for branch preview, but the Pages assembler overwrites the published `_site/studio/index.html` with the full generated Studio document.
+RawGitHack and direct branch review continue to use `director-v2.html` as the exact-commit Studio staging entry. A source-level `visual-direction-os/studio/index.html` redirect shim makes `/studio/` convenient during branch review; Pages assembly overwrites the published `_site/studio/index.html` with the full generated Studio document.
 
-The preview shim must preserve `location.search` and `location.hash` when redirecting to `../director-v2.html`.
+The preview shim preserves `location.search` and `location.hash` when redirecting to `../director-v2.html`.
 
 ## SYSTEM → STUDIO bridge
 
-SYSTEM gets one restrained, first-class STUDIO entry in the existing navigation language. It should read as a transition between spaces rather than a fifth knowledge chapter.
+SYSTEM gets one restrained, first-class STUDIO entry in the existing navigation language. It reads as a transition between spaces rather than a fifth knowledge chapter.
 
 Required behavior:
 
-- Desktop rail: visible `ENTER STUDIO` / `STUDIO` action separated from chapter navigation.
-- Mobile header/navigation: equivalent accessible entry.
+- Desktop rail: `STUDIO / Enter Director Workspace` action separated from chapter navigation.
+- Mobile navigation drawer: the same entry remains reachable; the rail may scroll vertically if needed.
 - Link target: `studio/`.
 - No Scene State mutation or Project creation occurs from SYSTEM.
 
-A secondary hero CTA is optional only if it does not disturb the existing editorial hierarchy; the MVP requires the navigation bridge, not a new landing-page redesign.
+A secondary hero CTA is not required for the MVP.
 
 ## STUDIO → SYSTEM bridge
 
-STUDIO gets one persistent but quiet `SYSTEM` route in the rail/brand area.
+Desktop STUDIO gets a quiet `SYSTEM / Knowledge Space` route in the rail/brand area.
 
-Because the same `director-v2.html` source is used both at root during staging and under `/studio/` in production, the link target is resolved at runtime:
+Published Studio uses `<base href="../">`; therefore `href="./"` resolves to the Visual Direction OS root and remains deployment-path agnostic.
 
-```text
-if pathname contains `/studio/` → `../`
-otherwise → `index.html`
-```
-
-This avoids hard-coding the GitHub Pages repository path and keeps local/RawGitHack staging functional.
+At mobile breakpoints the desktop rail is hidden. SYSTEM therefore appears as a separate compact `SYSTEM ↗` control, not as a fifth item in Learn / Narrative / Direct / Diagnose.
 
 ## Production and demo separation
 
 `projectDemo=1` and `narrativeDemo=1` remain explicit fixtures only. Production `/studio/` does not silently enable fixtures.
 
-The Studio chrome should no longer describe itself as a generic "staging build" in user-facing copy. Review fixtures may expose a compact `DEMO FIXTURE` status where already supported, but the core brand becomes `Director Workspace · v2.1` / `Director Control Room`.
+Published Studio chrome uses `Director Workspace · v2.1` and `Director Control Room`; source `director-v2.html` may retain staging wording for exact-commit development review.
 
 No login, cloud sync, collaboration, image generation or automatic continuity repair is added in Sector 8.
 
@@ -104,30 +103,34 @@ No login, cloud sync, collaboration, image generation or automatic continuity re
 - Returning SYSTEM → STUDIO restores the previously saved Project when persistence is available.
 - If persistence is unavailable, STUDIO still initializes through the Sector 7 optional-persistence fallback.
 - SYSTEM remains usable even if all Studio-specific scripts fail.
+- SYSTEM never becomes a Director mode.
 
 ## Release gates
 
 Pages assembly must verify:
 
-1. `_site/index.html` is byte-identical to source `visual-direction-os/index.html`.
+1. `_site/index.html` still contains the SYSTEM editorial experience and now includes the `studio/` release route.
 2. `_site/studio/index.html` exists and is generated from `director-v2.html` with parent-asset resolution.
-3. `_site/director-v2.html` remains available.
-4. SYSTEM contains a valid `studio/` route.
-5. STUDIO contains a valid SYSTEM route.
-6. Existing Project Node/syntax tests continue to pass.
-7. Chromium opens both `/` and `/studio/?narrativeDemo=1&projectDemo=1` with no page-level horizontal overflow at mobile and desktop widths.
-8. The Sector 7 persistence-failure browser regression remains green.
+3. Studio-local hash links remain under `/studio/` despite the parent asset base.
+4. `_site/director-v2.html` remains available unchanged as a compatibility entry.
+5. SYSTEM contains a valid `studio/` route.
+6. STUDIO contains desktop and mobile SYSTEM routes.
+7. Published Studio does not present itself as `staging`.
+8. Existing Project Node/syntax tests continue to pass.
+9. Chromium opens both `/` and `/studio/?narrativeDemo=1&projectDemo=1` with no page-level horizontal overflow at mobile and desktop widths.
+10. Mobile Studio still exposes exactly four Director modes: Learn / Narrative / Direct / Diagnose.
+11. The Sector 7 persistence-failure browser regression remains green.
 
 ## Deployment safety
 
-`.github/workflows/pages.yml` continues to deploy only from `master` (plus manual dispatch). Development-branch work and Draft PR review cannot replace the current live SYSTEM homepage.
+`.github/workflows/pages.yml` continues to deploy only from `master` plus manual dispatch. Development-branch work and Draft PR review cannot replace the current live SYSTEM homepage.
 
 The rollout sequence is:
 
 ```text
 Development branch
 → build + browser gates
-→ product review of exact commit
+→ product review
 → merge readiness
 → master
 → Pages assembly
@@ -139,7 +142,7 @@ Development branch
 
 - No new landing page.
 - No framework migration.
-- No React/Vue/build bundler.
+- No React / Vue / build bundler.
 - No account system.
 - No cloud persistence.
 - No automatic redirect from `/` to STUDIO.
