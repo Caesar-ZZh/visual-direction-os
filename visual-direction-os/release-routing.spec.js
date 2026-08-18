@@ -40,10 +40,15 @@ test('mobile STUDIO exposes SYSTEM without adding a fifth Director mode', async 
   await page.setViewportSize({ width:390, height:844 });
   await page.goto(`${base}/studio/?narrativeDemo=1&projectDemo=1`);
 
-  await expect(page.locator('.release-system-home-mobile')).toBeVisible();
+  const systemRoute = page.locator('.release-system-home-mobile');
+  await expect(systemRoute).toBeVisible();
+  const systemRouteBox = await systemRoute.boundingBox();
+  expect(systemRouteBox).not.toBeNull();
+  expect(systemRouteBox.height).toBeGreaterThanOrEqual(44);
+
   const modeNames = await page.locator('[data-mode]').evaluateAll(nodes => [...new Set(nodes.map(node => node.dataset.mode))]);
   expect(modeNames.sort()).toEqual(['diagnose','direct','learn','narrative']);
-  await page.locator('.release-system-home-mobile').click();
+  await systemRoute.click();
   await expect(page.locator('#overview-title')).toBeVisible();
 });
 
