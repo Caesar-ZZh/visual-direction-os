@@ -25,6 +25,7 @@
     const storage = options.storage === undefined ? defaultStorage() : options.storage;
     const key = String(options.key || DEFAULT_KEY);
     const validateProjectState = options.validateProjectState || contracts.validateProjectState;
+    const onError = typeof options.onError === 'function' ? options.onError : () => {};
 
     if (typeof validateProjectState !== 'function') throw new Error('Project persistence requires validateProjectState.');
 
@@ -70,7 +71,12 @@
         throw new Error('Project persistence requires a Project Store subscription interface.');
       }
       return projectStore.subscribe(project => {
-        if (project) save(project);
+        if (!project) return;
+        try {
+          save(project);
+        } catch (error) {
+          onError(error);
+        }
       });
     }
 
