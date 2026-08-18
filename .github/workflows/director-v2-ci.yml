@@ -13,6 +13,17 @@ on:
       - ".github/workflows/pages.yml"
       - "README.md"
       - "CONTEXT.md"
+  pull_request:
+    branches: [master]
+    paths:
+      - "visual-direction-os/**"
+      - "api/narrative/**"
+      - "api/project/**"
+      - "vercel.json"
+      - ".github/workflows/director-v2-ci.yml"
+      - ".github/workflows/pages.yml"
+      - "README.md"
+      - "CONTEXT.md"
   workflow_dispatch:
 
 permissions:
