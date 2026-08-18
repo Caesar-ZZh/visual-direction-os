@@ -5,8 +5,10 @@
 })(typeof window !== 'undefined' ? window : globalThis, root => {
   'use strict';
 
-  const VERSION = '20260818-1308';
+  const VERSION = '20260818-1420';
   const DEMO_STORY = 'A young employee enters a routine assignment meeting expecting to comply. During the conversation, he realizes the assignment itself is a mechanism of control. Recognition turns into explicit refusal, and he leaves the institution acting from self-authored agency.';
+  const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const clone = value => value == null ? value : JSON.parse(JSON.stringify(value));
 
   function deriveProjectApiBase(narrativeBase = '') {
     const base = String(narrativeBase || '').trim().replace(/\/+$/, '');
@@ -20,6 +22,51 @@
       projectIntent:demoMode ? 'End with the character reclaiming agency.' : '',
       sourceNarrative:demoMode ? DEMO_STORY : ''
     };
+  }
+
+  function createNarrativeApiProxy(baseApi, getContext) {
+    if (!baseApi || typeof baseApi.interpret !== 'function') throw new Error('Narrative API proxy requires a base API client.');
+    return {
+      interpret(payload, signal) {
+        const projectContext = typeof getContext === 'function' ? getContext() : null;
+        return baseApi.interpret(projectContext ? { ...(payload || {}), projectContext:clone(projectContext) } : { ...(payload || {}) }, signal);
+      },
+      strategy(payload, signal) { return baseApi.strategy(payload, signal); },
+      sequence(payload, signal) { return baseApi.sequence(payload, signal); }
+    };
+  }
+
+  function renderSceneContextBar(project, sceneId = project?.activeSceneId) {
+    const order = Array.isArray(project?.sceneOrder) ? project.sceneOrder : [];
+    const index = order.indexOf(sceneId);
+    const scene = index >= 0 ? project?.scenes?.[sceneId] : null;
+    if (!scene) return '';
+    const agency = Array.isArray(scene.narrativeRole?.agencyTransition)
+      ? scene.narrativeRole.agencyTransition.map(value => String(value).toUpperCase()).join(' → ')
+      : '—';
+    const previousId = index > 0 ? order[index - 1] : null;
+    const nextId = index < order.length - 1 ? order[index + 1] : null;
+    return `<div class="project-scene-context-inner">
+      <div class="project-scene-context-id"><span>${esc(String(project.title || 'Untitled Project').toUpperCase())}</span><strong>${String(index + 1).padStart(2,'0')} / ${String(order.length).padStart(2,'0')} · ${esc(scene.title)}</strong><small>${esc(String(scene.narrativeRole?.role || '').toUpperCase())} · ${esc(agency)}</small></div>
+      <div class="project-scene-context-actions">
+        <button type="button" data-project-scene-nav="project">← PROJECT ARC</button>
+        <button type="button" data-project-scene-nav="previous" data-scene-id="${esc(previousId || '')}" ${previousId ? '' : 'disabled'}>PREV SCENE</button>
+        <button type="button" data-project-scene-nav="next" data-scene-id="${esc(nextId || '')}" ${nextId ? '' : 'disabled'}>NEXT SCENE →</button>
+      </div>
+    </div>`;
+  }
+
+  function renderNarrativeProjectContext(context) {
+    if (!context) return '';
+    const agency = Array.isArray(context.agencyTransition) ? context.agencyTransition.map(value => String(value).toUpperCase()).join(' → ') : '—';
+    return `<section class="project-narrative-context" aria-label="Project context for current Scene">
+      <header><span>PROJECT CONTEXT</span><strong>Upstream intent · not confirmed Scene truth</strong></header>
+      <div><span>ROLE</span><strong>${esc(String(context.sceneRole || '').toUpperCase())}</strong></div>
+      <div><span>FUNCTION</span><strong>${esc(context.narrativeFunction)}</strong></div>
+      <div><span>START</span><strong>${esc(context.startingState)}</strong></div>
+      <div><span>END</span><strong>${esc(context.endingState)}</strong></div>
+      <div><span>AGENCY</span><strong>${esc(agency)}</strong></div>
+    </section>`;
   }
 
   function loadStyle(href) {
@@ -48,7 +95,8 @@
   async function loadProjectDependencies() {
     await Promise.all([
       loadStyle(`project-workspace.css?v=${VERSION}`),
-      loadScript(`project-contracts.js?v=${VERSION}`, 'VDOSProjectContracts')
+      loadScript(`project-contracts.js?v=${VERSION}`, 'VDOSProjectContracts'),
+      loadScript(`project-context.js?v=${VERSION}`, 'VDOSProjectContextContract')
     ]);
     await Promise.all([
       loadScript(`project-state.js?v=${VERSION}`, 'VDOSProjectState'),
@@ -78,6 +126,18 @@
     return projectRoot;
   }
 
+  function ensureSceneContextRoot(projectRoot) {
+    let node = document.querySelector('#project-scene-context-bar');
+    if (node) return node;
+    node = document.createElement('aside');
+    node.id = 'project-scene-context-bar';
+    node.className = 'project-scene-context-bar';
+    node.hidden = true;
+    node.setAttribute('aria-label','Active Project Scene context');
+    projectRoot.insertAdjacentElement('afterend', node);
+    return node;
+  }
+
   function sceneAdapter(scene) {
     return {
       getState:() => scene.getSceneState(),
@@ -95,6 +155,75 @@
     return deriveProjectApiBase(narrative);
   }
 
+  function narrativeBase() {
+    return document.querySelector('meta[name="vdos-narrative-api-base"]')?.content?.trim() || '';
+  }
+
+  function currentProjectContext(store) {
+    const project = store.getProject();
+    const sceneId = project?.activeSceneId;
+    if (!sceneId) return null;
+    return root.VDOSProjectContextContract.projectContextForScene(project, sceneId);
+  }
+
+  function injectNarrativeProjectContext(context) {
+    const narrativeRoot = document.querySelector('#narrative-root');
+    if (!narrativeRoot) return;
+    narrativeRoot.querySelector('.project-narrative-context')?.remove();
+    if (!context) return;
+    const stages = narrativeRoot.querySelector('.narrative-stages');
+    if (stages) stages.insertAdjacentHTML('afterend', renderNarrativeProjectContext(context));
+  }
+
+  function createNarrativeRuntime(store, params) {
+    let controller = root.VDOSNarrativeWorkspaceController || null;
+    const demoMode = params.get('narrativeDemo') === '1';
+    const baseUrl = narrativeBase();
+
+    function destroyController() {
+      controller?.destroy?.();
+      controller = null;
+      root.VDOSNarrativeWorkspaceController = null;
+    }
+
+    return {
+      getState() { return controller?.getDraftState?.() || null; },
+      abort() { destroyController(); },
+      restore(snapshot) {
+        const narrativeRoot = document.querySelector('#narrative-root');
+        if (!narrativeRoot || !root.VDOSNarrativeWorkspace || !root.VDOSNarrativeState || !root.VDOSNarrativeApiClient) return null;
+        destroyController();
+        const projectContext = currentProjectContext(store);
+        const baseApi = root.VDOSNarrativeApiClient.createNarrativeApiClient({ baseUrl, demoMode, fixtures:root.VDOSNarrativeDemoFixtures });
+        const api = createNarrativeApiProxy(baseApi, () => currentProjectContext(store));
+        const draft = root.VDOSNarrativeState.createNarrativeState(snapshot || {});
+        controller = root.VDOSNarrativeWorkspace.initNarrativeWorkspace(narrativeRoot, { draft, api, demoMode, baseUrl });
+        root.VDOSNarrativeWorkspaceController = controller;
+        injectNarrativeProjectContext(projectContext);
+        return controller;
+      }
+    };
+  }
+
+  function createSequenceRuntime(scene) {
+    return {
+      getState() { return root.VDOSSequenceDirectorController?.getSequence?.() || null; },
+      restore(snapshot) {
+        const controller = root.VDOSSequenceDirectorController;
+        if (!controller?.setSequence) return null;
+        const sequence = snapshot || root.VDOSSequenceDirectorModel?.DEFAULT_SEQUENCE;
+        if (!sequence) return null;
+        controller.setSequence(sequence, { playhead:scene.getSceneState?.()?.playhead || 0 });
+        return sequence;
+      }
+    };
+  }
+
+  function scrollToNarrative() {
+    document.querySelector('[data-mode="narrative"]')?.click();
+    document.querySelector('#narrative-panel')?.scrollIntoView({ behavior:'auto', block:'start' });
+  }
+
   async function initProjectShell(options = {}) {
     await loadProjectDependencies();
     if (root.VDOSProjectContext) return root.VDOSProjectContext;
@@ -103,6 +232,7 @@
     const params = new URLSearchParams(root.location?.search || '');
     const demoMode = options.demoMode ?? params.get('projectDemo') === '1';
     const rootNode = options.rootNode || ensureRoot();
+    const sceneContextRoot = ensureSceneContextRoot(rootNode);
     const store = options.projectStore || root.VDOSProjectState.createProjectStore();
     if (!store.getProject()) store.createProject(createInitialProjectInput(demoMode));
     const breakdownState = options.breakdownState || root.VDOSProjectBreakdownState.createProjectBreakdownState();
@@ -111,10 +241,13 @@
       demoMode,
       fixtures:root.VDOSProjectBreakdownFixtures
     });
+    const narrativeRuntime = createNarrativeRuntime(store, params);
     const runtime = options.projectRuntime || root.VDOSProjectRuntime.createProjectRuntime({
       projectStore:store,
       sceneRuntime:sceneAdapter(scene),
-      abortTransient:() => root.VDOSNarrativeWorkspaceController?.abortAll?.()
+      narrativeRuntime,
+      sequenceRuntime:createSequenceRuntime(scene),
+      abortTransient:() => narrativeRuntime.abort()
     });
     const workspace = root.VDOSProjectWorkspace.initProjectWorkspace(rootNode, {
       projectStore:store,
@@ -122,17 +255,57 @@
       projectRuntime:runtime,
       apiClient
     });
-    const context = { store, breakdownState, apiClient, runtime, workspace, demoMode, rootNode };
+    const context = { store, breakdownState, apiClient, runtime, workspace, demoMode, rootNode, sceneContextRoot };
     root.VDOSProjectContext = context;
+
+    function syncSceneContext() {
+      const loadedSceneId = runtime.getLoadedSceneId?.();
+      const project = store.getProject();
+      const html = loadedSceneId ? renderSceneContextBar(project, loadedSceneId) : '';
+      sceneContextRoot.innerHTML = html;
+      sceneContextRoot.hidden = !html;
+    }
+
+    sceneContextRoot.addEventListener('click', async event => {
+      const button = event.target.closest?.('[data-project-scene-nav]');
+      if (!button || button.disabled) return;
+      const action = button.dataset.projectSceneNav;
+      if (action === 'project') {
+        workspace.showProject();
+        rootNode.scrollIntoView({behavior:'auto',block:'start'});
+        return;
+      }
+      const sceneId = button.dataset.sceneId;
+      if (sceneId) {
+        await runtime.switchScene(sceneId);
+        syncSceneContext();
+        scrollToNarrative();
+      }
+    });
+
+    store.subscribe(syncSceneContext);
+    runtime.subscribe(syncSceneContext);
+
+    let sceneSyncChain = Promise.resolve();
+    root.addEventListener('vdos:scene-state', event => {
+      const source = String(event?.detail?.source || '');
+      const loadedSceneId = runtime.getLoadedSceneId?.();
+      if (!loadedSceneId) return;
+      const directed = source === 'narrative:apply';
+      const inProgress = source === 'ownership-demo' || source.startsWith('workspace:') || source.startsWith('sequence-director:');
+      if (!directed && !inProgress) return;
+      sceneSyncChain = sceneSyncChain.then(async () => {
+        await runtime.captureActiveScene();
+        if (directed) runtime.markVisualDirected(loadedSceneId);
+        else runtime.markVisualInProgress(loadedSceneId);
+      }).catch(error => console.error(error));
+    });
 
     root.addEventListener('vdos:project-scene-open', event => {
       const sceneId = event?.detail?.sceneId;
-      const record = store.getProject()?.scenes?.[sceneId];
-      if (!record) return;
-      const narrativeButton = document.querySelector('[data-mode="narrative"]');
-      if (narrativeButton) narrativeButton.click();
-      const target = document.querySelector('#narrative-panel');
-      if (target) target.scrollIntoView({ behavior:'auto', block:'start' });
+      if (!store.getProject()?.scenes?.[sceneId]) return;
+      syncSceneContext();
+      scrollToNarrative();
     });
     return context;
   }
@@ -158,5 +331,13 @@
     else autoInit();
   }
 
-  return { deriveProjectApiBase, createInitialProjectInput, loadProjectDependencies, initProjectShell };
+  return {
+    deriveProjectApiBase,
+    createInitialProjectInput,
+    createNarrativeApiProxy,
+    renderSceneContextBar,
+    renderNarrativeProjectContext,
+    loadProjectDependencies,
+    initProjectShell
+  };
 });
