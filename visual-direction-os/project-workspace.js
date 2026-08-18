@@ -65,7 +65,7 @@
       <header class="project-header">
         <div><p class="project-kicker">PROJECT CONTEXT</p><h2>${esc(safeProject.title || 'Untitled Project')}</h2><p>${esc(safeProject.projectIntent || 'Build the narrative structure, then direct each Scene as part of one visual system')}</p></div>
         <div class="project-progress" aria-label="Project progress"><span>${String(progress.total).padStart(2, '0')} SCENES</span><strong>${progress.directed} DIRECTED</strong><small>${progress.pending} PENDING</small></div>
-        <div class="project-header-actions"><button type="button" data-action="show-breakdown">BREAK DOWN STORY</button><button type="button" data-action="add-manual-scene">+ ADD SCENE</button></div>
+        <div class="project-header-actions"><button type="button" data-action="edit-project">EDIT PROJECT</button><button type="button" data-action="show-breakdown">BREAK DOWN STORY</button><button type="button" data-action="add-manual-scene">+ ADD SCENE</button></div>
       </header>
       <section class="project-structure" aria-labelledby="project-structure-title"><div class="project-section-head"><p>SCENE STRUCTURE</p><h3 id="project-structure-title">Narrative progression</h3></div>${renderSceneRail(safeProject)}</section>
       <section class="project-arc" aria-labelledby="project-arc-title"><div class="project-section-head"><p>PROJECT SCALE</p><h2 id="project-arc-title">Project Arc</h2><span>${progress.directed} / ${progress.total} DIRECTED</span></div>${renderArc(safeProject, arcState)}</section>
@@ -73,8 +73,19 @@
     </section>`;
   }
 
+  function renderProjectEditor(project, errorMessage = '') {
+    const safeProject = project || { title:'Untitled Project', projectIntent:'' };
+    return `<section class="project-breakdown project-meta-editor" aria-labelledby="project-editor-title">
+      <header><p>PROJECT / METADATA</p><h2 id="project-editor-title">EDIT PROJECT</h2><span>PROJECT ONLY · SCENE STATE UNCHANGED</span></header>
+      <label>PROJECT TITLE<input data-project-meta-field="title" maxlength="120" value="${esc(safeProject.title || '')}"></label>
+      <label>DIRECTOR INTENT <small>OPTIONAL</small><textarea data-project-meta-field="projectIntent" maxlength="1000">${esc(safeProject.projectIntent || '')}</textarea></label>
+      <div class="project-breakdown-actions"><button type="button" data-action="cancel-project-edit">CANCEL</button><button type="button" data-action="save-project-edit">SAVE PROJECT</button></div>
+      <p class="project-request-status" role="status">${esc(errorMessage)}</p>
+    </section>`;
+  }
+
   function renderBreakdownInput(project, draft) {
-    return `<section class="project-breakdown" aria-labelledby="project-breakdown-title"><header><p>PROJECT / STRUCTURE PROPOSAL</p><h2 id="project-breakdown-title">Break down story</h2><span>PROPOSAL · PROJECT NOT YET MUTATED</span></header><label>PROJECT STORY<textarea data-project-field="sourceNarrative" maxlength="12000">${esc(draft?.sourceNarrative || project?.sourceNarrative || '')}</textarea></label><label>DIRECTOR INTENT <small>OPTIONAL</small><textarea data-project-field="directorIntent" maxlength="1000">${esc(draft?.directorIntent || project?.projectIntent || '')}</textarea></label><div class="project-breakdown-actions"><button type="button" data-action="cancel-breakdown">BACK TO PROJECT</button><button type="button" data-action="start-breakdown">BREAK DOWN STORY</button></div><p class="project-request-status" role="status">${esc(draft?.request?.status === 'error' ? draft.request.error?.message || 'Project Breakdown failed' : draft?.request?.status === 'loading' ? 'READING PROJECT STRUCTURE…' : '')}</p></section>`;
+    return `<section class="project-breakdown" aria-labelledby="project-breakdown-title"><header><p>PROJECT / STRUCTURE PROPOSAL</p><h2 id="project-breakdown-title">Break down story</h2><span>SCENE STRUCTURE NOT YET MUTATED</span></header><label>PROJECT STORY<textarea data-project-field="sourceNarrative" maxlength="12000">${esc(draft?.sourceNarrative || project?.sourceNarrative || '')}</textarea></label><label>DIRECTOR INTENT <small>OPTIONAL</small><textarea data-project-field="directorIntent" maxlength="1000">${esc(draft?.directorIntent || project?.projectIntent || '')}</textarea></label><div class="project-breakdown-actions"><button type="button" data-action="cancel-breakdown">BACK TO PROJECT</button><button type="button" data-action="start-breakdown">BREAK DOWN STORY</button></div><p class="project-request-status" role="status">${esc(draft?.request?.status === 'error' ? draft.request.error?.message || 'Project Breakdown failed' : draft?.request?.status === 'loading' ? 'READING PROJECT STRUCTURE…' : '')}</p></section>`;
   }
 
   function renderSceneProposal(scene, index, count) {
@@ -86,7 +97,7 @@
   function renderBreakdownProposal(draft) {
     const reading = draft?.projectReading || {};
     const scenes = draft?.proposedScenes || [];
-    return `<section class="project-breakdown project-breakdown-proposal" aria-labelledby="project-proposal-title"><header><p>PROPOSAL</p><h2 id="project-proposal-title">PROJECT READING</h2><span>PROJECT NOT YET MUTATED</span></header><div class="project-reading"><div><span>NARRATIVE PROBLEM</span><strong>${esc(reading.narrativeProblem || '')}</strong></div><div><span>CORE CONFLICT</span><strong>${esc(reading.coreConflict || '')}</strong></div><div><span>STARTING STATE</span><strong>${esc(reading.startingState || '')}</strong></div><div><span>ENDING STATE</span><strong>${esc(reading.endingState || '')}</strong></div><div><span>AGENCY ARC</span><strong>${esc(agencyLabel(reading.agencyArc || []))}</strong></div></div><div class="project-section-head"><p>DIRECTOR REVIEW</p><h2>PROPOSED SCENE STRUCTURE</h2><span>${scenes.length} SCENES${draft?.structureNeedsReview ? ' · NEEDS REVIEW' : ''}</span></div><div class="project-proposal-list">${scenes.map((scene,index) => renderSceneProposal(scene,index,scenes.length)).join('')}</div><div class="project-breakdown-actions"><button type="button" data-action="cancel-breakdown">BACK TO PROJECT</button><button type="button" data-action="add-proposal-scene">+ ADD SCENE</button><button type="button" data-action="confirm-structure">CONFIRM SCENE STRUCTURE</button></div></section>`;
+    return `<section class="project-breakdown project-breakdown-proposal" aria-labelledby="project-proposal-title"><header><p>PROPOSAL</p><h2 id="project-proposal-title">PROJECT READING</h2><span>SCENE STRUCTURE NOT YET MUTATED</span></header><div class="project-reading"><div><span>NARRATIVE PROBLEM</span><strong>${esc(reading.narrativeProblem || '')}</strong></div><div><span>CORE CONFLICT</span><strong>${esc(reading.coreConflict || '')}</strong></div><div><span>STARTING STATE</span><strong>${esc(reading.startingState || '')}</strong></div><div><span>ENDING STATE</span><strong>${esc(reading.endingState || '')}</strong></div><div><span>AGENCY ARC</span><strong>${esc(agencyLabel(reading.agencyArc || []))}</strong></div></div><div class="project-section-head"><p>DIRECTOR REVIEW</p><h2>PROPOSED SCENE STRUCTURE</h2><span>${scenes.length} SCENES${draft?.structureNeedsReview ? ' · NEEDS REVIEW' : ''}</span></div><div class="project-proposal-list">${scenes.map((scene,index) => renderSceneProposal(scene,index,scenes.length)).join('')}</div><div class="project-breakdown-actions"><button type="button" data-action="cancel-breakdown">BACK TO PROJECT</button><button type="button" data-action="add-proposal-scene">+ ADD SCENE</button><button type="button" data-action="confirm-structure">CONFIRM SCENE STRUCTURE</button></div></section>`;
   }
 
   function defaultManualProposal(index) {
@@ -141,12 +152,15 @@
     if (!projectStore || !breakdownState) throw new Error('Project Workspace requires Project Store and Breakdown state.');
     let view = 'project';
     let controller = null;
+    let projectEditError = '';
 
     function render() {
       const project = projectStore.getProject();
       const draft = breakdownState.getState();
       if (view === 'breakdown') {
         rootElement.innerHTML = draft.status === 'proposal' ? renderBreakdownProposal(draft) : renderBreakdownInput(project, draft);
+      } else if (view === 'edit') {
+        rootElement.innerHTML = renderProjectEditor(project, projectEditError);
       } else {
         rootElement.innerHTML = renderProjectWorkspace(project, deriveProjectArc(project), deriveContinuity(project));
       }
@@ -156,6 +170,7 @@
     async function startBreakdown() {
       const source = rootElement.querySelector('[data-project-field="sourceNarrative"]')?.value || '';
       const intent = rootElement.querySelector('[data-project-field="directorIntent"]')?.value || '';
+      projectStore.updateProjectMetadata({ sourceNarrative:source, projectIntent:intent });
       breakdownState.setInput(source, intent);
       const token = breakdownState.beginRequest();
       render();
@@ -195,6 +210,20 @@
       if (!button || button.disabled) return;
       const action = button.dataset.action;
       const sceneId = button.dataset.sceneId;
+      if (action === 'edit-project') { projectEditError = ''; view = 'edit'; render(); return; }
+      if (action === 'cancel-project-edit') { projectEditError = ''; view = 'project'; render(); return; }
+      if (action === 'save-project-edit') {
+        const title = rootElement.querySelector('[data-project-meta-field="title"]')?.value || '';
+        const projectIntent = rootElement.querySelector('[data-project-meta-field="projectIntent"]')?.value || '';
+        try {
+          projectStore.updateProjectMetadata({ title, projectIntent });
+          projectEditError = '';
+          view = 'project';
+        } catch (error) {
+          projectEditError = error?.message || 'Project metadata could not be saved.';
+        }
+        render(); return;
+      }
       if (action === 'show-breakdown') { view = 'breakdown'; render(); return; }
       if (action === 'cancel-breakdown') { if (controller) controller.abort(); view = 'project'; render(); return; }
       if (action === 'start-breakdown') { if (controller) controller.abort(); controller = typeof AbortController !== 'undefined' ? new AbortController() : null; await startBreakdown(); return; }
@@ -234,11 +263,11 @@
     render();
     return {
       render,
-      showProject(){ view = 'project'; return render(); },
-      showBreakdown(){ view = 'breakdown'; return render(); },
+      showProject(){ projectEditError = ''; view = 'project'; return render(); },
+      showBreakdown(){ projectEditError = ''; view = 'breakdown'; return render(); },
       destroy(){ if (controller) controller.abort(); unsubscribeProject(); unsubscribeDraft(); }
     };
   }
 
-  return { renderProjectWorkspace, renderBreakdownInput, renderBreakdownProposal, initProjectWorkspace };
+  return { renderProjectWorkspace, renderProjectEditor, renderBreakdownInput, renderBreakdownProposal, initProjectWorkspace };
 });
