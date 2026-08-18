@@ -1,1 +1,1 @@
-{"functions":{"api/narrative/*.js":{"maxDuration":30}}}
+{"functions":{"api/narrative/*.js":{"maxDuration":30},"api/project/*.js":{"maxDuration":30}}}
