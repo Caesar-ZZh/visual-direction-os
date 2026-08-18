@@ -17,6 +17,9 @@ const studioFixture = `<!doctype html>
 </aside>
 <main id="main"></main>
 <p class="eyebrow">Director Control Room / staging build</p>
+  <nav class="mobile-modes" aria-label="Primary modes">
+    <a href="#learn-panel" data-mode="learn">Learn</a>
+  </nav>
 </body></html>`;
 
 const system = createSystemDocument(systemFixture);
@@ -29,7 +32,9 @@ const studio = createStudioDocument(studioFixture);
 assert.match(studio, /<base href="\.\.\/">/);
 assert.match(studio, /data-system-home/);
 assert.match(studio, /href="\.\/"/);
+assert.match(studio, /release-system-home-mobile/, 'Mobile Studio must expose SYSTEM without becoming a fifth Director mode');
 assert.match(studio, /href="studio\/#main"/, 'Studio-local hash links must remain inside /studio/ even with the parent asset base');
+assert.match(studio, /href="studio\/#learn-panel"/, 'Mobile mode hash links must remain inside /studio/');
 assert.match(studio, /Director Workspace · v2\.1/);
 assert.match(studio, /Director Control Room/);
 assert.doesNotMatch(studio, /v2\.1 staging|staging build/i);
