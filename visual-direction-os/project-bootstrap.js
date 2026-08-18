@@ -56,6 +56,14 @@
     </div>`;
   }
 
+  function shouldPersistSceneEvent(source, runtime) {
+    if (runtime?.isSwitching?.()) return null;
+    const value = String(source || '');
+    if (value === 'narrative:apply') return 'directed';
+    if (value === 'ownership-demo' || value.startsWith('workspace:') || value.startsWith('sequence-director:')) return 'in-progress';
+    return null;
+  }
+
   function renderNarrativeProjectContext(context) {
     if (!context) return '';
     const agency = Array.isArray(context.agencyTransition) ? context.agencyTransition.map(value => String(value).toUpperCase()).join(' → ') : '—';
@@ -292,12 +300,11 @@
       const source = String(event?.detail?.source || '');
       const loadedSceneId = runtime.getLoadedSceneId?.();
       if (!loadedSceneId) return;
-      const directed = source === 'narrative:apply';
-      const inProgress = source === 'ownership-demo' || source.startsWith('workspace:') || source.startsWith('sequence-director:');
-      if (!directed && !inProgress) return;
+      const persistence = shouldPersistSceneEvent(source, runtime);
+      if (!persistence) return;
       sceneSyncChain = sceneSyncChain.then(async () => {
         await runtime.captureActiveScene();
-        if (directed) runtime.markVisualDirected(loadedSceneId);
+        if (persistence === 'directed') runtime.markVisualDirected(loadedSceneId);
         else runtime.markVisualInProgress(loadedSceneId);
       }).catch(error => console.error(error));
     });
@@ -338,6 +345,7 @@
     createNarrativeApiProxy,
     renderSceneContextBar,
     renderNarrativeProjectContext,
+    shouldPersistSceneEvent,
     loadProjectDependencies,
     initProjectShell
   };
