@@ -1,6 +1,14 @@
 name: Sector 7 MVP Gate
 
 on:
+  push:
+    branches:
+      - agent/director-workspace-v2-1
+    paths:
+      - "visual-direction-os/project-*.js"
+      - "visual-direction-os/project-*.css"
+      - "visual-direction-os/project-*.spec.js"
+      - ".github/workflows/sector-7-mvp-gate.yml"
   pull_request:
     branches:
       - master
