@@ -20,14 +20,14 @@
 .narrative-editor h3{font:700 clamp(1.8rem,3vw,3rem)/1 var(--serif);letter-spacing:-.025em;margin:0 0 8px}
 .narrative-editor>p{margin:0 0 26px;color:var(--muted);max-width:52ch}
 .narrative-field{display:grid;gap:9px;margin-top:20px}
-.narrative-field label{font:600 .64rem/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:#c7c3bc}
-.narrative-field label span{color:var(--muted);font-weight:500;font-size:.56rem;letter-spacing:.08em;margin-left:.35em}
+.narrative-field label{font:600 .76rem/1.1 var(--sans);letter-spacing:.045em;text-transform:uppercase;color:#c7c3bc}
+.narrative-field label span{color:var(--muted);font:600 .62rem/1 var(--mono);letter-spacing:.06em;margin-left:.45em}
 .narrative-field textarea{width:100%;resize:vertical;border:1px solid #34373d;background:#0b0d10;color:var(--text);font:400 .94rem/1.65 var(--sans);padding:16px;outline:none;min-height:190px;transition:border-color .16s ease,box-shadow .16s ease,background-color .16s ease}
 .narrative-field--intent textarea{min-height:100px}
 .narrative-field textarea:focus-visible{border-color:var(--accent);box-shadow:0 0 0 2px rgba(232,93,42,.16)}
 .narrative-field textarea::placeholder{color:#666762}
 .narrative-editor-foot{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-top:22px}
-.narrative-counter{font:600 .62rem/1 var(--mono);color:var(--muted);letter-spacing:.04em}
+.narrative-counter{font:600 .75rem/1 var(--mono);color:var(--muted);letter-spacing:.025em}
 .narrative-primary{min-height:46px;border:1px solid var(--accent);background:#1f130e;color:var(--text);padding:0 20px;font:700 .88rem/1 var(--serif);letter-spacing:.025em;text-transform:uppercase;cursor:pointer;transition:background-color .16s ease,border-color .16s ease,transform .16s ease}
 .narrative-primary:hover{background:#2a1810}
 .narrative-primary:active{transform:translateY(1px)}
@@ -35,7 +35,15 @@
 .narrative-primary:disabled{cursor:not-allowed;color:#6c6c68;border-color:#32353a;background:#101216}
 .narrative-aside{display:grid;gap:18px;border-top:1px solid var(--line);padding-top:18px}
 .narrative-aside-block{display:grid;gap:8px;padding-bottom:18px;border-bottom:1px solid rgba(255,255,255,.06)}
-.narrative-aside-block span{font:600 .58rem/1 var(--mono);letter-spacing:.11em;text-transform:uppercase;color:var(--accent)}
+.narrative-aside-block>span{display:flex;align-items:baseline;gap:8px;font-size:0;line-height:1;text-transform:uppercase;color:var(--accent)}
+.narrative-aside-block>span::before{font:600 .58rem/1 var(--mono);letter-spacing:.08em}
+.narrative-aside-block>span::after{font:650 .75rem/1 var(--sans);letter-spacing:.055em}
+.narrative-aside-block:nth-child(1)>span::before{content:"01 /"}
+.narrative-aside-block:nth-child(1)>span::after{content:"INTERPRET"}
+.narrative-aside-block:nth-child(2)>span::before{content:"02 /"}
+.narrative-aside-block:nth-child(2)>span::after{content:"DIRECTOR AUTHORITY"}
+.narrative-aside-block:nth-child(3)>span::before{content:"03 /"}
+.narrative-aside-block:nth-child(3)>span::after{content:"APPLY BOUNDARY"}
 .narrative-aside-block strong{font:700 1.05rem/1.2 var(--serif)}
 .narrative-aside-block p{margin:0;color:var(--muted);font-size:.82rem;line-height:1.55}
 .narrative-live{min-height:1.4em;color:var(--muted);font:400 .78rem/1.45 var(--sans);letter-spacing:0}
