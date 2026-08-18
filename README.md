@@ -32,6 +32,17 @@
 - **CONTINUITY** — 只做可解释的跨 Scene 规则诊断，给出涉及 Scene 的路由入口，不提供自动修复。
 - **TDD + CI** — Node contracts/state/runtime/API/Serverless、Visual QA、JS syntax、Pages 组装和 Playwright Chromium 验收。
 
+### SYSTEM / STUDIO release architecture
+
+Visual Direction OS 正式发布时分成两个平级空间：
+
+```text
+/                     SYSTEM · editorial knowledge experience
+/studio/              STUDIO · Director Workspace v2.1
+```
+
+SYSTEM 保持默认首页；STUDIO 不再覆盖根 `index.html`。Pages 组装只在发布产物中加入克制的双向空间入口，并把 `director-v2.html` 生成成 `/studio/index.html`；`director-v2.html` 本身继续作为兼容 / exact-commit staging entry 保留。
+
 开发预览入口：
 
 ```text
@@ -40,9 +51,20 @@ visual-direction-os/director-v2.html?narrativeDemo=1
 
 # Multi-Scene Project review
 visual-direction-os/director-v2.html?narrativeDemo=1&projectDemo=1
+
+# RawGitHack / branch preview shortcut
+visual-direction-os/studio/?narrativeDemo=1&projectDemo=1
 ```
 
-`narrativeDemo=1` 与 `projectDemo=1` 都是**显式 fixture 模式**，只用于本地 / PR Review，不会伪装成生产 AI。发布策略不会覆盖旧知识库源码：GitHub Pages 构建时把 `director-v2.html` 提升为线上 `index.html`，同时把现有稳定版 `index.html` 原样保留为线上 `knowledge.html`。Draft PR 合并前不替换当前线上站点。
+正式 Pages 入口：
+
+```text
+SYSTEM  https://caesar-zzh.github.io/visual-direction-os/
+STUDIO  https://caesar-zzh.github.io/visual-direction-os/studio/
+DEMO    https://caesar-zzh.github.io/visual-direction-os/studio/?narrativeDemo=1&projectDemo=1
+```
+
+`narrativeDemo=1` 与 `projectDemo=1` 都是**显式 fixture 模式**，只用于本地 / PR Review，不会伪装成生产 AI。Draft PR 合并前不会替换当前线上站点；`.github/workflows/pages.yml` 仍只在 `master` 发布。
 
 ### Serverless API configuration
 
@@ -131,7 +153,7 @@ Project 层进一步回答：**不同 Scene 为什么发生变化、变化是否
 - 🎭 **角色机制案例**：Miles / Gwen / Hobie / Elian 不是“画风模板”，而是“变量所有权”的机制示范
 - 🌐 **中英术语表**：统一对译，写 Brief 不词穷
 
-### 🖥️ Director Workspace（visual-direction-os/）
+### 🖥️ Director Workspace（`/studio/`）
 - 🧩 **Project Breakdown**：长叙事先形成 Project Reading 和 Scene Structure Proposal，Director 确认后才写入 Project Store
 - 🧭 **Scene Context Bar**：项目名、当前 Scene、位置、角色/agency，以及 Project Arc / Previous / Next 路由
 - 📊 **Project Arc**：七行语义矩阵检查整个项目的视觉变化
@@ -149,18 +171,20 @@ Project 层进一步回答：**不同 Scene 为什么发生变化、变化是否
 ## 🚀 使用说明
 
 ```bash
-# 稳定知识浏览器
+# SYSTEM 源页面
 visual-direction-os/index.html
 
-# v2.1 单 Scene Demo Review
-visual-direction-os/director-v2.html?narrativeDemo=1
-
-# v2.1 Multi-Scene Project Demo Review
+# STUDIO exact-commit / staging entry
 visual-direction-os/director-v2.html?narrativeDemo=1&projectDemo=1
 
-# 或起本地静态服务器
+# branch / RawGitHack Studio shortcut
+visual-direction-os/studio/?narrativeDemo=1&projectDemo=1
+
+# 本地静态服务器
 python3 -m http.server 4173 --directory visual-direction-os
 ```
+
+GitHub Pages 由 `build-pages-site.js` 组装：源 `index.html` 保留为 SYSTEM，`director-v2.html` 生成到发布产物的 `studio/index.html`，并共享根目录的 Director / Project / Narrative assets。
 
 想读“原典”？直接翻 [`visual-direction-system/`](./visual-direction-system/)，知识文档即是内容源。
 
@@ -180,7 +204,7 @@ v2.1 的 Scene / Project / Narrative contracts、state/runtime、Apply、Serverl
 |---|---|---|
 | 🔁 克隆 | `git clone https://github.com/Caesar-ZZh/visual-direction-os.git` | 完整仓库 |
 | 📥 下载 | GitHub **Code → Download ZIP** | 静态知识库与 Demo 可直接查看 |
-| 🌐 前端 | GitHub Pages / 任意静态服务器 | 发布 `visual-direction-os/` 装配站点 |
+| 🌐 前端 | GitHub Pages / 任意静态服务器 | SYSTEM 发布在 `/`，STUDIO 发布在 `/studio/` |
 | 🤖 Narrative / Project AI | Vercel / 兼容 Node Serverless | 部署 `api/narrative/` + `api/project/`，服务端配置 API Key |
 
 前端没有 React / Vue / 打包器运行时。真实 AI 模式需要 Serverless 网络请求；显式 Demo fixture 不需要模型服务。
@@ -195,7 +219,7 @@ v2.1 的 Scene / Project / Narrative contracts、state/runtime、Apply、Serverl
 | 看多个 Scene 的整体视觉弧线 | **Project Arc** |
 | 检查两个 Scene 之间是否有因果断裂 | **Cross-Scene Continuity** |
 | 从一段场景形成导演判断 | **Narrative → Interpret → Strategy → Sequence Preview** |
-| 一眼看懂整个视觉框架 | **Learn → Knowledge Atlas / System Map** |
+| 一眼看懂整个视觉框架 | **SYSTEM → Knowledge Atlas / System Map** |
 | 看一个角色如何“长大” | **Character → State Machine** |
 | 给一段戏排视觉节奏 | **Sequence Director / Sequence Score** |
 | 决定这场戏谁掌镜 | **Color / Ownership** |
@@ -209,17 +233,19 @@ v2.1 的 Scene / Project / Narrative contracts、state/runtime、Apply、Serverl
 ```text
 📦 visual-direction-os
 ├── 🖥️ visual-direction-os/
-│   ├── index.html / knowledge source browser
+│   ├── index.html                         # SYSTEM source
+│   ├── studio/index.html                  # branch preview shim; Pages build replaces with full STUDIO
 │   ├── director-v2.html / director-v2-app.js / director-v2*.css
+│   ├── release-routing.css / build-pages-site.js
 │   ├── scene-state.js / state-machine.js / sequence-director*.js
 │   ├── narrative-contracts.js / narrative-state.js / narrative-api-client.js
 │   ├── narrative-workspace.js / narrative-apply*.js
 │   ├── project-contracts.js / project-context.js / project-state.js
-│   ├── project-runtime.js / project-arc.js / project-continuity.js
+│   ├── project-persistence.js / project-runtime.js / project-arc.js / project-continuity.js
 │   ├── project-breakdown-state.js / project-breakdown-api-client.js
 │   ├── project-workspace.js / project-workspace.css / project-context.css
 │   ├── project-bootstrap.js
-│   └── visual-qa.js / build-pages-site.js / tests
+│   └── visual-qa.js / release + project tests
 ├── 🤖 api/narrative/
 │   ├── _contracts.js / _prompts.js / _openai-adapter.js / _handler.js
 │   └── interpret.js / strategy.js / sequence.js
