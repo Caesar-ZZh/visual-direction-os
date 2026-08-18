@@ -38,7 +38,7 @@ function createStudioDocument(directorHtml) {
   if (!html.includes('<base ')) html = html.replace('<head>', '<head>\n  <base href="../">');
   html = injectReleaseStyles(html);
   html = html
-    .replace(/Director Workspace · v2\.1 staging/g, 'Director Workspace · v2.1')
+    .replace(/Director Workspace(?: ·)? v2\.1 staging/g, 'Director Workspace · v2.1')
     .replace(/Director Control Room \/ staging build/g, 'Director Control Room')
     .replace(/href="#([^"]+)"/g, 'href="studio/#$1"');
   if (!html.includes('data-system-home')) {
