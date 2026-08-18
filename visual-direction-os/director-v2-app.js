@@ -302,7 +302,8 @@
     loadScript('sequence-director-model.js?v=20260817-1218', 'VDOSSequenceDirectorModel'),
     loadScript('sequence-director.js?v=20260817-1218', 'VDOSSequenceDirector'),
     loadScript('diagnostic-routing.js?v=20260817-1218', 'VDOSDiagnosticRouting'),
-    loadScript('visual-response.js?v=20260817-1218', 'VDOSVisualResponse')
+    loadScript('visual-response.js?v=20260817-1218', 'VDOSVisualResponse'),
+    loadScript('project-bootstrap.js?v=20260818-1308', 'VDOSProjectBootstrap')
   ]).then(() => {
     initAdvancedTools();
     syncModeFromScroll();
