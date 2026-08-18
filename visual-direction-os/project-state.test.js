@@ -26,4 +26,19 @@ const p = store.getProject();
 p.scenes['scene-02'].workspace.sceneState.variables.camera.perspective = 'mixed';
 assert.equal(store.getProject().scenes['scene-01'].workspace.sceneState.variables.camera.perspective, 'world');
 assert.equal(store.getProject().scenes['scene-02'].workspace.sceneState.variables.camera.perspective, 'character');
+
+const collisionStore = createProjectStore();
+collisionStore.createProject({ id:'collision', title:'Collision', projectIntent:'', sourceNarrative:'' });
+for (let index = 1; index <= 3; index += 1) {
+  collisionStore.addScene({
+    title:`Scene ${index}`, role:'transition', narrativeFunction:`Function ${index}.`, startingState:`Start ${index}.`, endingState:`End ${index}.`, turningPoint:`Turn ${index}.`, agencyTransition:['world','contested'], relationToPrevious:index === 1 ? null : `After ${index - 1}.`
+  });
+}
+collisionStore.removeScene('scene-02');
+collisionStore.addScene({
+  title:'Replacement', role:'transition', narrativeFunction:'Replacement function.', startingState:'Replacement start.', endingState:'Replacement end.', turningPoint:'Replacement turn.', agencyTransition:['contested','character'], relationToPrevious:'After Scene 1.'
+});
+const collisionProject = collisionStore.getProject();
+assert.equal(new Set(collisionProject.sceneOrder).size, collisionProject.sceneOrder.length);
+assert.ok(collisionProject.sceneOrder.includes('scene-04'), 'manual add must choose the next free stable Scene ID');
 console.log('project-state.test.js passed');
