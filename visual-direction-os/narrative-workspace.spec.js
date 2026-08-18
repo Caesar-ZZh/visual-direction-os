@@ -30,6 +30,13 @@ async function computedFont(page, selector) {
   });
 }
 
+async function computedPseudoFont(page, selector, pseudo) {
+  return page.locator(selector).first().evaluate((node, pseudoElement) => {
+    const style = getComputedStyle(node, pseudoElement);
+    return { family: style.fontFamily, size: parseFloat(style.fontSize), weight: style.fontWeight, content: style.content };
+  }, pseudo);
+}
+
 test('Narrative mode exposes editorial story input instead of chat', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(url);
@@ -56,6 +63,9 @@ test('Narrative typography separates directing decisions readable copy and syste
   const fieldLabel = await computedFont(page, '.narrative-field label');
   const optionalMeta = await computedFont(page, '.narrative-field--intent label span');
   const counterMeta = await computedFont(page, '[data-narrative-counter]');
+  const principleKicker = await computedFont(page, '.narrative-aside-block>span');
+  const principleIndex = await computedPseudoFont(page, '.narrative-aside-block>span', '::before');
+  const principleLabel = await computedPseudoFont(page, '.narrative-aside-block>span', '::after');
 
   expect(fontRole(stageLabel.family)).toBe('serif');
   expect(stageLabel.size).toBeGreaterThanOrEqual(13);
@@ -69,14 +79,12 @@ test('Narrative typography separates directing decisions readable copy and syste
   expect(optionalMeta.size).toBeGreaterThanOrEqual(10);
   expect(fontRole(counterMeta.family)).toBe('mono');
   expect(counterMeta.size).toBeGreaterThanOrEqual(12);
-
-  await expect(page.locator('[data-aside-index]')).toHaveCount(3);
-  await expect(page.locator('[data-aside-label]')).toHaveCount(3);
-  const asideIndex = await computedFont(page, '[data-aside-index]');
-  const asideLabel = await computedFont(page, '[data-aside-label]');
-  expect(fontRole(asideIndex.family)).toBe('mono');
-  expect(fontRole(asideLabel.family)).toBe('sans');
-  expect(asideLabel.size).toBeGreaterThanOrEqual(12);
+  expect(principleKicker.size).toBe(0);
+  expect(fontRole(principleIndex.family)).toBe('mono');
+  expect(principleIndex.content).not.toBe('none');
+  expect(fontRole(principleLabel.family)).toBe('sans');
+  expect(principleLabel.size).toBeGreaterThanOrEqual(12);
+  expect(principleLabel.content).not.toBe('none');
 
   await reachSequencePreview(page);
 
