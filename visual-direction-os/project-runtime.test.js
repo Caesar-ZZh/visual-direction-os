@@ -17,6 +17,7 @@ let liveSequence = null;
 let aborts = 0;
 const runtime = createProjectRuntime({
   projectStore:store,
+  initialLoadedSceneId:'scene-01',
   sceneRuntime:{ getState:()=>JSON.parse(JSON.stringify(liveScene)), restore:s=>{ liveScene=JSON.parse(JSON.stringify(s)); } },
   narrativeRuntime:{ getState:()=>JSON.parse(JSON.stringify(liveNarrative)), restore:s=>{ liveNarrative=JSON.parse(JSON.stringify(s)); } },
   sequenceRuntime:{ getState:()=>liveSequence == null ? null : JSON.parse(JSON.stringify(liveSequence)), restore:s=>{ liveSequence=s == null ? null : JSON.parse(JSON.stringify(s)); } },
@@ -40,5 +41,26 @@ liveNarrative = { stage:'strategy', selectedStrategyId:'camera' };
   await runtime.switchScene('scene-01');
   assert.equal(liveScene.variables.camera.perspective, 'mixed');
   assert.equal(liveNarrative.stage, 'strategy');
+
+  const freshStore = createProjectStore();
+  freshStore.createProject({ id:'fresh', title:'Fresh', projectIntent:'', sourceNarrative:'' });
+  freshStore.confirmBreakdown({ status:'proposal', proposedScenes:[{
+    id:'proposal-1', title:'First', role:'setup', narrativeFunction:'Establish order.', startingState:'Order accepted.', endingState:'Task accepted.', turningPoint:'Task binds.', agencyTransition:['world','world'], relationToPrevious:null
+  }] });
+  let implicitLive = { agency:'world', variables:{ camera:{ perspective:'world' } }, technicalDefault:true };
+  let restores = 0;
+  let freshAborts = 0;
+  const freshRuntime = createProjectRuntime({
+    projectStore:freshStore,
+    sceneRuntime:{ getState:()=>JSON.parse(JSON.stringify(implicitLive)), restore:s=>{ restores += 1; implicitLive=s == null ? null : JSON.parse(JSON.stringify(s)); } },
+    abortTransient:()=>{ freshAborts += 1; }
+  });
+  assert.equal(freshStore.getProject().activeSceneId, 'scene-01');
+  assert.equal(freshStore.getProject().scenes['scene-01'].workspace.sceneState, null);
+  await freshRuntime.switchScene('scene-01');
+  assert.equal(restores, 1, 'first explicit open must load Scene 01 even when Store already marks it active');
+  assert.equal(freshAborts, 1);
+  assert.equal(freshStore.getProject().scenes['scene-01'].workspace.sceneState, null, 'implicit technical runtime must not be captured into an unloaded Scene');
+
   console.log('project-runtime.test.js passed');
 })().catch(error => { console.error(error); process.exitCode = 1; });
