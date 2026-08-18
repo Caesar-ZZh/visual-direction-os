@@ -1,0 +1,55 @@
+name: Sector 7 MVP Gate
+
+on:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - "visual-direction-os/project-*.js"
+      - "visual-direction-os/project-*.css"
+      - "visual-direction-os/project-*.spec.js"
+      - ".github/workflows/sector-7-mvp-gate.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sector-7:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Run Sector 7 Project behavior tests
+        run: |
+          node visual-direction-os/project-contracts.test.js
+          node visual-direction-os/project-context.test.js
+          node visual-direction-os/project-state.test.js
+          node visual-direction-os/project-persistence.test.js
+          node visual-direction-os/project-runtime.test.js
+          node visual-direction-os/project-arc.test.js
+          node visual-direction-os/project-continuity.test.js
+          node visual-direction-os/project-breakdown-state.test.js
+          node visual-direction-os/project-breakdown-api-client.test.js
+          node visual-direction-os/project-workspace.test.js
+          node visual-direction-os/project-bootstrap.test.js
+      - name: Check Sector 7 JavaScript syntax
+        run: |
+          node --check visual-direction-os/project-contracts.js
+          node --check visual-direction-os/project-context.js
+          node --check visual-direction-os/project-state.js
+          node --check visual-direction-os/project-persistence.js
+          node --check visual-direction-os/project-runtime.js
+          node --check visual-direction-os/project-arc.js
+          node --check visual-direction-os/project-continuity.js
+          node --check visual-direction-os/project-breakdown-state.js
+          node --check visual-direction-os/project-breakdown-api-client.js
+          node --check visual-direction-os/project-workspace.js
+          node --check visual-direction-os/project-bootstrap.js
+      - name: Run Project browser acceptance
+        run: |
+          npm install --no-save @playwright/test@1.55.0
+          npx playwright install --with-deps chromium
+          python3 -m http.server 4173 --directory visual-direction-os >/tmp/vdos-sector7-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          npx playwright test visual-direction-os/project-workspace.spec.js --reporter=line --workers=1
