@@ -1,0 +1,230 @@
+name: Director Workspace v2.1 CI
+
+on:
+  push:
+    branches:
+      - agent/director-workspace-v2-1
+    paths:
+      - "visual-direction-os/**"
+      - "api/narrative/**"
+      - "api/project/**"
+      - "vercel.json"
+      - ".github/workflows/director-v2-ci.yml"
+      - ".github/workflows/pages.yml"
+      - "README.md"
+      - "CONTEXT.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Run model behavior tests
+        run: |
+          node visual-direction-os/director-v2-models.test.js
+          node visual-direction-os/sequence-director-model.test.js
+          node visual-direction-os/diagnostic-routing.test.js
+          node visual-direction-os/visual-response.test.js
+          node visual-direction-os/visual-qa.test.js
+          node visual-direction-os/site-publish.test.js
+          node visual-direction-os/build-pages-site.test.js
+          node visual-direction-os/release-routing.test.js
+          node visual-direction-os/narrative-contracts.test.js
+          node visual-direction-os/narrative-state.test.js
+          node visual-direction-os/narrative-api-client.test.js
+          node visual-direction-os/narrative-apply.test.js
+          node visual-direction-os/project-contracts.test.js
+          node visual-direction-os/project-context.test.js
+          node visual-direction-os/project-state.test.js
+          node visual-direction-os/project-persistence.test.js
+          node visual-direction-os/project-runtime.test.js
+          node visual-direction-os/project-arc.test.js
+          node visual-direction-os/project-continuity.test.js
+          node visual-direction-os/project-breakdown-state.test.js
+          node visual-direction-os/project-breakdown-api-client.test.js
+          node visual-direction-os/project-workspace.test.js
+          node visual-direction-os/project-bootstrap.test.js
+          node api/narrative/_handler.test.js
+          node api/narrative/_prompts.test.js
+          node api/narrative/_openai-adapter.test.js
+          node api/narrative/_production.test.js
+          node api/project/_handler.test.js
+          node api/project/_openai-adapter.test.js
+          node api/project/_production.test.js
+      - name: Check JavaScript syntax
+        run: |
+          node --check visual-direction-os/scene-state.js
+          node --check visual-direction-os/sequence-director-model.js
+          node --check visual-direction-os/sequence-director.js
+          node --check visual-direction-os/diagnostic-routing.js
+          node --check visual-direction-os/visual-response.js
+          node --check visual-direction-os/director-v2-app.js
+          node --check visual-direction-os/state-machine.js
+          node --check visual-direction-os/sequence-score.js
+          node --check visual-direction-os/color-ownership.js
+          node --check visual-direction-os/diagnostic.js
+          node --check visual-direction-os/timeline-sync.js
+          node --check visual-direction-os/visual-qa.js
+          node --check visual-direction-os/build-pages-site.js
+          node --check visual-direction-os/build-pages-site.test.js
+          node --check visual-direction-os/release-routing.test.js
+          node --check visual-direction-os/narrative-contracts.js
+          node --check visual-direction-os/narrative-state.js
+          node --check visual-direction-os/narrative-demo-fixtures.js
+          node --check visual-direction-os/narrative-api-client.js
+          node --check visual-direction-os/narrative-workspace.js
+          node --check visual-direction-os/narrative-apply.js
+          node --check visual-direction-os/narrative-apply-ui.js
+          node --check visual-direction-os/project-contracts.js
+          node --check visual-direction-os/project-context.js
+          node --check visual-direction-os/project-state.js
+          node --check visual-direction-os/project-persistence.js
+          node --check visual-direction-os/project-runtime.js
+          node --check visual-direction-os/project-arc.js
+          node --check visual-direction-os/project-continuity.js
+          node --check visual-direction-os/project-breakdown-state.js
+          node --check visual-direction-os/project-breakdown-api-client.js
+          node --check visual-direction-os/project-breakdown-fixtures.js
+          node --check visual-direction-os/project-workspace.js
+          node --check visual-direction-os/project-bootstrap.js
+          node --check api/narrative/_contracts.js
+          node --check api/narrative/_prompts.js
+          node --check api/narrative/_openai-adapter.js
+          node --check api/narrative/_handler.js
+          node --check api/narrative/interpret.js
+          node --check api/narrative/strategy.js
+          node --check api/narrative/sequence.js
+          node --check api/project/_contracts.js
+          node --check api/project/_prompts.js
+          node --check api/project/_openai-adapter.js
+          node --check api/project/_handler.js
+          node --check api/project/breakdown.js
+      - name: Run staging source QA
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const qa = require('./visual-direction-os/visual-qa.js');
+          const html = fs.readFileSync('./visual-direction-os/director-v2.html','utf8');
+          const css = [
+            './visual-direction-os/director-v2.css',
+            './visual-direction-os/director-v2-tools.css',
+            './visual-direction-os/visual-response.css',
+            './visual-direction-os/sequence-director.css',
+            './visual-direction-os/diagnostic-routing.css',
+            './visual-direction-os/narrative-workspace.css',
+            './visual-direction-os/project-workspace.css',
+            './visual-direction-os/project-context.css',
+            './visual-direction-os/release-routing.css'
+          ].map(path => fs.readFileSync(path,'utf8')).join('\n');
+          const findings = qa.scanSource({html, css});
+          findings.forEach(f => console.log(`${f.level} ${f.id}: ${f.message} ${f.detail || ''}`));
+          if (findings.some(f => f.level === 'FAIL')) process.exit(1);
+          NODE
+      - name: Check staging contracts
+        run: |
+          test -f visual-direction-os/director-v2.html
+          test -f visual-direction-os/director-v2.css
+          test -f visual-direction-os/director-v2-tools.css
+          test -f visual-direction-os/visual-response.css
+          test -f visual-direction-os/visual-response.js
+          test -f visual-direction-os/sequence-director.css
+          test -f visual-direction-os/sequence-director-model.js
+          test -f visual-direction-os/sequence-director.js
+          test -f visual-direction-os/diagnostic-routing.js
+          test -f visual-direction-os/diagnostic-routing.css
+          test -f visual-direction-os/narrative-workspace.css
+          test -f visual-direction-os/narrative-contracts.js
+          test -f visual-direction-os/narrative-state.js
+          test -f visual-direction-os/narrative-demo-fixtures.js
+          test -f visual-direction-os/narrative-api-client.js
+          test -f visual-direction-os/narrative-workspace.js
+          test -f visual-direction-os/narrative-apply.js
+          test -f visual-direction-os/narrative-apply-ui.js
+          test -f visual-direction-os/project-contracts.js
+          test -f visual-direction-os/project-context.js
+          test -f visual-direction-os/project-state.js
+          test -f visual-direction-os/project-persistence.js
+          test -f visual-direction-os/project-runtime.js
+          test -f visual-direction-os/project-arc.js
+          test -f visual-direction-os/project-continuity.js
+          test -f visual-direction-os/project-breakdown-state.js
+          test -f visual-direction-os/project-breakdown-api-client.js
+          test -f visual-direction-os/project-breakdown-fixtures.js
+          test -f visual-direction-os/project-workspace.js
+          test -f visual-direction-os/project-workspace.css
+          test -f visual-direction-os/project-context.css
+          test -f visual-direction-os/project-bootstrap.js
+          test -f visual-direction-os/release-routing.css
+          test -f visual-direction-os/studio/index.html
+          ! grep -E "transition:[[:space:]]*all" visual-direction-os/director-v2.css visual-direction-os/director-v2-tools.css visual-direction-os/visual-response.css visual-direction-os/sequence-director.css visual-direction-os/diagnostic-routing.css visual-direction-os/narrative-workspace.css visual-direction-os/project-workspace.css visual-direction-os/project-context.css visual-direction-os/release-routing.css
+          grep -q "prefers-reduced-motion" visual-direction-os/director-v2.css
+          grep -q "prefers-reduced-motion" visual-direction-os/director-v2-tools.css
+          grep -q "prefers-reduced-motion" visual-direction-os/visual-response.css
+          grep -q "prefers-reduced-motion" visual-direction-os/sequence-director.css
+          grep -q "prefers-reduced-motion" visual-direction-os/diagnostic-routing.css
+          grep -q "prefers-reduced-motion" visual-direction-os/narrative-workspace.css
+          grep -q "prefers-reduced-motion" visual-direction-os/project-workspace.css
+          grep -q "prefers-reduced-motion" visual-direction-os/project-context.css
+          grep -q "prefers-reduced-motion" visual-direction-os/release-routing.css
+      - name: Verify assembled Pages site
+        run: |
+          node visual-direction-os/build-pages-site.js visual-direction-os /tmp/vdos-site
+          grep -q 'studio-entry' /tmp/vdos-site/index.html
+          grep -q 'href="studio/"' /tmp/vdos-site/index.html
+          test -f /tmp/vdos-site/studio/index.html
+          grep -q '<base href="../">' /tmp/vdos-site/studio/index.html
+          grep -q 'data-system-home' /tmp/vdos-site/studio/index.html
+          ! grep -Eqi 'v2\.1 staging|staging build' /tmp/vdos-site/studio/index.html
+          cmp visual-direction-os/director-v2.html /tmp/vdos-site/director-v2.html
+          test -f /tmp/vdos-site/release-routing.css
+          test -f /tmp/vdos-site/director-v2-app.js
+          test -f /tmp/vdos-site/scene-state.js
+          test -f /tmp/vdos-site/visual-response.js
+          test -f /tmp/vdos-site/visual-response.css
+          test -f /tmp/vdos-site/sequence-director-model.js
+          test -f /tmp/vdos-site/sequence-director.js
+          test -f /tmp/vdos-site/sequence-director.css
+          test -f /tmp/vdos-site/diagnostic-routing.js
+          test -f /tmp/vdos-site/diagnostic-routing.css
+          test -f /tmp/vdos-site/narrative-workspace.css
+          test -f /tmp/vdos-site/narrative-contracts.js
+          test -f /tmp/vdos-site/narrative-state.js
+          test -f /tmp/vdos-site/narrative-demo-fixtures.js
+          test -f /tmp/vdos-site/narrative-api-client.js
+          test -f /tmp/vdos-site/narrative-workspace.js
+          test -f /tmp/vdos-site/narrative-apply.js
+          test -f /tmp/vdos-site/narrative-apply-ui.js
+          test -f /tmp/vdos-site/project-contracts.js
+          test -f /tmp/vdos-site/project-context.js
+          test -f /tmp/vdos-site/project-state.js
+          test -f /tmp/vdos-site/project-persistence.js
+          test -f /tmp/vdos-site/project-runtime.js
+          test -f /tmp/vdos-site/project-arc.js
+          test -f /tmp/vdos-site/project-continuity.js
+          test -f /tmp/vdos-site/project-breakdown-state.js
+          test -f /tmp/vdos-site/project-breakdown-api-client.js
+          test -f /tmp/vdos-site/project-breakdown-fixtures.js
+          test -f /tmp/vdos-site/project-workspace.js
+          test -f /tmp/vdos-site/project-workspace.css
+          test -f /tmp/vdos-site/project-context.css
+          test -f /tmp/vdos-site/project-bootstrap.js
+      - name: Verify Pages workflow contract
+        run: |
+          grep -q "node visual-direction-os/build-pages-site.js visual-direction-os _site" .github/workflows/pages.yml
+          grep -q "path: _site" .github/workflows/pages.yml
+          grep -q "branches: \[master\]" .github/workflows/pages.yml
+      - name: Run browser acceptance
+        run: |
+          npm install --no-save @playwright/test@1.55.0
+          npx playwright install --with-deps chromium
+          python3 -m http.server 4173 --directory visual-direction-os >/tmp/vdos-server.log 2>&1 &
+          SOURCE_SERVER_PID=$!
+          node visual-direction-os/build-pages-site.js visual-direction-os /tmp/vdos-site
+          python3 -m http.server 4180 --directory /tmp/vdos-site >/tmp/vdos-release-server.log 2>&1 &
+          RELEASE_SERVER_PID=$!
+          trap 'kill $SOURCE_SERVER_PID $RELEASE_SERVER_PID || true' EXIT
+          npx playwright test visual-direction-os/director-v2-browser.spec.js visual-direction-os/director-v2-desktop-polish.spec.js visual-direction-os/sequence-director-playback.spec.js visual-direction-os/diagnostic-routing.spec.js visual-direction-os/narrative-workspace.spec.js visual-direction-os/narrative-clarification.spec.js visual-direction-os/narrative-recovery.spec.js visual-direction-os/display-copy.spec.js visual-direction-os/project-workspace.spec.js visual-direction-os/release-routing.spec.js --reporter=line --workers=1
