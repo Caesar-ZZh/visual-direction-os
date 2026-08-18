@@ -47,6 +47,12 @@ function createStudioDocument(directorHtml) {
     const bridge = `${marker}\n      <a class="release-space-switch release-system-home" data-system-home href="./" aria-label="Return to Visual Direction OS System">\n        <span>SYSTEM</span><strong>Knowledge Space</strong><i aria-hidden="true">↗</i>\n      </a>`;
     html = html.replace(marker, bridge);
   }
+  if (!html.includes('release-system-home-mobile')) {
+    const mobileMarker = '  <nav class="mobile-modes" aria-label="Primary modes">';
+    if (!html.includes(mobileMarker)) throw new Error('Studio mobile mode navigation marker is unavailable.');
+    const mobileBridge = '  <a class="release-system-home-mobile" href="./" aria-label="Return to Visual Direction OS System">SYSTEM <span aria-hidden="true">↗</span></a>\n';
+    html = html.replace(mobileMarker, `${mobileBridge}${mobileMarker}`);
+  }
   return html;
 }
 
