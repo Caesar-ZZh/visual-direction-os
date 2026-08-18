@@ -1,5 +1,15 @@
 const assert = require('assert');
-const { deriveProjectApiBase, createInitialProjectInput, createNarrativeApiProxy, renderSceneContextBar, renderNarrativeProjectContext, shouldPersistSceneEvent } = require('./project-bootstrap.js');
+const {
+  deriveProjectApiBase,
+  createInitialProjectInput,
+  createNarrativeApiProxy,
+  renderSceneContextBar,
+  renderNarrativeProjectContext,
+  shouldPersistSceneEvent,
+  createNoopPersistence,
+  loadOptionalPersistence,
+  createPersistence
+} = require('./project-bootstrap.js');
 assert.equal(deriveProjectApiBase('https://example.test/api/narrative'), 'https://example.test');
 assert.equal(deriveProjectApiBase('https://example.test/api/narrative/'), 'https://example.test');
 assert.equal(deriveProjectApiBase('https://example.test'), 'https://example.test');
@@ -14,6 +24,20 @@ assert.equal(shouldPersistSceneEvent('narrative:apply', { isSwitching:()=>false 
 assert.equal(shouldPersistSceneEvent('workspace:camera.perspective', { isSwitching:()=>false }), 'in-progress');
 
 (async () => {
+  const noop = createNoopPersistence(new Error('blocked by host'));
+  assert.equal(noop.enabled, false, 'fallback persistence must report disabled');
+  assert.equal(noop.load(), null, 'fallback persistence must not invent hydrated state');
+  assert.deepEqual(noop.save({ id:'project' }), { id:'project' }, 'fallback persistence must be non-destructive');
+  assert.equal(typeof noop.bind({}), 'function', 'fallback persistence bind must remain callable');
+
+  const optional = await loadOptionalPersistence(async () => { throw new Error('script blocked'); });
+  assert.equal(optional.enabled, false, 'optional persistence loader failure must degrade instead of rejecting Project bootstrap');
+  assert.match(optional.error.message, /script blocked/);
+
+  const fallback = createPersistence({}, false, null);
+  assert.equal(fallback.enabled, false, 'missing persistence module must not prevent Project initialization');
+  assert.equal(fallback.load(), null);
+
   const calls=[];
   const baseApi={async interpret(payload){calls.push(['interpret',payload]);return {ok:true};},async strategy(payload){calls.push(['strategy',payload]);return {ok:true};},async sequence(payload){calls.push(['sequence',payload]);return {ok:true};}};
   const context={projectIntent:'End with reclaimed agency.',sceneRole:'rupture',narrativeFunction:'Recognition becomes refusal.',startingState:'Agency is contested.',endingState:'The character refuses.',agencyTransition:['contested','character']};
