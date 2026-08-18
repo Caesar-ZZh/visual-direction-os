@@ -51,6 +51,7 @@
     const arcState = deriveProjectArc(project);
     const findings = [];
     const order = Array.isArray(project.sceneOrder) ? project.sceneOrder : [];
+    if (!order.length) return { status:'UNRESOLVED', findings:[] };
 
     order.forEach((id, index) => {
       const scene = project.scenes?.[id];
