@@ -8,6 +8,7 @@ const PROMPTS = {
 Interpret the user's scene before prescribing visuals. Produce 2–3 plausible Narrative Reading candidates rather than claiming one correct interpretation.
 For every major field, assign provenance as explicit, inferred, or director_intent and give a short Basis. Distinguish what the user literally supplied from what the system inferred.
 Each Narrative Reading must identify Narrative Problem, Core Conflict, Starting State, Ending State, Turning Point, and Agency Transition.
+If Project Context is supplied, treat it as upstream intent, not confirmed truth about the actual Scene Description. Compare it with the described Scene; if they diverge, preserve and explain the divergence rather than forcing the reading to match Project Context.
 Do not prescribe camera, color, space, line, texture, rhythm, or a visual style in this stage.
 Use clarification only when ambiguity materially changes the directing interpretation. Ask at most one focused question with 2–4 meaningful answer options; otherwise return null.`,
 
