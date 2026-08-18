@@ -209,6 +209,7 @@ test('site-wide metadata uses one clean sans family while display and director c
   await page.mouse.move(1000, 500);
   await expect(page.locator('.v2-rail')).toHaveAttribute('data-expanded', 'false');
   await page.locator('[data-color-view="base"]').click();
-  const basePaletteFamily = await page.locator('.palette-readout dt').first().evaluate(node => getComputedStyle(node).fontFamily);
-  expect(basePaletteFamily).toBe(typography.bodyFamily);
+  const paletteMeta = page.locator('.palette-readout dt').first();
+  await expect(paletteMeta).toBeVisible();
+  await expect.poll(() => paletteMeta.evaluate(node => getComputedStyle(node).fontFamily)).toBe(typography.bodyFamily);
 });
