@@ -16,6 +16,13 @@ async function reachSequencePreview(page) {
   await expect(page.locator('[data-sequence-proposal-beat]')).toHaveCount(5);
 }
 
+async function readVisualSceneState(page) {
+  return page.evaluate(() => {
+    const { mode, ...visualState } = window.VDOSScene.getSceneState();
+    return visualState;
+  });
+}
+
 const fontRole = family => {
   const value = family.toLowerCase();
   if (value.includes('georgia') || value.includes('times new roman')) return 'serif';
@@ -106,14 +113,14 @@ test('Narrative typography separates directing decisions readable copy and syste
   expect(visualEvent.size).toBeGreaterThanOrEqual(12);
 });
 
-test('Narrative demo flows through editable Reading and Strategy into a five-beat preview without mutating Scene State', async ({ page }) => {
+test('Narrative demo flows through editable Reading and Strategy into a five-beat preview without mutating visual Scene State', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1100 });
   await page.goto(url);
   await page.getByRole('button', { name: /Turn story into direction/i }).click();
   await page.getByLabel('Scene description').fill('He enters the office expecting to accept an assignment. During the conversation he realizes the assignment itself is a mechanism of control. He refuses and leaves.');
   await page.getByLabel('Director intent').fill('End with the character reclaiming control.');
 
-  const before = await page.evaluate(() => window.VDOSScene.getSceneState());
+  const before = await readVisualSceneState(page);
   await page.getByRole('button', { name: /Start interpretation/i }).click();
 
   await expect(page.locator('[data-reading-card]')).toHaveCount(2);
@@ -142,8 +149,9 @@ test('Narrative demo flows through editable Reading and Strategy into a five-bea
   await expect(page.getByText('CAMERA BREAK', { exact: true })).toBeVisible();
   await expect(page.getByText('OWNERSHIP SHIFT', { exact: true })).toBeVisible();
 
-  const after = await page.evaluate(() => window.VDOSScene.getSceneState());
+  const after = await readVisualSceneState(page);
   expect(after).toEqual(before);
+  await expect.poll(() => page.evaluate(() => window.VDOSScene.getSceneState().mode)).toBe('narrative');
 });
 
 test('Apply selected mutates only selected Sequence beats at the explicit Apply boundary and leaves DIRECT editable', async ({ page }) => {
