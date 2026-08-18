@@ -22,6 +22,14 @@
     return next;
   }
 
+  function nextFreeSceneId(scenes = {}) {
+    const max = Object.keys(scenes).reduce((highest, id) => {
+      const match = /^scene-(\d+)$/.exec(id);
+      return match ? Math.max(highest, Number(match[1])) : highest;
+    }, 0);
+    return `scene-${String(max + 1).padStart(2, '0')}`;
+  }
+
   function createProjectStore(initial = null) {
     let state = null;
     const listeners = new Set();
@@ -80,7 +88,8 @@
       const index = Number.isInteger(options.index)
         ? Math.max(0, Math.min(options.index, next.sceneOrder.length))
         : next.sceneOrder.length;
-      const generatedId = String(sceneInput.id || `scene-${String(next.sceneOrder.length + 1).padStart(2, '0')}`);
+      const requestedId = String(sceneInput.id || '');
+      const generatedId = requestedId && !requestedId.startsWith('proposal-') ? requestedId : nextFreeSceneId(next.scenes);
       if (next.scenes[generatedId]) throw new Error(`Scene already exists: ${generatedId}`);
       const record = sceneInput.workspace && sceneInput.status
         ? clone(sceneInput)
