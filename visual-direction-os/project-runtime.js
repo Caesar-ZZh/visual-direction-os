@@ -27,6 +27,7 @@
     let switchChain = Promise.resolve();
     let switchToken = 0;
     let loadedSceneId = initialLoadedSceneId;
+    let switching = false;
 
     function notify(source) {
       const project = projectStore.getProject();
@@ -75,19 +76,24 @@
           return clone(projectStore.getProject().scenes[sceneId]);
         }
 
-        await captureActiveScene();
-        if (typeof abortTransient === 'function') await asAsync(abortTransient());
+        switching = true;
+        try {
+          await captureActiveScene();
+          if (typeof abortTransient === 'function') await asAsync(abortTransient());
 
-        projectStore.setActiveScene(sceneId);
-        const project = projectStore.getProject();
-        const target = project.scenes[sceneId];
-        const workspace = clone(target.workspace || {});
-        await restoreAdapter(sceneRuntime, workspace.sceneState);
-        await restoreAdapter(narrativeRuntime, workspace.narrativeState);
-        await restoreAdapter(sequenceRuntime, workspace.sequenceState);
-        loadedSceneId = sceneId;
-        notify(`scene:switch:${token}`);
-        return clone(target);
+          projectStore.setActiveScene(sceneId);
+          const project = projectStore.getProject();
+          const target = project.scenes[sceneId];
+          const workspace = clone(target.workspace || {});
+          await restoreAdapter(sceneRuntime, workspace.sceneState);
+          await restoreAdapter(narrativeRuntime, workspace.narrativeState);
+          await restoreAdapter(sequenceRuntime, workspace.sequenceState);
+          loadedSceneId = sceneId;
+          notify(`scene:switch:${token}`);
+          return clone(target);
+        } finally {
+          switching = false;
+        }
       };
       const result = switchChain.then(run, run);
       switchChain = result.catch(() => {});
@@ -113,7 +119,15 @@
       return clone(projectStore.getProject().scenes[targetId]);
     }
 
-    return { captureActiveScene, switchScene, markVisualDirected, markVisualInProgress, subscribe, getLoadedSceneId:() => loadedSceneId };
+    return {
+      captureActiveScene,
+      switchScene,
+      markVisualDirected,
+      markVisualInProgress,
+      subscribe,
+      getLoadedSceneId:() => switching ? null : loadedSceneId,
+      isSwitching:() => switching
+    };
   }
 
   return { createProjectRuntime };
