@@ -35,7 +35,7 @@
     rootNode.innerHTML = `
       <div class="narrative-shell">
         <header class="narrative-head">
-          <div><p class="eyebrow">Narrative / Upstream direction</p><h2 id="narrative-title">Narrative becomes a directing hypothesis.</h2></div>
+          <div><p class="eyebrow">Narrative / Upstream direction</p><h2 id="narrative-title">Narrative becomes a directing hypothesis</h2></div>
           <div>${demoMode ? '<span class="narrative-demo-badge" data-narrative-demo-badge>DEMO FIXTURE</span>' : `<span class="narrative-service-status" data-ready="${Boolean(configuredBase)}">${configuredBase ? 'AI SERVICE READY' : 'AI SERVICE NOT CONFIGURED'}</span>`}</div>
         </header>
         <div class="narrative-stages" aria-label="Narrative direction stages">
@@ -43,7 +43,7 @@
         </div>
         <div class="narrative-entry">
           <form class="narrative-editor" data-narrative-entry novalidate>
-            <h3>Tell your story.</h3>
+            <h3>Tell your story</h3>
             <p>描述正在发生的场景，不需要先懂 Camera、Space 或 Color。系统先帮助你形成可检查的叙事判断。</p>
             <div class="narrative-field"><label for="narrative-scene">Scene description</label><textarea id="narrative-scene" name="narrative" maxlength="2000" required placeholder="例：他进入办公室，本来只是接受任务，但随着对话推进逐渐意识到自己正在被控制。最后他拒绝任务并离开。"></textarea></div>
             <div class="narrative-field narrative-field--intent"><label for="narrative-intent">Director intent <span>Optional</span></label><textarea id="narrative-intent" name="directorIntent" maxlength="600" placeholder="例：我希望最后让角色重新获得控制权。"></textarea></div>
@@ -51,9 +51,9 @@
             <div class="narrative-live" data-narrative-live aria-live="polite">${demoMode ? 'Demo fixture mode. Results remain proposals until Apply.' : configuredBase ? 'Narrative AI service configured.' : 'AI service not configured. Configure the Narrative API base or use explicit demo mode for UI review.'}</div>
           </form>
           <aside class="narrative-aside" aria-label="Narrative Input principles">
-            <div class="narrative-aside-block"><span>01 / Interpret</span><strong>Multiple readings, not one truth.</strong><p>系统会提出 2–3 个候选 Narrative Reading，而不是把一个模型判断伪装成唯一答案。</p></div>
-            <div class="narrative-aside-block"><span>02 / Director authority</span><strong>You confirm before the system advances.</strong><p>Reading、Strategy、Sequence 每一层都必须经过你的选择，AI 不直接写入 DIRECT。</p></div>
-            <div class="narrative-aside-block"><span>03 / Apply boundary</span><strong>Proposal first. Mutation later.</strong><p>生成结果先进入 Preview。只有明确 Apply 才会触碰 canonical Scene State。</p></div>
+            <div class="narrative-aside-block"><span>01 / Interpret</span><strong>Multiple readings, not one truth</strong><p>系统会提出 2–3 个候选 Narrative Reading，而不是把一个模型判断伪装成唯一答案。</p></div>
+            <div class="narrative-aside-block"><span>02 / Director authority</span><strong>You confirm before the system advances</strong><p>Reading、Strategy、Sequence 每一层都必须经过你的选择，AI 不直接写入 DIRECT。</p></div>
+            <div class="narrative-aside-block"><span>03 / Apply boundary</span><strong>Proposal first · Mutation later</strong><p>生成结果先进入 Preview。只有明确 Apply 才会触碰 canonical Scene State。</p></div>
           </aside>
         </div>
         <section class="narrative-output" data-narrative-output aria-live="polite"></section>
@@ -108,7 +108,7 @@
 
     function renderStageError(stage,error,retry) {
       const label = stage === 'interpret' ? 'Interpret' : stage === 'strategy' ? 'Strategy' : 'Sequence';
-      output.innerHTML = `<div class="narrative-stage-error" data-narrative-error role="alert"><span>${escapeHtml(label.toUpperCase())} · RECOVERABLE ERROR</span><strong>${escapeHtml(error?.message || `${label} failed.`)}</strong><p>Your confirmed upstream work is preserved. Retry only this stage.</p><button type="button" class="narrative-primary" data-retry-stage="${stage}">Retry ${label}</button></div>`;
+      output.innerHTML = `<div class="narrative-stage-error" data-narrative-error role="alert"><span>${escapeHtml(label.toUpperCase())} · RECOVERABLE ERROR</span><strong>${escapeHtml(error?.message || `${label} failed`)}</strong><p>Your confirmed upstream work is preserved. Retry only this stage.</p><button type="button" class="narrative-primary" data-retry-stage="${stage}">Retry ${label}</button></div>`;
       output.querySelector('[data-retry-stage]')?.addEventListener('click',retry);
     }
 
@@ -156,7 +156,7 @@
       if (!reading) return;
       setStage(2);
       output.innerHTML = `
-        <div class="narrative-section-head"><p class="eyebrow">02 / Director edit</p><h3>Confirm the reading before visual translation.</h3><p>${escapeHtml(reading.title)} · Edit any field where the proposed interpretation is not yours.</p></div>
+        <div class="narrative-section-head"><p class="eyebrow">02 / Director edit</p><h3>Confirm the reading before visual translation</h3><p>${escapeHtml(reading.title)} · Edit any field where the proposed interpretation is not yours.</p></div>
         <div class="narrative-reading-editor" data-reading-editor>
           ${READING_FIELDS.map(([key,label]) => {
             const field = reading[key];
@@ -199,7 +199,7 @@
       setStage(1);
       const clarification = state.clarification;
       output.innerHTML = `
-        <div class="narrative-section-head"><p class="eyebrow">01 / Interpretation</p><h3>Choose the reading you want to direct.</h3><p>Narrative signal · ${escapeHtml(String(state.signal || '').toUpperCase())}. These are candidate interpretations, not a single hidden truth.</p></div>
+        <div class="narrative-section-head"><p class="eyebrow">01 / Interpretation</p><h3>Choose the reading you want to direct</h3><p>Narrative signal · ${escapeHtml(String(state.signal || '').toUpperCase())}. These are candidate interpretations, not a single hidden truth.</p></div>
         ${clarification ? `<section class="narrative-clarification" data-narrative-clarification><span>CLARIFICATION · ONE QUESTION</span><strong>${escapeHtml(clarification.question)}</strong><p>Answer only if this distinction matters to your directing intent. The system will rerun Interpret, not the downstream visual stages.</p><div class="narrative-clarification-options">${clarification.options.map(option => `<button type="button" data-clarification-option>${escapeHtml(option)}</button>`).join('')}</div></section>` : ''}
         <div class="narrative-reading-grid">
           ${state.readings.map(reading => `<button type="button" class="narrative-reading-card" data-reading-card data-reading-id="${escapeHtml(reading.id)}"><span>${escapeHtml(String(reading.confidence).toUpperCase())} CONFIDENCE</span><strong>${escapeHtml(reading.title)}</strong><p>${escapeHtml(reading.narrativeProblem.value)}</p><small>${groundingLabel(reading.narrativeProblem)} · ${escapeHtml(reading.narrativeProblem.basis)}</small></button>`).join('')}
@@ -215,7 +215,7 @@
       const state = draft.getState();
       setStage(3);
       output.innerHTML = `
-        <div class="narrative-section-head"><p class="eyebrow">03 / Visual strategy</p><h3>Choose what leads the image.</h3><p>Each strategy shares the confirmed narrative mechanism but assigns different variable ownership.</p></div>
+        <div class="narrative-section-head"><p class="eyebrow">03 / Visual strategy</p><h3>Choose what leads the image</h3><p>Each strategy shares the confirmed narrative mechanism but assigns different variable ownership.</p></div>
         <div class="narrative-strategy-grid">${state.strategies.map(strategy => `<button type="button" class="narrative-strategy-card" data-strategy-card data-strategy-id="${escapeHtml(strategy.id)}" aria-pressed="false"><span>PRIMARY · ${escapeHtml(strategy.primaryVariable.toUpperCase())}</span><strong>${escapeHtml(strategy.title)}</strong><p>${escapeHtml(strategy.mechanism)}</p><small>SUPPORT · ${escapeHtml(strategy.supportingVariables.join(' / ').toUpperCase())}</small><small>RESTRAIN · ${escapeHtml(strategy.restrainedVariables.join(' / ').toUpperCase() || '—')}</small></button>`).join('')}</div>
         <div class="narrative-actions"><button type="button" class="narrative-primary" data-select-strategy disabled>Select strategy</button></div>`;
       const selectButton = output.querySelector('[data-select-strategy]');
@@ -251,9 +251,9 @@
       setStage(4);
       const beats = state.sequenceProposal?.beats || [];
       output.innerHTML = `
-        <div class="narrative-section-head"><p class="eyebrow">04 / Proposal preview</p><h3>Sequence before state mutation.</h3><p>The proposal remains isolated from canonical Scene State until an explicit Apply action.</p></div>
+        <div class="narrative-section-head"><p class="eyebrow">04 / Proposal preview</p><h3>Sequence before state mutation</h3><p>The proposal remains isolated from canonical Scene State until an explicit Apply action.</p></div>
         <div class="narrative-sequence-grid">${beats.map((beat,index) => `<article class="narrative-sequence-beat" data-sequence-proposal-beat data-beat-id="${escapeHtml(beat.id)}"><div class="narrative-beat-index">${String(index+1).padStart(2,'0')}</div><div class="narrative-beat-copy"><div class="narrative-beat-head"><strong data-beat-label>${escapeHtml(beat.label)}</strong><span>AGENCY · ${escapeHtml(beat.agency.toUpperCase())}</span></div><p>${escapeHtml(beat.narrativeBeat)}</p><div class="narrative-beat-variables"><b>PRIMARY · ${escapeHtml(beat.primaryVariable.toUpperCase())}</b><span>SUPPORT · ${escapeHtml(beat.supportingVariables.join(' / ').toUpperCase() || '—')}</span><span>RESTRAIN · ${escapeHtml(beat.restrainedVariables.join(' / ').toUpperCase() || '—')}</span></div><div class="narrative-events">${beat.visualEvents.length ? beat.visualEvents.map(event => `<span>${escapeHtml(typeof event==='string'?event:event.type)}</span>`).join('') : '<span>NO EVENT</span>'}</div></div></article>`).join('')}</div>
-        <div class="narrative-apply-preview"><span>05 / APPLY</span><strong>Not applied yet.</strong><p>DIRECT and Sequence Director remain unchanged in Preview mode.</p></div>`;
+        <div class="narrative-apply-preview"><span>05 / APPLY</span><strong>Not applied yet</strong><p>DIRECT and Sequence Director remain unchanged in Preview mode.</p></div>`;
       live.textContent = 'Sequence proposal ready. Canonical Scene State is still unchanged.';
     }
 
