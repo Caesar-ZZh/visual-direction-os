@@ -40,6 +40,8 @@ async function computedPseudoFont(page, selector, pseudo) {
 test('Narrative mode exposes editorial story input instead of chat', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(url);
+  await expect.poll(() => page.evaluate(() => Boolean(window.VDOSProjectContext) || Boolean(document.querySelector('.project-bootstrap-error')))).toBe(true);
+  await expect(page.locator('.project-bootstrap-error')).toHaveCount(0);
   await page.getByRole('button', { name: /Turn story into direction/i }).click();
   await expect(page.locator('.mode-btn[data-mode="narrative"]')).toHaveAttribute('aria-current', 'page');
   await expect.poll(() => page.evaluate(() => window.VDOSScene.getSceneState().mode)).toBe('narrative');
