@@ -64,4 +64,26 @@ assert.throws(
 persistence.clear();
 assert.strictEqual(storage.getItem(key), null, 'clear should remove the local Project snapshot');
 
+let persistenceError = null;
+const failingStorage = {
+  getItem() { return null; },
+  setItem() { throw new Error('quota exceeded'); },
+  removeItem() {}
+};
+const resilientPersistence = createProjectPersistence({
+  storage:failingStorage,
+  key:'vdos-project-failing-storage',
+  validateProjectState,
+  onError(error) { persistenceError = error; }
+});
+const resilientStore = createProjectStore();
+resilientPersistence.bind(resilientStore);
+assert.doesNotThrow(() => resilientStore.createProject({
+  id:'project-resilient',
+  title:'Resilient Film',
+  projectIntent:'Persistence failure must not block directing.',
+  sourceNarrative:'story'
+}), 'autosave failures must not destabilize Project Store mutations');
+assert.match(persistenceError?.message || '', /quota exceeded/, 'persistence write failures should remain observable');
+
 console.log('project-persistence.test.js passed');
