@@ -82,6 +82,15 @@
       return validateAndCommit(next, 'project:create');
     }
 
+    function updateProjectMetadata(patch = {}) {
+      requireProject();
+      const next = getProject();
+      ['title','projectIntent','sourceNarrative'].forEach(key => {
+        if (Object.prototype.hasOwnProperty.call(patch, key)) next[key] = String(patch[key] ?? '');
+      });
+      return validateAndCommit(next, 'project:metadata');
+    }
+
     function addScene(sceneInput = {}, options = {}) {
       requireProject();
       const next = getProject();
@@ -216,6 +225,7 @@
       getProject,
       subscribe,
       createProject,
+      updateProjectMetadata,
       addScene,
       updateScene,
       removeScene,
