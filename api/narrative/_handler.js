@@ -2,6 +2,7 @@
 
 const { STAGES, validateInput, validateOutput } = require('./_contracts.js');
 const { createOpenAIProvider } = require('./_openai-adapter.js');
+const { validateProjectContext } = require('../../visual-direction-os/project-context.js');
 
 const LOCAL_ORIGINS = new Set(['http://127.0.0.1:4173', 'http://localhost:4173']);
 
@@ -48,6 +49,14 @@ function createHandler({ stage, provider, allowedOrigin = '', production = proce
     const checkedInput = validateInput(stage, req?.body);
     if (!checkedInput.valid) {
       return sendError(res, 400, 'BAD_REQUEST', checkedInput.errors.join('; '));
+    }
+
+    if (stage === 'interpret' && req?.body?.projectContext != null) {
+      const checkedContext = validateProjectContext(req.body.projectContext);
+      if (!checkedContext.valid) {
+        return sendError(res, 400, 'BAD_REQUEST', checkedContext.errors.join('; '));
+      }
+      checkedInput.value.projectContext = checkedContext.value;
     }
 
     let generated;
