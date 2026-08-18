@@ -1,0 +1,12 @@
+const assert = require('assert');
+const { deriveProjectApiBase, createInitialProjectInput } = require('./project-bootstrap.js');
+assert.equal(deriveProjectApiBase('https://example.test/api/narrative'), 'https://example.test');
+assert.equal(deriveProjectApiBase('https://example.test/api/narrative/'), 'https://example.test');
+assert.equal(deriveProjectApiBase('https://example.test'), 'https://example.test');
+const normal = createInitialProjectInput(false);
+assert.equal(normal.title, 'Untitled Film');
+assert.equal(normal.sourceNarrative, '');
+const demo = createInitialProjectInput(true);
+assert.ok(demo.sourceNarrative.length > 40);
+assert.match(demo.projectIntent, /agency/i);
+console.log('project-bootstrap.test.js passed');
