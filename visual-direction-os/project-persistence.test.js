@@ -1,0 +1,67 @@
+const assert = require('assert');
+const { validateProjectState } = require('./project-contracts.js');
+const { createProjectStore } = require('./project-state.js');
+const { createProjectPersistence } = require('./project-persistence.js');
+
+function createMemoryStorage() {
+  const values = new Map();
+  return {
+    getItem(key) { return values.has(key) ? values.get(key) : null; },
+    setItem(key, value) { values.set(key, String(value)); },
+    removeItem(key) { values.delete(key); }
+  };
+}
+
+const storage = createMemoryStorage();
+const key = 'vdos-project-test';
+const persistence = createProjectPersistence({ storage, key, validateProjectState });
+
+assert.strictEqual(persistence.load(), null, 'empty storage should hydrate as no Project');
+
+const store = createProjectStore();
+const unbind = persistence.bind(store);
+store.createProject({
+  id:'project-persisted',
+  title:'Persisted Film',
+  projectIntent:'Preserve Director decisions across reloads.',
+  sourceNarrative:'A Project that must survive a page reload.'
+});
+store.addScene({
+  title:'SCENE ONE',
+  role:'setup',
+  narrativeFunction:'Establish the initial state.',
+  startingState:'Stable.',
+  endingState:'Pressure appears.',
+  turningPoint:'Pressure becomes visible.',
+  agencyTransition:['world','contested'],
+  relationToPrevious:null
+});
+store.saveSceneSnapshot('scene-01', {
+  narrativeState:{ status:'confirmed', selectedReadingId:'reading-1' },
+  sceneState:{ mode:'direct', variables:{ camera:'constrained' } },
+  sequenceState:{ id:'sequence-1', beats:[{ id:'beat-1' }] }
+});
+
+assert.deepStrictEqual(persistence.load(), store.getProject(), 'valid Project Store mutations should autosave');
+
+const reloadedStore = createProjectStore(persistence.load());
+assert.deepStrictEqual(reloadedStore.getProject(), store.getProject(), 'saved Project should hydrate a fresh Project Store without losing Scene workspace state');
+
+unbind();
+
+storage.setItem(key, '{not-json');
+assert.strictEqual(persistence.load(), null, 'corrupt JSON must be ignored instead of crashing Project bootstrap');
+
+storage.setItem(key, JSON.stringify({ version:1, project:{ id:'broken' } }));
+assert.strictEqual(persistence.load(), null, 'invalid Project payload must be rejected by Project contracts');
+
+assert.throws(
+  () => persistence.save({ id:'invalid' }),
+  /Invalid Project State/,
+  'invalid Project state must never be written to persistence'
+);
+
+persistence.clear();
+assert.strictEqual(storage.getItem(key), null, 'clear should remove the local Project snapshot');
+
+console.log('project-persistence.test.js passed');
