@@ -9,6 +9,7 @@
   const scrollKeys = new Set(['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' ']);
   const explicitVariables = new Set();
   let explicitModePin = null;
+  let modeReconcileQueued = false;
 
   function updateModeUI(mode) {
     $$('[data-mode]').forEach((control) => {
@@ -208,6 +209,17 @@
   }
 
   function render(state) {
+    const canonicalMode = explicitModePin || state.mode;
+    updateModeUI(canonicalMode);
+    if (explicitModePin && state.mode !== explicitModePin && !modeReconcileQueued) {
+      modeReconcileQueued = true;
+      queueMicrotask(() => {
+        modeReconcileQueued = false;
+        const current = scene.getSceneState?.();
+        if (explicitModePin && current?.mode !== explicitModePin) scene.updateSceneState({ mode: explicitModePin }, 'mode-switch');
+      });
+    }
+
     renderOwnership(state);
 
     const agency = $('#summary-agency'); if (agency) agency.textContent = String(state.agency).toUpperCase();
