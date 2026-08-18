@@ -7,8 +7,8 @@ const roleB = { role:'rupture', narrativeFunction:'Turn recognition into refusal
 const store = createProjectStore({
   id:'p', title:'Film', projectIntent:'', sourceNarrative:'', sceneOrder:['scene-01','scene-02'], activeSceneId:'scene-01',
   scenes:{
-    'scene-01':{ id:'scene-01',order:1,title:'A',narrativeRole:roleA,workspace:{sceneState:{agency:'world',variables:{camera:{perspective:'world'}}},narrativeState:{stage:'input'},sequenceState:null},status:{narrative:'defined',visual:'directed',continuity:'unresolved'} },
-    'scene-02':{ id:'scene-02',order:2,title:'B',narrativeRole:roleB,workspace:{sceneState:{agency:'character',variables:{camera:{perspective:'character'}}},narrativeState:{stage:'input'},sequenceState:null},status:{narrative:'defined',visual:'directed',continuity:'unresolved'} }
+    'scene-01':{ id:'scene-01',order:1,title:'A',narrativeRole:roleA,workspace:{sceneState:{mode:'narrative',agency:'world',variables:{camera:{perspective:'world'}}},narrativeState:{stage:'input'},sequenceState:null},status:{narrative:'defined',visual:'directed',continuity:'unresolved'} },
+    'scene-02':{ id:'scene-02',order:2,title:'B',narrativeRole:roleB,workspace:{sceneState:{mode:'learn',agency:'character',variables:{camera:{perspective:'character'}}},narrativeState:{stage:'input'},sequenceState:null},status:{narrative:'defined',visual:'directed',continuity:'unresolved'} }
   }
 });
 let liveScene = JSON.parse(JSON.stringify(store.getProject().scenes['scene-01'].workspace.sceneState));
@@ -33,6 +33,7 @@ liveNarrative = { stage:'strategy', selectedStrategyId:'camera' };
   assert.equal(store.getProject().scenes['scene-01'].workspace.narrativeState.stage, 'strategy');
   assert.equal(store.getProject().activeSceneId, 'scene-02');
   assert.equal(liveScene.variables.camera.perspective, 'character');
+  assert.equal(liveScene.mode, 'narrative', 'Scene restore must preserve the current Workspace mode instead of reviving a stale Scene-local mode');
   liveScene.variables.camera.perspective = 'world';
   assert.equal(store.getProject().scenes['scene-01'].workspace.sceneState.variables.camera.perspective, 'mixed');
 
@@ -40,6 +41,7 @@ liveNarrative = { stage:'strategy', selectedStrategyId:'camera' };
   assert.equal(store.getProject().scenes['scene-02'].status.visual, 'directed');
   await runtime.switchScene('scene-01');
   assert.equal(liveScene.variables.camera.perspective, 'mixed');
+  assert.equal(liveScene.mode, 'narrative');
   assert.equal(liveNarrative.stage, 'strategy');
 
   const freshStore = createProjectStore();
@@ -47,7 +49,7 @@ liveNarrative = { stage:'strategy', selectedStrategyId:'camera' };
   freshStore.confirmBreakdown({ status:'proposal', proposedScenes:[{
     id:'proposal-1', title:'First', role:'setup', narrativeFunction:'Establish order.', startingState:'Order accepted.', endingState:'Task accepted.', turningPoint:'Task binds.', agencyTransition:['world','world'], relationToPrevious:null
   }] });
-  let implicitLive = { agency:'world', variables:{ camera:{ perspective:'world' } }, technicalDefault:true };
+  let implicitLive = { mode:'direct', agency:'world', variables:{ camera:{ perspective:'world' } }, technicalDefault:true };
   let restores = 0;
   let freshAborts = 0;
   let sawSwitchingDuringRestore = false;
