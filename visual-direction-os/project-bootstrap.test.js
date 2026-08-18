@@ -8,7 +8,8 @@ const {
   shouldPersistSceneEvent,
   createNoopPersistence,
   loadOptionalPersistence,
-  createPersistence
+  createPersistence,
+  preserveWorkspaceMode
 } = require('./project-bootstrap.js');
 assert.equal(deriveProjectApiBase('https://example.test/api/narrative'), 'https://example.test');
 assert.equal(deriveProjectApiBase('https://example.test/api/narrative/'), 'https://example.test');
@@ -22,6 +23,12 @@ assert.match(demo.projectIntent, /agency/i);
 assert.equal(shouldPersistSceneEvent('sequence-director:set-sequence', { isSwitching:()=>true }), null, 'restore-generated events must be ignored during Scene switching');
 assert.equal(shouldPersistSceneEvent('narrative:apply', { isSwitching:()=>false }), 'directed');
 assert.equal(shouldPersistSceneEvent('workspace:camera.perspective', { isSwitching:()=>false }), 'in-progress');
+assert.equal(typeof preserveWorkspaceMode, 'function', 'Project Scene restore must expose a mode-preserving boundary');
+assert.deepEqual(
+  preserveWorkspaceMode({ mode:'learn', agency:'character', variables:{ camera:{ perspective:'character' } } }, 'narrative'),
+  { mode:'narrative', agency:'character', variables:{ camera:{ perspective:'character' } } },
+  'Scene restore must preserve current Workspace mode while restoring the rest of the Scene snapshot'
+);
 
 (async () => {
   const noop = createNoopPersistence(new Error('blocked by host'));
