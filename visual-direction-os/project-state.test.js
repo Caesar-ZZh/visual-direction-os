@@ -27,6 +27,19 @@ p.scenes['scene-02'].workspace.sceneState.variables.camera.perspective = 'mixed'
 assert.equal(store.getProject().scenes['scene-01'].workspace.sceneState.variables.camera.perspective, 'world');
 assert.equal(store.getProject().scenes['scene-02'].workspace.sceneState.variables.camera.perspective, 'character');
 
+const scenesBeforeMetadataEdit = store.getProject().scenes;
+store.updateProjectMetadata({
+  title:'Renamed Film',
+  projectIntent:'The ending should feel self-authored.',
+  sourceNarrative:'Updated source story supplied by the Director.'
+});
+const metadataProject = store.getProject();
+assert.equal(metadataProject.title, 'Renamed Film');
+assert.equal(metadataProject.projectIntent, 'The ending should feel self-authored.');
+assert.equal(metadataProject.sourceNarrative, 'Updated source story supplied by the Director.');
+assert.deepStrictEqual(metadataProject.scenes, scenesBeforeMetadataEdit, 'Project metadata edits must not mutate Scene records or workspace snapshots');
+assert.throws(() => store.updateProjectMetadata({ title:'   ' }), /Invalid Project State/, 'blank Project titles must remain invalid');
+
 const collisionStore = createProjectStore();
 collisionStore.createProject({ id:'collision', title:'Collision', projectIntent:'', sourceNarrative:'' });
 for (let index = 1; index <= 3; index += 1) {
