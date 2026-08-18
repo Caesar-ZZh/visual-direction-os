@@ -36,6 +36,17 @@ test('STUDIO demo route keeps Project mode explicit and returns to SYSTEM', asyn
   await expect(page).toHaveURL(/\/$/);
 });
 
+test('mobile STUDIO exposes SYSTEM without adding a fifth Director mode', async ({ page }) => {
+  await page.setViewportSize({ width:390, height:844 });
+  await page.goto(`${base}/studio/?narrativeDemo=1&projectDemo=1`);
+
+  await expect(page.locator('.release-system-home-mobile')).toBeVisible();
+  const modeNames = await page.locator('[data-mode]').evaluateAll(nodes => [...new Set(nodes.map(node => node.dataset.mode))]);
+  expect(modeNames.sort()).toEqual(['diagnose','direct','learn','narrative']);
+  await page.locator('.release-system-home-mobile').click();
+  await expect(page.locator('#overview-title')).toBeVisible();
+});
+
 for (const viewport of [
   { name:'mobile', width:390, height:844 },
   { name:'desktop', width:1440, height:1000 }
