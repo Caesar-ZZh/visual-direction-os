@@ -16,6 +16,20 @@ async function reachSequencePreview(page) {
   await expect(page.locator('[data-sequence-proposal-beat]')).toHaveCount(5);
 }
 
+const fontRole = family => {
+  const value = family.toLowerCase();
+  if (value.includes('georgia') || value.includes('times new roman')) return 'serif';
+  if (value.includes('ui-monospace') || value.includes('sfmono') || value.includes('menlo') || value.includes('monospace')) return 'mono';
+  return 'sans';
+};
+
+async function computedFont(page, selector) {
+  return page.locator(selector).first().evaluate(node => {
+    const style = getComputedStyle(node);
+    return { family: style.fontFamily, size: parseFloat(style.fontSize), weight: style.fontWeight };
+  });
+}
+
 test('Narrative mode exposes editorial story input instead of chat', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(url);
@@ -29,6 +43,42 @@ test('Narrative mode exposes editorial story input instead of chat', async ({ pa
   await expect(page.getByRole('button', { name: /Start interpretation/i })).toBeVisible();
   await expect(page.locator('[data-narrative-demo-badge]')).toHaveText('DEMO FIXTURE');
   await expect(page.locator('[data-narrative-stage]')).toHaveCount(5);
+});
+
+test('Narrative typography separates directing decisions readable copy and system metadata', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1100 });
+  await page.goto(url);
+  await page.getByRole('button', { name: /Turn story into direction/i }).click();
+
+  const stageLabel = await computedFont(page, '[data-narrative-stage="1"] strong');
+  const startAction = await computedFont(page, '[data-narrative-entry] button[type="submit"]');
+  const liveCopy = await computedFont(page, '[data-narrative-live]');
+  const fieldMeta = await computedFont(page, '.narrative-field label');
+
+  expect(fontRole(stageLabel.family)).toBe('serif');
+  expect(stageLabel.size).toBeGreaterThanOrEqual(13);
+  expect(fontRole(startAction.family)).toBe('serif');
+  expect(startAction.size).toBeGreaterThanOrEqual(14);
+  expect(fontRole(liveCopy.family)).toBe('sans');
+  expect(liveCopy.size).toBeGreaterThanOrEqual(12);
+  expect(fontRole(fieldMeta.family)).toBe('mono');
+
+  await reachSequencePreview(page);
+
+  const applyAll = await computedFont(page, '[data-apply-mode="all"]');
+  const applySelected = await computedFont(page, '[data-apply-mode="selected"]');
+  const beatChoice = await computedFont(page, '[data-apply-beat="setup"] small');
+  const sequenceMeta = await computedFont(page, '.narrative-beat-variables');
+  const visualEvent = await computedFont(page, '.narrative-events span');
+
+  expect(fontRole(applyAll.family)).toBe('serif');
+  expect(fontRole(applySelected.family)).toBe('serif');
+  expect(applyAll.size).toBeGreaterThanOrEqual(13);
+  expect(fontRole(beatChoice.family)).toBe('serif');
+  expect(beatChoice.size).toBeGreaterThanOrEqual(12);
+  expect(fontRole(sequenceMeta.family)).toBe('mono');
+  expect(fontRole(visualEvent.family)).toBe('serif');
+  expect(visualEvent.size).toBeGreaterThanOrEqual(12);
 });
 
 test('Narrative demo flows through editable Reading and Strategy into a five-beat preview without mutating Scene State', async ({ page }) => {
