@@ -35,6 +35,39 @@ for (const asset of narrativeAssets) {
   assert.ok(fs.existsSync(path.join(output, asset)), `assembled Pages site must include ${asset}`);
 }
 
+const projectAssets = [
+  'project-contracts.js',
+  'project-context.js',
+  'project-state.js',
+  'project-runtime.js',
+  'project-arc.js',
+  'project-continuity.js',
+  'project-breakdown-state.js',
+  'project-breakdown-api-client.js',
+  'project-breakdown-fixtures.js',
+  'project-workspace.js',
+  'project-workspace.css',
+  'project-context.css',
+  'project-bootstrap.js'
+];
+for (const asset of projectAssets) {
+  assert.ok(fs.existsSync(path.join(output, asset)), `assembled Pages site must include ${asset}`);
+}
+const directorApp = fs.readFileSync(path.join(source, 'director-v2-app.js'), 'utf8');
+assert.ok(directorApp.includes('project-bootstrap.js'), 'Director shell must load Project Bootstrap as a context layer');
+const bootstrap = fs.readFileSync(path.join(source, 'project-bootstrap.js'), 'utf8');
+for (const asset of ['project-contracts.js','project-context.js','project-state.js','project-runtime.js','project-arc.js','project-continuity.js','project-breakdown-state.js','project-workspace.js','project-workspace.css','project-context.css']) {
+  assert.ok(bootstrap.includes(asset), `Project Bootstrap must load ${asset}`);
+}
+
+const workflow = fs.readFileSync(path.join(source, '..', '.github', 'workflows', 'director-v2-ci.yml'), 'utf8');
+for (const testFile of [
+  'project-contracts.test.js','project-context.test.js','project-state.test.js','project-runtime.test.js','project-arc.test.js','project-continuity.test.js','project-breakdown-state.test.js','project-breakdown-api-client.test.js','project-workspace.test.js','project-bootstrap.test.js','api/project/_handler.test.js','api/project/_openai-adapter.test.js','api/narrative/_prompts.test.js','project-workspace.spec.js'
+]) {
+  assert.ok(workflow.includes(testFile), `Director CI must execute ${testFile}`);
+}
+assert.ok(workflow.includes('api/project/**'), 'Director CI path filter must include Project API changes');
+
 assert.ok(fs.existsSync(path.join(output, 'director-v2.html')));
 fs.rmSync(root, { recursive: true, force: true });
 console.log('site publish tests passed');
