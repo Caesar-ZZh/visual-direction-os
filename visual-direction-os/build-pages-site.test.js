@@ -21,13 +21,20 @@ try {
   const systemBuilt = fs.readFileSync(path.join(output, 'index.html'), 'utf8');
   const studioPath = path.join(output, 'studio', 'index.html');
 
-  assert.equal(systemBuilt, systemSource, 'SYSTEM root must remain byte-identical to source index.html');
+  assert.match(systemSource, /Visual Direction OS/, 'Source SYSTEM must remain the editorial knowledge document');
+  assert.match(systemBuilt, /Visual Direction OS/, 'Built SYSTEM must retain the editorial knowledge document');
+  assert.match(systemBuilt, /class="[^"]*studio-entry[^"]*"[^>]*href="studio\/"/, 'Built SYSTEM must expose a first-class Studio route');
+  assert.match(systemBuilt, /release-routing\.css/, 'Built SYSTEM must load the shared release bridge styles');
   assert.ok(fs.existsSync(studioPath), 'Pages build must create studio/index.html');
 
   const studioBuilt = fs.readFileSync(studioPath, 'utf8');
   assert.match(studioBuilt, /<base href="\.\.\/">/, 'Studio build must resolve shared assets from the parent directory');
-  assert.match(studioBuilt, /Director Workspace/, 'Studio build must contain Director Workspace markup');
+  assert.match(studioBuilt, /Director Workspace · v2\.1/, 'Studio build must contain production-neutral Director Workspace chrome');
+  assert.doesNotMatch(studioBuilt, /v2\.1 staging|staging build/i, 'Published Studio must not present itself as a staging build');
+  assert.match(studioBuilt, /data-system-home[^>]*href="\.\/"/, 'Built Studio must expose a route back to SYSTEM');
+  assert.match(studioBuilt, /release-routing\.css/, 'Built Studio must load the shared release bridge styles');
   assert.doesNotMatch(studioBuilt, /location\.replace\(/, 'Published Studio must be the full workspace, not the preview redirect shim');
+  assert.ok(fs.existsSync(path.join(output, 'release-routing.css')), 'Release bridge styles must be published');
   assert.ok(fs.existsSync(path.join(output, 'director-v2.html')), 'Compatibility director-v2.html must remain published');
   assert.ok(fs.existsSync(path.join(output, 'director-v2.css')), 'Studio shared assets must remain at the publish root');
 
