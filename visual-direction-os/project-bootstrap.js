@@ -5,7 +5,7 @@
 })(typeof window !== 'undefined' ? window : globalThis, root => {
   'use strict';
 
-  const VERSION = '20260818-1855';
+  const VERSION = '20260818-2048';
   const DEMO_STORY = 'A young employee enters a routine assignment meeting expecting to comply. During the conversation, he realizes the assignment itself is a mechanism of control. Recognition turns into explicit refusal, and he leaves the institution acting from self-authored agency.';
   const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const clone = value => value == null ? value : JSON.parse(JSON.stringify(value));
@@ -100,6 +100,19 @@
     });
   }
 
+  async function loadOptionalPersistence(loader = loadScript) {
+    try {
+      const persistenceApi = await loader(`project-persistence.js?v=${VERSION}`, 'VDOSProjectPersistence');
+      if (!persistenceApi || typeof persistenceApi.createProjectPersistence !== 'function') {
+        throw new Error('VDOSProjectPersistence is unavailable after project-persistence.js');
+      }
+      return { enabled:true, api:persistenceApi, error:null };
+    } catch (error) {
+      if (root?.console?.warn) root.console.warn('Project persistence unavailable; Project Workspace will continue without local save.', error);
+      return { enabled:false, api:null, error };
+    }
+  }
+
   async function loadProjectDependencies() {
     await Promise.all([
       loadStyle(`project-workspace.css?v=${VERSION}`),
@@ -109,7 +122,6 @@
     ]);
     await Promise.all([
       loadScript(`project-state.js?v=${VERSION}`, 'VDOSProjectState'),
-      loadScript(`project-persistence.js?v=${VERSION}`, 'VDOSProjectPersistence'),
       loadScript(`project-breakdown-state.js?v=${VERSION}`, 'VDOSProjectBreakdownState'),
       loadScript(`project-breakdown-api-client.js?v=${VERSION}`, 'VDOSProjectBreakdownApiClient'),
       loadScript(`project-breakdown-fixtures.js?v=${VERSION}`, 'VDOSProjectBreakdownFixtures'),
@@ -120,6 +132,8 @@
       loadScript(`project-continuity.js?v=${VERSION}`, 'VDOSProjectContinuity')
     ]);
     await loadScript(`project-workspace.js?v=${VERSION}`, 'VDOSProjectWorkspace');
+    const persistence = await loadOptionalPersistence();
+    return { persistence };
   }
 
   function ensureRoot() {
@@ -234,17 +248,43 @@
     document.querySelector('#narrative-panel')?.scrollIntoView({ behavior:'auto', block:'start' });
   }
 
-  function createPersistence(options, demoMode) {
+  function createNoopPersistence(reason = null) {
+    return {
+      enabled:false,
+      reason:reason?.message || String(reason || 'Persistence unavailable'),
+      key:null,
+      load(){ return null; },
+      save(project){ return clone(project); },
+      clear(){},
+      bind(){ return () => {}; }
+    };
+  }
+
+  function createPersistence(options, demoMode, persistenceApi = root?.VDOSProjectPersistence) {
     if (options.projectPersistence) return options.projectPersistence;
-    const persistenceOptions = {};
+    if (!persistenceApi || typeof persistenceApi.createProjectPersistence !== 'function') {
+      return createNoopPersistence(new Error('Persistence module unavailable'));
+    }
+    const persistenceOptions = {
+      onError(error) {
+        if (root?.console?.warn) root.console.warn('Project persistence write failed; continuing without interrupting the workspace.', error);
+      }
+    };
     if (Object.prototype.hasOwnProperty.call(options, 'storage')) persistenceOptions.storage = options.storage;
     if (options.persistenceKey) persistenceOptions.key = options.persistenceKey;
     else if (demoMode) persistenceOptions.key = 'vdos-project-v2.1-demo';
-    return root.VDOSProjectPersistence.createProjectPersistence(persistenceOptions);
+    try {
+      const persistence = persistenceApi.createProjectPersistence(persistenceOptions);
+      if (persistence && persistence.enabled == null) persistence.enabled = true;
+      return persistence;
+    } catch (error) {
+      if (root?.console?.warn) root.console.warn('Project persistence initialization failed; continuing without local save.', error);
+      return createNoopPersistence(error);
+    }
   }
 
   async function initProjectShell(options = {}) {
-    await loadProjectDependencies();
+    const dependencyStatus = await loadProjectDependencies();
     if (root.VDOSProjectContext) return root.VDOSProjectContext;
     const scene = options.scene || root.VDOSScene;
     if (!scene) throw new Error('VDOSScene is required before Project Bootstrap.');
@@ -252,11 +292,27 @@
     const demoMode = options.demoMode ?? params.get('projectDemo') === '1';
     const rootNode = options.rootNode || ensureRoot();
     const sceneContextRoot = ensureSceneContextRoot(rootNode);
-    const persistence = createPersistence(options, demoMode);
-    const hydratedProject = options.projectStore ? null : persistence.load();
+    let persistence = createPersistence(options, demoMode, dependencyStatus?.persistence?.api || root?.VDOSProjectPersistence);
+    let hydratedProject = null;
+    if (!options.projectStore) {
+      try {
+        hydratedProject = persistence.load();
+      } catch (error) {
+        if (root?.console?.warn) root.console.warn('Project persistence hydration failed; continuing with a fresh Project.', error);
+        persistence = createNoopPersistence(error);
+      }
+    }
     const store = options.projectStore || root.VDOSProjectState.createProjectStore(hydratedProject);
     if (!store.getProject()) store.createProject(createInitialProjectInput(demoMode));
-    const unbindPersistence = options.disablePersistence ? () => {} : persistence.bind(store);
+    let unbindPersistence = () => {};
+    if (!options.disablePersistence) {
+      try {
+        unbindPersistence = persistence.bind(store);
+      } catch (error) {
+        if (root?.console?.warn) root.console.warn('Project persistence binding failed; continuing without local save.', error);
+        persistence = createNoopPersistence(error);
+      }
+    }
     const breakdownState = options.breakdownState || root.VDOSProjectBreakdownState.createProjectBreakdownState();
     const apiClient = options.apiClient || root.VDOSProjectBreakdownApiClient.createProjectBreakdownApiClient({
       baseUrl:options.baseUrl ?? configuredBase(),
@@ -277,7 +333,20 @@
       projectRuntime:runtime,
       apiClient
     });
-    const context = { store, persistence, unbindPersistence, breakdownState, apiClient, runtime, workspace, demoMode, rootNode, sceneContextRoot };
+    const context = {
+      store,
+      persistence,
+      persistenceEnabled:persistence?.enabled !== false,
+      persistenceLoadError:dependencyStatus?.persistence?.error || null,
+      unbindPersistence,
+      breakdownState,
+      apiClient,
+      runtime,
+      workspace,
+      demoMode,
+      rootNode,
+      sceneContextRoot
+    };
     root.VDOSProjectContext = context;
 
     function syncSceneContext() {
@@ -338,6 +407,7 @@
     const message = document.createElement('p');
     message.className = 'project-bootstrap-error';
     message.setAttribute('role','alert');
+    message.dataset.error = String(error?.message || error || 'Unknown Project bootstrap error').slice(0,240);
     message.textContent = 'Project Workspace failed to initialize. Single-Scene Director remains available.';
     stage.insertBefore(message, stage.firstChild);
   }
@@ -359,6 +429,9 @@
     renderSceneContextBar,
     renderNarrativeProjectContext,
     shouldPersistSceneEvent,
+    createNoopPersistence,
+    loadOptionalPersistence,
+    createPersistence,
     loadProjectDependencies,
     initProjectShell
   };
