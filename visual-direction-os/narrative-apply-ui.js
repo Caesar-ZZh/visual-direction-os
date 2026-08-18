@@ -47,7 +47,7 @@
     preview.innerHTML = `
       <div class="narrative-apply-title">
         <span>05 / APPLY</span>
-        <div><strong>Choose what enters the Director.</strong><p>Preview stays isolated until this action is explicit.</p></div>
+        <div><strong>Choose what enters the Director</strong><p>Preview stays isolated until this action is explicit.</p></div>
       </div>
       <div class="narrative-apply-controls" data-apply-controls>
         <div class="narrative-apply-modes" role="group" aria-label="Apply scope">
