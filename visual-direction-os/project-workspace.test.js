@@ -20,6 +20,8 @@ assert.match(html, /data-project-arc-row="camera"/);
 assert.match(html, /data-scene-id="scene-01"[^>]*>—</);
 assert.match(html, /UNRESOLVED/);
 assert.doesNotMatch(html, />PROJECT<\/button>/, 'Project must not become a fifth mode button');
+const emptyHtml = renderProjectWorkspace({ id:'empty', title:'Empty', projectIntent:'', sourceNarrative:'', sceneOrder:[], activeSceneId:null, scenes:{} });
+assert.match(emptyHtml, />00 SCENES</, 'empty Project must report zero Scenes');
 
 const proposal = renderBreakdownProposal({
   status:'proposal',
