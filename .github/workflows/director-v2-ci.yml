@@ -38,6 +38,7 @@ jobs:
           node visual-direction-os/project-contracts.test.js
           node visual-direction-os/project-context.test.js
           node visual-direction-os/project-state.test.js
+          node visual-direction-os/project-persistence.test.js
           node visual-direction-os/project-runtime.test.js
           node visual-direction-os/project-arc.test.js
           node visual-direction-os/project-continuity.test.js
@@ -77,6 +78,7 @@ jobs:
           node --check visual-direction-os/project-contracts.js
           node --check visual-direction-os/project-context.js
           node --check visual-direction-os/project-state.js
+          node --check visual-direction-os/project-persistence.js
           node --check visual-direction-os/project-runtime.js
           node --check visual-direction-os/project-arc.js
           node --check visual-direction-os/project-continuity.js
@@ -140,6 +142,7 @@ jobs:
           test -f visual-direction-os/project-contracts.js
           test -f visual-direction-os/project-context.js
           test -f visual-direction-os/project-state.js
+          test -f visual-direction-os/project-persistence.js
           test -f visual-direction-os/project-runtime.js
           test -f visual-direction-os/project-arc.js
           test -f visual-direction-os/project-continuity.js
@@ -184,6 +187,7 @@ jobs:
           test -f /tmp/vdos-site/project-contracts.js
           test -f /tmp/vdos-site/project-context.js
           test -f /tmp/vdos-site/project-state.js
+          test -f /tmp/vdos-site/project-persistence.js
           test -f /tmp/vdos-site/project-runtime.js
           test -f /tmp/vdos-site/project-arc.js
           test -f /tmp/vdos-site/project-continuity.js
