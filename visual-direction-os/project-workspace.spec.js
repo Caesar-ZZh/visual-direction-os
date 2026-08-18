@@ -18,23 +18,26 @@ async function applyNarrativeDemo(page, description) {
   await expect(page.getByRole('button', { name:/Applied to Director/i })).toBeVisible();
 }
 
+async function confirmFiveSceneProject(page) {
+  await page.getByRole('button', { name:'BREAK DOWN STORY' }).first().click();
+  await expect(page.getByRole('heading', { name:'Break down story' })).toBeVisible();
+  await page.getByRole('button', { name:'BREAK DOWN STORY' }).last().click();
+  await expect(page.getByRole('heading', { name:'PROJECT READING' })).toBeVisible();
+  await expect(page.locator('[data-proposal-scene-id]')).toHaveCount(4);
+  await page.locator('[data-action="split-scene"]').nth(1).click();
+  await expect(page.locator('[data-proposal-scene-id]')).toHaveCount(5);
+  await page.getByRole('button', { name:'CONFIRM SCENE STRUCTURE' }).click();
+  await expect(page.locator('.project-scene-node')).toHaveCount(5);
+}
+
 test('Project Breakdown becomes an isolated five-Scene directing workflow', async ({ page }) => {
   await page.setViewportSize({ width:1440, height:1100 });
   await page.goto(url);
 
   await expect(page.getByRole('heading', { name:'Project Arc' })).toBeVisible();
   await expect(page.locator('.project-progress')).toContainText('00 SCENES');
-  await page.getByRole('button', { name:'BREAK DOWN STORY' }).first().click();
-  await expect(page.getByRole('heading', { name:'Break down story' })).toBeVisible();
-  await page.getByRole('button', { name:'BREAK DOWN STORY' }).last().click();
+  await confirmFiveSceneProject(page);
 
-  await expect(page.getByRole('heading', { name:'PROJECT READING' })).toBeVisible();
-  await expect(page.locator('[data-proposal-scene-id]')).toHaveCount(4);
-  await page.locator('[data-action="split-scene"]').nth(1).click();
-  await expect(page.locator('[data-proposal-scene-id]')).toHaveCount(5);
-  await page.getByRole('button', { name:'CONFIRM SCENE STRUCTURE' }).click();
-
-  await expect(page.locator('.project-scene-node')).toHaveCount(5);
   const cameraCells = page.locator('[data-project-arc-row="camera"] [data-scene-id]');
   await expect(cameraCells).toHaveCount(5);
   for (let index = 0; index < 5; index += 1) await expect(cameraCells.nth(index)).toHaveText('—');
@@ -76,6 +79,31 @@ test('Project Breakdown becomes an isolated five-Scene directing workflow', asyn
   expect(restoredSceneOne.agency).toBe(sceneOneSnapshot.agency);
   expect(restoredSceneOne.variables.camera.perspective).toBe(sceneOneSnapshot.variables.camera.perspective);
   expect(restoredSceneOne.variables.color.territory).toBe(sceneOneSnapshot.variables.color.territory);
+});
+
+test('Continuity routes a deterministic rupture boundary without auto-fix', async ({ page }) => {
+  await page.setViewportSize({ width:1024, height:900 });
+  await page.goto(url);
+  await confirmFiveSceneProject(page);
+
+  await page.evaluate(() => {
+    const project = window.VDOSProjectContext;
+    const base = window.VDOSScene.getSceneState();
+    const clone = value => JSON.parse(JSON.stringify(value));
+    project.store.updateScene('scene-03', { workspace:{ sceneState:clone(base) }, status:{ visual:'directed' } });
+    project.store.updateScene('scene-04', { workspace:{ sceneState:clone(base) }, status:{ visual:'directed' } });
+  });
+
+  const warning = page.locator('.project-finding[data-status="WARN"]').filter({ hasText:/scene-03 → scene-04/i });
+  await expect(warning).toHaveCount(1);
+  await expect(warning).toContainText('Narrative rupture has no visible system response');
+  await expect(warning.getByRole('button', { name:'OPEN SCENE-03' })).toBeVisible();
+  await expect(warning.getByRole('button', { name:'OPEN SCENE-04' })).toBeVisible();
+  await expect(page.getByRole('button', { name:/auto.?fix|fix automatically/i })).toHaveCount(0);
+
+  await warning.getByRole('button', { name:'OPEN SCENE-04' }).click();
+  await expect(page.locator('#project-scene-context-bar')).toContainText('04 / 05');
+  await expect(page.locator('#project-scene-context-bar')).toContainText('REFUSAL');
 });
 
 test('Project Context does not create a fifth Director mode', async ({ page }) => {
