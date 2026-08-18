@@ -7,6 +7,7 @@
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const modeOrder = ['learn', 'narrative', 'direct', 'diagnose'];
   const explicitVariables = new Set();
+  let pendingExplicitMode = null;
 
   function updateModeUI(mode) {
     $$('[data-mode]').forEach((control) => {
@@ -24,6 +25,7 @@
 
   function setMode(mode, options = {}) {
     const safe = modeOrder.includes(mode) ? mode : 'learn';
+    if (options.explicit === true) pendingExplicitMode = safe;
     scene.updateSceneState({ mode: safe }, 'mode-switch');
     updateModeUI(safe);
     if (options.scroll === false) return;
@@ -39,7 +41,7 @@
       const hash = control.getAttribute('href');
       if (hash && hash.startsWith('#')) history.replaceState(null, '', hash);
     }
-    setMode(control.dataset.mode);
+    setMode(control.dataset.mode, { explicit: true });
   }));
 
   function modeFromScroll() {
@@ -60,10 +62,12 @@
     scrollTicking = true;
     requestAnimationFrame(() => {
       scrollTicking = false;
-      const mode = modeFromScroll();
+      const scrollMode = modeFromScroll();
+      const mode = pendingExplicitMode || scrollMode;
       updateModeUI(mode);
       const current = scene.getSceneState?.();
-      if (current && current.mode !== mode) scene.updateSceneState({ mode }, 'scroll-spy');
+      if (current && current.mode !== mode) scene.updateSceneState({ mode }, pendingExplicitMode ? 'mode-switch' : 'scroll-spy');
+      if (pendingExplicitMode && scrollMode === pendingExplicitMode) pendingExplicitMode = null;
     });
   }
   window.addEventListener('scroll', syncModeFromScroll, { passive: true });
