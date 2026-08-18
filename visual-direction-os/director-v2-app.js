@@ -6,8 +6,9 @@
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const modeOrder = ['learn', 'narrative', 'direct', 'diagnose'];
+  const scrollKeys = new Set(['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' ']);
   const explicitVariables = new Set();
-  let pendingExplicitMode = null;
+  let explicitModePin = null;
 
   function updateModeUI(mode) {
     $$('[data-mode]').forEach((control) => {
@@ -25,7 +26,7 @@
 
   function setMode(mode, options = {}) {
     const safe = modeOrder.includes(mode) ? mode : 'learn';
-    if (options.explicit === true) pendingExplicitMode = safe;
+    if (options.explicit === true) explicitModePin = safe;
     scene.updateSceneState({ mode: safe }, 'mode-switch');
     updateModeUI(safe);
     if (options.scroll === false) return;
@@ -43,6 +44,19 @@
     }
     setMode(control.dataset.mode, { explicit: true });
   }));
+
+  function clearExplicitModePin() {
+    explicitModePin = null;
+  }
+
+  window.addEventListener('wheel', clearExplicitModePin, { passive: true });
+  window.addEventListener('touchmove', clearExplicitModePin, { passive: true });
+  window.addEventListener('keydown', event => {
+    if (scrollKeys.has(event.key)) clearExplicitModePin();
+  });
+  window.addEventListener('pointerdown', event => {
+    if (event.clientX >= window.innerWidth - 20) clearExplicitModePin();
+  }, { passive: true });
 
   function modeFromScroll() {
     const narrative = $('#narrative-panel');
@@ -62,12 +76,10 @@
     scrollTicking = true;
     requestAnimationFrame(() => {
       scrollTicking = false;
-      const scrollMode = modeFromScroll();
-      const mode = pendingExplicitMode || scrollMode;
+      const mode = explicitModePin || modeFromScroll();
       updateModeUI(mode);
       const current = scene.getSceneState?.();
-      if (current && current.mode !== mode) scene.updateSceneState({ mode }, pendingExplicitMode ? 'mode-switch' : 'scroll-spy');
-      if (pendingExplicitMode && scrollMode === pendingExplicitMode) pendingExplicitMode = null;
+      if (current && current.mode !== mode) scene.updateSceneState({ mode }, explicitModePin ? 'mode-switch' : 'scroll-spy');
     });
   }
   window.addEventListener('scroll', syncModeFromScroll, { passive: true });
