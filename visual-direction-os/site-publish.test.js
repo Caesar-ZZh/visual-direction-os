@@ -62,7 +62,7 @@ for (const asset of ['project-contracts.js','project-context.js','project-state.
 
 const workflow = fs.readFileSync(path.join(source, '..', '.github', 'workflows', 'director-v2-ci.yml'), 'utf8');
 for (const testFile of [
-  'project-contracts.test.js','project-context.test.js','project-state.test.js','project-runtime.test.js','project-arc.test.js','project-continuity.test.js','project-breakdown-state.test.js','project-breakdown-api-client.test.js','project-workspace.test.js','project-bootstrap.test.js','api/project/_handler.test.js','api/project/_openai-adapter.test.js','api/narrative/_prompts.test.js','project-workspace.spec.js'
+  'project-contracts.test.js','project-context.test.js','project-state.test.js','project-runtime.test.js','project-arc.test.js','project-continuity.test.js','project-breakdown-state.test.js','project-breakdown-api-client.test.js','project-workspace.test.js','project-bootstrap.test.js','api/project/_handler.test.js','api/project/_openai-adapter.test.js','api/project/_production.test.js','api/narrative/_prompts.test.js','project-workspace.spec.js'
 ]) {
   assert.ok(workflow.includes(testFile), `Director CI must execute ${testFile}`);
 }
