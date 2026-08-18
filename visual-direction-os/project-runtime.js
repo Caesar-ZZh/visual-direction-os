@@ -8,6 +8,14 @@
   const clone = value => value == null ? value : JSON.parse(JSON.stringify(value));
   const asAsync = value => Promise.resolve(value);
 
+  function preserveWorkspaceMode(snapshot, currentState) {
+    const next = clone(snapshot);
+    if (!next || typeof next !== 'object' || Array.isArray(next)) return next;
+    const mode = currentState?.mode;
+    if (mode != null) next.mode = mode;
+    return next;
+  }
+
   function createProjectRuntime({
     projectStore,
     sceneRuntime,
@@ -76,6 +84,7 @@
           return clone(projectStore.getProject().scenes[sceneId]);
         }
 
+        const workspaceNavigationState = readAdapter(sceneRuntime);
         switching = true;
         try {
           await captureActiveScene();
@@ -85,7 +94,7 @@
           const project = projectStore.getProject();
           const target = project.scenes[sceneId];
           const workspace = clone(target.workspace || {});
-          await restoreAdapter(sceneRuntime, workspace.sceneState);
+          await restoreAdapter(sceneRuntime, preserveWorkspaceMode(workspace.sceneState, workspaceNavigationState));
           await restoreAdapter(narrativeRuntime, workspace.narrativeState);
           await restoreAdapter(sequenceRuntime, workspace.sequenceState);
           loadedSceneId = sceneId;
@@ -130,5 +139,5 @@
     };
   }
 
-  return { createProjectRuntime };
+  return { createProjectRuntime, preserveWorkspaceMode };
 });
