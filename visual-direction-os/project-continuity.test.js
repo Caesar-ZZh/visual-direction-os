@@ -13,4 +13,6 @@ const result = deriveContinuity(project);
 assert.ok(result.findings.some(f => f.rule === 'agency-alignment' && f.status === 'WARN'));
 assert.ok(result.findings.some(f => f.rule === 'unresolved-scene' && f.sceneIds.includes('scene-03')));
 assert.equal(JSON.stringify(project), before, 'diagnostics must not mutate project');
+const empty = deriveContinuity({ sceneOrder:[], scenes:{} });
+assert.equal(empty.status, 'UNRESOLVED', 'an empty Project has insufficient continuity data');
 console.log('project-continuity.test.js passed');
