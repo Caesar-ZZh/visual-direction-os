@@ -13,7 +13,8 @@
     sceneRuntime,
     narrativeRuntime = null,
     sequenceRuntime = null,
-    abortTransient = null
+    abortTransient = null,
+    initialLoadedSceneId = null
   } = {}) {
     if (!projectStore || typeof projectStore.getProject !== 'function' || typeof projectStore.saveSceneSnapshot !== 'function' || typeof projectStore.setActiveScene !== 'function') {
       throw new Error('Project Runtime requires a Project Store.');
@@ -25,6 +26,7 @@
     const listeners = new Set();
     let switchChain = Promise.resolve();
     let switchToken = 0;
+    let loadedSceneId = initialLoadedSceneId;
 
     function notify(source) {
       const project = projectStore.getProject();
@@ -46,8 +48,8 @@
 
     async function captureActiveScene() {
       const project = projectStore.getProject();
-      const activeSceneId = project?.activeSceneId;
-      if (!activeSceneId || !project.scenes?.[activeSceneId]) return null;
+      const activeSceneId = loadedSceneId;
+      if (!activeSceneId || !project?.scenes?.[activeSceneId]) return null;
       const snapshot = {
         sceneState: readAdapter(sceneRuntime),
         narrativeState: readAdapter(narrativeRuntime),
@@ -68,7 +70,10 @@
       const run = async () => {
         const before = projectStore.getProject();
         if (!before?.scenes?.[sceneId]) throw new Error(`Unknown Scene: ${sceneId}`);
-        if (before.activeSceneId === sceneId) return clone(before.scenes[sceneId]);
+        if (loadedSceneId === sceneId) {
+          if (before.activeSceneId !== sceneId) projectStore.setActiveScene(sceneId);
+          return clone(projectStore.getProject().scenes[sceneId]);
+        }
 
         await captureActiveScene();
         if (typeof abortTransient === 'function') await asAsync(abortTransient());
@@ -80,6 +85,7 @@
         await restoreAdapter(sceneRuntime, workspace.sceneState);
         await restoreAdapter(narrativeRuntime, workspace.narrativeState);
         await restoreAdapter(sequenceRuntime, workspace.sequenceState);
+        loadedSceneId = sceneId;
         notify(`scene:switch:${token}`);
         return clone(target);
       };
@@ -90,7 +96,7 @@
 
     function markVisualDirected(sceneId = null) {
       const project = projectStore.getProject();
-      const targetId = sceneId || project?.activeSceneId;
+      const targetId = sceneId || loadedSceneId || project?.activeSceneId;
       if (!targetId || !project?.scenes?.[targetId]) throw new Error(`Unknown Scene: ${targetId}`);
       projectStore.updateScene(targetId, { status:{ visual:'directed' } });
       notify('scene:directed');
@@ -99,7 +105,7 @@
 
     function markVisualInProgress(sceneId = null) {
       const project = projectStore.getProject();
-      const targetId = sceneId || project?.activeSceneId;
+      const targetId = sceneId || loadedSceneId || project?.activeSceneId;
       if (!targetId || !project?.scenes?.[targetId]) throw new Error(`Unknown Scene: ${targetId}`);
       const current = project.scenes[targetId].status?.visual;
       if (current !== 'directed') projectStore.updateScene(targetId, { status:{ visual:'in-progress' } });
@@ -107,7 +113,7 @@
       return clone(projectStore.getProject().scenes[targetId]);
     }
 
-    return { captureActiveScene, switchScene, markVisualDirected, markVisualInProgress, subscribe };
+    return { captureActiveScene, switchScene, markVisualDirected, markVisualInProgress, subscribe, getLoadedSceneId:() => loadedSceneId };
   }
 
   return { createProjectRuntime };
