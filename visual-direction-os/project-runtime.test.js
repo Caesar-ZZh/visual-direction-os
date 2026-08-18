@@ -50,15 +50,22 @@ liveNarrative = { stage:'strategy', selectedStrategyId:'camera' };
   let implicitLive = { agency:'world', variables:{ camera:{ perspective:'world' } }, technicalDefault:true };
   let restores = 0;
   let freshAborts = 0;
-  const freshRuntime = createProjectRuntime({
+  let sawSwitchingDuringRestore = false;
+  let loadedIdDuringRestore = 'not-observed';
+  let freshRuntime;
+  freshRuntime = createProjectRuntime({
     projectStore:freshStore,
-    sceneRuntime:{ getState:()=>JSON.parse(JSON.stringify(implicitLive)), restore:s=>{ restores += 1; implicitLive=s == null ? null : JSON.parse(JSON.stringify(s)); } },
+    sceneRuntime:{ getState:()=>JSON.parse(JSON.stringify(implicitLive)), restore:s=>{ restores += 1; sawSwitchingDuringRestore = freshRuntime.isSwitching(); loadedIdDuringRestore = freshRuntime.getLoadedSceneId(); implicitLive=s == null ? null : JSON.parse(JSON.stringify(s)); } },
     abortTransient:()=>{ freshAborts += 1; }
   });
   assert.equal(freshStore.getProject().activeSceneId, 'scene-01');
   assert.equal(freshStore.getProject().scenes['scene-01'].workspace.sceneState, null);
   await freshRuntime.switchScene('scene-01');
   assert.equal(restores, 1, 'first explicit open must load Scene 01 even when Store already marks it active');
+  assert.equal(sawSwitchingDuringRestore, true, 'runtime must expose switching state for the entire restore transaction');
+  assert.equal(loadedIdDuringRestore, null, 'loaded Scene identity must be unavailable while restore-generated events are firing');
+  assert.equal(freshRuntime.getLoadedSceneId(), 'scene-01');
+  assert.equal(freshRuntime.isSwitching(), false, 'switching state must clear after restore completes');
   assert.equal(freshAborts, 1);
   assert.equal(freshStore.getProject().scenes['scene-01'].workspace.sceneState, null, 'implicit technical runtime must not be captured into an unloaded Scene');
 
