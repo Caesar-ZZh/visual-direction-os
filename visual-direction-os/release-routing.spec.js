@@ -23,6 +23,38 @@ test('SYSTEM remains the public root and routes into STUDIO', async ({ page }) =
   await expect(page.locator('.project-bootstrap-error')).toHaveCount(0);
 });
 
+test('assembled STUDIO paints the Auteur material and motion contract', async ({ page }) => {
+  await page.setViewportSize({ width:1440, height:1000 });
+  await page.goto(`${base}/studio/?narrativeDemo=1&projectDemo=1`);
+  await expect(page.getByRole('heading', { name:'Project Arc' })).toBeVisible();
+
+  const painted = await page.evaluate(() => {
+    const root = getComputedStyle(document.documentElement);
+    const grain = getComputedStyle(document.body, '::after');
+    const glow = getComputedStyle(document.querySelector('.narrative-glow'));
+    const reading = getComputedStyle(document.querySelector('.project-reading'));
+    const railLabel = getComputedStyle(document.querySelector('.v2-rail .mode-label'));
+    return {
+      motionPress:root.getPropertyValue('--motion-press').trim(),
+      grainPosition:grain.position,
+      grainOpacity:parseFloat(grain.opacity),
+      glowAnimation:glow.animationName,
+      readingColumns:reading.gridTemplateColumns.split(' ').map(Number),
+      railLabelFamily:railLabel.fontFamily,
+      bodyFamily:getComputedStyle(document.body).fontFamily
+    };
+  });
+
+  expect(painted.motionPress).toBe('130ms');
+  expect(painted.grainPosition).toBe('fixed');
+  expect(painted.grainOpacity).toBeGreaterThanOrEqual(.02);
+  expect(painted.grainOpacity).toBeLessThanOrEqual(.03);
+  expect(painted.glowAnimation).toBe('none');
+  expect(painted.readingColumns).toHaveLength(5);
+  expect(painted.readingColumns[0]).toBeGreaterThan(painted.readingColumns[4]);
+  expect(painted.railLabelFamily).toBe(painted.bodyFamily);
+});
+
 test('STUDIO demo route keeps Project mode explicit and returns to SYSTEM', async ({ page }) => {
   await page.setViewportSize({ width:1280, height:960 });
   await page.goto(`${base}/studio/?narrativeDemo=1&projectDemo=1`);
