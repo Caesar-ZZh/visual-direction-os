@@ -39,7 +39,7 @@ test('assembled STUDIO paints the Auteur material and motion contract', async ({
       grainPosition:grain.position,
       grainOpacity:parseFloat(grain.opacity),
       glowAnimation:glow.animationName,
-      readingColumns:reading.gridTemplateColumns.split(' ').map(Number),
+      readingColumns:reading.gridTemplateColumns.split(' ').map(parseFloat),
       railLabelFamily:railLabel.fontFamily,
       bodyFamily:getComputedStyle(document.body).fontFamily
     };
