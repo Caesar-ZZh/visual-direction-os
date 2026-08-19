@@ -23,3 +23,25 @@
 @media(max-width:900px){.project-scene-context-inner{align-items:flex-start;flex-direction:column;gap:10px}.project-scene-context-actions{width:100%;overflow-x:auto}.project-scene-context-actions button{flex:0 0 auto}.project-narrative-context{grid-template-columns:repeat(2,minmax(0,1fr))}.project-narrative-context>div{border-bottom:1px solid #2f3339}.project-narrative-context>div:nth-of-type(even){border-right:0}.project-narrative-context>div:last-child{grid-column:1/-1;border-bottom:0}}
 @media(max-width:520px){.project-scene-context-id{grid-template-columns:1fr}.project-scene-context-id>span{grid-column:auto}.project-scene-context-id>small{white-space:normal}.project-narrative-context{grid-template-columns:1fr}.project-narrative-context>div{border-right:0}.project-narrative-context>div:last-child{grid-column:auto}}
 @media(prefers-reduced-motion:reduce){.project-scene-context-bar{backdrop-filter:none}}
+
+/* PROJECT CONTEXT TYPOGRAPHY CONTRACT — same hierarchy as the rest of Director Workspace. */
+.project-scene-context-id>span,
+.project-scene-context-id>small,
+.project-narrative-context>header span,
+.project-narrative-context>header strong,
+.project-narrative-context>div>span{
+  font-family:var(--sans);
+}
+.project-scene-context-id>span{font-size:.66rem;line-height:1.15;font-weight:650;letter-spacing:.09em}
+.project-scene-context-id>small{font-size:.66rem;line-height:1.2;font-weight:650;letter-spacing:.045em}
+.project-scene-context-actions button{
+  font-family:var(--serif);
+  font-size:.76rem;
+  line-height:1;
+  font-weight:600;
+  letter-spacing:.015em;
+}
+.project-narrative-context>header span{font-size:.68rem;line-height:1.15;font-weight:650;letter-spacing:.08em}
+.project-narrative-context>header strong{font-size:.66rem;line-height:1.2;font-weight:600;letter-spacing:.03em}
+.project-narrative-context>div>span{font-size:.64rem;line-height:1.15;font-weight:650;letter-spacing:.065em}
+.project-narrative-context>div:first-of-type>strong,.project-narrative-context>div:last-child>strong{font-family:var(--sans);font-size:.72rem;font-weight:650;letter-spacing:.025em}
