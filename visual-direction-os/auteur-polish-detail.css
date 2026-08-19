@@ -46,6 +46,41 @@
   box-shadow:0 12px 34px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.025);
 }
 
+/* Collapsed rail gets a real monogram instead of clipping the full wordmark. */
+@media (min-width:901px){
+  .v2-rail[data-expanded='false'] .brand{
+    width:44px;
+    height:44px;
+    margin-inline:auto;
+    display:grid;
+    place-items:center;
+    overflow:hidden;
+    white-space:nowrap;
+    font-size:0;
+    line-height:1;
+  }
+  .v2-rail[data-expanded='false'] .brand::before{
+    content:"V";
+    font:700 1.45rem/1 var(--serif);
+    letter-spacing:-.06em;
+    color:#f2efe8;
+  }
+  .v2-rail[data-expanded='false'] .brand small{display:none}
+  .v2-rail[data-expanded='true'] .brand{
+    width:auto;
+    height:auto;
+    margin-inline:0;
+    overflow:visible;
+    white-space:normal;
+    font-size:1.32rem;
+    line-height:1.06;
+  }
+}
+
+/* Keep the first system marker inside the visual map, away from the hero copy baseline. */
+.stage .hero-system-map{right:3%;width:min(48vw,700px)}
+.stage .node-narrative{left:16%;top:-4%}
+
 /* Mobile navigation is a control surface, not a floating glass card. */
 .mobile-modes{
   border-top-color:rgba(241,239,234,.105);
@@ -148,6 +183,27 @@
 .stage .score-track-line{
   background:#1a1e23;
   box-shadow:inset 0 1px 2px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.018);
+}
+
+/* One additional material pass: edge light and warm graphite, never more bloom. */
+body::after{opacity:.028}
+.stage .hero{
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.018),inset 0 -1px 0 rgba(255,255,255,.012);
+}
+.stage .project-workspace-root{
+  background:
+    radial-gradient(980px 420px at 82% -8%,rgba(124,57,34,.035),transparent 62%),
+    linear-gradient(180deg,rgba(255,255,255,.006),transparent 180px);
+}
+.stage .project-scene-node[aria-current='true']{
+  background:
+    radial-gradient(440px 130px at 84% 0%,rgba(232,93,42,.055),transparent 70%),
+    linear-gradient(180deg,#1b1411,#13110f);
+  box-shadow:inset 0 -2px 0 rgba(232,93,42,.84),inset 0 1px 0 rgba(255,230,216,.032),0 18px 46px rgba(0,0,0,.11);
+}
+.stage .project-arc-scroll{
+  background:linear-gradient(180deg,rgba(255,255,255,.008),rgba(0,0,0,.028));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.018),inset 0 -18px 48px rgba(0,0,0,.08);
 }
 
 @media (hover:hover){
