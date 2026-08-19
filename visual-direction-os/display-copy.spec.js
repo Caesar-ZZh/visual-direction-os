@@ -4,10 +4,10 @@ const url = 'http://127.0.0.1:4173/director-v2.html?narrativeDemo=1';
 const terminalPeriod = /[.。]\s*$/;
 
 function expectNoTerminalPeriod(items) {
-  for (const text of items) expect(text, `display copy should not end with a period: ${text}`).not.toMatch(terminalPeriod);
+  for (const text of items) expect(text, `interface copy should not end with a period: ${text}`).not.toMatch(terminalPeriod);
 }
 
-test('Director display copy omits terminal periods while prose keeps normal punctuation', async ({ page }) => {
+test('Director interface copy omits terminal periods while user-authored prose preserves punctuation', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1100 });
   await page.goto(url);
 
@@ -18,11 +18,17 @@ test('Director display copy omits terminal periods while prose keeps normal punc
   const initialNarrativeDisplay = await page.locator('#narrative-panel h2, #narrative-panel h3, .narrative-aside-block>strong').allTextContents();
   expectNoTerminalPeriod(initialNarrativeDisplay.map(text => text.trim()));
 
-  const prose = (await page.locator('.narrative-editor>p').textContent()).trim();
-  expect(prose).toMatch(/[.。]\s*$/);
+  const helperCopy = await page.locator('.narrative-editor>p, .narrative-aside-block>p').allTextContents();
+  expectNoTerminalPeriod(helperCopy.map(text => text.trim()));
+  helperCopy.forEach(text => expect(text).not.toContain('。'));
 
-  await page.getByLabel('Scene description').fill('He enters the office expecting to accept an assignment. During the conversation he realizes the assignment itself is a mechanism of control. He refuses and leaves.');
-  await page.getByLabel('Director intent').fill('End with the character reclaiming control.');
+  const sceneText = 'He enters the office expecting to accept an assignment. During the conversation he realizes the assignment itself is a mechanism of control. He refuses and leaves.';
+  const intentText = 'End with the character reclaiming control.';
+  await page.getByLabel('Scene description').fill(sceneText);
+  await page.getByLabel('Director intent').fill(intentText);
+  await expect(page.getByLabel('Scene description')).toHaveValue(sceneText);
+  await expect(page.getByLabel('Director intent')).toHaveValue(intentText);
+
   await page.getByRole('button', { name: /Start interpretation/i }).click();
   await expect(page.locator('[data-reading-card]')).toHaveCount(2);
 
