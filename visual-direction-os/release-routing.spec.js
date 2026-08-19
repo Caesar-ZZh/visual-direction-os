@@ -54,6 +54,48 @@ test('assembled STUDIO paints the Auteur material and motion contract', async ({
   expect(painted.railLabelFamily).toBe(painted.bodyFamily);
 });
 
+test('collapsed brand, hero marker and helper copy remain visually disciplined', async ({ page }) => {
+  await page.setViewportSize({ width:1680, height:1000 });
+  await page.goto(`${base}/studio/?narrativeDemo=1&projectDemo=1`);
+  await expect(page.getByRole('heading', { name:'Project Arc' })).toBeVisible();
+  await expect.poll(() => page.evaluate(() => Boolean(window.VDOSAuteurPolishRuntime))).toBe(true);
+
+  await page.mouse.move(1200, 500);
+  await expect(page.locator('.v2-rail')).toHaveAttribute('data-expanded', 'false');
+  const chrome = await page.evaluate(() => {
+    const rail = document.querySelector('.v2-rail');
+    const brand = rail?.querySelector('.brand');
+    const eyebrow = document.querySelector('.hero-copy .eyebrow');
+    const marker = document.querySelector('.node-narrative');
+    if (!rail || !brand || !eyebrow || !marker) throw new Error('Expected chrome targets are missing');
+    const rr = rail.getBoundingClientRect();
+    const br = brand.getBoundingClientRect();
+    const er = eyebrow.getBoundingClientRect();
+    const mr = marker.getBoundingClientRect();
+    return {
+      brandFontSize:parseFloat(getComputedStyle(brand).fontSize),
+      brandPseudo:getComputedStyle(brand, '::before').content,
+      brandInsideRail:br.left >= rr.left && br.right <= rr.right,
+      brandWidth:br.width,
+      markerClearsCopy:mr.bottom <= er.top - 2 || mr.left >= er.right + 8
+    };
+  });
+  expect(chrome.brandFontSize).toBe(0);
+  expect(chrome.brandPseudo).toContain('V');
+  expect(chrome.brandInsideRail).toBe(true);
+  expect(chrome.brandWidth).toBeLessThanOrEqual(44.5);
+  expect(chrome.markerClearsCopy).toBe(true);
+
+  await page.getByRole('button', { name:/Turn story into direction/i }).click();
+  await expect(page.getByRole('heading', { name:/Tell your story/i })).toBeVisible();
+  await expect.poll(() => page.locator('.narrative-editor > p').textContent()).not.toContain('。');
+  const helperCopy = await page.locator('.narrative-aside-block > p').allTextContents();
+  helperCopy.forEach(text => {
+    expect(text).not.toContain('。');
+    expect(text.trim()).not.toMatch(/\.$/);
+  });
+});
+
 test('STUDIO demo route keeps Project mode explicit and returns to SYSTEM', async ({ page }) => {
   await page.setViewportSize({ width:1280, height:960 });
   await page.goto(`${base}/studio/?narrativeDemo=1&projectDemo=1`);
