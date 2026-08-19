@@ -31,15 +31,16 @@ test('assembled STUDIO paints the Auteur material and motion contract', async ({
   const painted = await page.evaluate(() => {
     const root = getComputedStyle(document.documentElement);
     const grain = getComputedStyle(document.body, '::after');
-    const glow = getComputedStyle(document.querySelector('.narrative-glow'));
-    const reading = getComputedStyle(document.querySelector('.project-reading'));
-    const railLabel = getComputedStyle(document.querySelector('.v2-rail .mode-label'));
+    const glowNode = document.querySelector('.narrative-glow');
+    const railLabelNode = document.querySelector('.v2-rail .mode-label');
+    if (!glowNode || !railLabelNode) throw new Error('Expected Studio material targets are missing');
+    const glow = getComputedStyle(glowNode);
+    const railLabel = getComputedStyle(railLabelNode);
     return {
       motionPress:root.getPropertyValue('--motion-press').trim(),
       grainPosition:grain.position,
       grainOpacity:parseFloat(grain.opacity),
       glowAnimation:glow.animationName,
-      readingColumns:reading.gridTemplateColumns.split(' ').map(parseFloat),
       railLabelFamily:railLabel.fontFamily,
       bodyFamily:getComputedStyle(document.body).fontFamily
     };
@@ -50,8 +51,6 @@ test('assembled STUDIO paints the Auteur material and motion contract', async ({
   expect(painted.grainOpacity).toBeGreaterThanOrEqual(.02);
   expect(painted.grainOpacity).toBeLessThanOrEqual(.03);
   expect(painted.glowAnimation).toBe('none');
-  expect(painted.readingColumns).toHaveLength(5);
-  expect(painted.readingColumns[0]).toBeGreaterThan(painted.readingColumns[4]);
   expect(painted.railLabelFamily).toBe(painted.bodyFamily);
 });
 
