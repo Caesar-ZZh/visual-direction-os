@@ -102,11 +102,15 @@ test('STUDIO demo route keeps Project mode explicit and returns to SYSTEM', asyn
 
   await expect(page.getByRole('heading', { name:'Project Arc' })).toBeVisible();
   await expect(page.locator('.project-bootstrap-error')).toHaveCount(0);
-  await expect(page.locator('.release-system-home')).toHaveAttribute('href', './');
-  await page.locator('.release-system-home').click();
+  const systemHome = page.locator('.release-system-home');
+  await expect(systemHome).toHaveAttribute('href', './');
+  await Promise.all([
+    page.waitForURL(url => url.pathname === '/', { timeout:10000 }),
+    systemHome.click()
+  ]);
 
-  await expect(page.locator('#overview-title')).toBeVisible();
   await expect(page).toHaveURL(/\/$/);
+  await expect(page.locator('#overview-title')).toBeVisible();
 });
 
 test('mobile STUDIO exposes SYSTEM without adding a fifth Director mode', async ({ page }) => {
