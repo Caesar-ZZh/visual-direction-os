@@ -19,8 +19,8 @@ assert.ok(bad.some(x => x.id === 'focus-visible' && x.level === 'FAIL'));
 assert.ok(bad.some(x => x.id === 'reduced-motion' && x.level === 'FAIL'));
 
 // Auteur system-register polish contract.
-const html = fs.readFileSync(require.resolve('./director-v2.html'), 'utf8');
-assert.match(html, /auteur-polish\.css/, 'Director Workspace must load the final Auteur polish layer');
+const projectContextCss = fs.readFileSync(require.resolve('./project-context.css'), 'utf8');
+assert.match(projectContextCss, /^@import url\("auteur-polish\.css\?v=/, 'Project style entry must load the final Auteur polish layer');
 const polish = fs.readFileSync(require.resolve('./auteur-polish.css'), 'utf8');
 assert.match(polish, /body::after[\s\S]*position:\s*fixed[\s\S]*opacity:\s*\.0[23]/, 'grain must be a fixed, very low-opacity material layer');
 assert.match(polish, /\.stage\s+\.project-reading\s*\{[\s\S]*grid-template-columns:\s*1\.18fr\s+1\.12fr\s+1fr\s+1fr\s+\.82fr/, 'Project Reading must break the uniform card-grid rhythm');
