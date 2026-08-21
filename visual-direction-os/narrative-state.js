@@ -237,6 +237,20 @@
       return getState();
     }
 
+    function setSequenceCompletionFailure(completion) {
+      if (!state.sequenceSkeleton) throw new Error('Compile a Sequence Skeleton before storing a failed compiler-first completion.');
+      const completionCheck = validateSequenceCompletionResponse(completion);
+      if (!completionCheck.valid) throw new Error(`Invalid sequence completion shape: ${completionCheck.errors.join('; ')}`);
+      state.sequenceCompletion = clone(completionCheck.value);
+      state.sequenceProposal = null;
+      state.sequenceProvenance = null;
+      state.stage = 'sequence';
+      state.selectedBeatIds = clone(BEAT_IDS);
+      state.applyMode = 'all';
+      notify('sequence-completion-failure');
+      return getState();
+    }
+
     function setSequenceResult(payload) {
       if (!state.confirmedReading || !state.selectedStrategy) throw new Error('Select a strategy after confirming a Narrative Reading before generating a sequence.');
       const checked = validateSequenceResponse(payload);
@@ -322,6 +336,7 @@
       selectStrategy,
       setSequenceSkeleton,
       setSequenceCompletionResult,
+      setSequenceCompletionFailure,
       setSequenceResult,
       toggleBeat,
       setApplyMode,
