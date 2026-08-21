@@ -151,12 +151,20 @@
     if (!validation.valid) console.warn('[Visual Direction OS] Visual IR validation:', validation.errors);
   }
 
+  function stateFor(ir, stateName) {
+    return ir?.character?.stateMachine?.[stateName] || null;
+  }
+
   function renderState(stateName) {
     if (!activeIR) return;
-    const data = activeIR?.character?.stateMachine?.[stateName];
+    const data = stateFor(activeIR, stateName);
     if (!data) return;
     $$('.state-machine button').forEach((item) => item.setAttribute('aria-pressed', String(item.dataset.state === stateName)));
-    text('#state-variable', data.variable); text('#state-camera', data.camera); text('#state-readability', data.readability); text('#state-trigger', data.trigger); text('#state-owner', data.owner);
+    text('#state-variable', data.variable);
+    text('#state-camera', data.camera);
+    text('#state-readability', data.readability);
+    text('#state-trigger', data.trigger);
+    text('#state-owner', data.owner);
     const marker = $('.state-gauge b'); if (marker) { marker.style.left = data.x; marker.style.top = data.y; }
   }
 
@@ -166,7 +174,8 @@
     const character = primary === 'Time / Medium' ? 'Time' : primary === 'Boundary' ? 'Boundary' : primary === 'Space' ? 'Space' : 'Focus';
     const relation = valueOf(activeIR.world.relation);
     $$('.compatibility-matrix button').forEach((item) => item.setAttribute('aria-pressed', String(item.dataset.character === character && item.dataset.mode === relation)));
-    text('#matrix-character', character.toUpperCase()); text('#matrix-mode', relation.toUpperCase());
+    text('#matrix-character', character.toUpperCase());
+    text('#matrix-mode', relation.toUpperCase());
     text('#matrix-headline', `${valueOf(activeIR.world.thesis)} × ${primary}`);
     text('#matrix-copy', `Active Visual IR maps this brief to ${relation}. ${valueOf(activeIR.composition.staging)} The host remains governed by its own grammar unless ownership explicitly transfers.`);
     text('#matrix-action', relation === 'Rewrite' ? 'Transforms' : relation === 'Resist' ? 'Constrains' : relation === 'Destabilize' ? 'Disables' : relation === 'Amplify' ? 'Magnifies' : 'Supports');
@@ -195,11 +204,11 @@
     const primary = valueOf(ir.character.primaryVariable);
     const relation = valueOf(ir.world.relation);
     return [
-      { index:'BEAT 01 / BASELINE OWNERSHIP', verb:'Establish', copy:`Establish ${owner} ownership before any break. The host grammar remains legible and identity anchors are protected.`, owner:'World / baseline', boundary, migration:'Baseline → contact', residue:'None', desc:`Baseline ownership map for ${primary}.` },
-      { index:'BEAT 02 / PRESSURE', verb: relation === 'Rewrite' ? 'Contest' : 'Resist', copy:`The ${primary} mechanism meets ${relation.toLowerCase()} pressure. Color changes are assigned by owner rather than applied as a global mood wash.`, owner:'Contested', boundary, migration, residue:'Relationship / conflict trace', desc:`Pressure territory for ${primary}; ownership is contested.` },
-      { index:'BEAT 03 / RULE FAILURE', verb:'Break', copy:'Crisis attacks the character-specific rule instead of increasing generic visual noise. Keep the highest-order identity anchors readable.', owner:'Rule failure', boundary:'Contradictory / unstable', migration, residue:'Controlled contamination only', desc:`Rule-failure territory for ${primary}.` },
-      { index:'BEAT 04 / OWNERSHIP SHIFT', verb:'Claim', copy:`${valueOf(ir.agency.mode)} becomes the source of visual organization. Global FX remain disabled; any event is local to a justified owner.`, owner:'Character', boundary, migration, residue:'Ownership transfer', desc:`Character ownership expands according to ${valueOf(ir.agency.mode)}.` },
-      { index:'BEAT 05 / BASELINE B', verb:'Remain', copy:'Resolution preserves residue from the ownership transfer without resetting to the original baseline or contaminating every layer.', owner:'Character + world', boundary:'Negotiated', migration:'Event → shared residue', residue:'Baseline B', desc:`Negotiated Baseline B territory for ${primary}.` }
+      { index: 'BEAT 01 / BASELINE OWNERSHIP', verb: 'Establish', copy: `Establish ${owner} ownership before any break. The host grammar remains legible and identity anchors are protected.`, owner: 'World / baseline', boundary, migration: 'Baseline → contact', residue: 'None', desc: `Baseline ownership map for ${primary}.` },
+      { index: 'BEAT 02 / PRESSURE', verb: relation === 'Rewrite' ? 'Contest' : 'Resist', copy: `The ${primary} mechanism meets ${relation.toLowerCase()} pressure. Color changes are assigned by owner rather than applied as a global mood wash.`, owner: 'Contested', boundary, migration, residue: 'Relationship / conflict trace', desc: `Pressure territory for ${primary}; ownership is contested.` },
+      { index: 'BEAT 03 / RULE FAILURE', verb: 'Break', copy: `Crisis attacks the character-specific rule instead of increasing generic visual noise. Keep the highest-order identity anchors readable.`, owner: 'Rule failure', boundary: 'Contradictory / unstable', migration, residue: 'Controlled contamination only', desc: `Rule-failure territory for ${primary}.` },
+      { index: 'BEAT 04 / OWNERSHIP SHIFT', verb: 'Claim', copy: `${valueOf(ir.agency.mode)} becomes the source of visual organization. Global FX remain disabled; any event is local to a justified owner.`, owner: 'Character', boundary, migration, residue: 'Ownership transfer', desc: `Character ownership expands according to ${valueOf(ir.agency.mode)}.` },
+      { index: 'BEAT 05 / BASELINE B', verb: 'Remain', copy: `Resolution preserves residue from the ownership transfer without resetting to the original baseline or contaminating every layer.`, owner: 'Character + world', boundary: 'Negotiated', migration: 'Event → shared residue', residue: 'Baseline B', desc: `Negotiated Baseline B territory for ${primary}.` }
     ];
   }
 
@@ -215,39 +224,53 @@
 
   function syncExistingUI(ir) {
     const activeState = valueOf(ir.state.active, 'baseline');
-    renderState(activeState); renderCompatibility();
-    const stateBeat = { baseline:0, pressure:2, crisis:3, decision:4, agency:5, resolution:6 };
+    renderState(activeState);
+    renderCompatibility();
+    const stateBeat = { baseline: 0, pressure: 2, crisis: 3, decision: 4, agency: 5, resolution: 6 };
     renderBeat(stateBeat[activeState] ?? 0);
-    const stateTerritory = { baseline:0, pressure:1, crisis:2, decision:3, agency:3, resolution:4 };
+    const stateTerritory = { baseline: 0, pressure: 1, crisis: 2, decision: 3, agency: 3, resolution: 4 };
     renderTerritory(stateTerritory[activeState] ?? 0);
   }
 
   function installRuntimeBridges() {
     $('.state-machine')?.addEventListener('click', (event) => {
       if (!activeIR) return;
-      const button = event.target.closest('button[data-state]'); if (!button) return;
-      event.stopImmediatePropagation(); renderState(button.dataset.state);
+      const button = event.target.closest('button[data-state]');
+      if (!button) return;
+      event.stopImmediatePropagation();
+      renderState(button.dataset.state);
     }, true);
+
     $('.beat-tabs')?.addEventListener('click', (event) => {
       if (!activeIR) return;
-      const button = event.target.closest('button[data-beat]'); if (!button) return;
-      event.stopImmediatePropagation(); renderBeat(Number(button.dataset.beat));
+      const button = event.target.closest('button[data-beat]');
+      if (!button) return;
+      event.stopImmediatePropagation();
+      renderBeat(Number(button.dataset.beat));
     }, true);
+
     $('.territory-controls')?.addEventListener('click', (event) => {
       if (!activeIR) return;
-      const button = event.target.closest('button[data-territory]'); if (!button) return;
-      event.stopImmediatePropagation(); renderTerritory(Number(button.dataset.territory));
+      const button = event.target.closest('button[data-territory]');
+      if (!button) return;
+      event.stopImmediatePropagation();
+      renderTerritory(Number(button.dataset.territory));
     }, true);
   }
 
   function runDirection(rawBrief) {
     const brief = String(rawBrief || '').trim();
-    if (!brief) { $('#director-brief-input')?.focus(); return; }
+    if (!brief) {
+      $('#director-brief-input')?.focus();
+      return;
+    }
     const ir = directBrief(brief);
     const compiled = compileVisualIR(ir);
-    activeIR = ir; activeCompiled = compiled;
+    activeIR = ir;
+    activeCompiled = compiled;
     root.VisualDirectionOS = Object.assign(root.VisualDirectionOS || {}, { activeIR, activeCompiled, direct: runDirection });
-    renderSummary(ir, compiled); syncExistingUI(ir);
+    renderSummary(ir, compiled);
+    syncExistingUI(ir);
     $('#director-output')?.scrollIntoView({ behavior: root.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
   }
 

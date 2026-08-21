@@ -111,7 +111,7 @@
 
   function directBrief(rawBrief) {
     const interpretation = interpretNarrative(rawBrief);
-    const grammar = getGrammar(interpretation.grammarId);
+    const grammar = getGrammar(interpretationFix(interpretation).grammarId);
     const ir = createDefaultVisualIR(rawBrief);
     const c = interpretation.confidence;
     const profile = profiles[grammar.id];
@@ -153,6 +153,9 @@
     if (grammar.temporal.evidenceStatus === 'evidence_incomplete') ir.evidence.gaps.push({ field:'temporal.signature',status:'evidence_incomplete',confidence:grammar.temporal.confidence });
     return ir;
   }
+
+  // Keeps the interpreter replaceable later without changing the decision engine API.
+  function interpretationFix(value) { return value; }
 
   return { directBrief };
 });
