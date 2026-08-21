@@ -31,6 +31,19 @@ const seq = { sequenceProposal: { beats: ids.map((id, i) => ({
   supportingVariables: ['space'], restrainedVariables: ['texture'], visualEvents: [],
   sceneStatePatch: { agency: i < 2 ? 'world' : i < 4 ? 'contested' : 'character' }, rationale: 'causal reason'
 })) } };
-assert.equal(c.validateSequenceResponse(seq).valid, true);
+assert.equal(c.validateSequenceResponse(seq).valid, true, 'legacy/downstream assembled proposal validation remains available');
 assert.equal(c.validateSequenceResponse({ sequenceProposal: { beats: seq.sequenceProposal.beats.slice(0,4) } }).valid, false);
+
+const sequenceCompletion = { sequenceCompletion: { beats: ids.map((id, i) => ({
+  id,
+  narrativeBeat: `completion ${i}`,
+  agency: i < 2 ? 'world' : i < 4 ? 'contested' : 'character',
+  visualEvents: i === 2 ? ['break'] : [],
+  rationale: `completion rationale ${i}`,
+  openPatch: i === 0 ? { ownership: { world: 'high' }, variables: { camera: { distance: 'wide' } } } : {}
+})) } };
+assert.equal(typeof c.validateSequenceCompletionResponse, 'function', 'M5 exposes a static completion response validator');
+assert.equal(c.validateSequenceCompletionResponse(sequenceCompletion).valid, true);
+assert.equal(c.validateSequenceCompletionResponse({ sequenceCompletion: { beats: sequenceCompletion.sequenceCompletion.beats.slice(0,4) } }).valid, false);
+assert.equal(c.validateSequenceCompletionResponse({ sequenceProposal: seq.sequenceProposal }).valid, false, 'M5 completion validator does not accept a final proposal as model output');
 console.log('narrative-contracts.test.js passed');
