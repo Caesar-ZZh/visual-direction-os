@@ -34,18 +34,33 @@
     { id:'camera', title:'CAMERA-LED', grammarId:'camera-authority-transfer', primaryVariable:'camera', supportingVariables:['space','line'], restrainedVariables:['color'], mechanism:'Keep viewpoint institution-led until the recognition beat, then transfer framing authority.', rationale:'Who defines perspective directly expresses the scene’s agency conflict.' },
     { id:'color', title:'COLOR OWNERSHIP', grammarId:'color-ownership-transfer', primaryVariable:'color', supportingVariables:['camera','texture'], restrainedVariables:['rhythm'], mechanism:'Move color territory from environment to contested space and finally to the character.', rationale:'Ownership can change without reducing the scene to warm-versus-cool mood.' }
   ] };
-  const beatData = [
+
+  const completionData = [
+    ['setup','The character enters expecting to accept the assignment.','world',[],{ownership:{world:'high'},variables:{camera:{distance:'wide',stability:'high'},line:{density:'low'}}}],
+    ['pressure','The conversation increasingly limits the character’s perceived freedom.','world',['PRESSURE ACCUMULATES'],{ownership:{world:'high'},variables:{camera:{distance:'medium',stability:'medium'},line:{density:'high'}}}],
+    ['rupture','The character recognizes that the assignment itself is control.','contested',['CAMERA BREAK'],{ownership:{world:'medium',character:'medium'},variables:{camera:{distance:'close',stability:'low'},line:{direction:'fractured'}}}],
+    ['release','The character stops accepting the institutional frame.','contested',['AGENCY TRANSFER'],{ownership:{world:'low',character:'medium'},variables:{camera:{movement:'forward',stability:'medium'}}}],
+    ['new-ownership','The character leaves after defining the next action.','character',['OWNERSHIP SHIFT'],{ownership:{character:'high',world:'low'},variables:{camera:{distance:'medium',stability:'high'},line:{density:'low'}}}]
+  ];
+  const sequence = { sequenceCompletion: { beats: completionData.map(([id,narrativeBeat,agency,visualEvents,openPatch]) => ({
+    id, narrativeBeat, agency, visualEvents, openPatch,
+    rationale: `${id.toUpperCase()} completes only AI-open slots while compiler-owned fields stay absent from the raw completion.`
+  })) } };
+
+  // Legacy fixture remains available for focused M3/M4/downstream compatibility tests.
+  const legacyBeatData = [
     ['setup','SETUP','The character enters expecting to accept the assignment.','world','camera',['space'],['texture'],[],{agency:'world',variables:{camera:{perspective:'world',stability:'high'},space:{compression:'low'},color:{territory:'world'}}}],
     ['pressure','PRESSURE','The conversation increasingly limits the character’s perceived freedom.','world','space',['camera','line'],['texture','rhythm'],['SPACE COMPRESSION'],{agency:'world',variables:{space:{compression:'high'},camera:{perspective:'world',stability:'medium'}}}],
     ['rupture','RUPTURE','The character recognizes that the assignment itself is control.','contested','camera',['space','color'],['rhythm'],['CAMERA BREAK','COLOR MIGRATION'],{agency:'contested',variables:{camera:{perspective:'mixed',stability:'low'},color:{territory:'contested'}}}],
     ['release','RELEASE','The character stops accepting the institutional frame.','contested','camera',['space'],['texture','rhythm'],['AGENCY TRANSFER'],{agency:'contested',variables:{space:{compression:'low'},camera:{perspective:'mixed',stability:'medium'}}}],
     ['new-ownership','NEW OWNERSHIP','The character leaves after defining the next action.','character','agency',['camera','color'],['texture','rhythm'],['OWNERSHIP SHIFT'],{agency:'character',variables:{camera:{perspective:'character'},color:{territory:'character'}}}]
   ];
-  const sequence = { sequenceProposal: { beats: beatData.map(([id,label,narrativeBeat,agency,primaryVariable,supportingVariables,restrainedVariables,visualEvents,sceneStatePatch]) => ({
+  const legacySequence = { sequenceProposal: { beats: legacyBeatData.map(([id,label,narrativeBeat,agency,primaryVariable,supportingVariables,restrainedVariables,visualEvents,sceneStatePatch]) => ({
     id, label, narrativeBeat, agency, primaryVariable, supportingVariables, restrainedVariables, visualEvents, sceneStatePatch,
     rationale: `${label} advances the selected directing mechanism without letting every variable peak at once.`
   })) } };
-  return { interpret, strategy, sequence };
+
+  return { interpret, strategy, sequence, legacySequence };
 });
 
 (() => {
