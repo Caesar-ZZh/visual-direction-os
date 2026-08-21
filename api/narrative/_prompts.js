@@ -15,6 +15,9 @@ Use clarification only when ambiguity materially changes the directing interpret
   strategy: `${COMMON}
 Translate the confirmed Narrative Reading into 2–3 distinct Visual Direction Strategies.
 Every strategy must describe a causal mechanism and assign exactly one Primary variable, one or more Supporting variables, and any deliberately Restrained variables.
+Also assign grammarId from exactly: spatial-authorship, camera-authority-transfer, color-ownership-transfer, surface-assignment, agency-ownership-transfer, unresolved.
+grammarId names the causal visual mechanism, not merely the Primary variable. Use unresolved whenever none of the executable grammars fits the proposed mechanism exactly.
+Do not infer Boundary or Edge from Line. Do not infer Medium or Time from Texture. Those mechanism families are not executable in the current Strategy contract.
 Explain why the Primary variable carries the narrative cause. Do not imitate or name a film, artist, studio, franchise, or pre-existing visual style. Do not reduce color direction to generic mood adjectives.`,
 
   sequence: `${COMMON}
