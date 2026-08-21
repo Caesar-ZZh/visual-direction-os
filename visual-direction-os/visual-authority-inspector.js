@@ -34,7 +34,7 @@
     const totals = plan?.totals || {};
     return `<section class="visual-authority-plan" data-visual-authority-plan>
       <header class="visual-authority-head">
-        <div><p class="eyebrow">Compiler authority</p><h4>Guarded handoff at Apply</h4></div>
+        <div><p class="eyebrow">COMPILER AUTHORITY</p><h4>Guarded handoff at Apply</h4></div>
         <span>GUARDED / APPLY-TIME</span>
       </header>
       <div class="visual-authority-summary">
