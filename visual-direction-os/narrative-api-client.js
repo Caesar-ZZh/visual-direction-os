@@ -12,7 +12,7 @@
   const validators = {
     interpret: contracts.validateInterpretResponse,
     strategy: contracts.validateStrategyResponse,
-    sequence: contracts.validateSequenceResponse
+    sequence: contracts.validateSequenceCompletionResponse
   };
 
   function createError(code, message, cause) {
