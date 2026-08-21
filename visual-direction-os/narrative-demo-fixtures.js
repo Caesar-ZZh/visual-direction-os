@@ -30,9 +30,9 @@
     clarification: null
   };
   const strategy = { strategies: [
-    { id:'space', title:'SPACE-LED', primaryVariable:'space', supportingVariables:['camera','color'], restrainedVariables:['texture','rhythm'], mechanism:'Let environmental compression embody external authority before opening after refusal.', rationale:'The conflict first becomes visible as loss and recovery of freedom.' },
-    { id:'camera', title:'CAMERA-LED', primaryVariable:'camera', supportingVariables:['space','line'], restrainedVariables:['color'], mechanism:'Keep viewpoint institution-led until the recognition beat, then transfer framing authority.', rationale:'Who defines perspective directly expresses the scene’s agency conflict.' },
-    { id:'color', title:'COLOR OWNERSHIP', primaryVariable:'color', supportingVariables:['camera','texture'], restrainedVariables:['rhythm'], mechanism:'Move color territory from environment to contested space and finally to the character.', rationale:'Ownership can change without reducing the scene to warm-versus-cool mood.' }
+    { id:'space', title:'SPACE-LED', grammarId:'spatial-authorship', primaryVariable:'space', supportingVariables:['camera','color'], restrainedVariables:['texture','rhythm'], mechanism:'Let environmental compression embody external authority before opening after refusal.', rationale:'The conflict first becomes visible as loss and recovery of freedom.' },
+    { id:'camera', title:'CAMERA-LED', grammarId:'camera-authority-transfer', primaryVariable:'camera', supportingVariables:['space','line'], restrainedVariables:['color'], mechanism:'Keep viewpoint institution-led until the recognition beat, then transfer framing authority.', rationale:'Who defines perspective directly expresses the scene’s agency conflict.' },
+    { id:'color', title:'COLOR OWNERSHIP', grammarId:'color-ownership-transfer', primaryVariable:'color', supportingVariables:['camera','texture'], restrainedVariables:['rhythm'], mechanism:'Move color territory from environment to contested space and finally to the character.', rationale:'Ownership can change without reducing the scene to warm-versus-cool mood.' }
   ] };
   const beatData = [
     ['setup','SETUP','The character enters expecting to accept the assignment.','world','camera',['space'],['texture'],[],{agency:'world',variables:{camera:{perspective:'world',stability:'high'},space:{compression:'low'},color:{territory:'world'}}}],
