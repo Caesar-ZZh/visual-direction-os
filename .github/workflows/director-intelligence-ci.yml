@@ -34,6 +34,7 @@ jobs:
           node --test visual-direction-os/visual-compiler-inspector.test.js
           node --test visual-direction-os/visual-compiler-integration.test.js
           node --test visual-direction-os/visual-compiler-authority.test.js
+          node --test visual-direction-os/visual-authority-inspector.test.js
           node visual-direction-os/narrative-contracts.test.js
           node visual-direction-os/narrative-state.test.js
           node api/narrative/_contracts-grammar.test.js
