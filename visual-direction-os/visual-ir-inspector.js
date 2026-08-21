@@ -26,6 +26,12 @@
     if (!checked.valid) throw new Error(`Cannot render invalid Visual IR: ${checked.errors.join('; ')}`);
 
     const unresolvedCount = ir.evidence.unresolved.length;
+    const grammarResolved = ir.grammar.status === 'resolved';
+    const grammarLabel = grammarResolved ? upper(ir.grammar.label) : 'NO EXACT GRAMMAR';
+    const contractLabel = upper(ir.grammar.contractStatus);
+    const evidenceLabel = upper(ir.grammar.evidenceStatus);
+    const evidenceTier = ir.grammar.evidenceTier ? upper(ir.grammar.evidenceTier) : '—';
+    const sourceCount = Array.isArray(ir.grammar.refs) ? ir.grammar.refs.length : 0;
     const json = escapeHtml(JSON.stringify(ir, null, 2));
 
     return `
@@ -43,12 +49,17 @@
           <div><span>RESTRAIN</span><strong>${escapeHtml(list(ir.direction.restrainedVariables.value))}</strong></div>
           <div><span>AGENCY</span><strong>${escapeHtml(agency(ir.agency.transition.value))}</strong></div>
         </div>
+        <div class="visual-ir-shadow__grammar" data-visual-ir-grammar>
+          <div><span>GRAMMAR</span><strong>${escapeHtml(grammarLabel)}</strong></div>
+          <div><span>CONTRACT · ${escapeHtml(contractLabel)}</span><small>EVIDENCE · ${escapeHtml(evidenceLabel)}</small></div>
+          <div><span>${escapeHtml(evidenceTier)}</span><small>${sourceCount} SOURCES</small></div>
+        </div>
         <div class="visual-ir-shadow__mechanism">
           <span>MECHANISM</span>
           <p>${escapeHtml(ir.direction.mechanism.value)}</p>
         </div>
         <details data-visual-ir-details class="visual-ir-shadow__details">
-          <summary><span>Inspect Visual IR v0.2</span><small>${unresolvedCount} unresolved · no Scene State mutation</small></summary>
+          <summary><span>Inspect Visual IR v0.3</span><small>${unresolvedCount} unresolved · no Scene State mutation</small></summary>
           <pre><code>${json}</code></pre>
         </details>
       </section>`;
