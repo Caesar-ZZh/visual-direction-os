@@ -21,9 +21,10 @@ const reading = {
   agencyTransition: { value: ['world','contested','character'], sourceType: 'inferred', basis: 'Agency transfers.' }
 };
 
-const strategy = (primaryVariable, supportingVariables = [], restrainedVariables = []) => ({
+const strategy = (primaryVariable, grammarId = 'unresolved', supportingVariables = [], restrainedVariables = []) => ({
   id: `strategy-${primaryVariable}`,
   title: `${primaryVariable} strategy`,
+  grammarId,
   primaryVariable,
   supportingVariables,
   restrainedVariables,
@@ -46,9 +47,9 @@ test('registers executable and latent grammars with source-backed evidence metad
   });
 });
 
-test('resolves space strategies to Spatial Authorship without guessing unrelated fields', () => {
+test('resolves only an explicitly identified compatible grammar', () => {
   assert.equal(typeof registry?.resolveGrammar, 'function', 'registry must expose resolveGrammar');
-  const resolved = registry.resolveGrammar({ confirmedReading: reading, selectedStrategy: strategy('space', ['camera','agency'], ['texture']) });
+  const resolved = registry.resolveGrammar({ confirmedReading: reading, selectedStrategy: strategy('space', 'spatial-authorship', ['camera','agency'], ['texture']) });
 
   assert.equal(resolved.id, 'spatial-authorship');
   assert.equal(resolved.contract.status, 'supported');
@@ -57,6 +58,16 @@ test('resolves space strategies to Spatial Authorship without guessing unrelated
   assert.equal(resolved.bindings.camera.status, 'partial');
   assert.ok(resolved.antiRules.includes('Do not equate large space with freedom.'));
   assert.ok(resolved.evidence.refs.some(ref => ref.path === 'visual-direction-system/02-character-system.md'));
+});
+
+test('rejects missing, unresolved or primary-variable-incompatible grammar identity instead of guessing', () => {
+  const missing = registry.resolveGrammar({ confirmedReading: reading, selectedStrategy: { ...strategy('space'), grammarId: undefined } });
+  const unresolved = registry.resolveGrammar({ confirmedReading: reading, selectedStrategy: strategy('space', 'unresolved') });
+  const mismatch = registry.resolveGrammar({ confirmedReading: reading, selectedStrategy: strategy('color', 'spatial-authorship') });
+
+  assert.equal(missing, null);
+  assert.equal(unresolved, null);
+  assert.equal(mismatch, null);
 });
 
 test('keeps Boundary and Medium/Time grammars latent when the current Strategy contract cannot express them', () => {
@@ -73,8 +84,8 @@ test('keeps Boundary and Medium/Time grammars latent when the current Strategy c
 });
 
 test('does not silently reinterpret line as boundary or texture as medium', () => {
-  const line = registry.resolveGrammar({ confirmedReading: reading, selectedStrategy: strategy('line') });
-  const texture = registry.resolveGrammar({ confirmedReading: reading, selectedStrategy: strategy('texture') });
+  const line = registry.resolveGrammar({ confirmedReading: reading, selectedStrategy: strategy('line', 'unresolved') });
+  const texture = registry.resolveGrammar({ confirmedReading: reading, selectedStrategy: strategy('texture', 'surface-assignment') });
 
   assert.equal(line, null);
   assert.equal(texture.id, 'surface-assignment');
