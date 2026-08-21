@@ -1,0 +1,233 @@
+/* AUTEUR DETAIL PASS — chrome, navigation and secondary tools. */
+
+.stage :is(h1,h2,h3){text-wrap:balance}
+.stage :is(p,li,dd){text-wrap:pretty}
+.stage .hero h1{letter-spacing:-.04em}
+.stage .narrative-head h2{letter-spacing:-.035em}
+
+/* Persistent rail: quiet, precise, and legible without adding new chrome. */
+.v2-rail .brand{
+  color:#f0ede6;
+  text-shadow:0 1px 0 rgba(255,255,255,.025);
+}
+.v2-rail .brand small,
+.v2-rail .mode-label{
+  font-family:var(--sans);
+  color:#777974;
+}
+.v2-rail .mode-btn{
+  border-color:transparent;
+  background:transparent;
+  box-shadow:none;
+  transition:border-color var(--motion-state) ease,background-color var(--motion-state) ease,color var(--motion-state) ease,box-shadow var(--motion-state) ease;
+}
+.v2-rail .mode-btn[aria-current='page']{
+  border-color:rgba(241,239,234,.12);
+  background:linear-gradient(180deg,rgba(255,255,255,.032),rgba(255,255,255,.012));
+  box-shadow:inset 0 -1px 0 rgba(232,93,42,.72),inset 0 1px 0 rgba(255,255,255,.025);
+}
+.v2-rail .mode-btn[aria-current='page'] strong{color:#f27a4b}
+.v2-rail .rail-note{
+  border-top-color:rgba(241,239,234,.085);
+  color:#777974;
+  line-height:1.55;
+}
+.v2-rail .release-space-switch>span:first-child,
+.release-system-home-mobile{
+  font-family:var(--sans);
+}
+.v2-rail .release-system-home{
+  border-color:rgba(241,239,234,.085);
+  box-shadow:none;
+}
+.release-system-home-mobile{
+  border-color:rgba(241,239,234,.13);
+  background:rgba(11,13,16,.94);
+  box-shadow:0 12px 34px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.025);
+}
+
+/* Collapsed rail gets a real monogram instead of clipping the full wordmark. */
+@media (min-width:901px){
+  .v2-rail[data-expanded='false'] .brand{
+    width:44px;
+    height:44px;
+    margin-inline:auto;
+    display:grid;
+    place-items:center;
+    overflow:hidden;
+    white-space:nowrap;
+    font-size:0;
+    line-height:1;
+  }
+  .v2-rail[data-expanded='false'] .brand::before{
+    content:"V";
+    font:700 1.45rem/1 var(--serif);
+    letter-spacing:-.06em;
+    color:#f2efe8;
+  }
+  .v2-rail[data-expanded='false'] .brand small{display:none}
+  .v2-rail[data-expanded='true'] .brand{
+    width:auto;
+    height:auto;
+    margin-inline:0;
+    overflow:visible;
+    white-space:normal;
+    font-size:1.32rem;
+    line-height:1.06;
+  }
+}
+
+/* Keep the first system marker inside the visual map, away from the hero copy baseline. */
+.stage .hero-system-map{right:3%;width:min(48vw,700px)}
+.stage .node-narrative{left:16%;top:-4%}
+
+/* Mobile navigation is a control surface, not a floating glass card. */
+.mobile-modes{
+  border-top-color:rgba(241,239,234,.105);
+  background:rgba(10,12,15,.965);
+  box-shadow:0 -18px 44px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.018);
+}
+.mobile-modes a{
+  transition:background-color var(--motion-state) ease,color var(--motion-state) ease;
+}
+.mobile-modes a[aria-current='page']{
+  background:rgba(232,93,42,.045);
+  box-shadow:inset 0 2px 0 rgba(232,93,42,.72);
+}
+
+/* Secondary tool navigation uses one compact state recipe. */
+.stage :is(.case-tabs,.color-view-tabs,.diagnostic-toolbar) button{
+  border-color:rgba(241,239,234,.11);
+  background:linear-gradient(180deg,#111419,#0e1114);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.02);
+  transition:border-color var(--motion-state) ease,background-color var(--motion-state) ease,color var(--motion-state) ease,transform var(--motion-press) var(--ease-out-quart);
+}
+.stage :is(.case-tabs,.color-view-tabs) button[aria-selected='true']{
+  border-color:rgba(232,93,42,.64);
+  color:#f0ede6;
+  background:linear-gradient(180deg,#211611,#17110e);
+  box-shadow:inset 0 -2px 0 rgba(232,93,42,.78),inset 0 1px 0 rgba(255,235,225,.025);
+}
+
+/* Tool panels share material logic with Project and Narrative. */
+.stage .case-state-panel,
+.stage .diagnostic-list article,
+.stage .conflict-field>div{
+  border-color:rgba(241,239,234,.105);
+  background:linear-gradient(145deg,#111419 0%,#0e1114 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.02);
+}
+.stage .diagnostic-list article[data-level='PASS']{border-color:rgba(135,169,107,.22)}
+.stage .diagnostic-list article[data-level='WARN']{border-color:rgba(217,164,65,.24)}
+.stage .diagnostic-list article[data-level='FAIL']{border-color:rgba(201,90,84,.25)}
+.stage .diagnostic-list article header strong{
+  background:rgba(255,255,255,.012);
+}
+.stage .tool-error{
+  border:1px solid rgba(201,90,84,.34);
+  border-left-width:1px;
+  padding:10px 12px;
+  background:linear-gradient(110deg,rgba(201,90,84,.055),rgba(15,17,20,.86) 42%);
+  color:#d87972;
+}
+
+/* Knowledge atlas: keep the grid, remove the generic lift-card behavior. */
+.stage .atlas-grid{
+  border-left:0;
+  border-top-color:rgba(241,239,234,.105);
+  border-bottom:1px solid rgba(241,239,234,.065);
+  background:transparent;
+}
+.stage .atlas-grid a{
+  border-color:rgba(241,239,234,.065);
+  background:linear-gradient(180deg,rgba(255,255,255,.012),rgba(255,255,255,.002));
+  transform:none;
+  transition:background-color var(--motion-state) ease,color var(--motion-state) ease,border-color var(--motion-state) ease;
+}
+
+/* Data readouts read like a ledger instead of mini cards. */
+.stage .palette-readout{
+  gap:0;
+  background:transparent;
+  border-top:1px solid rgba(241,239,234,.105);
+  border-bottom:1px solid rgba(241,239,234,.065);
+}
+.stage .palette-readout div{
+  border-right:1px solid rgba(241,239,234,.065);
+  background:linear-gradient(180deg,rgba(255,255,255,.012),transparent);
+}
+.stage .palette-readout div:last-child{border-right:0}
+.stage .base-palette-strip,
+.stage .temperature-axis{
+  border-color:rgba(241,239,234,.105);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.018);
+}
+
+/* Conflict/diagnostic callouts use the full surface, not the familiar side stripe. */
+.stage .conflict-verdict{
+  border:1px solid rgba(241,239,234,.105);
+  border-left-width:1px;
+  padding:12px 14px;
+  background:linear-gradient(110deg,rgba(232,93,42,.035),rgba(15,17,20,.78) 42%);
+}
+.stage .diagnostic-status{
+  border-color:rgba(241,239,234,.12);
+  background:rgba(255,255,255,.012);
+}
+
+/* Dense timeline instruments get a restrained inset track. */
+.stage .score-tracks,
+.stage .ownership-markers{
+  border-color:rgba(241,239,234,.085);
+}
+.stage .score-track-line{
+  background:#1a1e23;
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.018);
+}
+
+/* One additional material pass: edge light and warm graphite, never more bloom. */
+body::after{opacity:.028}
+.stage .hero{
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.018),inset 0 -1px 0 rgba(255,255,255,.012);
+}
+.stage .project-workspace-root{
+  background:
+    radial-gradient(980px 420px at 82% -8%,rgba(124,57,34,.035),transparent 62%),
+    linear-gradient(180deg,rgba(255,255,255,.006),transparent 180px);
+}
+.stage .project-scene-node[aria-current='true']{
+  background:
+    radial-gradient(440px 130px at 84% 0%,rgba(232,93,42,.055),transparent 70%),
+    linear-gradient(180deg,#1b1411,#13110f);
+  box-shadow:inset 0 -2px 0 rgba(232,93,42,.84),inset 0 1px 0 rgba(255,230,216,.032),0 18px 46px rgba(0,0,0,.11);
+}
+.stage .project-arc-scroll{
+  background:linear-gradient(180deg,rgba(255,255,255,.008),rgba(0,0,0,.028));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.018),inset 0 -18px 48px rgba(0,0,0,.08);
+}
+
+@media (hover:hover){
+  .v2-rail .mode-btn:hover:not([aria-current='page']){
+    border-color:rgba(241,239,234,.07);
+    background:rgba(255,255,255,.018);
+    color:#cfcbc3;
+  }
+  .stage :is(.case-tabs,.color-view-tabs,.diagnostic-toolbar) button:hover{
+    border-color:rgba(241,239,234,.22);
+    background:#15191e;
+    color:#f0ede6;
+  }
+  .stage .atlas-grid a:hover{
+    transform:none;
+    background:rgba(255,255,255,.024);
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .v2-rail .mode-btn,
+  .mobile-modes a,
+  .stage :is(.case-tabs,.color-view-tabs,.diagnostic-toolbar) button,
+  .stage .atlas-grid a{
+    transition-duration:80ms!important;
+  }
+}

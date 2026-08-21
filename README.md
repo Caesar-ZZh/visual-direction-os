@@ -20,6 +20,37 @@
 
 ---
 
+## 🎛️ STUDIO v2.1（开发中）
+
+`agent/director-workspace-v2-1` 在现有 SYSTEM 之上增加一个独立的导演工作空间，而不是替换当前知识首页。
+
+```text
+/                     SYSTEM · editorial knowledge experience
+/studio/              STUDIO · Director Workspace v2.1
+```
+
+SYSTEM 继续负责知识、方法论和案例浏览；STUDIO 负责 Project Context、Narrative、Direct、Diagnose、Scene 切换、Project Arc 与 Cross-Scene Continuity。**Project 是四个 Director mode 之上的 context layer，不是第五个 mode。**
+
+STUDIO 当前锁定的 MVP 包括：
+
+- **Project Breakdown** — 长叙事先形成 Scene Structure Proposal，Director 确认后才写入 Project Store。
+- **Scene isolation** — 每个 Scene 独立保存 Narrative / Scene State / Sequence snapshot，切换 Scene 不互相污染。
+- **Project Arc** — 横向查看多个 Scene 的 Narrative Role / Agency / Camera / Color / Space / Density / Rhythm；未导演字段保持 `—`。
+- **Cross-Scene Continuity** — 用可解释规则检查跨 Scene 的视觉因果关系，不提供 Auto Fix。
+- **Local persistence** — Project 可在浏览器本地恢复；持久化失败只降级保存能力，不允许杀死 Project Workspace。
+- **Narrative / Project AI boundary** — AI 只提出结构化候选；Project Breakdown 不允许直接输出 Camera / Color / Space 等视觉决定。
+
+开发预览：
+
+```text
+visual-direction-os/director-v2.html?narrativeDemo=1&projectDemo=1
+visual-direction-os/studio/?narrativeDemo=1&projectDemo=1
+```
+
+Sector 8 的发布目标是保持当前 SYSTEM 在公开根目录 `/`，并把 STUDIO 发布到 `/studio/`。`master` 仍是唯一自动 Pages 发布分支，开发分支不会直接替换线上首页。
+
+---
+
 ## 💡 这玩意儿到底是啥？
 
 大多数"视觉风格指南"只告诉你**画成什么样**。Visual Direction OS 告诉你**谁有权决定画面变成什么样**。
@@ -98,6 +129,8 @@ node visual-direction-os/qa-check.js   # 期望输出：50 passed, 0 failed
 | 决定这场戏谁掌镜 | **Color → Color Territory** |
 | 把理论榨成 Brief | **Production → Workflow / QA** |
 | 查一个术语卡壳了 | **Glossary**（中英对照） |
+| 把长叙事拆成多个可导演 Scene | **STUDIO → Project Breakdown** |
+| 看多个 Scene 的整体视觉弧线 | **STUDIO → Project Arc** |
 
 > 💡 推荐路径：**Overview（30 秒）→ Character（2 分钟）→ Sequence（看图秒懂）**。之后你就回不去"凭感觉调色"了。
 
@@ -107,13 +140,16 @@ node visual-direction-os/qa-check.js   # 期望输出：50 passed, 0 failed
 
 ```
 📦 visual-direction-os
-├── 🖥️ visual-direction-os/          # 交互前端（11 视图，零构建）
+├── 🖥️ visual-direction-os/          # SYSTEM + STUDIO 前端，零构建
 │   ├── index.html  styles.css  app.js
-│   └── qa-check.js                # 50 项结构 QA，自带 CI 灵魂
+│   ├── director-v2.html            # STUDIO staging / compatibility entry
+│   ├── studio/index.html           # branch preview shim；Pages build 生成完整 STUDIO
+│   └── qa-check.js                 # SYSTEM 结构 QA
+├── 🤖 api/                          # Narrative / Project Serverless API
 ├── 📚 visual-direction-system/      # 11 篇知识文档（内容源，勿改语义）
 │   ├── 01-master-framework.md … 11-visual-qa.md
 │   └── README.md
-├── 📐 docs/superpowers/             # v2 设计规格 + 实施计划
+├── 📐 docs/superpowers/             # v2/v2.1 设计规格 + 实施计划
 └── 📋 CONTEXT.md                    # 项目上下文
 ```
 

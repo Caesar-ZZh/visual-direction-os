@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="description" content="Visual Direction OS Director Workspace v2.1 staging shell">
+  <meta name="vdos-narrative-api-base" content="">
+  <title>Visual Direction OS · Director Workspace v2.1</title>
+  <link rel="stylesheet" href="director-v2.css?v=20260816-1951">
+  <link rel="stylesheet" href="director-v2-tools.css?v=20260816-1951">
+  <link rel="stylesheet" href="narrative-workspace.css?v=20260817-1740">
+</head>
+<body>
+  <a class="skip" href="#main">跳到主要内容</a>
+  <div class="v2-shell">
+    <aside class="v2-rail" aria-label="Visual Direction OS v2.1 navigation">
+      <div class="brand">Visual Direction OS<small>Director Workspace · v2.1 staging</small></div>
+      <nav class="mode-group" aria-label="LEARN">
+        <p class="mode-label">Learn</p>
+        <button class="mode-btn" type="button" data-mode="learn" aria-current="page"><strong>01</strong>Understand the grammar</button>
+      </nav>
+      <nav class="mode-group" aria-label="NARRATIVE">
+        <p class="mode-label">Narrative</p>
+        <button class="mode-btn" type="button" data-mode="narrative"><strong>02</strong>Turn story into direction</button>
+      </nav>
+      <nav class="mode-group" aria-label="DIRECT">
+        <p class="mode-label">Direct</p>
+        <button class="mode-btn" type="button" data-mode="direct"><strong>03</strong>Make visual decisions</button>
+      </nav>
+      <nav class="mode-group" aria-label="DIAGNOSE">
+        <p class="mode-label">Diagnose</p>
+        <button class="mode-btn" type="button" data-mode="diagnose"><strong>04</strong>Test coherence</button>
+      </nav>
+      <p class="rail-note">Narrative becomes visual behavior<br>Decoration is not direction</p>
+    </aside>
+
+    <main id="main" class="stage">
+      <section class="hero" id="learn-panel" aria-labelledby="hero-title">
+        <div class="hero-visual" aria-hidden="true">
+          <div class="narrative-glow glow-a"></div>
+          <div class="narrative-glow glow-b"></div>
+          <div class="hero-focus-field"></div>
+          <div class="hero-system-map">
+            <svg class="hero-system-path" viewBox="0 0 100 52" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M8 14 C20 6, 30 7, 38 18 S58 32, 68 22 S82 14, 92 34"></path>
+            </svg>
+            <span class="hero-node node-narrative" data-hero-node="narrative"><i>01</i><b>Narrative</b></span>
+            <span class="hero-node node-variable" data-hero-node="variable"><i>02</i><b>Variable</b></span>
+            <span class="hero-node node-state" data-hero-node="state" data-active="true"><i>03</i><b>State</b></span>
+            <span class="hero-node node-sequence" data-hero-node="sequence"><i>04</i><b>Sequence</b></span>
+            <span class="hero-node node-agency" data-hero-node="agency"><i>05</i><b>Agency</b></span>
+          </div>
+        </div>
+        <div class="hero-copy">
+          <p class="eyebrow">Director Control Room / staging build</p>
+          <h1 id="hero-title">Narrative becomes visual behavior</h1>
+          <p>这不是风格库。它把故事问题转译成可观察、可调整、可诊断的视觉状态与所有权关系。</p>
+        </div>
+        <div class="system-chain" aria-label="Narrative to Agency system chain">
+          <button type="button"><small>INPUT</small><strong>Narrative</strong></button>
+          <button type="button"><small>TRANSLATE</small><strong>Variable</strong></button>
+          <button type="button"><small>MODULATE</small><strong>State</strong></button>
+          <button type="button"><small>ORCHESTRATE</small><strong>Sequence</strong></button>
+          <button type="button"><small>TRANSFER</small><strong>Agency</strong></button>
+        </div>
+      </section>
+
+      <section class="ownership-lab" aria-labelledby="ownership-title">
+        <div class="ownership-stage" data-owner="world" role="img" aria-describedby="ownership-status ownership-help ownership-reason" aria-label="Visual ownership diagnostic showing which subject leads camera, color and spatial pressure">
+          <div class="ownership-field"></div><div class="ownership-grid"></div>
+          <div class="ownership-board">
+            <div class="ownership-summary">
+              <span>PRIMARY OWNER</span>
+              <strong id="ownership-primary">WORLD</strong>
+              <p id="ownership-reason">WORLD leads camera and color; spatial pressure remains low.</p>
+            </div>
+            <div class="ownership-tracks">
+              <div class="ownership-track" data-ownership-track="camera" data-position="world">
+                <div class="ownership-track-head"><span>Camera authority</span><b id="ownership-camera">WORLD-LED</b></div>
+                <div class="ownership-axis"><small>WORLD</small><i class="ownership-marker"></i><small>CHARACTER</small></div>
+              </div>
+              <div class="ownership-track" data-ownership-track="color" data-position="world">
+                <div class="ownership-track-head"><span>Color authority</span><b id="ownership-color">WORLD-LED</b></div>
+                <div class="ownership-axis"><small>WORLD</small><i class="ownership-marker"></i><small>CHARACTER</small></div>
+              </div>
+              <div class="ownership-track" data-ownership-track="space" data-position="low">
+                <div class="ownership-track-head"><span>Spatial pressure</span><b id="ownership-space">LOW</b></div>
+                <div class="ownership-axis ownership-axis-pressure"><small>LOW</small><i class="ownership-marker"></i><small>HIGH</small></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="ownership-copy">
+          <p class="eyebrow">Ownership transfer</p>
+          <h2 id="ownership-title">Who gets to define the image?</h2>
+          <p id="ownership-status" class="status-line">OWNERSHIP · WORLD OWNS FRAME</p>
+          <p id="ownership-help">切换视觉控制权，观察 camera、color 与空间压力如何共同支持“谁拥有画面”这个结论。</p>
+          <div class="segmented" aria-label="Ownership states">
+            <button type="button" data-owner-choice="world" aria-pressed="true">World</button>
+            <button type="button" data-owner-choice="contested" aria-pressed="false">Contested</button>
+            <button type="button" data-owner-choice="character" aria-pressed="false">Character</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="workspace narrative-workspace" id="narrative-panel" aria-labelledby="narrative-title">
+        <div id="narrative-root"></div>
+      </section>
+
+      <section class="workspace" id="direct-panel" aria-labelledby="workspace-title">
+        <p class="eyebrow">Direct / Workspace</p>
+        <h2 id="workspace-title">Direct the visual state</h2>
+        <p>把每个导演变量当作一个明确的选择，而不是填写后台表单。所有工具共享同一个 scene state。</p>
+        <div class="workspace-grid">
+          <section class="variable-family"><h3>Color</h3>
+            <div class="control-row"><span class="control-label" id="label-color-temp">Temperature</span><div class="variable-options" role="group" aria-labelledby="label-color-temp"><button type="button" data-variable-family="color" data-variable-key="temperature" data-variable-value="cool" aria-pressed="false">Cool</button><button type="button" data-variable-family="color" data-variable-key="temperature" data-variable-value="neutral" aria-pressed="true">Neutral</button><button type="button" data-variable-family="color" data-variable-key="temperature" data-variable-value="warm" aria-pressed="false">Warm</button></div></div>
+            <div class="control-row"><span class="control-label" id="label-color-territory">Territory</span><div class="variable-options" role="group" aria-labelledby="label-color-territory"><button type="button" data-variable-family="color" data-variable-key="territory" data-variable-value="world" aria-pressed="true">World</button><button type="button" data-variable-family="color" data-variable-key="territory" data-variable-value="contested" aria-pressed="false">Contested</button><button type="button" data-variable-family="color" data-variable-key="territory" data-variable-value="character" aria-pressed="false">Character</button></div></div>
+          </section>
+          <section class="variable-family"><h3>Space</h3>
+            <div class="control-row"><span class="control-label" id="label-space-compress">Compression</span><div class="variable-options" role="group" aria-labelledby="label-space-compress"><button type="button" data-variable-family="space" data-variable-key="compression" data-variable-value="low" aria-pressed="true">Low</button><button type="button" data-variable-family="space" data-variable-key="compression" data-variable-value="medium" aria-pressed="false">Medium</button><button type="button" data-variable-family="space" data-variable-key="compression" data-variable-value="high" aria-pressed="false">High</button></div></div>
+            <div class="control-row"><span class="control-label" id="label-space-open">Openness</span><div class="variable-options" role="group" aria-labelledby="label-space-open"><button type="button" data-variable-family="space" data-variable-key="openness" data-variable-value="low" aria-pressed="false">Low</button><button type="button" data-variable-family="space" data-variable-key="openness" data-variable-value="medium" aria-pressed="true">Medium</button><button type="button" data-variable-family="space" data-variable-key="openness" data-variable-value="high" aria-pressed="false">High</button></div></div>
+          </section>
+          <section class="variable-family"><h3>Camera</h3>
+            <div class="control-row"><span class="control-label" id="label-camera-perspective">Perspective</span><div class="variable-options" role="group" aria-labelledby="label-camera-perspective"><button type="button" data-variable-family="camera" data-variable-key="perspective" data-variable-value="world" aria-pressed="true">World</button><button type="button" data-variable-family="camera" data-variable-key="perspective" data-variable-value="mixed" aria-pressed="false">Mixed</button><button type="button" data-variable-family="camera" data-variable-key="perspective" data-variable-value="character" aria-pressed="false">Character</button></div></div>
+            <div class="control-row"><span class="control-label" id="label-camera-stability">Stability</span><div class="variable-options" role="group" aria-labelledby="label-camera-stability"><button type="button" data-variable-family="camera" data-variable-key="stability" data-variable-value="low" aria-pressed="false">Low</button><button type="button" data-variable-family="camera" data-variable-key="stability" data-variable-value="medium" aria-pressed="false">Medium</button><button type="button" data-variable-family="camera" data-variable-key="stability" data-variable-value="high" aria-pressed="true">High</button></div></div>
+          </section>
+          <section class="variable-family"><h3>Line</h3>
+            <div class="control-row"><span class="control-label" id="label-line-stability">Stability</span><div class="variable-options" role="group" aria-labelledby="label-line-stability"><button type="button" data-variable-family="line" data-variable-key="stability" data-variable-value="low" aria-pressed="false">Low</button><button type="button" data-variable-family="line" data-variable-key="stability" data-variable-value="medium" aria-pressed="false">Medium</button><button type="button" data-variable-family="line" data-variable-key="stability" data-variable-value="high" aria-pressed="true">High</button></div></div>
+            <div class="control-row"><span class="control-label" id="label-line-density">Density</span><div class="variable-options" role="group" aria-labelledby="label-line-density"><button type="button" data-variable-family="line" data-variable-key="density" data-variable-value="low" aria-pressed="false">Low</button><button type="button" data-variable-family="line" data-variable-key="density" data-variable-value="medium" aria-pressed="true">Medium</button><button type="button" data-variable-family="line" data-variable-key="density" data-variable-value="high" aria-pressed="false">High</button></div></div>
+          </section>
+          <section class="variable-family"><h3>Texture</h3>
+            <div class="control-row"><span class="control-label" id="label-texture-noise">Noise</span><div class="variable-options" role="group" aria-labelledby="label-texture-noise"><button type="button" data-variable-family="texture" data-variable-key="noise" data-variable-value="low" aria-pressed="true">Low</button><button type="button" data-variable-family="texture" data-variable-key="noise" data-variable-value="medium" aria-pressed="false">Medium</button><button type="button" data-variable-family="texture" data-variable-key="noise" data-variable-value="high" aria-pressed="false">High</button></div></div>
+            <div class="control-row"><span class="control-label" id="label-texture-grain">Granularity</span><div class="variable-options" role="group" aria-labelledby="label-texture-grain"><button type="button" data-variable-family="texture" data-variable-key="granularity" data-variable-value="low" aria-pressed="true">Low</button><button type="button" data-variable-family="texture" data-variable-key="granularity" data-variable-value="medium" aria-pressed="false">Medium</button><button type="button" data-variable-family="texture" data-variable-key="granularity" data-variable-value="high" aria-pressed="false">High</button></div></div>
+          </section>
+          <section class="variable-family"><h3>Rhythm</h3>
+            <div class="control-row"><span class="control-label" id="label-rhythm-energy">Motion energy</span><div class="variable-options" role="group" aria-labelledby="label-rhythm-energy"><button type="button" data-variable-family="rhythm" data-variable-key="motionEnergy" data-variable-value="low" aria-pressed="true">Low</button><button type="button" data-variable-family="rhythm" data-variable-key="motionEnergy" data-variable-value="medium" aria-pressed="false">Medium</button><button type="button" data-variable-family="rhythm" data-variable-key="motionEnergy" data-variable-value="high" aria-pressed="false">High</button></div></div>
+            <div class="control-row"><span class="control-label" id="label-rhythm-cut">Cut density</span><div class="variable-options" role="group" aria-labelledby="label-rhythm-cut"><button type="button" data-variable-family="rhythm" data-variable-key="cutDensity" data-variable-value="low" aria-pressed="true">Low</button><button type="button" data-variable-family="rhythm" data-variable-key="cutDensity" data-variable-value="medium" aria-pressed="false">Medium</button><button type="button" data-variable-family="rhythm" data-variable-key="cutDensity" data-variable-value="high" aria-pressed="false">High</button></div></div>
+          </section>
+        </div>
+        <div class="state-summary" aria-live="polite">
+          <div><span>Narrative</span><strong id="summary-narrative">BASELINE</strong></div>
+          <div><span>Agency</span><strong id="summary-agency">WORLD</strong></div>
+          <div><span>Color</span><strong id="summary-color">NEUTRAL / WORLD</strong></div>
+          <div><span>Camera</span><strong id="summary-camera">WORLD / HIGH</strong></div>
+        </div>
+      </section>
+
+      <section class="workspace tool-workspace" id="state-machine-panel" aria-labelledby="state-machine-title">
+        <p class="eyebrow">Direct / Character mechanism</p><h2 id="state-machine-title">Visual State Machine</h2>
+        <p>机制而非画风模仿。拖动 playhead，观察叙事状态如何同步改变视觉变量与 ownership。</p><div id="state-machine-root"></div>
+      </section>
+      <section class="workspace tool-workspace" id="sequence-panel" aria-labelledby="sequence-title">
+        <p class="eyebrow">Direct / Temporal orchestration</p><h2 id="sequence-title">Sequence Score</h2>
+        <p>六条视觉轨道错峰变化。高潮由控制权转移定义，而不是所有参数一起达到最大值。</p><div id="sequence-root"></div>
+      </section>
+      <section class="workspace tool-workspace" id="color-ownership-panel" aria-labelledby="color-ownership-title">
+        <p class="eyebrow">Direct / Color territory</p><h2 id="color-ownership-title">Color Ownership Map</h2>
+        <p>颜色不仅是什么，更重要的是此刻由谁拥有、在哪里占领、是否发生冲突。</p><div id="color-ownership-root"></div>
+      </section>
+
+      <section class="workspace tool-workspace diagnose-workspace" id="diagnose-panel" aria-labelledby="diagnose-title">
+        <p class="eyebrow">Diagnose / Visual system diagnostic</p>
+        <h2 id="diagnose-title">Why did this visual behavior change?</h2>
+        <p>使用与 DIRECT 完全相同的 scene state，输出确定性的 PASS / WARN / FAIL，不制造总分。</p>
+        <div id="diagnostic-root"></div>
+      </section>
+    </main>
+  </div>
+
+  <nav class="mobile-modes" aria-label="Primary modes">
+    <a href="#learn-panel" data-mode="learn" aria-current="page">Learn</a>
+    <a href="#narrative-panel" data-mode="narrative">Narrative</a>
+    <a href="#direct-panel" data-mode="direct">Direct</a>
+    <a href="#diagnose-panel" data-mode="diagnose">Diagnose</a>
+  </nav>
+
+  <script src="scene-state.js?v=20260816-1951"></script>
+  <script src="state-machine.js?v=20260816-1951"></script>
+  <script src="sequence-score.js?v=20260816-1951"></script>
+  <script src="color-ownership.js?v=20260816-1951"></script>
+  <script src="diagnostic.js?v=20260816-1951"></script>
+  <script src="timeline-sync.js?v=20260816-1951"></script>
+  <script src="narrative-contracts.js?v=20260817-1740"></script>
+  <script src="narrative-state.js?v=20260817-1740"></script>
+  <script src="narrative-demo-fixtures.js?v=20260817-1740"></script>
+  <script src="narrative-api-client.js?v=20260817-1740"></script>
+  <script src="director-v2-app.js?v=20260816-1951"></script>
+  <script src="narrative-workspace.js?v=20260818-1116"></script>
+</body>
+</html>
