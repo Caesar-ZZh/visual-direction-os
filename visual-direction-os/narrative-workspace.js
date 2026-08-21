@@ -22,7 +22,10 @@
     const stateFactory = options.stateFactory || root.VDOSNarrativeState;
     const apiFactory = options.apiFactory || root.VDOSNarrativeApiClient;
     const fixtures = options.fixtures || root.VDOSNarrativeDemoFixtures;
-    if (!contracts || !stateFactory || !apiFactory) throw new Error('Narrative workspace dependencies are missing.');
+    const skeletonCompiler = options.skeletonCompiler || root.VDOSVisualSequenceSkeleton;
+    const completionAssembler = options.completionAssembler || root.VDOSVisualSequenceCompletion;
+    const visualIRProvider = options.visualIRProvider || (() => root.VDOSVisualIRShadowController?.getVisualIR?.() || null);
+    if (!contracts || !stateFactory || !apiFactory || !skeletonCompiler || !completionAssembler) throw new Error('Narrative workspace dependencies are missing.');
 
     const params = new URLSearchParams(root.location?.search || '');
     const demoMode = options.demoMode ?? params.get('narrativeDemo') === '1';
@@ -108,7 +111,10 @@
 
     function renderStageError(stage,error,retry) {
       const label = stage === 'interpret' ? 'Interpret' : stage === 'strategy' ? 'Strategy' : 'Sequence';
-      output.innerHTML = `<div class="narrative-stage-error" data-narrative-error role="alert"><span>${escapeHtml(label.toUpperCase())} · RECOVERABLE ERROR</span><strong>${escapeHtml(error?.message || `${label} failed`)}</strong><p>Your confirmed upstream work is preserved. Retry only this stage.</p><button type="button" class="narrative-primary" data-retry-stage="${stage}">Retry ${label}</button></div>`;
+      const details = Array.isArray(error?.errors) && error.errors.length
+        ? `<ul class="narrative-error-details">${error.errors.map(item => `<li><b>${escapeHtml(item.code || 'ERROR')}</b>${item.path ? ` · ${escapeHtml(item.path)}` : ''} — ${escapeHtml(item.message || '')}</li>`).join('')}</ul>`
+        : '';
+      output.innerHTML = `<div class="narrative-stage-error" data-narrative-error role="alert"><span>${escapeHtml(label.toUpperCase())} · RECOVERABLE ERROR</span><strong>${escapeHtml(error?.message || `${label} failed`)}</strong><p>Your confirmed upstream work is preserved. Retry only this stage.</p>${details}<button type="button" class="narrative-primary" data-retry-stage="${stage}">Retry ${label}</button></div>`;
       output.querySelector('[data-retry-stage]')?.addEventListener('click',retry);
     }
 
@@ -118,7 +124,7 @@
         setBusy(false,'Request cancelled. Your latest input is ready.');
         return false;
       }
-      const accepted = draft.failRequest(stage,token,{ code:error?.code || 'UNKNOWN', message:error?.message || 'Narrative request failed.' });
+      const accepted = draft.failRequest(stage,token,{ code:error?.code || 'UNKNOWN', message:error?.message || 'Narrative request failed.', errors:error?.errors || null });
       if (!accepted) {
         setBusy(false,'A stale response was ignored. Your latest input remains authoritative.');
         return false;
@@ -227,22 +233,90 @@
       selectButton.addEventListener('click',requestSequence);
     }
 
+    function skeletonMatchesCurrent(skeleton, current, visualIR) {
+      if (!skeleton) return false;
+      const grammarId = visualIR?.grammar?.status === 'resolved' ? visualIR.grammar.id : null;
+      return skeleton.readingId === current.confirmedReading?.id
+        && skeleton.strategyId === current.selectedStrategy?.id
+        && (skeleton.grammarId || null) === grammarId;
+    }
+
     async function requestSequence() {
-      if (!draft.getState().selectedStrategy) return;
+      const initial = draft.getState();
+      if (!initial.selectedStrategy || !initial.confirmedReading) return;
       setStage(4);
-      output.innerHTML = '<div class="narrative-loading">Building five-beat sequence proposal…</div>';
-      const { token,controller } = beginRequest('sequence');
+      output.innerHTML = '<div class="narrative-loading">Compiling Sequence Skeleton, then completing open directing slots…</div>';
+      let rawCompletion = null;
+      let skeleton = null;
+      let visualIR = null;
+      let token = null;
+      let controller = null;
       try {
-        const current = draft.getState();
-        const result = await api.sequence({ narrative:current.input, directorIntent:current.directorIntent, reading:current.confirmedReading, strategy:current.selectedStrategy },controller.signal);
+        visualIR = visualIRProvider();
+        if (!visualIR) {
+          const error = new Error('Visual IR is not ready for compiler-first Sequence synthesis.');
+          error.code = 'VISUAL_IR_UNAVAILABLE';
+          throw error;
+        }
+        let current = draft.getState();
+        skeleton = current.sequenceSkeleton;
+        if (!skeletonMatchesCurrent(skeleton, current, visualIR)) {
+          skeleton = skeletonCompiler.compileSequenceSkeleton({
+            confirmedReading: current.confirmedReading,
+            selectedStrategy: current.selectedStrategy,
+            visualIR
+          });
+          draft.setSequenceSkeleton(skeleton);
+          current = draft.getState();
+        }
+
+        ({ token,controller } = beginRequest('sequence'));
+        rawCompletion = await api.sequence({
+          narrative:current.input,
+          directorIntent:current.directorIntent,
+          reading:current.confirmedReading,
+          strategy:current.selectedStrategy,
+          sequenceSkeleton:skeleton
+        },controller.signal);
         finishRequest('sequence',controller);
-        if (!draft.acceptResponse('sequence',token,result)) {
+        controller = null;
+
+        if (draft.getState().requests.sequence.token !== token) {
+          setBusy(false,'A stale response was ignored.');
+          return;
+        }
+
+        const assembled = completionAssembler.assembleSequenceProposal({
+          skeleton,
+          completion:rawCompletion,
+          visualIR
+        });
+        draft.setSequenceCompletionResult({
+          completion:rawCompletion,
+          proposal:assembled.sequenceProposal,
+          provenance:assembled.sequenceProvenance
+        });
+        if (!draft.markRequestSuccess('sequence',token)) {
           setBusy(false,'A stale response was ignored.');
           return;
         }
         renderSequence();
       } catch (error) {
-        failStage('sequence',token,controller,error,requestSequence);
+        if (error?.code === 'SEQUENCE_COMPLETION_INVALID' && rawCompletion) {
+          draft.setSequenceCompletionFailure?.(rawCompletion);
+        }
+        if (token != null && controller) {
+          failStage('sequence',token,controller,error,requestSequence);
+        } else if (token != null) {
+          const accepted = draft.failRequest('sequence',token,{ code:error?.code || 'UNKNOWN', message:error?.message || 'Sequence synthesis failed.', errors:error?.errors || null });
+          if (accepted) {
+            setBusy(false,error?.message || 'Sequence synthesis failed.');
+            renderStageError('sequence',error,requestSequence);
+          }
+        } else {
+          setBusy(false,error?.message || 'Sequence synthesis failed.');
+          renderStageError('sequence',error,requestSequence);
+        }
       }
     }
 
@@ -254,7 +328,7 @@
         <div class="narrative-section-head"><p class="eyebrow">04 / Proposal preview</p><h3>Sequence before state mutation</h3><p>The proposal remains isolated from canonical Scene State until an explicit Apply action.</p></div>
         <div class="narrative-sequence-grid">${beats.map((beat,index) => `<article class="narrative-sequence-beat" data-sequence-proposal-beat data-beat-id="${escapeHtml(beat.id)}"><div class="narrative-beat-index">${String(index+1).padStart(2,'0')}</div><div class="narrative-beat-copy"><div class="narrative-beat-head"><strong data-beat-label>${escapeHtml(beat.label)}</strong><span>AGENCY · ${escapeHtml(beat.agency.toUpperCase())}</span></div><p>${escapeHtml(beat.narrativeBeat)}</p><div class="narrative-beat-variables"><b>PRIMARY · ${escapeHtml(beat.primaryVariable.toUpperCase())}</b><span>SUPPORT · ${escapeHtml(beat.supportingVariables.join(' / ').toUpperCase() || '—')}</span><span>RESTRAIN · ${escapeHtml(beat.restrainedVariables.join(' / ').toUpperCase() || '—')}</span></div><div class="narrative-events">${beat.visualEvents.length ? beat.visualEvents.map(event => `<span>${escapeHtml(typeof event==='string'?event:event.type)}</span>`).join('') : '<span>NO EVENT</span>'}</div></div></article>`).join('')}</div>
         <div class="narrative-apply-preview"><span>05 / APPLY</span><strong>Not applied yet</strong><p>DIRECT and Sequence Director remain unchanged in Preview mode.</p></div>`;
-      live.textContent = 'Sequence proposal ready. Canonical Scene State is still unchanged.';
+      live.textContent = 'Compiler-first Sequence proposal ready. Canonical Scene State is still unchanged.';
     }
 
     sceneInput.addEventListener('input',handleInputEdit);
