@@ -54,3 +54,20 @@ test('compiles Visual IR only from the confirmed reading and selected strategy',
   assert.deepEqual(ir.direction.restrainedVariables.value, ['texture']);
   assert.deepEqual(ir.agency.transition.value, ['world', 'contested', 'character']);
 });
+
+test('marks unsupported visual dimensions unresolved instead of inventing values', () => {
+  const ir = bridge.compileVisualIR({ confirmedReading, selectedStrategy });
+  const visualFields = ['character','world','composition','camera','hierarchy','shape','value','color','edge','detail','medium','texture','fx','temporal'];
+
+  visualFields.forEach(field => {
+    assert.equal(ir.visual[field].value, 'UNKNOWN', `${field} must not receive a fabricated default`);
+    assert.equal(ir.visual[field].status, 'unknown');
+    assert.equal(ir.visual[field].evidenceStatus, 'unresolved');
+  });
+
+  assert.equal(ir.constraints.antiRules.value, 'UNKNOWN');
+  assert.equal(ir.constraints.antiRules.status, 'unknown');
+  assert.equal(ir.evidence.status, 'partial');
+  assert.equal(ir.evidence.confidence, 'high');
+  assert.deepEqual(ir.evidence.unresolved, [...visualFields, 'antiRules']);
+});
