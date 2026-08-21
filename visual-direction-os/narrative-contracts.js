@@ -10,6 +10,7 @@
   const CONFIDENCE_LEVELS = ['low', 'medium', 'high'];
   const AGENCIES = ['world', 'contested', 'shared', 'character'];
   const VARIABLE_FAMILIES = ['color', 'space', 'camera', 'line', 'texture', 'rhythm', 'agency'];
+  const GRAMMAR_IDS = ['spatial-authorship', 'camera-authority-transfer', 'color-ownership-transfer', 'surface-assignment', 'agency-ownership-transfer', 'unresolved'];
   const BEAT_IDS = ['setup', 'pressure', 'rupture', 'release', 'new-ownership'];
   const BEAT_LABELS = ['SETUP', 'PRESSURE', 'RUPTURE', 'RELEASE', 'NEW OWNERSHIP'];
   const OWNERSHIP_KEYS = ['character', 'world', 'narrative'];
@@ -113,6 +114,7 @@
       }
       if (!nonEmpty(strategy.id)) errors.push(`${path}.id is required`);
       if (!nonEmpty(strategy.title)) errors.push(`${path}.title is required`);
+      if ('grammarId' in strategy && !GRAMMAR_IDS.includes(strategy.grammarId)) errors.push(`${path}.grammarId is invalid`);
       if (!VARIABLE_FAMILIES.includes(strategy.primaryVariable)) errors.push(`${path}.primaryVariable is invalid`);
       validateVariableList(strategy.supportingVariables, `${path}.supportingVariables`, errors, { min: 1 });
       validateVariableList(strategy.restrainedVariables, `${path}.restrainedVariables`, errors);
@@ -208,6 +210,7 @@
     CONFIDENCE_LEVELS: clone(CONFIDENCE_LEVELS),
     AGENCIES: clone(AGENCIES),
     VARIABLE_FAMILIES: clone(VARIABLE_FAMILIES),
+    GRAMMAR_IDS: clone(GRAMMAR_IDS),
     BEAT_IDS: clone(BEAT_IDS),
     clone,
     validateInterpretResponse,
