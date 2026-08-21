@@ -11,7 +11,7 @@ const clone = value => JSON.parse(JSON.stringify(value));
 const cameraIR = { grammar: { status: 'resolved', id: 'camera-authority-transfer' } };
 
 test('resolved proposal overrides a supported AI conflict without mutating the raw proposal', () => {
-  const proposal = clone(fixtures.sequence.sequenceProposal);
+  const proposal = clone(fixtures.legacySequence.sequenceProposal);
   const rupture = proposal.beats.find(beat => beat.id === 'rupture');
   rupture.sceneStatePatch.variables.camera.perspective = 'world';
   const rawBefore = JSON.stringify(proposal);
