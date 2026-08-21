@@ -36,10 +36,26 @@
       return checked.value;
     }
 
+    function createDemoValue(stage) {
+      const value = contracts.clone(fixtures[stage]);
+      if (stage !== 'sequence') return value;
+      const params = new URLSearchParams(root?.location?.search || '');
+      if (params.get('sequenceCompletionViolation') === 'camera-owned-write') {
+        const rupture = value?.sequenceCompletion?.beats?.find(beat => beat.id === 'rupture');
+        if (rupture) {
+          rupture.openPatch ||= {};
+          rupture.openPatch.variables ||= {};
+          rupture.openPatch.variables.camera ||= {};
+          rupture.openPatch.variables.camera.perspective = 'world';
+        }
+      }
+      return value;
+    }
+
     async function request(stage, payload = {}, signal) {
       if (demoMode) {
         if (!fixtures || !fixtures[stage]) throw createError('SCHEMA', `Demo fixture missing for ${stage}.`);
-        return validate(stage, contracts.clone(fixtures[stage]));
+        return validate(stage, createDemoValue(stage));
       }
       if (!baseUrl) throw createError('NOT_CONFIGURED', 'Narrative AI service is not configured.');
       if (typeof fetchImpl !== 'function') throw createError('NETWORK', 'Narrative AI transport is unavailable.');
