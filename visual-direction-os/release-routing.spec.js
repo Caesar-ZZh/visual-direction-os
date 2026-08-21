@@ -59,33 +59,56 @@ test('collapsed brand, hero marker and helper copy remain visually disciplined',
   await page.goto(`${base}/studio/?narrativeDemo=1&projectDemo=1`);
   await expect(page.getByRole('heading', { name:'Project Arc' })).toBeVisible();
   await expect.poll(() => page.evaluate(() => Boolean(window.VDOSAuteurPolishRuntime))).toBe(true);
+  await expect(page.locator('.v2-rail .brand')).toHaveAttribute('data-auteur-brand-structure', 'true');
 
   await page.mouse.move(1200, 500);
   await expect(page.locator('.v2-rail')).toHaveAttribute('data-expanded', 'false');
   const chrome = await page.evaluate(() => {
     const rail = document.querySelector('.v2-rail');
     const brand = rail?.querySelector('.brand');
+    const monogram = brand?.querySelector('.brand-monogram');
+    const wordmark = brand?.querySelector('.brand-wordmark');
     const eyebrow = document.querySelector('.hero-copy .eyebrow');
     const marker = document.querySelector('.node-narrative');
-    if (!rail || !brand || !eyebrow || !marker) throw new Error('Expected chrome targets are missing');
+    if (!rail || !brand || !monogram || !wordmark || !eyebrow || !marker) throw new Error('Expected chrome targets are missing');
     const rr = rail.getBoundingClientRect();
     const br = brand.getBoundingClientRect();
     const er = eyebrow.getBoundingClientRect();
     const mr = marker.getBoundingClientRect();
+    const nakedBrandText = [...brand.childNodes]
+      .filter(node => node.nodeType === Node.TEXT_NODE)
+      .map(node => node.textContent || '')
+      .join('')
+      .trim();
     return {
-      brandFontSize:parseFloat(getComputedStyle(brand).fontSize),
-      brandPseudo:getComputedStyle(brand, '::before').content,
       brandInsideRail:br.left >= rr.left && br.right <= rr.right,
       brandWidth:br.width,
+      pseudoContent:getComputedStyle(brand, '::before').content,
+      monogramText:monogram.textContent.trim(),
+      monogramDisplay:getComputedStyle(monogram).display,
+      wordmarkText:wordmark.textContent.trim(),
+      wordmarkDisplay:getComputedStyle(wordmark).display,
+      nakedBrandText,
       markerClearsCopy:mr.bottom <= er.top - 2 || mr.left >= er.right + 8
     };
   });
-  expect(chrome.brandFontSize).toBe(0);
-  expect(chrome.brandPseudo).toContain('V');
   expect(chrome.brandInsideRail).toBe(true);
   expect(chrome.brandWidth).toBeLessThanOrEqual(44.5);
+  expect(chrome.pseudoContent).toBe('none');
+  expect(chrome.monogramText).toBe('V');
+  expect(chrome.monogramDisplay).not.toBe('none');
+  expect(chrome.wordmarkText).toBe('Visual Direction OS');
+  expect(chrome.wordmarkDisplay).toBe('none');
+  expect(chrome.nakedBrandText).toBe('');
   expect(chrome.markerClearsCopy).toBe(true);
 
+  await page.mouse.move(20, 40);
+  await expect(page.locator('.v2-rail')).toHaveAttribute('data-expanded', 'true');
+  await expect(page.locator('.v2-rail .brand-wordmark')).toBeVisible();
+  await expect(page.locator('.v2-rail .brand-monogram')).toBeHidden();
+
+  await page.mouse.move(1200, 500);
+  await expect(page.locator('.v2-rail')).toHaveAttribute('data-expanded', 'false');
   await page.getByRole('button', { name:/Turn story into direction/i }).click();
   await expect(page.getByRole('heading', { name:/Tell your story/i })).toBeVisible();
   await expect.poll(() => page.locator('.narrative-editor > p').textContent()).not.toContain('。');
