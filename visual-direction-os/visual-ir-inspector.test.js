@@ -25,6 +25,7 @@ const ir = bridge.compileVisualIR({
   selectedStrategy: {
     id: 'strategy-1',
     title: 'Spatial authorship',
+    grammarId: 'spatial-authorship',
     primaryVariable: 'space',
     supportingVariables: ['camera','agency'],
     restrainedVariables: ['texture'],
