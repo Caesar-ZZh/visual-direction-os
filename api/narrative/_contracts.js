@@ -53,7 +53,15 @@ function validateInput(stage, body = {}) {
 
 function validateOutput(stage, value) {
   if (stage === 'interpret') return domain.validateInterpretResponse(value);
-  if (stage === 'strategy') return domain.validateStrategyResponse(value);
+  if (stage === 'strategy') {
+    const checked = domain.validateStrategyResponse(value);
+    if (!checked.valid) return checked;
+    const errors = [];
+    checked.value.strategies.forEach((strategy, index) => {
+      if (!GRAMMAR_IDS.includes(strategy.grammarId)) errors.push(`strategies[${index}].grammarId is required and must be executable or unresolved`);
+    });
+    return errors.length ? failure(errors) : success(checked.value);
+  }
   if (stage === 'sequence') return domain.validateSequenceResponse(value);
   return failure([`Unknown Narrative API stage: ${stage}`]);
 }
