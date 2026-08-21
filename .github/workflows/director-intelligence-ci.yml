@@ -58,12 +58,18 @@ jobs:
           node --check visual-direction-os/visual-grammar-registry.js
           node --check visual-direction-os/visual-ir-bridge.js
           node --check visual-direction-os/visual-compiler.js
+          node --check visual-direction-os/visual-sequence-skeleton.js
+          node --check visual-direction-os/visual-sequence-completion.js
+          node --check visual-direction-os/visual-sequence-origin.js
           node --check visual-direction-os/visual-compiler-compare.js
           node --check visual-direction-os/visual-compiler-authority.js
           node --check visual-direction-os/visual-compiler-inspector.js
           node --check visual-direction-os/visual-authority-inspector.js
           node --check visual-direction-os/visual-ir-inspector.js
           node --check visual-direction-os/visual-ir-shadow.js
+          node --check visual-direction-os/narrative-state.js
+          node --check visual-direction-os/narrative-api-client.js
+          node --check visual-direction-os/narrative-workspace.js
           node --check visual-direction-os/narrative-apply-ui.js
           node --check visual-direction-os/narrative-contracts.js
           node --check visual-direction-os/narrative-demo-fixtures.js
@@ -75,6 +81,9 @@ jobs:
           test -f /tmp/vdos-site/visual-grammar-registry.js
           test -f /tmp/vdos-site/visual-ir-bridge.js
           test -f /tmp/vdos-site/visual-compiler.js
+          test -f /tmp/vdos-site/visual-sequence-skeleton.js
+          test -f /tmp/vdos-site/visual-sequence-completion.js
+          test -f /tmp/vdos-site/visual-sequence-origin.js
           test -f /tmp/vdos-site/visual-compiler-compare.js
           test -f /tmp/vdos-site/visual-compiler-authority.js
           test -f /tmp/vdos-site/visual-compiler-inspector.js
@@ -85,6 +94,9 @@ jobs:
           test -f /tmp/vdos-site/narrative-apply-ui.js
           grep -q 'visual-grammar-registry.js' /tmp/vdos-site/director-v2.html
           grep -q 'visual-compiler.js' /tmp/vdos-site/director-v2.html
+          grep -q 'visual-sequence-skeleton.js' /tmp/vdos-site/director-v2.html
+          grep -q 'visual-sequence-completion.js' /tmp/vdos-site/director-v2.html
+          grep -q 'visual-sequence-origin.js' /tmp/vdos-site/director-v2.html
           grep -q 'visual-compiler-compare.js' /tmp/vdos-site/director-v2.html
           grep -q 'visual-compiler-authority.js' /tmp/vdos-site/director-v2.html
           grep -q 'visual-compiler-inspector.js' /tmp/vdos-site/director-v2.html
@@ -104,4 +116,4 @@ jobs:
           python3 -m http.server 4173 --directory visual-direction-os >/tmp/vdos-intelligence-server.log 2>&1 &
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
-          npx playwright test visual-direction-os/director-v2-rail-intent.spec.js visual-direction-os/visual-ir-shadow.spec.js visual-direction-os/visual-compiler-shadow.spec.js visual-direction-os/visual-authority-handoff.spec.js visual-direction-os/narrative-workspace.spec.js --reporter=line --workers=1
+          npx playwright test visual-direction-os/director-v2-rail-intent.spec.js visual-direction-os/visual-ir-shadow.spec.js visual-direction-os/visual-compiler-shadow.spec.js visual-direction-os/visual-authority-handoff.spec.js visual-direction-os/visual-sequence-compiler-first.spec.js visual-direction-os/narrative-workspace.spec.js --reporter=line --workers=1
