@@ -184,11 +184,13 @@
   }
 
   function resolveGrammar({ selectedStrategy } = {}) {
+    const grammarId = selectedStrategy?.grammarId;
     const primaryVariable = selectedStrategy?.primaryVariable;
-    if (!primaryVariable) return null;
-    const grammar = GRAMMARS.find(candidate =>
-      candidate.contract.status === 'supported' && candidate.match.primaryVariables.includes(primaryVariable));
-    return grammar ? clone(grammar) : null;
+    if (!grammarId || grammarId === 'unresolved' || !primaryVariable) return null;
+    const grammar = byId.get(grammarId);
+    if (!grammar || grammar.contract.status !== 'supported') return null;
+    if (!grammar.match.primaryVariables.includes(primaryVariable)) return null;
+    return clone(grammar);
   }
 
   return { listGrammars, getGrammar, resolveGrammar };
