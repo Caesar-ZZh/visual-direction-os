@@ -43,8 +43,23 @@ const sequence = { sequenceProposal: { beats: ids.map((id, index) => ({
   sceneStatePatch: { agency: index < 2 ? 'world' : index < 4 ? 'contested' : 'character' },
   rationale: 'causal reason'
 })) } };
+const skeleton = {
+  version:'0.1.0', mode:'compiler-first', grammarId:'camera-authority-transfer',
+  agencyConstraint:{path:['world','contested','character'],start:'world',end:'character'},
+  beats:ids.map(id=>({id,patchSlots:{}}))
+};
+const sequenceCompletion = { sequenceCompletion:{ beats:ids.map((id,index)=>({
+  id, narrativeBeat:`beat ${index}`, agency:index<2?'world':index<4?'contested':'character', visualEvents:[], rationale:'reason', openPatch:{}
+})) } };
+const provenance = { origin:'compiler-first', skeletonVersion:'0.1.0', grammarId:'camera-authority-transfer', fields:{} };
 
 const draft = createNarrativeState();
+let state = draft.getState();
+assert.equal(state.sequenceSkeleton, null);
+assert.equal(state.sequenceCompletion, null);
+assert.equal(state.sequenceProposal, null);
+assert.equal(state.sequenceProvenance, null);
+
 draft.setInput('A character recognizes an assignment as control.', 'End with reclaimed agency.');
 assert.equal(draft.getState().stage, 'input');
 draft.setInterpretResult(interpret);
@@ -55,7 +70,7 @@ assert.equal(draft.getState().clarificationAnswer, 'Independent decision');
 
 draft.selectReading('reading-agency');
 draft.editSelectedReadingField('endingState', 'The character defines the next action.');
-let state = draft.getState();
+state = draft.getState();
 assert.equal(state.selectedReading.endingState.directorEdited, true);
 assert.equal(state.selectedReading.endingState.sourceType, 'director_intent');
 assert.equal(state.selectedReading.endingState.directorEditBasis, 'Edited by the director.');
@@ -68,14 +83,43 @@ draft.setStrategyResult(strategies);
 assert.equal(draft.getState().strategies.length, 2);
 draft.selectStrategy('camera');
 assert.equal(draft.getState().selectedStrategy.id, 'camera');
-draft.setSequenceResult(sequence);
-assert.equal(draft.getState().stage, 'sequence');
-assert.equal(draft.getState().sequenceProposal.beats.length, 5);
+
+assert.equal(typeof draft.setSequenceSkeleton, 'function');
+assert.equal(typeof draft.setSequenceCompletionResult, 'function');
+draft.setSequenceSkeleton(skeleton);
+state = draft.getState();
+assert.deepEqual(state.sequenceSkeleton, skeleton);
+assert.equal(state.sequenceCompletion, null);
+assert.equal(state.sequenceProposal, null);
+assert.equal(state.sequenceProvenance, null);
+
+draft.setSequenceCompletionResult({ completion:sequenceCompletion, proposal:sequence.sequenceProposal, provenance });
+state = draft.getState();
+assert.equal(state.stage, 'sequence');
+assert.deepEqual(state.sequenceCompletion, sequenceCompletion);
+assert.deepEqual(state.sequenceProposal, sequence.sequenceProposal);
+assert.deepEqual(state.sequenceProvenance, provenance);
+assert.deepEqual(state.sequenceSkeleton, skeleton);
 
 draft.setApplyMode('selected');
 draft.toggleBeat('setup');
 assert.equal(draft.getState().applyMode, 'selected');
 assert.equal(draft.getState().selectedBeatIds.includes('setup'), false);
+
+// Replacing the deterministic skeleton invalidates stale completion artifacts without invalidating upstream intent.
+const nextSkeleton = { ...skeleton, version:'0.1.1' };
+draft.setSequenceSkeleton(nextSkeleton);
+state = draft.getState();
+assert.equal(state.confirmedReading.id, 'reading-agency');
+assert.equal(state.selectedStrategy.id, 'camera');
+assert.deepEqual(state.sequenceSkeleton, nextSkeleton);
+assert.equal(state.sequenceCompletion, null);
+assert.equal(state.sequenceProposal, null);
+assert.equal(state.sequenceProvenance, null);
+
+// Legacy assembled Sequence path remains loadable for pre-M5 proposals.
+draft.setSequenceResult(sequence);
+assert.equal(draft.getState().sequenceProposal.beats.length, 5);
 
 const stale = draft.beginRequest('strategy');
 const current = draft.beginRequest('strategy');
@@ -86,11 +130,16 @@ draft.failRequest('strategy', current, { code: 'NETWORK', message: 'offline' });
 assert.equal(draft.getState().requests.strategy.status, 'error');
 assert.equal(draft.getState().requests.strategy.error.code, 'NETWORK');
 
-// Editing a confirmed upstream decision invalidates downstream generated work.
+// Editing a confirmed upstream decision invalidates every M5 generation artifact.
+draft.setSequenceSkeleton(skeleton);
+draft.setSequenceCompletionResult({ completion:sequenceCompletion, proposal:sequence.sequenceProposal, provenance });
 draft.editSelectedReadingField('coreConflict', 'Authority versus refusal.');
 state = draft.getState();
 assert.equal(state.confirmedReading, null);
 assert.equal(state.strategies.length, 0);
 assert.equal(state.selectedStrategy, null);
+assert.equal(state.sequenceSkeleton, null);
+assert.equal(state.sequenceCompletion, null);
 assert.equal(state.sequenceProposal, null);
+assert.equal(state.sequenceProvenance, null);
 console.log('narrative-state.test.js passed');
