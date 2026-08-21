@@ -99,20 +99,31 @@
       const beatIds = mode === 'all' ? beats.map(beat => beat.id) : beats.map(beat => beat.id).filter(id => selected.has(id));
       if (!proposal || !beatIds.length) return;
 
+      const intelligence = root.VDOSVisualIRShadowController;
+      const authorityPlan = intelligence?.syncAuthorityPlan?.() || intelligence?.getAuthorityPlan?.() || null;
+      const guarded = Boolean(authorityPlan?.grammarId && authorityPlan?.resolvedProposal);
+      const proposalForApply = guarded ? authorityPlan.resolvedProposal : proposal;
+
       const currentSequence = sequenceController.getSequence();
-      const nextSequence = apply.buildSequenceFromProposal(proposal, currentSequence, beatIds);
+      const nextSequence = apply.buildSequenceFromProposal(proposalForApply, currentSequence, beatIds);
       const currentPlayhead = root.VDOSScene.getSceneState().playhead;
       sequenceController.setSequence(nextSequence, { playhead: currentPlayhead });
       applySceneAtCurrentPlayhead(nextSequence);
 
       const labels = beats.filter(beat => beatIds.includes(beat.id)).map(beat => beat.label);
-      status.textContent = `Applied ${labels.join(' · ')} to Director.`;
+      status.textContent = guarded
+        ? `COMPILER GUARDED · Applied ${labels.join(' · ')} to Director.`
+        : `COMPILER UNRESOLVED · AI proposal applied ${labels.join(' · ')} to Director.`;
       root.document.querySelectorAll('[data-narrative-stage]').forEach(node => {
         if (node.dataset.narrativeStage === '5') node.setAttribute('aria-current', 'step');
         else node.removeAttribute('aria-current');
       });
       action.textContent = 'Applied to Director';
-      root.document.querySelector('[data-narrative-live]')?.replaceChildren(root.document.createTextNode('Narrative proposal applied. DIRECT remains manually editable.'));
+      root.document.querySelector('[data-narrative-live]')?.replaceChildren(root.document.createTextNode(
+        guarded
+          ? 'Compiler-guarded Narrative proposal applied. DIRECT remains manually editable.'
+          : 'Narrative proposal applied without resolved compiler authority. DIRECT remains manually editable.'
+      ));
     });
 
     sync();
