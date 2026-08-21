@@ -40,6 +40,7 @@ jobs:
           node --test visual-direction-os/visual-authority-apply.test.js
           node visual-direction-os/narrative-contracts.test.js
           node visual-direction-os/narrative-state.test.js
+          node visual-direction-os/narrative-api-client.test.js
           node api/narrative/_contracts-grammar.test.js
           node api/narrative/_contracts-sequence-completion.test.js
           node api/narrative/_handler.test.js
