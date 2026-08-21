@@ -46,6 +46,9 @@ jobs:
         run: |
           node --check visual-direction-os/visual-grammar-registry.js
           node --check visual-direction-os/visual-ir-bridge.js
+          node --check visual-direction-os/visual-compiler.js
+          node --check visual-direction-os/visual-compiler-compare.js
+          node --check visual-direction-os/visual-compiler-inspector.js
           node --check visual-direction-os/visual-ir-inspector.js
           node --check visual-direction-os/visual-ir-shadow.js
           node --check visual-direction-os/narrative-contracts.js
@@ -57,10 +60,16 @@ jobs:
           node visual-direction-os/build-pages-site.js visual-direction-os /tmp/vdos-site
           test -f /tmp/vdos-site/visual-grammar-registry.js
           test -f /tmp/vdos-site/visual-ir-bridge.js
+          test -f /tmp/vdos-site/visual-compiler.js
+          test -f /tmp/vdos-site/visual-compiler-compare.js
+          test -f /tmp/vdos-site/visual-compiler-inspector.js
           test -f /tmp/vdos-site/visual-ir-inspector.js
           test -f /tmp/vdos-site/visual-ir-inspector.css
           test -f /tmp/vdos-site/visual-ir-shadow.js
           grep -q 'visual-grammar-registry.js' /tmp/vdos-site/director-v2.html
+          grep -q 'visual-compiler.js' /tmp/vdos-site/director-v2.html
+          grep -q 'visual-compiler-compare.js' /tmp/vdos-site/director-v2.html
+          grep -q 'visual-compiler-inspector.js' /tmp/vdos-site/director-v2.html
           grep -q 'visual-ir-shadow.js' /tmp/vdos-site/director-v2.html
 
   browser:
@@ -76,4 +85,4 @@ jobs:
           python3 -m http.server 4173 --directory visual-direction-os >/tmp/vdos-intelligence-server.log 2>&1 &
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
-          npx playwright test visual-direction-os/visual-ir-shadow.spec.js visual-direction-os/narrative-workspace.spec.js --reporter=line --workers=1
+          npx playwright test visual-direction-os/visual-ir-shadow.spec.js visual-direction-os/visual-compiler-shadow.spec.js visual-direction-os/narrative-workspace.spec.js --reporter=line --workers=1
