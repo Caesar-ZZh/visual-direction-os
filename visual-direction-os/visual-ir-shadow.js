@@ -2,14 +2,16 @@
   const bridge = typeof module === 'object' && module.exports ? require('./visual-ir-bridge.js') : root?.VDOSVisualIRBridge;
   const inspector = typeof module === 'object' && module.exports ? require('./visual-ir-inspector.js') : root?.VDOSVisualIRInspector;
   const compare = typeof module === 'object' && module.exports ? require('./visual-compiler-compare.js') : root?.VDOSVisualCompilerCompare;
+  const authority = typeof module === 'object' && module.exports ? require('./visual-compiler-authority.js') : root?.VDOSVisualCompilerAuthority;
   const compilerInspector = typeof module === 'object' && module.exports ? require('./visual-compiler-inspector.js') : root?.VDOSVisualCompilerInspector;
-  const api = factory(root, bridge, inspector, compare, compilerInspector);
+  const authorityInspector = typeof module === 'object' && module.exports ? require('./visual-authority-inspector.js') : root?.VDOSVisualAuthorityInspector;
+  const api = factory(root, bridge, inspector, compare, authority, compilerInspector, authorityInspector);
   if (typeof module === 'object' && module.exports) module.exports = api;
   if (root) root.VDOSVisualIRShadow = api;
-})(typeof window !== 'undefined' ? window : globalThis, (root, bridge, inspector, compare, compilerInspector) => {
+})(typeof window !== 'undefined' ? window : globalThis, (root, bridge, inspector, compare, authority, compilerInspector, authorityInspector) => {
   'use strict';
 
-  if (!bridge || !inspector || !compare || !compilerInspector) throw new Error('Visual IR shadow dependencies are missing.');
+  if (!bridge || !inspector || !compare || !authority || !compilerInspector || !authorityInspector) throw new Error('Visual IR shadow dependencies are missing.');
 
   const clone = value => JSON.parse(JSON.stringify(value));
   const defer = callback => (root.queueMicrotask || queueMicrotask)(callback);
@@ -20,7 +22,9 @@
 
     let activeVisualIR = null;
     let activeCompilerComparison = null;
+    let activeAuthorityPlan = null;
     let lastComparisonKey = null;
+    let lastAuthorityKey = null;
     let destroyed = false;
 
     const getWorkspaceController = () => options.workspaceController || root.VDOSNarrativeWorkspaceController;
@@ -33,10 +37,21 @@
       target.querySelector('[data-visual-compiler-slot]')?.remove();
     }
 
+    function removeAuthoritySlot() {
+      target.querySelector('[data-visual-authority-slot]')?.remove();
+    }
+
+    function clearAuthorityPlan() {
+      activeAuthorityPlan = null;
+      lastAuthorityKey = null;
+      removeAuthoritySlot();
+    }
+
     function clearCompilerComparison() {
       activeCompilerComparison = null;
       lastComparisonKey = null;
       removeCompilerSlot();
+      clearAuthorityPlan();
     }
 
     function clearVisualIR() {
@@ -71,6 +86,21 @@
       return slot;
     }
 
+    function ensureAuthoritySlot() {
+      const output = target.querySelector('[data-narrative-output]');
+      const applyPreview = output?.querySelector('.narrative-apply-preview');
+      if (!output || !applyPreview) return null;
+      let slot = output.querySelector('[data-visual-authority-slot]');
+      if (!slot) {
+        slot = root.document.createElement('div');
+        slot.setAttribute('data-visual-authority-slot', '');
+        const compilerSlot = output.querySelector('[data-visual-compiler-slot]');
+        if (compilerSlot) compilerSlot.after(slot);
+        else applyPreview.before(slot);
+      }
+      return slot;
+    }
+
     function buildVisualIR(state) {
       if (!state?.confirmedReading || !state?.selectedStrategy) return null;
       const ir = bridge.compileVisualIR({
@@ -100,6 +130,7 @@
       const slot = ensureVisualIRSlot();
       if (slot) slot.innerHTML = inspector.renderVisualIRInspector(ir);
       syncSequenceCompare();
+      syncAuthorityPlan();
       return clone(ir);
     }
 
@@ -137,12 +168,49 @@
       return clone(comparison);
     }
 
+    function syncAuthorityPlan() {
+      if (destroyed) return null;
+      const workspace = getWorkspaceController();
+      if (!workspace || typeof workspace.getDraftState !== 'function') {
+        clearAuthorityPlan();
+        return null;
+      }
+      const state = workspace.getDraftState();
+      const proposal = state?.sequenceProposal;
+      if (!proposal || !Array.isArray(proposal.beats) || proposal.beats.length === 0 || !target.querySelector('[data-sequence-proposal-beat]')) {
+        clearAuthorityPlan();
+        return null;
+      }
+
+      const ir = activeVisualIR || buildVisualIR(state);
+      if (!ir) {
+        clearAuthorityPlan();
+        return null;
+      }
+      activeVisualIR = clone(ir);
+
+      const plan = authority.resolveSequenceAuthority({ visualIR: ir, proposal });
+      const authorityKey = JSON.stringify(plan);
+      const existing = target.querySelector('[data-visual-authority-slot]');
+      if (existing && authorityKey === lastAuthorityKey) return clone(activeAuthorityPlan || plan);
+
+      activeAuthorityPlan = clone(plan);
+      lastAuthorityKey = authorityKey;
+      const slot = ensureAuthoritySlot();
+      if (slot) slot.innerHTML = authorityInspector.renderAuthorityPlan(plan);
+      return clone(plan);
+    }
+
     function getVisualIR() {
       return activeVisualIR ? clone(activeVisualIR) : null;
     }
 
     function getCompilerComparison() {
       return activeCompilerComparison ? clone(activeCompilerComparison) : null;
+    }
+
+    function getAuthorityPlan() {
+      return activeAuthorityPlan ? clone(activeAuthorityPlan) : null;
     }
 
     function handleClick(event) {
@@ -161,7 +229,10 @@
     }
 
     const observer = typeof root.MutationObserver === 'function'
-      ? new root.MutationObserver(() => defer(syncSequenceCompare))
+      ? new root.MutationObserver(() => defer(() => {
+          syncSequenceCompare();
+          syncAuthorityPlan();
+        }))
       : null;
 
     target.addEventListener('click', handleClick);
@@ -171,8 +242,10 @@
     return {
       sync,
       syncSequenceCompare,
+      syncAuthorityPlan,
       getVisualIR,
       getCompilerComparison,
+      getAuthorityPlan,
       clear: clearVisualIR,
       destroy() {
         destroyed = true;
