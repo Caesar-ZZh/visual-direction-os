@@ -6,17 +6,19 @@ const path = require('node:path');
 const read = file => fs.readFileSync(path.join(__dirname, file), 'utf8');
 const readIfPresent = file => fs.existsSync(path.join(__dirname, file)) ? read(file) : '';
 
-test('loads a read-only Visual IR shadow adapter around the existing Narrative Workspace', () => {
+test('loads an evidence-aware Grammar Registry ahead of the read-only Visual IR shadow adapter', () => {
   const html = read('director-v2.html');
   const shadow = readIfPresent('visual-ir-shadow.js');
   const css = readIfPresent('visual-ir-inspector.css');
 
+  const registryIndex = html.indexOf('visual-grammar-registry.js');
   const bridgeIndex = html.indexOf('visual-ir-bridge.js');
   const inspectorIndex = html.indexOf('visual-ir-inspector.js');
   const workspaceIndex = html.indexOf('narrative-workspace.js');
   const shadowIndex = html.indexOf('visual-ir-shadow.js');
 
-  assert.ok(bridgeIndex > -1, 'Director v2 must load visual-ir-bridge.js');
+  assert.ok(registryIndex > -1, 'Director v2 must load visual-grammar-registry.js');
+  assert.ok(bridgeIndex > registryIndex, 'visual-ir-bridge.js must load after the Grammar Registry');
   assert.ok(inspectorIndex > bridgeIndex, 'visual-ir-inspector.js must load after the bridge');
   assert.ok(workspaceIndex > inspectorIndex, 'Narrative Workspace must retain its existing initialization order');
   assert.ok(shadowIndex > workspaceIndex, 'visual-ir-shadow.js must attach after Narrative Workspace');
@@ -31,6 +33,7 @@ test('loads a read-only Visual IR shadow adapter around the existing Narrative W
   assert.doesNotMatch(shadow, /updateSceneState/);
 
   assert.match(css, /\.visual-ir-shadow/);
+  assert.match(css, /\.visual-ir-shadow__grammar/);
   assert.match(css, /\.visual-ir-shadow__details summary:focus-visible/);
   assert.match(css, /@media \(max-width: 720px\)/);
 });
