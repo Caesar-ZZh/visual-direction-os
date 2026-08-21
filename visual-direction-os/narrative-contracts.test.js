@@ -15,10 +15,13 @@ assert.equal(c.validateInterpretResponse(interpret).valid, true);
 assert.equal(c.validateInterpretResponse({ ...interpret, readings: [reading] }).valid, false);
 
 const strategies = { strategies: [
-  { id: 'space', title: 'SPACE-LED', primaryVariable: 'space', supportingVariables: ['camera','color'], restrainedVariables: ['texture','rhythm'], mechanism: 'Pressure accumulates spatially before agency transfers.', rationale: 'Loss of freedom is the first visible causal change.' },
-  { id: 'camera', title: 'CAMERA-LED', primaryVariable: 'camera', supportingVariables: ['space','line'], restrainedVariables: ['color'], mechanism: 'Viewpoint authority moves from institution to character.', rationale: 'The scene is fundamentally about who defines perspective.' }
+  { id: 'space', title: 'SPACE-LED', grammarId: 'spatial-authorship', primaryVariable: 'space', supportingVariables: ['camera','color'], restrainedVariables: ['texture','rhythm'], mechanism: 'Pressure accumulates spatially before agency transfers.', rationale: 'Loss of freedom is the first visible causal change.' },
+  { id: 'camera', title: 'CAMERA-LED', grammarId: 'camera-authority-transfer', primaryVariable: 'camera', supportingVariables: ['space','line'], restrainedVariables: ['color'], mechanism: 'Viewpoint authority moves from institution to character.', rationale: 'The scene is fundamentally about who defines perspective.' }
 ]};
 assert.equal(c.validateStrategyResponse(strategies).valid, true);
+assert.equal(c.GRAMMAR_IDS.includes('unresolved'), true);
+assert.equal(c.validateStrategyResponse({ strategies: strategies.strategies.map(({ grammarId, ...item }) => item) }).valid, false, 'grammarId is required');
+assert.equal(c.validateStrategyResponse({ strategies: strategies.strategies.map(item => ({ ...item, grammarId: 'invented-grammar' })) }).valid, false, 'unknown grammarId is rejected');
 
 const ids = ['setup','pressure','rupture','release','new-ownership'];
 const seq = { sequenceProposal: { beats: ids.map((id, i) => ({
