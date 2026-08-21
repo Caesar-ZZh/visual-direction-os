@@ -25,6 +25,15 @@ const { createNarrativeApiClient } = require('./narrative-api-client.js');
   assert.ok(demoSequence.sequenceCompletion, 'demo sequence returns raw constrained completion, not preassembled proposal');
   assert.equal(demoSequence.sequenceCompletion.beats.length, 5);
 
+  const originalLocation = globalThis.location;
+  globalThis.location = { search:'?sequenceCompletionViolation=camera-owned-write' };
+  const violatingDemo = createNarrativeApiClient({ baseUrl:'', demoMode:true, fixtures });
+  const violatingSequence = await violatingDemo.sequence({ sequenceSkeleton:{ beats:[] } });
+  const violatingRupture = violatingSequence.sequenceCompletion.beats.find(beat => beat.id === 'rupture');
+  assert.equal(violatingRupture.openPatch.variables.camera.perspective, 'world', 'demo violation flag writes a compiler-owned path while remaining statically valid');
+  if (originalLocation === undefined) delete globalThis.location;
+  else globalThis.location = originalLocation;
+
   const ids = ['setup','pressure','rupture','release','new-ownership'];
   const completionResponse = { sequenceCompletion:{ beats:ids.map((id,index)=>({
     id, narrativeBeat:`beat ${index}`, agency:index<2?'world':index<4?'contested':'character', visualEvents:[], rationale:'reason', openPatch:{}
