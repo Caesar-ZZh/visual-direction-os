@@ -6,6 +6,7 @@ const STAGES = ['interpret', 'strategy', 'sequence'];
 const AGENT_SOURCE_TYPES = ['explicit', 'inferred', 'director_intent'];
 const AGENCIES = ['world', 'contested', 'shared', 'character'];
 const VARIABLES = ['color', 'space', 'camera', 'line', 'texture', 'rhythm', 'agency'];
+const GRAMMAR_IDS = ['spatial-authorship', 'camera-authority-transfer', 'color-ownership-transfer', 'surface-assignment', 'agency-ownership-transfer', 'unresolved'];
 const LEVELS = ['low', 'medium', 'high'];
 
 const isObject = value => Boolean(value) && typeof value === 'object' && !Array.isArray(value);
@@ -102,13 +103,14 @@ const strategyItem = {
   properties: {
     id: { type: 'string', minLength: 1 },
     title: { type: 'string', minLength: 1 },
+    grammarId: { type: 'string', enum: GRAMMAR_IDS },
     primaryVariable: { type: 'string', enum: VARIABLES },
     supportingVariables: { type: 'array', minItems: 1, items: { type: 'string', enum: VARIABLES } },
     restrainedVariables: { type: 'array', items: { type: 'string', enum: VARIABLES } },
     mechanism: { type: 'string', minLength: 1 },
     rationale: { type: 'string', minLength: 1 }
   },
-  required: ['id', 'title', 'primaryVariable', 'supportingVariables', 'restrainedVariables', 'mechanism', 'rationale']
+  required: ['id', 'title', 'grammarId', 'primaryVariable', 'supportingVariables', 'restrainedVariables', 'mechanism', 'rationale']
 };
 
 const ownershipSchema = {
@@ -247,4 +249,4 @@ function schemaFor(stage) {
   return clone(OUTPUT_SCHEMAS[stage]);
 }
 
-module.exports = { STAGES, validateInput, validateOutput, schemaFor };
+module.exports = { STAGES, GRAMMAR_IDS, validateInput, validateOutput, schemaFor };
