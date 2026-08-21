@@ -1,10 +1,11 @@
 ((root, factory) => {
-  const api = factory();
+  const api = factory(root);
   if (typeof module === 'object' && module.exports) module.exports = api;
   if (root) root.VDOSVisualSequenceOrigin = api;
-})(typeof window !== 'undefined' ? window : globalThis, () => {
+})(typeof window !== 'undefined' ? window : globalThis, root => {
   'use strict';
 
+  const clone = value => value == null ? value : JSON.parse(JSON.stringify(value));
   const escapeHtml = value => String(value ?? '')
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
@@ -13,6 +14,7 @@
     .replace(/'/g, '&#039;');
   const unique = values => [...new Set(values.filter(Boolean))];
   const displayPath = path => String(path || '').toUpperCase();
+  const defer = callback => (root?.queueMicrotask || queueMicrotask)(callback);
 
   function buildSequenceOrigin({ skeleton, completion, provenance, proposal } = {}) {
     if (provenance?.origin !== 'compiler-first') return null;
@@ -90,5 +92,93 @@
       </section>`;
   }
 
-  return { buildSequenceOrigin, renderSequenceOrigin };
+  function initSequenceOrigin(rootNode, options = {}) {
+    const target = rootNode || root?.document?.querySelector('#narrative-root');
+    if (!target) return null;
+    let activeModel = null;
+    let lastKey = null;
+    let destroyed = false;
+    const getWorkspaceController = () => options.workspaceController || root.VDOSNarrativeWorkspaceController;
+
+    function removeSlot() {
+      target.querySelector('[data-sequence-origin-slot]')?.remove();
+      activeModel = null;
+      lastKey = null;
+    }
+
+    function ensureSlot() {
+      const output = target.querySelector('[data-narrative-output]');
+      const applyPreview = output?.querySelector('.narrative-apply-preview');
+      if (!output || !applyPreview) return null;
+      let slot = output.querySelector('[data-sequence-origin-slot]');
+      if (!slot) {
+        slot = root.document.createElement('div');
+        slot.setAttribute('data-sequence-origin-slot', '');
+      }
+      const compilerSlot = output.querySelector('[data-visual-compiler-slot]');
+      if (compilerSlot) compilerSlot.before(slot);
+      else applyPreview.before(slot);
+      return slot;
+    }
+
+    function sync() {
+      if (destroyed) return null;
+      const workspace = getWorkspaceController();
+      const state = workspace?.getDraftState?.();
+      const model = buildSequenceOrigin({
+        skeleton: state?.sequenceSkeleton,
+        completion: state?.sequenceCompletion,
+        provenance: state?.sequenceProvenance,
+        proposal: state?.sequenceProposal
+      });
+      if (!model || !target.querySelector('[data-sequence-proposal-beat]')) {
+        removeSlot();
+        return null;
+      }
+      const key = JSON.stringify(model);
+      const existing = target.querySelector('[data-sequence-origin-slot]');
+      if (existing && key === lastKey) return clone(activeModel || model);
+      const slot = ensureSlot();
+      if (!slot) return null;
+      slot.innerHTML = renderSequenceOrigin({
+        skeleton: state.sequenceSkeleton,
+        completion: state.sequenceCompletion,
+        provenance: state.sequenceProvenance,
+        proposal: state.sequenceProposal
+      });
+      activeModel = clone(model);
+      lastKey = key;
+      return clone(model);
+    }
+
+    const observer = typeof root?.MutationObserver === 'function'
+      ? new root.MutationObserver(() => defer(sync))
+      : null;
+    observer?.observe(target, { childList: true, subtree: true });
+    defer(sync);
+
+    return {
+      sync,
+      getModel: () => activeModel ? clone(activeModel) : null,
+      clear: removeSlot,
+      destroy() {
+        destroyed = true;
+        observer?.disconnect();
+        removeSlot();
+      }
+    };
+  }
+
+  function autoInit() {
+    const target = root?.document?.querySelector('#narrative-root');
+    if (!target || root.VDOSVisualSequenceOriginController) return;
+    root.VDOSVisualSequenceOriginController = initSequenceOrigin(target);
+  }
+
+  if (root?.document) {
+    if (root.document.readyState === 'loading') root.document.addEventListener('DOMContentLoaded', autoInit, { once: true });
+    else autoInit();
+  }
+
+  return { buildSequenceOrigin, renderSequenceOrigin, initSequenceOrigin };
 });
