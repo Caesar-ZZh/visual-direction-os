@@ -21,7 +21,10 @@
     const result = {};
     const walk = (value, prefix = '') => {
       if (!value || typeof value !== 'object' || Array.isArray(value)) {
-        if (prefix) result[prefix] = value;
+        if (prefix) {
+          const canonicalPath = prefix.startsWith('variables.') ? prefix.slice('variables.'.length) : prefix;
+          result[canonicalPath] = value;
+        }
         return;
       }
       const entries = Object.entries(value);
