@@ -67,5 +67,24 @@
     };
   }
 
-  return { VISUAL_FIELDS: clone(VISUAL_FIELDS), compileVisualIR };
+  function validateVisualIR(value = {}) {
+    const errors = [];
+    if (value.schemaVersion !== '0.2.0') errors.push('schemaVersion must be 0.2.0');
+    if (value.mode !== 'shadow') errors.push('mode must be shadow');
+    if (!value.source?.readingId) errors.push('source.readingId is required');
+    if (!value.source?.strategyId) errors.push('source.strategyId is required');
+    if (value.direction?.primaryVariable?.status !== 'known' || !value.direction?.primaryVariable?.value) {
+      errors.push('direction.primaryVariable must be known');
+    }
+    if (!Array.isArray(value.agency?.transition?.value)) errors.push('agency.transition.value must be an array');
+    if (!Array.isArray(value.evidence?.unresolved)) errors.push('evidence.unresolved must be an array');
+    VISUAL_FIELDS.forEach(field => {
+      const signal = value.visual?.[field];
+      if (!signal) errors.push(`visual.${field} is required`);
+      else if (signal.status === 'unknown' && signal.value !== 'UNKNOWN') errors.push(`visual.${field} unknown value must be UNKNOWN`);
+    });
+    return { valid: errors.length === 0, errors };
+  }
+
+  return { VISUAL_FIELDS: clone(VISUAL_FIELDS), compileVisualIR, validateVisualIR };
 });
