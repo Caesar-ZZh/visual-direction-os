@@ -45,7 +45,11 @@
     function sync() {
       if (destroyed) return null;
       const workspace = getWorkspaceController();
-      const state = workspace?.getDraftState?.();
+      if (!workspace || typeof workspace.getDraftState !== 'function') {
+        clearVisualIR();
+        return null;
+      }
+      const state = workspace.getDraftState();
       if (!state?.confirmedReading || !state?.selectedStrategy) {
         clearVisualIR();
         return null;
