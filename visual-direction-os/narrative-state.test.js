@@ -86,6 +86,7 @@ assert.equal(draft.getState().selectedStrategy.id, 'camera');
 
 assert.equal(typeof draft.setSequenceSkeleton, 'function');
 assert.equal(typeof draft.setSequenceCompletionResult, 'function');
+assert.equal(typeof draft.setSequenceCompletionFailure, 'function');
 draft.setSequenceSkeleton(skeleton);
 state = draft.getState();
 assert.deepEqual(state.sequenceSkeleton, skeleton);
@@ -114,6 +115,14 @@ assert.equal(state.confirmedReading.id, 'reading-agency');
 assert.equal(state.selectedStrategy.id, 'camera');
 assert.deepEqual(state.sequenceSkeleton, nextSkeleton);
 assert.equal(state.sequenceCompletion, null);
+assert.equal(state.sequenceProposal, null);
+assert.equal(state.sequenceProvenance, null);
+
+// A dynamically invalid but structurally legal raw completion is retained for diagnostics, never promoted to a proposal.
+draft.setSequenceCompletionFailure(sequenceCompletion);
+state = draft.getState();
+assert.deepEqual(state.sequenceSkeleton, nextSkeleton);
+assert.deepEqual(state.sequenceCompletion, sequenceCompletion);
 assert.equal(state.sequenceProposal, null);
 assert.equal(state.sequenceProvenance, null);
 
