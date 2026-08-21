@@ -76,6 +76,7 @@
       throw new Error('Visual IR requires a confirmed Narrative Reading and selected Strategy.');
     }
 
+    const requestedGrammarId = selectedStrategy.grammarId || 'unresolved';
     const grammar = registry.resolveGrammar({ confirmedReading, selectedStrategy });
     const visual = Object.fromEntries(VISUAL_FIELDS.map(field => [field, unknown(field)]));
     const confidence = confirmedReading.confidence || 'unknown';
@@ -94,6 +95,7 @@
       source: {
         readingId: confirmedReading.id,
         strategyId: selectedStrategy.id,
+        grammarId: requestedGrammarId,
         contract: 'confirmed-reading+selected-strategy+grammar-registry'
       },
       narrative: {
@@ -131,6 +133,7 @@
     if (value.mode !== 'shadow') errors.push('mode must be shadow');
     if (!value.source?.readingId) errors.push('source.readingId is required');
     if (!value.source?.strategyId) errors.push('source.strategyId is required');
+    if (!value.source?.grammarId) errors.push('source.grammarId is required');
     if (value.direction?.primaryVariable?.status !== 'known' || !value.direction?.primaryVariable?.value) {
       errors.push('direction.primaryVariable must be known');
     }
