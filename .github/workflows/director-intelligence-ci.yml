@@ -41,6 +41,8 @@ jobs:
           node visual-direction-os/narrative-contracts.test.js
           node visual-direction-os/narrative-state.test.js
           node api/narrative/_contracts-grammar.test.js
+          node api/narrative/_contracts-sequence-completion.test.js
+          node api/narrative/_handler.test.js
           node api/narrative/_prompts.test.js
           node api/narrative/_openai-adapter.test.js
           node visual-direction-os/project-contracts.test.js
