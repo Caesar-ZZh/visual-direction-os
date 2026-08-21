@@ -9,6 +9,7 @@ const readIfPresent = file => fs.existsSync(path.join(__dirname, file)) ? read(f
 test('loads a read-only Visual IR shadow adapter around the existing Narrative Workspace', () => {
   const html = read('director-v2.html');
   const shadow = readIfPresent('visual-ir-shadow.js');
+  const css = readIfPresent('visual-ir-inspector.css');
 
   const bridgeIndex = html.indexOf('visual-ir-bridge.js');
   const inspectorIndex = html.indexOf('visual-ir-inspector.js');
@@ -28,4 +29,8 @@ test('loads a read-only Visual IR shadow adapter around the existing Narrative W
   assert.match(shadow, /data-visual-ir-slot/);
   assert.match(shadow, /getVisualIR/);
   assert.doesNotMatch(shadow, /updateSceneState/);
+
+  assert.match(css, /\.visual-ir-shadow/);
+  assert.match(css, /\.visual-ir-shadow__details summary:focus-visible/);
+  assert.match(css, /@media \(max-width: 720px\)/);
 });
