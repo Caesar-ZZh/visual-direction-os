@@ -33,7 +33,7 @@ const ir = bridge.compileVisualIR({
   }
 });
 
-test('renders a restrained Direction Logic summary and expandable Visual IR inspector', () => {
+test('renders grammar, contract and evidence state without hiding unresolved dimensions', () => {
   assert.equal(typeof inspector?.renderVisualIRInspector, 'function', 'Visual IR inspector must expose renderVisualIRInspector');
   const html = inspector.renderVisualIRInspector(ir);
 
@@ -43,8 +43,12 @@ test('renders a restrained Direction Logic summary and expandable Visual IR insp
   assert.match(html, /CAMERA \/ AGENCY/);
   assert.match(html, /TEXTURE/);
   assert.match(html, /WORLD → CONTESTED → CHARACTER/);
-  assert.match(html, /PARTIAL/);
+  assert.match(html, /SPATIAL AUTHORSHIP/);
+  assert.match(html, /CONTRACT · SUPPORTED/);
+  assert.match(html, /EVIDENCE · SUPPORTED/);
+  assert.match(html, /METHOD/);
+  assert.match(html, /4 SOURCES/);
   assert.match(html, /15 UNRESOLVED/);
   assert.match(html, /<details[^>]*data-visual-ir-details/);
-  assert.match(html, /Visual IR v0\.2/);
+  assert.match(html, /Visual IR v0\.3/);
 });
