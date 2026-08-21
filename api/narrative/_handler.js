@@ -74,7 +74,7 @@ function createHandler({ stage, provider, allowedOrigin = '', production = proce
       );
     }
 
-    const checkedOutput = validateOutput(stage, generated);
+    const checkedOutput = validateOutput(stage, generated, { input: checkedInput.value });
     if (!checkedOutput.valid) {
       return sendError(res, 502, 'SCHEMA', 'The Narrative model returned an invalid structured response.');
     }
