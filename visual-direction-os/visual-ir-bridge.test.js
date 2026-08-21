@@ -71,3 +71,15 @@ test('marks unsupported visual dimensions unresolved instead of inventing values
   assert.equal(ir.evidence.confidence, 'high');
   assert.deepEqual(ir.evidence.unresolved, [...visualFields, 'antiRules']);
 });
+
+test('validates the shadow Visual IR contract before UI consumption', () => {
+  assert.equal(typeof bridge?.validateVisualIR, 'function', 'Visual IR bridge must expose validateVisualIR');
+  const valid = bridge.validateVisualIR(bridge.compileVisualIR({ confirmedReading, selectedStrategy }));
+  assert.deepEqual(valid, { valid: true, errors: [] });
+
+  const invalid = bridge.validateVisualIR({ schemaVersion: '0.2.0', mode: 'shadow' });
+  assert.equal(invalid.valid, false);
+  assert.ok(invalid.errors.includes('source.readingId is required'));
+  assert.ok(invalid.errors.includes('direction.primaryVariable must be known'));
+  assert.ok(invalid.errors.includes('evidence.unresolved must be an array'));
+});
