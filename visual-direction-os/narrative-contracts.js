@@ -161,6 +161,40 @@
     return validationResult(errors, patch);
   }
 
+  function validateOpenPatch(openPatch, path, errors) {
+    if (!isObject(openPatch)) {
+      errors.push(`${path} must be an object`);
+      return;
+    }
+    Object.keys(openPatch).forEach(key => {
+      if (!['ownership', 'variables'].includes(key)) errors.push(`${path}.${key} is not allowed`);
+    });
+    if ('ownership' in openPatch) {
+      if (!isObject(openPatch.ownership)) errors.push(`${path}.ownership must be an object`);
+      else Object.entries(openPatch.ownership).forEach(([key, value]) => {
+        if (!OWNERSHIP_KEYS.includes(key)) errors.push(`${path}.ownership.${key} is not allowed`);
+        else if (!LEVELS.includes(value)) errors.push(`${path}.ownership.${key} is invalid`);
+      });
+    }
+    if ('variables' in openPatch) {
+      if (!isObject(openPatch.variables)) errors.push(`${path}.variables must be an object`);
+      else Object.entries(openPatch.variables).forEach(([family, values]) => {
+        if (!(family in VARIABLE_KEYS)) {
+          errors.push(`${path}.variables.${family} is not allowed`);
+          return;
+        }
+        if (!isObject(values)) {
+          errors.push(`${path}.variables.${family} must be an object`);
+          return;
+        }
+        Object.entries(values).forEach(([key, value]) => {
+          if (!VARIABLE_KEYS[family].includes(key)) errors.push(`${path}.variables.${family}.${key} is not allowed`);
+          else if (!nonEmpty(value)) errors.push(`${path}.variables.${family}.${key} must be a non-empty string`);
+        });
+      });
+    }
+  }
+
   function validateVisualEvents(events, path, errors) {
     if (!Array.isArray(events)) {
       errors.push(`${path} must be an array`);
@@ -174,6 +208,35 @@
       }
       if (!isObject(event) || !nonEmpty(event.type)) errors.push(`${path}[${index}] must be a non-empty event label or object with type`);
     });
+  }
+
+  function validateSequenceCompletionResponse(value = {}) {
+    const errors = [];
+    const beats = value?.sequenceCompletion?.beats;
+    if (!isObject(value) || Object.keys(value).some(key => key !== 'sequenceCompletion')) errors.push('sequence completion response must contain only sequenceCompletion');
+    if (!isObject(value?.sequenceCompletion)) errors.push('sequenceCompletion must be an object');
+    if (!Array.isArray(beats) || beats.length !== BEAT_IDS.length) {
+      errors.push('sequenceCompletion.beats must contain exactly 5 beats');
+      return validationResult(errors, value);
+    }
+    beats.forEach((beat, index) => {
+      const path = `sequenceCompletion.beats[${index}]`;
+      if (!isObject(beat)) {
+        errors.push(`${path} must be an object`);
+        return;
+      }
+      const allowed = ['id', 'narrativeBeat', 'agency', 'visualEvents', 'rationale', 'openPatch'];
+      Object.keys(beat).forEach(key => {
+        if (!allowed.includes(key)) errors.push(`${path}.${key} is not allowed`);
+      });
+      if (beat.id !== BEAT_IDS[index]) errors.push(`${path}.id must be ${BEAT_IDS[index]}`);
+      if (!nonEmpty(beat.narrativeBeat)) errors.push(`${path}.narrativeBeat is required`);
+      if (!AGENCIES.includes(beat.agency)) errors.push(`${path}.agency is invalid`);
+      validateVisualEvents(beat.visualEvents, `${path}.visualEvents`, errors);
+      if (!nonEmpty(beat.rationale)) errors.push(`${path}.rationale is required`);
+      validateOpenPatch(beat.openPatch, `${path}.openPatch`, errors);
+    });
+    return validationResult(errors, value);
   }
 
   function validateSequenceResponse(value = {}) {
@@ -215,6 +278,7 @@
     clone,
     validateInterpretResponse,
     validateStrategyResponse,
+    validateSequenceCompletionResponse,
     validateSequenceResponse,
     validateSceneStatePatch
   };
