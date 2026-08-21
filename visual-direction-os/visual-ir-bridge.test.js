@@ -33,6 +33,7 @@ const confirmedReading = {
 const selectedStrategy = {
   id: 'strategy-space-authorship',
   title: 'Let space carry authorship',
+  grammarId: 'spatial-authorship',
   primaryVariable: 'space',
   supportingVariables: ['camera', 'agency'],
   restrainedVariables: ['texture'],
@@ -44,12 +45,13 @@ const lineStrategy = {
   ...selectedStrategy,
   id: 'strategy-line',
   title: 'Line strategy',
+  grammarId: 'unresolved',
   primaryVariable: 'line',
   supportingVariables: [],
   restrainedVariables: []
 };
 
-test('compiles Visual IR v0.3 from confirmed upstream direction plus an evidence-aware grammar', () => {
+test('compiles Visual IR v0.3 from confirmed upstream direction plus an explicitly identified evidence-aware grammar', () => {
   assert.equal(typeof bridge?.compileVisualIR, 'function', 'Visual IR bridge must expose compileVisualIR');
 
   const ir = bridge.compileVisualIR({ confirmedReading, selectedStrategy });
@@ -58,6 +60,7 @@ test('compiles Visual IR v0.3 from confirmed upstream direction plus an evidence
   assert.equal(ir.mode, 'shadow');
   assert.equal(ir.source.readingId, 'reading-authorship');
   assert.equal(ir.source.strategyId, 'strategy-space-authorship');
+  assert.equal(ir.source.grammarId, 'spatial-authorship');
   assert.equal(ir.direction.primaryVariable.value, 'space');
   assert.deepEqual(ir.direction.supportingVariables.value, ['camera', 'agency']);
   assert.deepEqual(ir.direction.restrainedVariables.value, ['texture']);
@@ -91,8 +94,9 @@ test('applies only grammar-authorized visual fields and leaves every unrelated d
   assert.deepEqual(ir.evidence.unresolved, unresolvedFields);
 });
 
-test('keeps Visual IR unresolved when no exact grammar matches instead of coercing variables', () => {
+test('keeps Visual IR unresolved when Strategy explicitly declares no exact grammar', () => {
   const ir = bridge.compileVisualIR({ confirmedReading, selectedStrategy: lineStrategy });
+  assert.equal(ir.source.grammarId, 'unresolved');
   assert.equal(ir.grammar.status, 'unresolved');
   assert.equal(ir.grammar.id, null);
   assert.equal(ir.visual.line.value, 'UNKNOWN');
@@ -109,6 +113,7 @@ test('validates the shadow Visual IR contract before UI consumption', () => {
   const invalid = bridge.validateVisualIR({ schemaVersion: '0.3.0', mode: 'shadow' });
   assert.equal(invalid.valid, false);
   assert.ok(invalid.errors.includes('source.readingId is required'));
+  assert.ok(invalid.errors.includes('source.grammarId is required'));
   assert.ok(invalid.errors.includes('direction.primaryVariable must be known'));
   assert.ok(invalid.errors.includes('grammar.status is required'));
   assert.ok(invalid.errors.includes('evidence.unresolved must be an array'));
