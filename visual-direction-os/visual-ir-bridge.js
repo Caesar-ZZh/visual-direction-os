@@ -6,6 +6,7 @@
   'use strict';
 
   const clone = value => JSON.parse(JSON.stringify(value));
+  const VISUAL_FIELDS = ['character','world','composition','camera','hierarchy','shape','value','color','edge','detail','medium','texture','fx','temporal'];
 
   const sourced = (value, source, confidence = 'medium') => ({
     value: clone(value),
@@ -14,10 +15,20 @@
     confidence
   });
 
+  const unknown = field => ({
+    value: 'UNKNOWN',
+    status: 'unknown',
+    evidenceStatus: 'unresolved',
+    source: 'not-yet-compiled',
+    basis: `${field} is intentionally unresolved until an evidence-aware grammar provides support.`
+  });
+
   function compileVisualIR({ confirmedReading, selectedStrategy } = {}) {
     if (!confirmedReading || !selectedStrategy) {
       throw new Error('Visual IR requires a confirmed Narrative Reading and selected Strategy.');
     }
+
+    const visual = Object.fromEntries(VISUAL_FIELDS.map(field => [field, unknown(field)]));
 
     return {
       schemaVersion: '0.2.0',
@@ -43,9 +54,18 @@
       },
       agency: {
         transition: sourced(confirmedReading.agencyTransition?.value || [], 'confirmed-reading', confirmedReading.confidence)
+      },
+      visual,
+      constraints: {
+        antiRules: unknown('antiRules')
+      },
+      evidence: {
+        status: 'partial',
+        confidence: confirmedReading.confidence || 'unknown',
+        unresolved: [...VISUAL_FIELDS, 'antiRules']
       }
     };
   }
 
-  return { compileVisualIR };
+  return { VISUAL_FIELDS: clone(VISUAL_FIELDS), compileVisualIR };
 });
