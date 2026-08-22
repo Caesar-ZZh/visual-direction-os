@@ -7,7 +7,7 @@
 
 ## 1. Problem
 
-Project Arc and Project Continuity already summarize directed Scenes and identify some cross-Scene mismatches. Today, however, those systems only see Narrative Role and final Scene State. They do not know whether a visual state was produced by the deterministic Compiler, completed by AI within an allowed field, manually changed in DIRECT, inherited from legacy data, or left unresolved.
+Project Arc and Project Continuity already summarize directed Scenes and identify some cross-Scene mismatches. Today, however, those systems only see Narrative Role and final Scene State. They do not know whether a visual state was produced by the deterministic Compiler, completed by AI within an allowed field, changed later in DIRECT, inherited from legacy data, or left unresolved.
 
 After M5, that distinction matters. The system must not treat a compiler-backed Camera transfer, an AI-completed Texture change, and an old Scene with no provenance as equivalent evidence.
 
@@ -19,7 +19,7 @@ M6 therefore adds a separate Project Intelligence layer rather than expanding `p
 2. **Do not replace Continuity v1.** Existing `project-continuity.js` keeps its current rules and status semantics.
 3. **Cause before judgment.** A Scene boundary is evaluated as `cause → visual response → ownership consequence`, not as a raw numeric jump.
 4. **Provenance is part of evidence.** A final state is not sufficient evidence to claim that a visual response was compiler-backed.
-5. **UNKNOWN stays UNKNOWN.** Missing M5 provenance, unsupported grammar mappings, blocked fields, or insufficient Scene data yield `UNRESOLVED`; the system must not infer missing authority.
+5. **UNKNOWN stays UNKNOWN.** Missing M5 provenance, unsupported grammar mappings, blocked fields, post-Apply divergence, or insufficient Scene data yield `UNRESOLVED`; the system must not infer missing authority.
 6. **No global score.** Project Intelligence uses categorical findings only: `PASS`, `WARN`, `FAIL`, `UNRESOLVED`.
 7. **Scene autonomy is preserved.** Different Scenes may use different Grammars. Grammar changes are not errors by themselves.
 8. **No continuity-by-smoothness.** Abrupt changes can be correct when they have a narrative cause and explainable ownership consequence.
@@ -33,7 +33,7 @@ M6 therefore adds a separate Project Intelligence layer rather than expanding `p
 - Derive a provenance-aware intelligence record for every Scene in Project order.
 - Evaluate adjacent Scene boundaries.
 - Explain narrative cause, visual response, ownership consequence, and evidence origin.
-- Distinguish compiler-backed, AI-completed, blocked, legacy, and missing provenance conditions.
+- Distinguish compiler-backed, AI-completed, blocked, legacy, and missing/unknown provenance conditions.
 - Add a Project Workspace inspector labeled `PROJECT INTELLIGENCE · SHADOW`.
 - Add unit, integration, and browser acceptance coverage.
 - Preserve all existing Project Arc, Continuity, Scene switching, Sequence Director, M3, M4, and M5 behavior.
@@ -159,8 +159,9 @@ A normalized Scene record must be machine-readable and deterministic.
   - `contested`, `shared`, or `mixed` → `CONTESTED`
 - `grammarId` comes only from explicit stored M5 / Visual IR / Strategy provenance. It must never be inferred from final Camera or Color state.
 - `compilerOwnedFamilies`, `aiCompletedFamilies`, and `blockedFamilies` come only from M5 provenance or authority decisions.
-- A directed Scene with no M5 provenance is `legacy` when it has a valid final Scene State but predates compiler-first evidence.
-- A Scene with insufficient visual or provenance data is `missing` where the distinction cannot safely be made.
+- A directed Scene with a valid final Scene State and no compiler-first markers is treated as `legacy` for backward compatibility.
+- A Scene is `missing` when compiler-first markers exist but required provenance is absent/incomplete, or when visual data is too incomplete to classify safely.
+- If a final Scene State value differs from the compiler/AI value recorded by M5 provenance, that final value must not be labeled `compiler-backed` or `ai-completed`. The origin becomes `unknown` for M6 and the mismatch may surface as an integrity `UNRESOLVED` finding.
 
 ## 7. Boundary Intelligence record
 
@@ -179,6 +180,12 @@ For every adjacent Scene pair `A → B`, derive a record:
     agencyFrom,
     agencyTo,
     relationToPrevious
+  },
+
+  handoff: {
+    previousEndingAgency,
+    currentStartingAgency,
+    status
   },
 
   visualResponse: [
@@ -209,22 +216,58 @@ For every adjacent Scene pair `A → B`, derive a record:
 
 The boundary record is explanatory. It is not a Scene patch and contains no mutation instructions.
 
+### 7.1 Narrative cause and handoff semantics
+
+Two different narrative comparisons exist and must never be conflated.
+
+**Handoff continuity** compares:
+
+```text
+previous Scene ending agency
+↔
+current Scene starting agency
+```
+
+This asks whether adjacent Scenes connect narratively.
+
+**Boundary cause** comes from the **current Scene**:
+
+```text
+current Scene agencyTransition: start → end
++
+current Scene narrativeRole
++
+current Scene turningPoint / relationToPrevious when available
+```
+
+This asks whether the current Scene provides a narrative cause for the visual change observed between the previous Scene final state and current Scene final state.
+
+Therefore:
+
+```text
+Narrative cause: current Scene start → current Scene end
+Visual response: previous final Scene State → current final Scene State
+Handoff check: previous Scene end ↔ current Scene start
+```
+
+Rule 1 and Rule 2 use **current Scene cause**. Rule 3 uses **handoff continuity**.
+
 ## 8. Evidence source semantics
 
 ### `compiler-backed`
-Use only when the relevant final field is supported by M5 provenance as Compiler-owned or deterministically assembled from a supported Compiler assertion.
+Use only when the relevant final field is supported by M5 provenance as Compiler-owned or deterministically assembled from a supported Compiler assertion **and the current final Scene State still matches that recorded value**.
 
 ### `ai-completed`
-Use only when M5 provenance explicitly records the family/path as AI-completable and the final value originated through that completion path.
+Use only when M5 provenance explicitly records the family/path as AI-completable, the final value originated through that completion path, **and the current final Scene State still matches that recorded value**.
 
 ### `blocked`
 Use when the Grammar / Compiler contract explicitly says the family or path cannot be determined safely.
 
 ### `legacy`
-Use when the Scene is directed and final state exists, but compiler-first provenance is absent because the Scene was created through an older flow.
+Use when the Scene is directed and final state exists, but compiler-first provenance is absent and no compiler-first markers indicate a broken/incomplete transaction.
 
 ### `unknown`
-Use when the system lacks enough evidence even to classify the origin as legacy vs compiler-first.
+Use when the system lacks enough evidence to classify the origin safely, including post-Apply/manual divergence from stored provenance.
 
 A final Scene State value alone is never sufficient to upgrade source to `compiler-backed` or `ai-completed`.
 
@@ -234,21 +277,21 @@ M6 v1 deliberately starts with a small rule set. Every rule must be explainable 
 
 ### Rule 1 — Narrative ownership transfer without compiler-backed visual response
 
-**Condition:** Narrative agency changes materially across the boundary, but Camera/Color ownership does not produce a corresponding compiler-backed response where the active Grammar supports one.
+**Condition:** The current Scene contains a material narrative agency transition (`start !== end`) or an explicit ownership-relevant structural role, but Camera/Color ownership does not produce a corresponding compiler-backed response where the current Scene Grammar supports one.
 
 **Status:** `WARN`
 
-**Why:** The story reports a transfer of agency, but the deterministic visual ownership system does not visibly carry that change.
+**Why:** The current Scene reports a transfer of agency, but the deterministic visual ownership system does not visibly carry that change into the Scene's final state.
 
 If the relevant visual family is blocked or unsupported, return `UNRESOLVED` rather than `WARN`.
 
 ### Rule 2 — Major compiler-backed visual ownership transfer without narrative cause
 
-**Condition:** Camera or Color makes a major ownership transfer with `compiler-backed` provenance while narrative agency and structural role provide no comparable cause.
+**Condition:** Camera or Color makes a major ownership transfer from previous final Scene State to current final Scene State with `compiler-backed` provenance, while the current Scene agency transition and structural role provide no comparable narrative cause.
 
 **Status:** `WARN`
 
-**Why:** The visual authority transfer is real and compiler-backed, but the Project narrative does not explain why it occurs at this boundary.
+**Why:** The visual authority transfer is real and compiler-backed, but the current Scene narrative does not explain why it occurs.
 
 ### Rule 3 — Narrative agency handoff mismatch between adjacent Scenes
 
@@ -262,7 +305,7 @@ This rule is about narrative handoff continuity, not about visual smoothness.
 
 ### Rule 4 — Directed Scene without M5 provenance
 
-**Condition:** Scene is visually directed and has a final Scene State, but no compiler-first provenance can be found.
+**Condition:** Scene is visually directed and has a final Scene State, but no compiler-first provenance can be found and no compiler-first marker proves an incomplete transaction.
 
 **Status:** `UNRESOLVED`
 
@@ -291,6 +334,16 @@ Intensity → exact Space state
 Emotion → hue
 ```
 
+### Rule 7 — Provenance/final-state divergence
+
+**Condition:** M5 provenance identifies an exact compiler-backed or AI-completed value for a path, but current final Scene State contains a different value.
+
+**Status:** `UNRESOLVED` in M6 v1.
+
+**Why:** Project Intelligence can prove that the final state no longer matches the recorded decision origin, but it cannot safely determine whether the divergence came from a later DIRECT edit, stale snapshot, corrupted persistence, or another unsupported path.
+
+M6 must not silently keep the old provenance label after divergence.
+
 ## 10. PASS semantics
 
 `PASS` is allowed only when a boundary has enough evidence to evaluate the relevant rule and no mismatch is found.
@@ -300,7 +353,7 @@ Example:
 ```text
 SCENE 02 → SCENE 03
 
-CAUSE
+CURRENT SCENE CAUSE
 Agency: WORLD → CONTESTED
 
 VISUAL RESPONSE
@@ -321,8 +374,9 @@ PASS
 ```text
 SCENE 01 → SCENE 02
 
-CAUSE
+CURRENT SCENE CAUSE
 Agency: WORLD → WORLD
+Role: DEVELOPMENT
 
 VISUAL RESPONSE
 Camera: WORLD → CHARACTER
@@ -335,7 +389,7 @@ RESULT
 WARN
 
 WHY
-A major compiler-backed ownership transfer occurs without a comparable narrative cause.
+A major compiler-backed ownership transfer occurs without a comparable narrative cause in the current Scene.
 ```
 
 ## 12. UNRESOLVED examples
@@ -360,11 +414,27 @@ RESULT: UNRESOLVED
 WHY: Exact spatial authorship cannot be inferred from current grammar evidence.
 ```
 
+### Provenance divergence
+
+```text
+M5 PROVENANCE
+camera.perspective = MIXED
+source = COMPILER
+
+CURRENT FINAL SCENE STATE
+camera.perspective = CHARACTER
+
+RESULT
+UNRESOLVED
+WHY
+The final value no longer matches its recorded decision origin.
+```
+
 ## 13. FAIL semantics
 
-M6 v1 should use `FAIL` sparingly. No initial rule automatically produces `FAIL` unless an invariant is structurally impossible or provenance contradicts a validated compiler-owned contract.
+M6 v1 should use `FAIL` sparingly. No initial rule automatically produces `FAIL` unless an invariant is structurally impossible or provenance contradicts a validated compiler-owned contract in a way that can be proven from persisted data.
 
-Examples that may justify `FAIL` later include corrupted provenance that claims a compiler-owned path was written by AI after validator acceptance. Such conditions belong to contract-integrity validation and must be supported by a deterministic proof, not heuristic disagreement.
+Examples that may justify `FAIL` later include corrupted provenance that claims a compiler-owned path was written by AI after validator acceptance. Such conditions belong to contract-integrity validation and must be supported by deterministic proof, not heuristic disagreement.
 
 Therefore the initial M6 rule set may produce `PASS`, `WARN`, and `UNRESOLVED` while preserving the `FAIL` enum for future hard invariant violations.
 
@@ -398,7 +468,7 @@ Expected top-level result:
 }
 ```
 
-`deriveProjectIntelligence()` must deep-clone or otherwise treat all input as immutable. Running it twice with the same input must return deep-equal output.
+`deriveProjectIntelligence()` must treat all input as immutable. Running it twice with the same input must return deep-equal output.
 
 ## 15. Relationship to Project Continuity
 
@@ -417,7 +487,7 @@ Does the change appear structurally coherent?
 Why did the change happen?
 Which system owned the decision?
 Was the visual response compiler-backed, AI-completed, blocked, legacy, or unknown?
-Does the ownership consequence follow the narrative cause?
+Does the ownership consequence follow the current Scene narrative cause?
 ```
 
 A boundary may therefore have:
@@ -436,7 +506,7 @@ CONTINUITY: WARN
 PROJECT INTELLIGENCE: PASS
 ```
 
-when an abrupt change is fully justified by a confirmed narrative cause and compiler-backed ownership transfer. M6 must not force these systems to agree.
+when an abrupt change is fully justified by a confirmed current-Scene narrative cause and compiler-backed ownership transfer. M6 must not force these systems to agree.
 
 ## 16. UI design
 
@@ -457,7 +527,7 @@ The new inspector is lower visual weight than the primary Project Arc and should
 ```text
 SCENE 02 → SCENE 03                         PASS
 
-CAUSE
+CAUSE · CURRENT SCENE
 WORLD → CONTESTED
 
 VISUAL RESPONSE
@@ -476,12 +546,15 @@ The visual transfer follows the confirmed narrative agency change.
 Expandable detail may show:
 
 - from/to Scene IDs and roles
+- previous ending agency / current starting agency handoff
+- current Scene agency transition
 - grammar IDs
 - provenance status
 - compiler-owned families
 - AI-completed families
 - blocked families
 - exact evidence source per compared visual response
+- provenance/final-state divergence when present
 - legacy / missing explanation
 
 ### 16.3 UI prohibitions
@@ -515,8 +588,9 @@ Cover:
 - AI-completed family
 - blocked family
 - legacy directed Scene
-- missing Scene data
+- incomplete/missing compiler-first data
 - explicit grammar ID only; no grammar inference from final state
+- provenance/final-state divergence downgrades origin to `unknown`
 - input immutability
 - deterministic repeatability
 
@@ -524,14 +598,15 @@ Cover:
 
 Required initial cases:
 
-1. `WORLD → CONTESTED` narrative transfer + compiler-backed `camera WORLD → MIXED` → `PASS`.
-2. Narrative stays `WORLD → WORLD` + compiler-backed `camera WORLD → CHARACTER` → `WARN`.
-3. Narrative agency changes but relevant supported visual response is absent → `WARN`.
+1. Current Scene `WORLD → CONTESTED` narrative transition + compiler-backed `camera WORLD → MIXED` final-state change → `PASS`.
+2. Current Scene stays `WORLD → WORLD` + compiler-backed `camera WORLD → CHARACTER` final-state change → `WARN`.
+3. Current Scene narrative agency changes but relevant supported visual response is absent → `WARN`.
 4. Same narrative case but relevant family is blocked → `UNRESOLVED`, not `WARN`.
 5. Previous ending agency and current starting agency disagree → `WARN`.
-6. One side missing → `UNRESOLVED`.
+6. One handoff side missing → `UNRESOLVED`.
 7. Grammar changes Camera-led → Color-led with otherwise valid boundary → no grammar-change warning.
 8. Legacy directed Scene → `UNRESOLVED`, never `FAIL` merely for lacking provenance.
+9. Stored compiler value differs from final Scene State → `UNRESOLVED` and source `unknown`.
 
 ### 18.3 Integration tests
 
@@ -547,6 +622,7 @@ Browser tests must prove:
 - Project Workspace renders `PROJECT INTELLIGENCE · SHADOW` after Continuity.
 - A compiler-first demo Project shows at least one provenance-aware boundary explanation.
 - A legacy/missing-provenance Scene renders `UNRESOLVED` without blocking the rest of Project Workspace.
+- Provenance/final-state divergence is shown as `UNRESOLVED`, never mislabeled compiler-backed.
 - Switching Scenes still restores Scene/Narrative/Sequence state correctly.
 - Project Intelligence interaction does not mutate canonical Scene State.
 - Existing rail, Narrative, M3, M4, M5, Project Arc, Continuity, and Sequence Director acceptance remains green.
@@ -575,7 +651,7 @@ No destructive migration is allowed.
 
 M6 consumes provenance as evidence but does not trust impossible combinations blindly. If stored provenance violates a validated M5 invariant, M6 should surface an integrity finding rather than silently normalize it into a valid compiler-backed state.
 
-Initial implementation should keep this validation narrow and deterministic; heuristic or probabilistic provenance repair is out of scope.
+Initial implementation keeps this validation narrow and deterministic; heuristic or probabilistic provenance repair is out of scope.
 
 ## 22. Success criteria
 
@@ -585,13 +661,15 @@ M6 is complete when all of the following are true:
 2. It derives deterministic Scene and boundary intelligence records.
 3. It distinguishes compiler-backed, AI-completed, blocked, legacy, and unknown origins without guessing.
 4. It evaluates cross-Scene relationships as cause → visual response → ownership consequence.
-5. It does not penalize Grammar changes by themselves.
-6. Unsupported families remain `UNRESOLVED`.
-7. Existing Project Arc and Continuity behavior is unchanged.
-8. Project Workspace displays the new Shadow inspector without redesigning the existing shell.
-9. No Project/Scene mutation occurs during analysis or inspection.
-10. Fresh exact-HEAD CI passes contracts, syntax, Pages assembly, and browser acceptance.
-11. The branch remains isolated and no merge occurs without explicit user approval.
+5. It keeps handoff continuity distinct from current-Scene narrative cause.
+6. It does not penalize Grammar changes by themselves.
+7. Unsupported families remain `UNRESOLVED`.
+8. Provenance/final-state divergence is not mislabeled as compiler-backed or AI-completed.
+9. Existing Project Arc and Continuity behavior is unchanged.
+10. Project Workspace displays the new Shadow inspector without redesigning the existing shell.
+11. No Project/Scene mutation occurs during analysis or inspection.
+12. Fresh exact-HEAD CI passes contracts, syntax, Pages assembly, and browser acceptance.
+13. The branch remains isolated and no merge occurs without explicit user approval.
 
 ## 23. Deferred work
 
