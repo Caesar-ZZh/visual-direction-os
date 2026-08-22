@@ -98,7 +98,7 @@ async function installProjectIntelligenceFixture(page, variant = 'normal') {
         workspace:{
           narrativeState,
           sceneState,
-          sequenceState:{ activeBeatId:'new-ownership' }
+          sequenceState:null
         },
         status:{ narrative:'confirmed', visual:'directed', continuity:'unresolved' }
       });
