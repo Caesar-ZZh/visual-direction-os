@@ -81,6 +81,37 @@ function deepMerge(target, source) {
   return out;
 }
 
+function makeRecord(overrides = {}) {
+  return deepMerge({
+    sceneId: 'scene-02',
+    title: 'Scene 02',
+    narrativeRole: 'RECOGNITION',
+    grammarId: 'camera-authority-transfer',
+    provenanceStatus: 'compiler-first',
+    narrativeAgency: { start: 'WORLD', end: 'CONTESTED' },
+    compilerOwnedFamilies: ['agency', 'camera'],
+    aiCompletedFamilies: [],
+    blockedFamilies: [],
+    visualAgency: 'CONTESTED',
+    cameraAuthority: 'MIXED',
+    colorTerritory: 'WORLD',
+    sources: {
+      agency: 'compiler-backed',
+      camera: 'compiler-backed',
+      color: 'unknown',
+      space: 'unknown'
+    },
+    fieldSources: { agency: 'compiler-backed', 'camera.perspective': 'compiler-backed' },
+    evidence: {
+      hasNarrativeState: true,
+      hasSceneState: true,
+      hasSequenceState: true,
+      hasCompilerFirstProvenance: true
+    },
+    integrityFindings: []
+  }, overrides);
+}
+
 test('normalizes compiler-first Scene provenance without mutating input', () => {
   const scene = makeScene();
   const before = JSON.parse(JSON.stringify(scene));
@@ -207,4 +238,132 @@ test('normalization is deterministic', () => {
     intelligence.normalizeSceneIntelligence(scene, { order: 1 }),
     intelligence.normalizeSceneIntelligence(scene, { order: 1 })
   );
+});
+
+test('passes when current Scene cause explains compiler-backed camera ownership transfer', () => {
+  const previous = makeRecord({
+    sceneId: 'scene-01',
+    narrativeAgency: { start: 'WORLD', end: 'WORLD' },
+    cameraAuthority: 'WORLD',
+    visualAgency: 'WORLD'
+  });
+  const current = makeRecord({
+    sceneId: 'scene-02',
+    narrativeAgency: { start: 'WORLD', end: 'CONTESTED' },
+    cameraAuthority: 'CONTESTED'
+  });
+  const result = intelligence.deriveBoundaryIntelligence(previous, current);
+
+  assert.equal(result.status, 'PASS');
+  assert.equal(result.rule, 'boundary-pass');
+  assert.deepEqual(result.cause.agencyFrom, 'WORLD');
+  assert.deepEqual(result.cause.agencyTo, 'CONTESTED');
+  assert.equal(result.handoff.status, 'PASS');
+  assert.ok(result.visualResponse.some(item => item.family === 'camera' && item.from === 'WORLD' && item.to === 'CONTESTED' && item.source === 'compiler-backed'));
+  assert.equal(result.ownershipConsequence.to, 'CONTESTED');
+  assert.equal(result.evidenceStatus, 'supported');
+});
+
+test('warns on major compiler-backed camera transfer without current Scene narrative cause', () => {
+  const previous = makeRecord({ sceneId: 'scene-01', narrativeAgency: { start: 'WORLD', end: 'WORLD' }, cameraAuthority: 'WORLD' });
+  const current = makeRecord({ sceneId: 'scene-02', narrativeRole: 'DEVELOPMENT', narrativeAgency: { start: 'WORLD', end: 'WORLD' }, cameraAuthority: 'CHARACTER', visualAgency: 'WORLD' });
+  const result = intelligence.deriveBoundaryIntelligence(previous, current);
+
+  assert.equal(result.status, 'WARN');
+  assert.equal(result.rule, 'visual-transfer-without-narrative-cause');
+  assert.match(result.why, /without a comparable narrative cause/i);
+});
+
+test('warns when supported camera grammar has narrative transfer but no compiler-backed visual response', () => {
+  const previous = makeRecord({ sceneId: 'scene-01', narrativeAgency: { start: 'WORLD', end: 'WORLD' }, cameraAuthority: 'WORLD' });
+  const current = makeRecord({ sceneId: 'scene-02', narrativeAgency: { start: 'WORLD', end: 'CONTESTED' }, cameraAuthority: 'WORLD', visualAgency: 'CONTESTED' });
+  const result = intelligence.deriveBoundaryIntelligence(previous, current);
+
+  assert.equal(result.status, 'WARN');
+  assert.equal(result.rule, 'narrative-transfer-without-visual-response');
+});
+
+test('returns unresolved instead of warning when narrative transfer relies on blocked or partial visual family', () => {
+  const previous = makeRecord({ sceneId: 'scene-01', narrativeAgency: { start: 'WORLD', end: 'WORLD' }, grammarId: 'spatial-authorship', cameraAuthority: 'WORLD' });
+  const current = makeRecord({
+    sceneId: 'scene-02',
+    grammarId: 'spatial-authorship',
+    narrativeAgency: { start: 'WORLD', end: 'CONTESTED' },
+    blockedFamilies: ['space'],
+    sources: { agency: 'compiler-backed', camera: 'unknown', color: 'unknown', space: 'blocked' }
+  });
+  const result = intelligence.deriveBoundaryIntelligence(previous, current);
+
+  assert.equal(result.status, 'UNRESOLVED');
+  assert.equal(result.rule, 'visual-family-unsupported');
+  assert.equal(result.evidenceStatus, 'blocked');
+});
+
+test('warns when adjacent narrative agency handoff is incompatible', () => {
+  const previous = makeRecord({ sceneId: 'scene-01', narrativeAgency: { start: 'WORLD', end: 'CHARACTER' }, cameraAuthority: 'CHARACTER' });
+  const current = makeRecord({ sceneId: 'scene-02', narrativeAgency: { start: 'WORLD', end: 'CONTESTED' }, cameraAuthority: 'CONTESTED' });
+  const result = intelligence.deriveBoundaryIntelligence(previous, current);
+
+  assert.equal(result.status, 'WARN');
+  assert.equal(result.rule, 'narrative-handoff-mismatch');
+  assert.deepEqual(result.handoff, { previousEndingAgency: 'CHARACTER', currentStartingAgency: 'WORLD', status: 'WARN' });
+});
+
+test('returns unresolved when a narrative handoff side is unknown', () => {
+  const previous = makeRecord({ sceneId: 'scene-01', narrativeAgency: { start: 'WORLD', end: null }, cameraAuthority: 'WORLD' });
+  const current = makeRecord({ sceneId: 'scene-02', narrativeAgency: { start: 'WORLD', end: 'CONTESTED' }, cameraAuthority: 'CONTESTED' });
+  const result = intelligence.deriveBoundaryIntelligence(previous, current);
+
+  assert.equal(result.status, 'UNRESOLVED');
+  assert.equal(result.rule, 'narrative-handoff-unresolved');
+});
+
+test('does not warn merely because adjacent Scenes use different grammars', () => {
+  const previous = makeRecord({
+    sceneId: 'scene-01',
+    grammarId: 'camera-authority-transfer',
+    narrativeAgency: { start: 'WORLD', end: 'WORLD' },
+    cameraAuthority: 'WORLD',
+    colorTerritory: 'WORLD',
+    sources: { agency: 'compiler-backed', camera: 'compiler-backed', color: 'unknown', space: 'unknown' }
+  });
+  const current = makeRecord({
+    sceneId: 'scene-02',
+    grammarId: 'color-ownership-transfer',
+    narrativeAgency: { start: 'WORLD', end: 'CONTESTED' },
+    cameraAuthority: 'WORLD',
+    colorTerritory: 'CONTESTED',
+    compilerOwnedFamilies: ['agency', 'color'],
+    sources: { agency: 'compiler-backed', camera: 'unknown', color: 'compiler-backed', space: 'unknown' }
+  });
+  const result = intelligence.deriveBoundaryIntelligence(previous, current);
+
+  assert.equal(result.status, 'PASS');
+  assert.equal(result.rule, 'boundary-pass');
+  assert.ok(!result.findings?.some(item => item.rule === 'grammar-change'));
+});
+
+test('legacy directed Scene yields unresolved rather than fail', () => {
+  const previous = makeRecord({ sceneId: 'scene-01', narrativeAgency: { start: 'WORLD', end: 'WORLD' }, cameraAuthority: 'WORLD' });
+  const current = makeRecord({ sceneId: 'scene-02', provenanceStatus: 'legacy', grammarId: null, sources: { agency: 'legacy', camera: 'legacy', color: 'legacy', space: 'legacy' } });
+  const result = intelligence.deriveBoundaryIntelligence(previous, current);
+
+  assert.equal(result.status, 'UNRESOLVED');
+  assert.equal(result.rule, 'legacy-provenance');
+  assert.notEqual(result.status, 'FAIL');
+});
+
+test('provenance divergence yields unresolved and never reports compiler-backed response', () => {
+  const previous = makeRecord({ sceneId: 'scene-01', narrativeAgency: { start: 'WORLD', end: 'WORLD' }, cameraAuthority: 'WORLD' });
+  const current = makeRecord({
+    sceneId: 'scene-02',
+    cameraAuthority: 'CHARACTER',
+    sources: { agency: 'compiler-backed', camera: 'unknown', color: 'unknown', space: 'unknown' },
+    integrityFindings: [{ status: 'UNRESOLVED', rule: 'provenance-final-state-divergence', family: 'camera', path: 'camera.perspective' }]
+  });
+  const result = intelligence.deriveBoundaryIntelligence(previous, current);
+
+  assert.equal(result.status, 'UNRESOLVED');
+  assert.equal(result.rule, 'provenance-final-state-divergence');
+  assert.ok(result.visualResponse.every(item => !(item.family === 'camera' && item.source === 'compiler-backed')));
 });
