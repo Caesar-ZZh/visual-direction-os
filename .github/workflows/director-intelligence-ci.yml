@@ -53,6 +53,7 @@ jobs:
           node visual-direction-os/project-arc.test.js
           node visual-direction-os/project-continuity.test.js
           node --test visual-direction-os/project-intelligence.test.js
+          node --test visual-direction-os/project-intelligence-aggregate.test.js
       - name: Check changed runtime syntax
         run: |
           node --check visual-direction-os/director-v2-app.js
