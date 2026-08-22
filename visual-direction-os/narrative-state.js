@@ -9,7 +9,7 @@
   'use strict';
 
   if (!contracts) throw new Error('VDOSNarrativeContracts is required before narrative-state.js');
-  const { clone, BEAT_IDS, validateInterpretResponse, validateStrategyResponse, validateSequenceResponse } = contracts;
+  const { clone, BEAT_IDS, validateInterpretResponse, validateStrategyResponse, validateSequenceCompletionResponse, validateSequenceResponse } = contracts;
   const REQUEST_STAGES = ['interpret', 'strategy', 'sequence'];
   const READING_FIELDS = ['narrativeProblem', 'coreConflict', 'startingState', 'endingState', 'turningPoint', 'agencyTransition'];
 
@@ -26,7 +26,10 @@
     strategies: [],
     selectedStrategyId: null,
     selectedStrategy: null,
+    sequenceSkeleton: null,
+    sequenceCompletion: null,
     sequenceProposal: null,
+    sequenceProvenance: null,
     selectedBeatIds: clone(BEAT_IDS),
     applyMode: 'all',
     clarification: null,
@@ -71,21 +74,26 @@
       stages.forEach(stageName => resetRequest(stageName, true));
     }
 
+    function clearSequenceArtifacts() {
+      state.sequenceSkeleton = null;
+      state.sequenceCompletion = null;
+      state.sequenceProposal = null;
+      state.sequenceProvenance = null;
+      state.selectedBeatIds = clone(BEAT_IDS);
+      state.applyMode = 'all';
+    }
+
     function clearDownstreamFromReading() {
       state.confirmedReading = null;
       state.strategies = [];
       state.selectedStrategyId = null;
       state.selectedStrategy = null;
-      state.sequenceProposal = null;
-      state.selectedBeatIds = clone(BEAT_IDS);
-      state.applyMode = 'all';
+      clearSequenceArtifacts();
       invalidateRequests(['strategy', 'sequence']);
     }
 
     function clearDownstreamFromStrategy() {
-      state.sequenceProposal = null;
-      state.selectedBeatIds = clone(BEAT_IDS);
-      state.applyMode = 'all';
+      clearSequenceArtifacts();
       invalidateRequests(['sequence']);
     }
 
@@ -105,9 +113,7 @@
         state.strategies = [];
         state.selectedStrategyId = null;
         state.selectedStrategy = null;
-        state.sequenceProposal = null;
-        state.selectedBeatIds = clone(BEAT_IDS);
-        state.applyMode = 'all';
+        clearSequenceArtifacts();
         state.clarification = null;
         state.clarificationAnswer = null;
         invalidateRequests(REQUEST_STAGES);
@@ -169,9 +175,7 @@
       state.strategies = [];
       state.selectedStrategyId = null;
       state.selectedStrategy = null;
-      state.sequenceProposal = null;
-      state.selectedBeatIds = clone(BEAT_IDS);
-      state.applyMode = 'all';
+      clearSequenceArtifacts();
       invalidateRequests(['strategy', 'sequence']);
       notify('reading-confirm');
       return getState();
@@ -202,10 +206,57 @@
       return getState();
     }
 
+    function setSequenceSkeleton(skeleton) {
+      if (!state.confirmedReading || !state.selectedStrategy) throw new Error('Select a strategy after confirming a Narrative Reading before compiling a sequence skeleton.');
+      if (!skeleton || typeof skeleton !== 'object' || !Array.isArray(skeleton.beats)) throw new Error('Sequence Skeleton must be an object with beats.');
+      state.sequenceSkeleton = clone(skeleton);
+      state.sequenceCompletion = null;
+      state.sequenceProposal = null;
+      state.sequenceProvenance = null;
+      state.stage = 'strategy';
+      state.selectedBeatIds = clone(BEAT_IDS);
+      state.applyMode = 'all';
+      notify('sequence-skeleton');
+      return getState();
+    }
+
+    function setSequenceCompletionResult({ completion, proposal, provenance } = {}) {
+      if (!state.sequenceSkeleton) throw new Error('Compile a Sequence Skeleton before storing a compiler-first completion result.');
+      const completionCheck = validateSequenceCompletionResponse(completion);
+      if (!completionCheck.valid) throw new Error(`Invalid sequence completion: ${completionCheck.errors.join('; ')}`);
+      const proposalCheck = validateSequenceResponse({ sequenceProposal: proposal });
+      if (!proposalCheck.valid) throw new Error(`Invalid assembled sequence proposal: ${proposalCheck.errors.join('; ')}`);
+      if (!provenance || provenance.origin !== 'compiler-first') throw new Error('Compiler-first sequence provenance is required.');
+      state.sequenceCompletion = clone(completionCheck.value);
+      state.sequenceProposal = clone(proposalCheck.value.sequenceProposal);
+      state.sequenceProvenance = clone(provenance);
+      state.stage = 'sequence';
+      state.selectedBeatIds = clone(BEAT_IDS);
+      state.applyMode = 'all';
+      notify('sequence-completion-result');
+      return getState();
+    }
+
+    function setSequenceCompletionFailure(completion) {
+      if (!state.sequenceSkeleton) throw new Error('Compile a Sequence Skeleton before storing a failed compiler-first completion.');
+      const completionCheck = validateSequenceCompletionResponse(completion);
+      if (!completionCheck.valid) throw new Error(`Invalid sequence completion shape: ${completionCheck.errors.join('; ')}`);
+      state.sequenceCompletion = clone(completionCheck.value);
+      state.sequenceProposal = null;
+      state.sequenceProvenance = null;
+      state.stage = 'sequence';
+      state.selectedBeatIds = clone(BEAT_IDS);
+      state.applyMode = 'all';
+      notify('sequence-completion-failure');
+      return getState();
+    }
+
     function setSequenceResult(payload) {
       if (!state.confirmedReading || !state.selectedStrategy) throw new Error('Select a strategy after confirming a Narrative Reading before generating a sequence.');
       const checked = validateSequenceResponse(payload);
       if (!checked.valid) throw new Error(`Invalid sequence response: ${checked.errors.join('; ')}`);
+      state.sequenceCompletion = null;
+      state.sequenceProvenance = null;
       state.sequenceProposal = clone(checked.value.sequenceProposal);
       state.stage = 'sequence';
       state.selectedBeatIds = clone(BEAT_IDS);
@@ -257,6 +308,14 @@
       return true;
     }
 
+    function markRequestSuccess(stageName, token) {
+      if (!REQUEST_STAGES.includes(stageName)) throw new Error(`Unknown Narrative request stage: ${stageName}`);
+      if (state.requests[stageName].token !== token) return false;
+      state.requests[stageName] = { status: 'success', token, error: null };
+      notify(`request:${stageName}:success`);
+      return true;
+    }
+
     function failRequest(stageName, token, error) {
       if (!REQUEST_STAGES.includes(stageName)) throw new Error(`Unknown Narrative request stage: ${stageName}`);
       if (state.requests[stageName].token !== token) return false;
@@ -275,12 +334,16 @@
       confirmReading,
       setStrategyResult,
       selectStrategy,
+      setSequenceSkeleton,
+      setSequenceCompletionResult,
+      setSequenceCompletionFailure,
       setSequenceResult,
       toggleBeat,
       setApplyMode,
       setClarificationAnswer,
       beginRequest,
       acceptResponse,
+      markRequestSuccess,
       failRequest
     };
   }

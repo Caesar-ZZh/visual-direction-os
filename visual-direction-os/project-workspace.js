@@ -1,15 +1,19 @@
 ((root, factory) => {
   const projectArc = typeof module === 'object' && module.exports ? require('./project-arc.js') : root?.VDOSProjectArc;
   const continuity = typeof module === 'object' && module.exports ? require('./project-continuity.js') : root?.VDOSProjectContinuity;
-  const api = factory(projectArc, continuity, root);
+  const intelligence = typeof module === 'object' && module.exports ? require('./project-intelligence.js') : root?.VDOSProjectIntelligence;
+  const intelligenceInspector = typeof module === 'object' && module.exports ? require('./project-intelligence-inspector.js') : root?.VDOSProjectIntelligenceInspector;
+  const api = factory(projectArc, continuity, intelligence, intelligenceInspector, root);
   if (typeof module === 'object' && module.exports) module.exports = api;
   if (root) root.VDOSProjectWorkspace = api;
-})(typeof window !== 'undefined' ? window : globalThis, (projectArc, continuity, root) => {
+})(typeof window !== 'undefined' ? window : globalThis, (projectArc, continuity, intelligence, intelligenceInspector, root) => {
   'use strict';
 
-  if (!projectArc || !continuity) throw new Error('Project Arc and Continuity are required before project-workspace.js');
+  if (!projectArc || !continuity || !intelligence || !intelligenceInspector) throw new Error('Project Arc, Continuity, Project Intelligence and Project Intelligence Inspector are required before project-workspace.js');
   const { deriveProjectArc } = projectArc;
   const { deriveContinuity } = continuity;
+  const { deriveProjectIntelligence } = intelligence;
+  const { renderProjectIntelligence } = intelligenceInspector;
   const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const sceneNumber = index => String(index + 1).padStart(2, '0');
   const agencyLabel = values => Array.isArray(values) ? values.map(v => String(v).toUpperCase()).join(' → ') : '—';
@@ -58,7 +62,7 @@
     return `<div class="project-findings">${findings.map(item => `<article class="project-finding" data-status="${esc(item.status)}"><header><span>${esc(item.status)}</span><strong>${esc(item.boundary || item.sceneIds?.[0] || 'PROJECT')}</strong></header><h3>${esc(item.title)}</h3><p>${esc(item.detail)}</p><div>${(item.sceneIds || []).map(id => `<button type="button" data-action="open-scene" data-scene-id="${esc(id)}">OPEN ${esc(id.toUpperCase())}</button>`).join('')}</div></article>`).join('')}</div>`;
   }
 
-  function renderProjectWorkspace(project, arcState = deriveProjectArc(project || {}), continuityState = deriveContinuity(project || {})) {
+  function renderProjectWorkspace(project, arcState = deriveProjectArc(project || {}), continuityState = deriveContinuity(project || {}), intelligenceState = deriveProjectIntelligence(project || {})) {
     const safeProject = project || { title:'Untitled Project', projectIntent:'', sceneOrder:[], scenes:{}, activeSceneId:null };
     const progress = projectProgress(safeProject);
     return `<section class="project-workspace-panel" aria-labelledby="project-arc-title">
@@ -70,6 +74,7 @@
       <section class="project-structure" aria-labelledby="project-structure-title"><div class="project-section-head"><p>SCENE STRUCTURE</p><h3 id="project-structure-title">Narrative progression</h3></div>${renderSceneRail(safeProject)}</section>
       <section class="project-arc" aria-labelledby="project-arc-title"><div class="project-section-head"><p>PROJECT SCALE</p><h2 id="project-arc-title">Project Arc</h2><span>${progress.directed} / ${progress.total} DIRECTED</span></div>${renderArc(safeProject, arcState)}</section>
       <section class="project-continuity" aria-labelledby="project-continuity-title"><div class="project-section-head"><p>CAUSE → RESPONSE</p><h2 id="project-continuity-title">Cross-Scene Continuity</h2><span>${esc(continuityState?.status || 'UNRESOLVED')}</span></div>${renderContinuity(continuityState)}</section>
+      ${renderProjectIntelligence(intelligenceState)}
     </section>`;
   }
 
@@ -162,7 +167,7 @@
       } else if (view === 'edit') {
         rootElement.innerHTML = renderProjectEditor(project, projectEditError);
       } else {
-        rootElement.innerHTML = renderProjectWorkspace(project, deriveProjectArc(project), deriveContinuity(project));
+        rootElement.innerHTML = renderProjectWorkspace(project, deriveProjectArc(project), deriveContinuity(project), deriveProjectIntelligence(project));
       }
       return rootElement.innerHTML;
     }

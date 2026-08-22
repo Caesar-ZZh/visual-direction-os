@@ -15,13 +15,20 @@ Use clarification only when ambiguity materially changes the directing interpret
   strategy: `${COMMON}
 Translate the confirmed Narrative Reading into 2–3 distinct Visual Direction Strategies.
 Every strategy must describe a causal mechanism and assign exactly one Primary variable, one or more Supporting variables, and any deliberately Restrained variables.
+Also assign grammarId from exactly: spatial-authorship, camera-authority-transfer, color-ownership-transfer, surface-assignment, agency-ownership-transfer, unresolved.
+grammarId names the causal visual mechanism, not merely the Primary variable. Use unresolved whenever none of the executable grammars fits the proposed mechanism exactly.
+Do not infer Boundary or Edge from Line. Do not infer Medium or Time from Texture. Those mechanism families are not executable in the current Strategy contract.
 Explain why the Primary variable carries the narrative cause. Do not imitate or name a film, artist, studio, franchise, or pre-existing visual style. Do not reduce color direction to generic mood adjectives.`,
 
   sequence: `${COMMON}
-Translate the confirmed Narrative Reading and selected Visual Direction Strategy into exactly five ordered beats: SETUP, PRESSURE, RUPTURE, RELEASE, NEW OWNERSHIP.
-Each beat must state its narrative purpose, agency state, Primary/Supporting/Restrained variables, up to three concise Visual Events, and a rationale.
-Return a complete Scene State patch for every beat: agency, ownership levels, and all canonical variable fields for color, space, camera, line, texture, and rhythm. Keep changes causally disciplined; not every variable should peak at once.
-The sequence is a proposal for later director approval, not permission to mutate application state.`
+Complete the supplied authoritative Sequence Skeleton; do not replace or reinterpret it.
+Return exactly one sequenceCompletion entry for each Skeleton beat in the supplied order. Preserve every beat id exactly.
+The Sequence Skeleton owns beat identity/order and the selected Strategy hierarchy. Do not return or modify label, Primary variable, Supporting variables, or Restrained variables.
+Choose each beat agency only from the supplied Agency Constraint and preserve monotonic progression from the confirmed starting agency to the confirmed final agency. Do not move backward after agency advances.
+For openPatch, return only Scene State paths whose exact Skeleton patch slot is declared open. Do not return compiler-owned, compiler-derived, constrained, blocked, or undeclared paths. In particular, do not repeat a compiler-owned path merely to agree with it.
+Provide only the beat's narrativeBeat, legal agency, up to three concise visualEvents, rationale, and AI-writable openPatch detail.
+Blocked is not creative permission: do not invent values for contract or evidence gaps. Do not infer Boundary or Edge from Line, do not infer Medium or Time from Texture, and do not infer numerical cadence.
+This is constrained completion for a later deterministic assembler and explicit Director approval; it is not permission to mutate application state.`
 };
 
 function promptFor(stage) {

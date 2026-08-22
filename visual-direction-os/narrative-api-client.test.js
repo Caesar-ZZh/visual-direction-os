@@ -21,6 +21,35 @@ const { createNarrativeApiClient } = require('./narrative-api-client.js');
   const demo = createNarrativeApiClient({ baseUrl: '', demoMode: true, fixtures });
   const demoStrategy = await demo.strategy({ confirmedReading: {} });
   assert.equal(demoStrategy.strategies.length, 3);
+  const demoSequence = await demo.sequence({ sequenceSkeleton:{ beats:[] } });
+  assert.ok(demoSequence.sequenceCompletion, 'demo sequence returns raw constrained completion, not preassembled proposal');
+  assert.equal(demoSequence.sequenceCompletion.beats.length, 5);
+
+  const originalLocation = globalThis.location;
+  globalThis.location = { search:'?sequenceCompletionViolation=camera-owned-write' };
+  const violatingDemo = createNarrativeApiClient({ baseUrl:'', demoMode:true, fixtures });
+  const violatingSequence = await violatingDemo.sequence({ sequenceSkeleton:{ beats:[] } });
+  const violatingRupture = violatingSequence.sequenceCompletion.beats.find(beat => beat.id === 'rupture');
+  assert.equal(violatingRupture.openPatch.variables.camera.perspective, 'world', 'demo violation flag writes a compiler-owned path while remaining statically valid');
+  if (originalLocation === undefined) delete globalThis.location;
+  else globalThis.location = originalLocation;
+
+  const ids = ['setup','pressure','rupture','release','new-ownership'];
+  const completionResponse = { sequenceCompletion:{ beats:ids.map((id,index)=>({
+    id, narrativeBeat:`beat ${index}`, agency:index<2?'world':index<4?'contested':'character', visualEvents:[], rationale:'reason', openPatch:{}
+  })) } };
+  const sequenceCalls = [];
+  const liveSequence = createNarrativeApiClient({
+    baseUrl:'https://api.example.test/api/narrative/',
+    fetchImpl:async (url, options) => {
+      sequenceCalls.push({url,options});
+      return {ok:true,status:200,json:async()=>completionResponse};
+    }
+  });
+  const skeleton = { version:'0.1.0', beats:ids.map(id=>({id})) };
+  const liveResult = await liveSequence.sequence({ narrative:'scene', sequenceSkeleton:skeleton });
+  assert.deepEqual(liveResult, completionResponse);
+  assert.deepEqual(JSON.parse(sequenceCalls[0].options.body).sequenceSkeleton, skeleton);
 
   const invalid = createNarrativeApiClient({
     baseUrl: 'https://api.example.test/api/narrative',

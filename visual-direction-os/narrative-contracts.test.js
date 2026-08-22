@@ -15,10 +15,14 @@ assert.equal(c.validateInterpretResponse(interpret).valid, true);
 assert.equal(c.validateInterpretResponse({ ...interpret, readings: [reading] }).valid, false);
 
 const strategies = { strategies: [
-  { id: 'space', title: 'SPACE-LED', primaryVariable: 'space', supportingVariables: ['camera','color'], restrainedVariables: ['texture','rhythm'], mechanism: 'Pressure accumulates spatially before agency transfers.', rationale: 'Loss of freedom is the first visible causal change.' },
-  { id: 'camera', title: 'CAMERA-LED', primaryVariable: 'camera', supportingVariables: ['space','line'], restrainedVariables: ['color'], mechanism: 'Viewpoint authority moves from institution to character.', rationale: 'The scene is fundamentally about who defines perspective.' }
+  { id: 'space', title: 'SPACE-LED', grammarId: 'spatial-authorship', primaryVariable: 'space', supportingVariables: ['camera','color'], restrainedVariables: ['texture','rhythm'], mechanism: 'Pressure accumulates spatially before agency transfers.', rationale: 'Loss of freedom is the first visible causal change.' },
+  { id: 'camera', title: 'CAMERA-LED', grammarId: 'camera-authority-transfer', primaryVariable: 'camera', supportingVariables: ['space','line'], restrainedVariables: ['color'], mechanism: 'Viewpoint authority moves from institution to character.', rationale: 'The scene is fundamentally about who defines perspective.' }
 ]};
-assert.equal(c.validateStrategyResponse(strategies).valid, true);
+const checkedStrategies = c.validateStrategyResponse(strategies);
+assert.equal(checkedStrategies.valid, true);
+assert.equal(checkedStrategies.value.strategies[0].grammarId, 'spatial-authorship', 'new grammar identity must survive client validation');
+const legacyStrategies = { strategies: strategies.strategies.map(({ grammarId, ...item }) => item) };
+assert.equal(c.validateStrategyResponse(legacyStrategies).valid, true, 'saved pre-M2 strategies remain loadable and resolve as UNKNOWN later');
 
 const ids = ['setup','pressure','rupture','release','new-ownership'];
 const seq = { sequenceProposal: { beats: ids.map((id, i) => ({
@@ -27,6 +31,19 @@ const seq = { sequenceProposal: { beats: ids.map((id, i) => ({
   supportingVariables: ['space'], restrainedVariables: ['texture'], visualEvents: [],
   sceneStatePatch: { agency: i < 2 ? 'world' : i < 4 ? 'contested' : 'character' }, rationale: 'causal reason'
 })) } };
-assert.equal(c.validateSequenceResponse(seq).valid, true);
+assert.equal(c.validateSequenceResponse(seq).valid, true, 'legacy/downstream assembled proposal validation remains available');
 assert.equal(c.validateSequenceResponse({ sequenceProposal: { beats: seq.sequenceProposal.beats.slice(0,4) } }).valid, false);
+
+const sequenceCompletion = { sequenceCompletion: { beats: ids.map((id, i) => ({
+  id,
+  narrativeBeat: `completion ${i}`,
+  agency: i < 2 ? 'world' : i < 4 ? 'contested' : 'character',
+  visualEvents: i === 2 ? ['break'] : [],
+  rationale: `completion rationale ${i}`,
+  openPatch: i === 0 ? { ownership: { world: 'high' }, variables: { camera: { distance: 'wide' } } } : {}
+})) } };
+assert.equal(typeof c.validateSequenceCompletionResponse, 'function', 'M5 exposes a static completion response validator');
+assert.equal(c.validateSequenceCompletionResponse(sequenceCompletion).valid, true);
+assert.equal(c.validateSequenceCompletionResponse({ sequenceCompletion: { beats: sequenceCompletion.sequenceCompletion.beats.slice(0,4) } }).valid, false);
+assert.equal(c.validateSequenceCompletionResponse({ sequenceProposal: seq.sequenceProposal }).valid, false, 'M5 completion validator does not accept a final proposal as model output');
 console.log('narrative-contracts.test.js passed');

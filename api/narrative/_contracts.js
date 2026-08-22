@@ -6,7 +6,9 @@ const STAGES = ['interpret', 'strategy', 'sequence'];
 const AGENT_SOURCE_TYPES = ['explicit', 'inferred', 'director_intent'];
 const AGENCIES = ['world', 'contested', 'shared', 'character'];
 const VARIABLES = ['color', 'space', 'camera', 'line', 'texture', 'rhythm', 'agency'];
+const GRAMMAR_IDS = ['spatial-authorship', 'camera-authority-transfer', 'color-ownership-transfer', 'surface-assignment', 'agency-ownership-transfer', 'unresolved'];
 const LEVELS = ['low', 'medium', 'high'];
+const BEAT_IDS = ['setup', 'pressure', 'rupture', 'release', 'new-ownership'];
 
 const isObject = value => Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 const nonEmpty = value => typeof value === 'string' && Boolean(value.trim());
@@ -42,18 +44,76 @@ function validateInput(stage, body = {}) {
   }
 
   if (!isObject(body.reading)) errors.push('reading is required');
-  if (stage === 'sequence' && !isObject(body.strategy)) errors.push('strategy is required');
+  if (stage === 'sequence') {
+    if (!isObject(body.strategy)) errors.push('strategy is required');
+    if (!isObject(body.sequenceSkeleton)) errors.push('sequenceSkeleton is required');
+    else {
+      if (!Array.isArray(body.sequenceSkeleton.beats) || body.sequenceSkeleton.beats.length !== 5) errors.push('sequenceSkeleton.beats must contain exactly 5 beats');
+      if (!Array.isArray(body.sequenceSkeleton.agencyConstraint?.path) || body.sequenceSkeleton.agencyConstraint.path.length < 2) errors.push('sequenceSkeleton.agencyConstraint.path is invalid');
+    }
+  }
 
   if (errors.length) return failure(errors);
   const value = { narrative, directorIntent, reading: clone(body.reading) };
-  if (stage === 'sequence') value.strategy = clone(body.strategy);
+  if (stage === 'sequence') {
+    value.strategy = clone(body.strategy);
+    value.sequenceSkeleton = clone(body.sequenceSkeleton);
+  }
   return success(value);
 }
 
-function validateOutput(stage, value) {
+function flattenCompletionPatch(openPatch = {}) {
+  const result = {};
+  const walk = (value, prefix = '') => {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) {
+      if (prefix) {
+        const canonical = prefix.startsWith('variables.') ? prefix.slice('variables.'.length) : prefix;
+        result[canonical] = value;
+      }
+      return;
+    }
+    Object.entries(value).forEach(([key, child]) => walk(child, prefix ? `${prefix}.${key}` : key));
+  };
+  walk(openPatch);
+  return result;
+}
+
+function validateCompletionAgainstSkeleton(value, skeleton) {
+  const staticCheck = domain.validateSequenceCompletionResponse(value);
+  if (!staticCheck.valid) return staticCheck;
+  if (!isObject(skeleton) || !Array.isArray(skeleton.beats) || skeleton.beats.length !== 5) {
+    return failure(['sequenceSkeleton is required for sequence completion validation']);
+  }
+  const errors = [];
+  staticCheck.value.sequenceCompletion.beats.forEach((beat, index) => {
+    const skeletonBeat = skeleton.beats[index];
+    if (!skeletonBeat || skeletonBeat.id !== beat.id) {
+      errors.push(`sequenceCompletion.beats[${index}].id does not match the authoritative Skeleton`);
+      return;
+    }
+    const flat = flattenCompletionPatch(beat.openPatch || {});
+    Object.keys(flat).forEach(path => {
+      const slot = skeletonBeat.patchSlots?.[path];
+      if (!slot) errors.push(`sequenceCompletion.beats[${index}].openPatch.${path} is not declared by the Skeleton`);
+      else if (slot.status === 'blocked') errors.push(`sequenceCompletion.beats[${index}].openPatch.${path} is blocked by the compiler`);
+      else if (slot.status !== 'open') errors.push(`sequenceCompletion.beats[${index}].openPatch.${path} is compiler-owned and cannot be written by AI completion`);
+    });
+  });
+  return errors.length ? failure(errors) : success(staticCheck.value);
+}
+
+function validateOutput(stage, value, context = {}) {
   if (stage === 'interpret') return domain.validateInterpretResponse(value);
-  if (stage === 'strategy') return domain.validateStrategyResponse(value);
-  if (stage === 'sequence') return domain.validateSequenceResponse(value);
+  if (stage === 'strategy') {
+    const checked = domain.validateStrategyResponse(value);
+    if (!checked.valid) return checked;
+    const errors = [];
+    checked.value.strategies.forEach((strategy, index) => {
+      if (!GRAMMAR_IDS.includes(strategy.grammarId)) errors.push(`strategies[${index}].grammarId is required and must be executable or unresolved`);
+    });
+    return errors.length ? failure(errors) : success(checked.value);
+  }
+  if (stage === 'sequence') return validateCompletionAgainstSkeleton(value, context.input?.sequenceSkeleton);
   return failure([`Unknown Narrative API stage: ${stage}`]);
 }
 
@@ -102,102 +162,79 @@ const strategyItem = {
   properties: {
     id: { type: 'string', minLength: 1 },
     title: { type: 'string', minLength: 1 },
+    grammarId: { type: 'string', enum: GRAMMAR_IDS },
     primaryVariable: { type: 'string', enum: VARIABLES },
     supportingVariables: { type: 'array', minItems: 1, items: { type: 'string', enum: VARIABLES } },
     restrainedVariables: { type: 'array', items: { type: 'string', enum: VARIABLES } },
     mechanism: { type: 'string', minLength: 1 },
     rationale: { type: 'string', minLength: 1 }
   },
-  required: ['id', 'title', 'primaryVariable', 'supportingVariables', 'restrainedVariables', 'mechanism', 'rationale']
+  required: ['id', 'title', 'grammarId', 'primaryVariable', 'supportingVariables', 'restrainedVariables', 'mechanism', 'rationale']
 };
 
-const ownershipSchema = {
+const partialOwnershipSchema = {
   type: 'object',
   additionalProperties: false,
   properties: {
     character: { type: 'string', enum: LEVELS },
     world: { type: 'string', enum: LEVELS },
     narrative: { type: 'string', enum: LEVELS }
-  },
-  required: ['character', 'world', 'narrative']
+  }
 };
 
-const variablesSchema = {
+const variableFamily = properties => ({
+  type: 'object', additionalProperties: false, properties
+});
+
+const partialVariablesSchema = {
   type: 'object',
   additionalProperties: false,
   properties: {
-    color: {
-      type: 'object', additionalProperties: false,
-      properties: {
-        temperature: { type: 'string', minLength: 1 }, saturation: { type: 'string', minLength: 1 },
-        contrast: { type: 'string', minLength: 1 }, territory: { type: 'string', minLength: 1 }
-      }, required: ['temperature', 'saturation', 'contrast', 'territory']
-    },
-    space: {
-      type: 'object', additionalProperties: false,
-      properties: {
-        depth: { type: 'string', minLength: 1 }, compression: { type: 'string', minLength: 1 },
-        openness: { type: 'string', minLength: 1 }, negativeSpace: { type: 'string', minLength: 1 }
-      }, required: ['depth', 'compression', 'openness', 'negativeSpace']
-    },
-    camera: {
-      type: 'object', additionalProperties: false,
-      properties: {
-        distance: { type: 'string', minLength: 1 }, stability: { type: 'string', minLength: 1 },
-        perspective: { type: 'string', minLength: 1 }, movement: { type: 'string', minLength: 1 }
-      }, required: ['distance', 'stability', 'perspective', 'movement']
-    },
-    line: {
-      type: 'object', additionalProperties: false,
-      properties: {
-        stability: { type: 'string', minLength: 1 }, density: { type: 'string', minLength: 1 }, direction: { type: 'string', minLength: 1 }
-      }, required: ['stability', 'density', 'direction']
-    },
-    texture: {
-      type: 'object', additionalProperties: false,
-      properties: {
-        noise: { type: 'string', minLength: 1 }, granularity: { type: 'string', minLength: 1 }, materiality: { type: 'string', minLength: 1 }
-      }, required: ['noise', 'granularity', 'materiality']
-    },
-    rhythm: {
-      type: 'object', additionalProperties: false,
-      properties: {
-        cutDensity: { type: 'string', minLength: 1 }, motionEnergy: { type: 'string', minLength: 1 }, repetition: { type: 'string', minLength: 1 }
-      }, required: ['cutDensity', 'motionEnergy', 'repetition']
-    }
-  },
-  required: ['color', 'space', 'camera', 'line', 'texture', 'rhythm']
+    color: variableFamily({
+      temperature: { type: 'string', minLength: 1 }, saturation: { type: 'string', minLength: 1 },
+      contrast: { type: 'string', minLength: 1 }, territory: { type: 'string', minLength: 1 }
+    }),
+    space: variableFamily({
+      depth: { type: 'string', minLength: 1 }, compression: { type: 'string', minLength: 1 },
+      openness: { type: 'string', minLength: 1 }, negativeSpace: { type: 'string', minLength: 1 }
+    }),
+    camera: variableFamily({
+      distance: { type: 'string', minLength: 1 }, stability: { type: 'string', minLength: 1 },
+      perspective: { type: 'string', minLength: 1 }, movement: { type: 'string', minLength: 1 }
+    }),
+    line: variableFamily({
+      stability: { type: 'string', minLength: 1 }, density: { type: 'string', minLength: 1 }, direction: { type: 'string', minLength: 1 }
+    }),
+    texture: variableFamily({
+      noise: { type: 'string', minLength: 1 }, granularity: { type: 'string', minLength: 1 }, materiality: { type: 'string', minLength: 1 }
+    }),
+    rhythm: variableFamily({
+      cutDensity: { type: 'string', minLength: 1 }, motionEnergy: { type: 'string', minLength: 1 }, repetition: { type: 'string', minLength: 1 }
+    })
+  }
 };
 
-const scenePatch = {
+const openPatchSchema = {
   type: 'object',
   additionalProperties: false,
   properties: {
-    agency: { type: 'string', enum: AGENCIES },
-    ownership: ownershipSchema,
-    variables: variablesSchema
-  },
-  required: ['agency', 'ownership', 'variables']
+    ownership: partialOwnershipSchema,
+    variables: partialVariablesSchema
+  }
 };
 
-const beatLabels = ['SETUP', 'PRESSURE', 'RUPTURE', 'RELEASE', 'NEW OWNERSHIP'];
-const beatIds = ['setup', 'pressure', 'rupture', 'release', 'new-ownership'];
-const sequenceBeat = {
+const sequenceCompletionBeat = {
   type: 'object',
   additionalProperties: false,
   properties: {
-    id: { type: 'string', enum: beatIds },
-    label: { type: 'string', enum: beatLabels },
+    id: { type: 'string', enum: BEAT_IDS },
     narrativeBeat: { type: 'string', minLength: 1 },
     agency: { type: 'string', enum: AGENCIES },
-    primaryVariable: { type: 'string', enum: VARIABLES },
-    supportingVariables: { type: 'array', items: { type: 'string', enum: VARIABLES } },
-    restrainedVariables: { type: 'array', items: { type: 'string', enum: VARIABLES } },
     visualEvents: { type: 'array', maxItems: 3, items: { type: 'string', minLength: 1 } },
-    sceneStatePatch: scenePatch,
-    rationale: { type: 'string', minLength: 1 }
+    rationale: { type: 'string', minLength: 1 },
+    openPatch: openPatchSchema
   },
-  required: ['id', 'label', 'narrativeBeat', 'agency', 'primaryVariable', 'supportingVariables', 'restrainedVariables', 'visualEvents', 'sceneStatePatch', 'rationale']
+  required: ['id', 'narrativeBeat', 'agency', 'visualEvents', 'rationale', 'openPatch']
 };
 
 const OUTPUT_SCHEMAS = {
@@ -230,15 +267,15 @@ const OUTPUT_SCHEMAS = {
   sequence: {
     type: 'object', additionalProperties: false,
     properties: {
-      sequenceProposal: {
+      sequenceCompletion: {
         type: 'object', additionalProperties: false,
         properties: {
-          beats: { type: 'array', minItems: 5, maxItems: 5, items: sequenceBeat }
+          beats: { type: 'array', minItems: 5, maxItems: 5, items: sequenceCompletionBeat }
         },
         required: ['beats']
       }
     },
-    required: ['sequenceProposal']
+    required: ['sequenceCompletion']
   }
 };
 
@@ -247,4 +284,4 @@ function schemaFor(stage) {
   return clone(OUTPUT_SCHEMAS[stage]);
 }
 
-module.exports = { STAGES, validateInput, validateOutput, schemaFor };
+module.exports = { STAGES, GRAMMAR_IDS, validateInput, validateOutput, validateCompletionAgainstSkeleton, schemaFor };

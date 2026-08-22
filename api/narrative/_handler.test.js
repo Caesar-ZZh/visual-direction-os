@@ -83,6 +83,61 @@ async function run(handler, req) {
   assert.equal(failed.jsonBody.error.code, 'PROVIDER');
   assert.equal(failed.body.includes('secret upstream detail'), false, 'provider internals must not leak to browser responses');
 
+  const ids = ['setup','pressure','rupture','release','new-ownership'];
+  const labels = ['SETUP','PRESSURE','RUPTURE','RELEASE','NEW OWNERSHIP'];
+  const patchSlots = {
+    'camera.distance': { status:'open' },
+    'camera.perspective': { status:'compiler-derived', support:'supported' }
+  };
+  const sequenceSkeleton = {
+    version:'0.1.0', mode:'compiler-first', grammarId:'camera-authority-transfer', grammarStatus:'resolved',
+    readingId:'reading-1', strategyId:'camera',
+    agencyConstraint:{ path:['world','contested','character'], start:'world', end:'character', rule:'monotonic-progression' },
+    beats:ids.map((id,index)=>({
+      id, label:labels[index], structure:{primaryVariable:'camera',supportingVariables:['space'],restrainedVariables:['texture']},
+      agencySlot:index===0?{status:'fixed',value:'world'}:index===4?{status:'fixed',value:'character'}:{status:'open',allowedValues:['world','contested','character']},
+      patchSlots
+    }))
+  };
+  const reading = {
+    id:'reading-1', title:'AGENCY', confidence:'high',
+    narrativeProblem:{value:'problem',sourceType:'explicit',basis:'basis'}, coreConflict:{value:'conflict',sourceType:'explicit',basis:'basis'},
+    startingState:{value:'start',sourceType:'explicit',basis:'basis'}, endingState:{value:'end',sourceType:'explicit',basis:'basis'},
+    turningPoint:{value:'turn',sourceType:'explicit',basis:'basis'}, agencyTransition:{value:['world','contested','character'],sourceType:'explicit',basis:'basis'}
+  };
+  const strategy = { id:'camera', title:'CAMERA', grammarId:'camera-authority-transfer', primaryVariable:'camera', supportingVariables:['space'], restrainedVariables:['texture'], mechanism:'Authority follows agency.', rationale:'Perspective carries authorship.' };
+  const sequenceCompletion = { sequenceCompletion:{ beats:ids.map((id,index)=>({
+    id, narrativeBeat:`beat ${index}`, agency:index<2?'world':index<4?'contested':'character', visualEvents:[], rationale:'reason',
+    openPatch:index===0?{variables:{camera:{distance:'wide'}}}:{}
+  })) } };
+  const sequenceCalls = [];
+  const sequenceHandler = createHandler({
+    stage:'sequence',
+    provider:{ async generate(input) { sequenceCalls.push(input); return sequenceCompletion; } },
+    allowedOrigin:'https://caesar-zzh.github.io', production:true
+  });
+  const sequenceRequest = {
+    method:'POST', headers:{origin:'https://caesar-zzh.github.io'},
+    body:{ narrative:'A character refuses control.', directorIntent:'Restore agency.', reading, strategy, sequenceSkeleton }
+  };
+  const sequenceOk = await run(sequenceHandler, sequenceRequest);
+  assert.equal(sequenceOk.statusCode, 200);
+  assert.ok(sequenceOk.jsonBody.sequenceCompletion);
+  assert.deepEqual(sequenceCalls[0].input.sequenceSkeleton, sequenceSkeleton, 'provider receives the validated compiler Skeleton');
+
+  const forbiddenHandler = createHandler({
+    stage:'sequence',
+    provider:{ async generate() {
+      const invalid = JSON.parse(JSON.stringify(sequenceCompletion));
+      invalid.sequenceCompletion.beats[2].openPatch = { variables:{camera:{perspective:'world'}} };
+      return invalid;
+    } },
+    allowedOrigin:'https://caesar-zzh.github.io', production:true
+  });
+  const forbiddenSequence = await run(forbiddenHandler, sequenceRequest);
+  assert.equal(forbiddenSequence.statusCode, 502, 'handler rejects model writes to compiler-owned Skeleton paths');
+  assert.equal(forbiddenSequence.jsonBody.error.code, 'SCHEMA');
+
   console.log('_handler.test.js passed');
 })().catch(error => {
   console.error(error);

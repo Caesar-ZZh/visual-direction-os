@@ -89,10 +89,19 @@
     const rail = $('.v2-rail');
     if (!rail) return;
     let revealTimer = 0;
+    let pendingModeHit = null;
+    let pendingModeAt = 0;
 
     const cancelReveal = () => {
       if (revealTimer) window.clearTimeout(revealTimer);
       revealTimer = 0;
+    };
+
+    const rememberModeHit = event => {
+      const control = event.target?.closest?.('.mode-btn[data-mode]');
+      if (!control) return;
+      pendingModeHit = control.dataset.mode;
+      pendingModeAt = Date.now();
     };
 
     const expandSoon = () => {
@@ -106,6 +115,8 @@
 
     const collapse = () => {
       cancelReveal();
+      pendingModeHit = null;
+      pendingModeAt = 0;
       window.requestAnimationFrame(() => {
         if (!rail.matches(':focus-within')) rail.dataset.expanded = 'false';
       });
@@ -113,7 +124,18 @@
 
     rail.dataset.expanded = 'false';
     rail.addEventListener('pointerenter', expandSoon);
-    rail.addEventListener('pointermove', expandSoon, { passive: true });
+    rail.addEventListener('pointermove', event => {
+      rememberModeHit(event);
+      expandSoon();
+    }, { passive: true });
+    rail.addEventListener('click', event => {
+      if (event.target?.closest?.('[data-mode]')) return;
+      if (!pendingModeHit || Date.now() - pendingModeAt > 800) return;
+      const intendedMode = pendingModeHit;
+      pendingModeHit = null;
+      pendingModeAt = 0;
+      setMode(intendedMode, { explicit: true });
+    });
     rail.addEventListener('pointerleave', collapse);
     rail.addEventListener('focusin', () => {
       cancelReveal();
@@ -123,6 +145,8 @@
     window.addEventListener('resize', () => {
       if (window.innerWidth <= 900) {
         cancelReveal();
+        pendingModeHit = null;
+        pendingModeAt = 0;
         rail.dataset.expanded = 'false';
       }
     }, { passive: true });
