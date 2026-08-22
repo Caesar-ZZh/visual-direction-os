@@ -7,6 +7,7 @@
 
   const FAMILY_ORDER = ['agency', 'camera', 'color', 'space', 'line', 'texture', 'rhythm', 'ownership'];
   const AUTHORITY_SCORE = { WORLD: 0, CONTESTED: 1, CHARACTER: 2 };
+  const STATUS_SCORE = { PASS: 0, UNRESOLVED: 1, WARN: 2, FAIL: 3 };
   const OWNERSHIP_CAUSE_ROLES = new Set(['PRESSURE', 'RECOGNITION', 'ESCALATION', 'RUPTURE', 'REVERSAL', 'RELEASE', 'RESOLUTION']);
   const SUPPORTED_GRAMMAR_FAMILY = {
     'camera-authority-transfer': 'camera',
@@ -388,9 +389,102 @@
     });
   }
 
+  function statusFromFindings(findings, empty = false) {
+    if (empty) return 'UNRESOLVED';
+    return (findings || []).reduce((status, finding) => {
+      const candidate = finding?.status || 'PASS';
+      return (STATUS_SCORE[candidate] ?? 0) > (STATUS_SCORE[status] ?? 0) ? candidate : status;
+    }, 'PASS');
+  }
+
+  function sceneProvenanceFinding(scene) {
+    if (scene.provenanceStatus === 'legacy') {
+      return {
+        id: `legacy-${scene.sceneId || 'unknown'}`,
+        status: 'UNRESOLVED',
+        rule: 'legacy-provenance',
+        scope: 'scene',
+        sceneIds: [scene.sceneId],
+        why: 'This directed Scene predates compiler-first provenance, so its decision origin cannot be attributed safely.'
+      };
+    }
+    if (scene.provenanceStatus === 'missing') {
+      return {
+        id: `missing-${scene.sceneId || 'unknown'}`,
+        status: 'UNRESOLVED',
+        rule: 'missing-provenance',
+        scope: 'scene',
+        sceneIds: [scene.sceneId],
+        why: 'Required compiler-first provenance or Scene evidence is incomplete.'
+      };
+    }
+    return null;
+  }
+
+  function deriveProjectIntelligence(projectState = {}) {
+    const project = clone(projectState) || {};
+    const sceneOrder = Array.isArray(project.sceneOrder) ? project.sceneOrder.slice() : [];
+    if (!sceneOrder.length) {
+      return {
+        schemaVersion: '0.1.0',
+        mode: 'shadow',
+        status: 'UNRESOLVED',
+        sceneOrder: [],
+        scenes: [],
+        boundaries: [],
+        findings: []
+      };
+    }
+
+    const scenes = sceneOrder.map((sceneId, index) => {
+      const scene = project.scenes?.[sceneId] || { id: sceneId };
+      return normalizeSceneIntelligence(scene, { order: index });
+    });
+    const boundaries = [];
+    for (let index = 1; index < scenes.length; index += 1) {
+      boundaries.push(deriveBoundaryIntelligence(scenes[index - 1], scenes[index]));
+    }
+
+    const findings = [];
+    for (const scene of scenes) {
+      for (const item of scene.integrityFindings || []) {
+        findings.push({
+          ...clone(item),
+          scope: 'scene',
+          sceneIds: [scene.sceneId]
+        });
+      }
+      const provenanceFinding = sceneProvenanceFinding(scene);
+      if (provenanceFinding) findings.push(provenanceFinding);
+    }
+    for (const boundary of boundaries) {
+      if (boundary.status === 'PASS') continue;
+      findings.push({
+        id: `boundary-${boundary.id}-${boundary.rule}`,
+        status: boundary.status,
+        rule: boundary.rule,
+        scope: 'boundary',
+        sceneIds: [boundary.fromSceneId, boundary.toSceneId],
+        why: boundary.why,
+        evidenceStatus: boundary.evidenceStatus
+      });
+    }
+
+    return {
+      schemaVersion: '0.1.0',
+      mode: 'shadow',
+      status: statusFromFindings(findings),
+      sceneOrder,
+      scenes,
+      boundaries,
+      findings
+    };
+  }
+
   return {
     normalizeAuthority,
     normalizeSceneIntelligence,
-    deriveBoundaryIntelligence
+    deriveBoundaryIntelligence,
+    deriveProjectIntelligence
   };
 });
