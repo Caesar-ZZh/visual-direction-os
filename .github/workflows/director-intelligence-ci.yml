@@ -77,6 +77,10 @@ jobs:
           node --check visual-direction-os/narrative-apply-ui.js
           node --check visual-direction-os/narrative-contracts.js
           node --check visual-direction-os/narrative-demo-fixtures.js
+          node --check visual-direction-os/project-intelligence.js
+          node --check visual-direction-os/project-intelligence-inspector.js
+          node --check visual-direction-os/project-workspace.js
+          node --check visual-direction-os/project-bootstrap.js
           node --check api/narrative/_contracts.js
           node --check api/narrative/_prompts.js
       - name: Verify Pages assembly keeps Director Intelligence assets
@@ -96,6 +100,9 @@ jobs:
           test -f /tmp/vdos-site/visual-ir-inspector.css
           test -f /tmp/vdos-site/visual-ir-shadow.js
           test -f /tmp/vdos-site/narrative-apply-ui.js
+          test -f /tmp/vdos-site/project-intelligence.js
+          test -f /tmp/vdos-site/project-intelligence-inspector.js
+          test -f /tmp/vdos-site/project-intelligence.css
           grep -q 'visual-grammar-registry.js' /tmp/vdos-site/director-v2.html
           grep -q 'visual-compiler.js' /tmp/vdos-site/director-v2.html
           grep -q 'visual-sequence-skeleton.js' /tmp/vdos-site/director-v2.html
