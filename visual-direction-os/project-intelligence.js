@@ -6,12 +6,19 @@
   'use strict';
 
   const FAMILY_ORDER = ['agency', 'camera', 'color', 'space', 'line', 'texture', 'rhythm', 'ownership'];
+  const AUTHORITY_SCORE = { WORLD: 0, CONTESTED: 1, CHARACTER: 2 };
+  const OWNERSHIP_CAUSE_ROLES = new Set(['PRESSURE', 'RECOGNITION', 'ESCALATION', 'RUPTURE', 'REVERSAL', 'RELEASE', 'RESOLUTION']);
+  const SUPPORTED_GRAMMAR_FAMILY = {
+    'camera-authority-transfer': 'camera',
+    'color-ownership-transfer': 'color',
+    'agency-ownership-transfer': 'agency'
+  };
   const clone = value => value == null ? value : JSON.parse(JSON.stringify(value));
 
   function normalizeAuthority(value) {
-    if (value === 'world') return 'WORLD';
-    if (value === 'character') return 'CHARACTER';
-    if (['mixed', 'contested', 'shared'].includes(value)) return 'CONTESTED';
+    if (value === 'world' || value === 'WORLD') return 'WORLD';
+    if (value === 'character' || value === 'CHARACTER') return 'CHARACTER';
+    if (['mixed', 'contested', 'shared', 'MIXED', 'CONTESTED', 'SHARED'].includes(value)) return 'CONTESTED';
     return value ? String(value).toUpperCase() : null;
   }
 
@@ -156,6 +163,8 @@
       title: input.title || '',
       order: Number.isInteger(options.order) ? options.order : null,
       narrativeRole: input.narrativeRole?.role ? String(input.narrativeRole.role).toUpperCase() : null,
+      relationToPrevious: input.narrativeRole?.relationToPrevious || null,
+      turningPoint: input.narrativeRole?.turningPoint || null,
       grammarId,
       provenanceStatus,
       appliedBeatId,
@@ -186,8 +195,202 @@
     };
   }
 
+  function authorityDistance(from, to) {
+    const a = normalizeAuthority(from);
+    const b = normalizeAuthority(to);
+    if (!(a in AUTHORITY_SCORE) || !(b in AUTHORITY_SCORE)) return null;
+    return Math.abs(AUTHORITY_SCORE[a] - AUTHORITY_SCORE[b]);
+  }
+
+  function responseItem(family, from, to, source) {
+    const normalizedFrom = normalizeAuthority(from);
+    const normalizedTo = normalizeAuthority(to);
+    return {
+      family,
+      from: normalizedFrom,
+      to: normalizedTo,
+      changed: Boolean(normalizedFrom && normalizedTo && normalizedFrom !== normalizedTo),
+      distance: authorityDistance(normalizedFrom, normalizedTo),
+      source: source || 'unknown'
+    };
+  }
+
+  function boundaryResult(previous, current, patch = {}) {
+    const camera = responseItem('camera', previous?.cameraAuthority, current?.cameraAuthority, current?.sources?.camera);
+    const color = responseItem('color', previous?.colorTerritory, current?.colorTerritory, current?.sources?.color);
+    const cause = {
+      narrativeRole: current?.narrativeRole || null,
+      agencyFrom: normalizeAuthority(current?.narrativeAgency?.start),
+      agencyTo: normalizeAuthority(current?.narrativeAgency?.end),
+      relationToPrevious: current?.relationToPrevious || null,
+      turningPoint: current?.turningPoint || null
+    };
+    const previousEndingAgency = normalizeAuthority(previous?.narrativeAgency?.end);
+    const currentStartingAgency = normalizeAuthority(current?.narrativeAgency?.start);
+    const handoffStatus = !previousEndingAgency || !currentStartingAgency
+      ? 'UNRESOLVED'
+      : previousEndingAgency === currentStartingAgency ? 'PASS' : 'WARN';
+    const handoff = {
+      previousEndingAgency,
+      currentStartingAgency,
+      status: handoffStatus
+    };
+    const visualResponse = [camera, color];
+    const changed = visualResponse.find(item => item.changed && item.source === 'compiler-backed')
+      || visualResponse.find(item => item.changed)
+      || null;
+    const ownershipConsequence = changed
+      ? {
+          summary: `${changed.family.toUpperCase()} authority moves from ${changed.from} to ${changed.to}.`,
+          from: changed.from,
+          to: changed.to
+        }
+      : {
+          summary: 'No attributable Camera or Color ownership transfer is established at this boundary.',
+          from: null,
+          to: null
+        };
+    return {
+      id: `${previous?.sceneId || 'unknown'}->${current?.sceneId || 'unknown'}`,
+      fromSceneId: previous?.sceneId || null,
+      toSceneId: current?.sceneId || null,
+      status: patch.status || 'PASS',
+      rule: patch.rule || 'boundary-pass',
+      cause,
+      handoff,
+      visualResponse,
+      ownershipConsequence,
+      why: patch.why || 'The supported visual ownership response is explainable from the current Scene narrative cause.',
+      evidenceStatus: patch.evidenceStatus || 'supported',
+      findings: clone(patch.findings || [])
+    };
+  }
+
+  function deriveBoundaryIntelligence(previousSceneRecord = {}, currentSceneRecord = {}) {
+    const previous = clone(previousSceneRecord) || {};
+    const current = clone(currentSceneRecord) || {};
+
+    const divergence = (current.integrityFindings || []).find(item => item?.rule === 'provenance-final-state-divergence')
+      || (previous.integrityFindings || []).find(item => item?.rule === 'provenance-final-state-divergence');
+    if (divergence) {
+      return boundaryResult(previous, current, {
+        status: 'UNRESOLVED',
+        rule: 'provenance-final-state-divergence',
+        why: 'A final Scene value no longer matches its recorded decision origin, so Project Intelligence cannot safely preserve the old provenance claim.',
+        evidenceStatus: 'unresolved',
+        findings: [divergence]
+      });
+    }
+
+    if (previous.provenanceStatus === 'legacy' || current.provenanceStatus === 'legacy') {
+      return boundaryResult(previous, current, {
+        status: 'UNRESOLVED',
+        rule: 'legacy-provenance',
+        why: 'At least one directed Scene predates compiler-first provenance, so the visual decision origin cannot be attributed safely.',
+        evidenceStatus: 'legacy'
+      });
+    }
+
+    if (previous.provenanceStatus === 'missing' || current.provenanceStatus === 'missing') {
+      return boundaryResult(previous, current, {
+        status: 'UNRESOLVED',
+        rule: 'missing-provenance',
+        why: 'Compiler-first markers are incomplete or required Scene evidence is missing.',
+        evidenceStatus: 'unresolved'
+      });
+    }
+
+    const previousEndingAgency = normalizeAuthority(previous?.narrativeAgency?.end);
+    const currentStartingAgency = normalizeAuthority(current?.narrativeAgency?.start);
+    if (!previousEndingAgency || !currentStartingAgency) {
+      return boundaryResult(previous, current, {
+        status: 'UNRESOLVED',
+        rule: 'narrative-handoff-unresolved',
+        why: 'The adjacent Scene handoff cannot be evaluated because one side of the narrative agency boundary is unknown.',
+        evidenceStatus: 'unresolved'
+      });
+    }
+    if (previousEndingAgency !== currentStartingAgency) {
+      return boundaryResult(previous, current, {
+        status: 'WARN',
+        rule: 'narrative-handoff-mismatch',
+        why: `Previous Scene ends with ${previousEndingAgency} agency while the current Scene starts with ${currentStartingAgency}.`,
+        evidenceStatus: 'supported'
+      });
+    }
+
+    const grammarFamily = SUPPORTED_GRAMMAR_FAMILY[current.grammarId] || null;
+    const narrativeFrom = normalizeAuthority(current?.narrativeAgency?.start);
+    const narrativeTo = normalizeAuthority(current?.narrativeAgency?.end);
+    const narrativeTransferred = Boolean(narrativeFrom && narrativeTo && narrativeFrom !== narrativeTo);
+    const hasStructuralCause = OWNERSHIP_CAUSE_ROLES.has(current.narrativeRole);
+    const hasNarrativeCause = narrativeTransferred || hasStructuralCause;
+
+    if (!grammarFamily) {
+      if (narrativeTransferred || current.blockedFamilies?.length) {
+        return boundaryResult(previous, current, {
+          status: 'UNRESOLVED',
+          rule: 'visual-family-unsupported',
+          why: 'The current Grammar does not provide an exact supported ownership mapping for the narrative transfer.',
+          evidenceStatus: current.blockedFamilies?.length ? 'blocked' : 'unresolved'
+        });
+      }
+      return boundaryResult(previous, current, {
+        status: 'UNRESOLVED',
+        rule: 'visual-family-unsupported',
+        why: 'The current Grammar does not provide an exact supported Project-level ownership mapping.',
+        evidenceStatus: 'unresolved'
+      });
+    }
+
+    const responses = {
+      camera: responseItem('camera', previous.cameraAuthority, current.cameraAuthority, current.sources?.camera),
+      color: responseItem('color', previous.colorTerritory, current.colorTerritory, current.sources?.color),
+      agency: responseItem('agency', previous.visualAgency, current.visualAgency, current.sources?.agency)
+    };
+    const relevant = responses[grammarFamily];
+
+    if (narrativeTransferred) {
+      if (current.blockedFamilies?.includes(grammarFamily) || relevant?.source === 'blocked') {
+        return boundaryResult(previous, current, {
+          status: 'UNRESOLVED',
+          rule: 'visual-family-unsupported',
+          why: `The ${grammarFamily.toUpperCase()} response is blocked by the current compiler contract, so the narrative transfer cannot be judged safely.`,
+          evidenceStatus: 'blocked'
+        });
+      }
+      if (!relevant || !relevant.changed || relevant.source !== 'compiler-backed') {
+        return boundaryResult(previous, current, {
+          status: 'WARN',
+          rule: 'narrative-transfer-without-visual-response',
+          why: `The current Scene changes narrative agency from ${narrativeFrom} to ${narrativeTo}, but the supported ${grammarFamily.toUpperCase()} ownership response is not compiler-backed and visibly changed.`,
+          evidenceStatus: relevant?.source === 'unknown' ? 'unresolved' : 'supported'
+        });
+      }
+    }
+
+    if (relevant?.changed && relevant.source === 'compiler-backed' && !hasNarrativeCause) {
+      return boundaryResult(previous, current, {
+        status: 'WARN',
+        rule: 'visual-transfer-without-narrative-cause',
+        why: `A compiler-backed ${grammarFamily.toUpperCase()} ownership transfer occurs without a comparable narrative cause in the current Scene.`,
+        evidenceStatus: 'supported'
+      });
+    }
+
+    return boundaryResult(previous, current, {
+      status: 'PASS',
+      rule: 'boundary-pass',
+      why: hasNarrativeCause
+        ? 'The supported visual ownership response follows the current Scene narrative cause.'
+        : 'No unexplained compiler-backed ownership transfer is present at this boundary.',
+      evidenceStatus: 'supported'
+    });
+  }
+
   return {
     normalizeAuthority,
-    normalizeSceneIntelligence
+    normalizeSceneIntelligence,
+    deriveBoundaryIntelligence
   };
 });
