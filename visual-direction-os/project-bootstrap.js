@@ -5,7 +5,7 @@
 })(typeof window !== 'undefined' ? window : globalThis, root => {
   'use strict';
 
-  const VERSION = '20260818-2048';
+  const VERSION = '20260822-1535';
   const DEMO_STORY = 'A young employee enters a routine assignment meeting expecting to comply. During the conversation, he realizes the assignment itself is a mechanism of control. Recognition turns into explicit refusal, and he leaves the institution acting from self-authored agency.';
   const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const clone = value => value == null ? value : JSON.parse(JSON.stringify(value));
@@ -117,6 +117,7 @@
     await Promise.all([
       loadStyle(`project-workspace.css?v=${VERSION}`),
       loadStyle(`project-context.css?v=${VERSION}`),
+      loadStyle(`project-intelligence.css?v=${VERSION}`),
       loadScript(`project-contracts.js?v=${VERSION}`, 'VDOSProjectContracts'),
       loadScript(`project-context.js?v=${VERSION}`, 'VDOSProjectContextContract')
     ]);
@@ -131,6 +132,8 @@
       loadScript(`project-runtime.js?v=${VERSION}`, 'VDOSProjectRuntime'),
       loadScript(`project-continuity.js?v=${VERSION}`, 'VDOSProjectContinuity')
     ]);
+    await loadScript(`project-intelligence.js?v=${VERSION}`, 'VDOSProjectIntelligence');
+    await loadScript(`project-intelligence-inspector.js?v=${VERSION}`, 'VDOSProjectIntelligenceInspector');
     await loadScript(`project-workspace.js?v=${VERSION}`, 'VDOSProjectWorkspace');
     const persistence = await loadOptionalPersistence();
     return { persistence };
