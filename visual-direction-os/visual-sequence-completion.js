@@ -149,7 +149,7 @@
       : { valid: true, errors: [], value: clone(completion) };
   }
 
-  function assembleSequenceProposal({ skeleton, completion, visualIR } = {}) {
+  function assembleSequenceProposal({ skeleton, completion, visualIR, projectConstraintResolutions = [], projectConstraintRegistryVersion = '0.1.0' } = {}) {
     const checked = validateSequenceCompletion({ skeleton, completion });
     if (!checked.valid) {
       const failure = new Error('Invalid sequence completion.');
@@ -164,6 +164,19 @@
       grammarId: skeleton.grammarId || null,
       fields: {}
     };
+    const satisfiedProjectConstraints = (projectConstraintResolutions || []).filter(item => item?.status === 'SATISFIED');
+    if (satisfiedProjectConstraints.length) {
+      provenance.projectConstraints = {
+        registryVersion: projectConstraintRegistryVersion,
+        resolutions: satisfiedProjectConstraints.map(item => ({
+          constraintId: item.constraintId,
+          revision: item.revision,
+          result: 'satisfied',
+          beatId: item.beatId,
+          path: item.path
+        }))
+      };
+    }
 
     const beats = checked.value.sequenceCompletion.beats.map((beat, index) => {
       const skeletonBeat = skeleton.beats[index];
@@ -189,9 +202,12 @@
       for (const item of expectations.assertions || []) {
         if (item.status !== 'supported') continue;
         setPatchPath(patch, item.path, item.expected);
-        provenance.fields[`${beat.id}.${item.path}`] = {
+        const fieldKey = `${beat.id}.${item.path}`;
+        provenance.fields[fieldKey] = {
           owner: 'compiler', support: 'supported', source: item.source || skeleton.grammarId || null
         };
+        const matches = satisfiedProjectConstraints.filter(entry => entry.beatId === beat.id && entry.path === item.path);
+        if (matches.length) provenance.fields[fieldKey].projectConstraintIds = matches.map(entry => entry.constraintId);
       }
 
       const patchCheck = contracts.validateSceneStatePatch(patch);
