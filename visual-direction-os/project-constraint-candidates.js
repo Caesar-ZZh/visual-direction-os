@@ -141,6 +141,13 @@
         });
         const candidateFingerprint = registry.fingerprintSnapshot('pcand', evidenceSnapshot);
         if (decisions.dismissals?.[candidateFingerprint]?.decision === 'rejected') continue;
+        const alreadyConfirmed = Object.values(decisions.constraints || {}).some(constraint => {
+          if (constraint?.decision !== 'confirmed') return false;
+          const revision = constraint.revisions?.[String(constraint.currentRevision)];
+          if (!revision?.evidence?.canonicalSnapshot) return false;
+          return registry.canonicalJSONString(revision.evidence.canonicalSnapshot) === registry.canonicalJSONString(evidenceSnapshot);
+        });
+        if (alreadyConfirmed) continue;
 
         results.push({
           candidateId: `candidate-${sourceSceneId}-${targetSceneId}-${family}-carry`,
@@ -169,8 +176,5 @@
     return results;
   }
 
-  return {
-    buildConstraintEvidenceSnapshot,
-    deriveProjectConstraintCandidates
-  };
+  return { buildConstraintEvidenceSnapshot, deriveProjectConstraintCandidates };
 });
