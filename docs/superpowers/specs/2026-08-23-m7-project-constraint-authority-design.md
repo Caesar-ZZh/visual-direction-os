@@ -2,9 +2,9 @@
 
 **Status:** Awaiting written-spec review before implementation planning  
 **Branch:** `phase2/director-intelligence-m0`  
-**Baseline before this spec:** `bbddba415eb64753f759afe0d4c7556e9d1f0af5`  
+**Baseline before M7 design:** `bbddba415eb64753f759afe0d4c7556e9d1f0af5`  
 **Depends on:** M5 Compiler-first Sequence Synthesis and M6 Project Intelligence · Shadow  
-**Primary objective:** Introduce the first Project-level authority layer without creating a new Scene State writer: M7 derives high-evidence Project Constraint Candidates, requires explicit Director confirmation, persists only Director decisions, detects stale/conflicting evidence, and guards M5 Sequence synthesis before AI completion.
+**Primary objective:** Introduce the first Project-level authority layer without creating a new Scene State writer. M7 derives high-evidence Project Constraint Candidates, requires explicit Director confirmation, persists only Director decisions, invalidates stale evidence, and guards M5 Sequence synthesis before AI completion.
 
 ---
 
@@ -19,27 +19,25 @@ CAUSE
 → EVIDENCE / PROVENANCE
 ```
 
-but M6 is intentionally read-only. It can say that Scene 02 establishes a compiler-backed contested Camera authority state and that the narrative handoff into Scene 03 is compatible, but it cannot protect that relationship when Scene 03 is directed.
+but M6 is intentionally read-only. It can prove that an upstream Scene established a compiler-backed ownership state and that the next Scene begins from a compatible narrative agency, but it cannot protect that relationship when the next Scene is directed.
 
-The next system needs to preserve a Director-approved cross-Scene commitment without collapsing Scene autonomy or creating a Project-level override that can silently defeat the current Scene narrative truth.
+The next layer must preserve Director-approved cross-Scene commitments without collapsing Scene autonomy or creating a Project-level override that can silently defeat current Scene narrative truth.
 
 The unsafe approaches are:
 
-- automatically turning every M6 `PASS` into a Project rule;
+- converting every M6 `PASS` into a rule;
 - letting Project consistency override a supported Scene Compiler result;
-- using AI to resolve conflicts between Project and Scene authority;
-- inferring exact Project constraints for unsupported families;
-- storing runtime statuses such as `ACTIVE` or `STALE` as if they were durable truth;
-- retroactively constraining a Scene after it has already been directed;
-- treating a previously confirmed constraint as valid after its source evidence changes.
+- asking AI to resolve Project/Scene authority conflicts;
+- inferring exact constraints for unsupported families;
+- storing runtime statuses such as `ACTIVE` or `STALE` as durable truth;
+- retroactively claiming a constraint governed a Scene after that Scene was already directed;
+- continuing to enforce a previously confirmed constraint after its source evidence changes.
 
-M7 therefore introduces a **Guarded Project Constraint Authority** layer whose authority is primarily a workflow guard, not a new Scene State writer.
+M7 therefore introduces **Guarded Project Constraint Authority**. Its authority is primarily a workflow guard, not a new Scene State write channel.
 
 ---
 
-## 2. Core authority principle
-
-M7 must follow this sequence:
+## 2. Core authority pipeline
 
 ```text
 M6 PROJECT INTELLIGENCE · SHADOW
@@ -54,9 +52,9 @@ DIRECTOR REVIEW
                   ↓
         PROJECT CONSTRAINT REGISTRY
                   ↓
-       evidence + scope revalidation
+      current evidence revalidation
                   ↓
-  ACTIVE / SATISFIED / CONFLICT / STALE
+ ACTIVE / SATISFIED / CONFLICT / STALE / INAPPLICABLE
                   ↓
 M5 BASE SEQUENCE SKELETON
                   ↓
@@ -72,60 +70,60 @@ GUARDED PROJECT CONSTRAINT CHECK
          M3 → M4 → APPLY
 ```
 
-The Director-confirmed Project constraint may **block an unsafe Sequence request**, but M7 v1 does not obtain an independent exact Scene State write channel.
+A Director-confirmed Project constraint may block an unsafe Sequence request. M7 v1 does **not** obtain independent exact Scene State write authority.
 
-A Project constraint may protect a supported cross-Scene relationship; it may not fabricate Scene truth.
+A Project constraint may protect a supported relationship; it may not fabricate Scene truth.
 
 ---
 
-## 3. Non-negotiable design principles
+## 3. Non-negotiable principles
 
 1. **Director confirmation is mandatory.** A Candidate has zero authority until explicitly confirmed.
-2. **M6 remains read-only.** Candidate controls do not live inside `PROJECT INTELLIGENCE · SHADOW`.
-3. **No automatic Project override.** Project constraints never silently defeat a supported current Scene Compiler expectation.
-4. **No new Scene State writer.** M7 v1 guards supported Scene Compiler values; it does not introduce `owner: project` as a new value-writing authority.
-5. **Scene narrative truth remains primary.** If a current Scene has a deterministic supported ownership result that conflicts with a Project commitment, the result is `CONFLICT`, not Project overwrite.
-6. **AI never arbitrates authority conflicts.** A Project/Scene conflict blocks Sequence completion before the AI request.
+2. **M6 remains read-only.** Candidate/constraint controls live in a separate Project Constraints UI.
+3. **No automatic Project override.** Project constraints never silently defeat a supported Scene Compiler expectation.
+4. **No new Scene State writer.** M7 does not introduce `owner: project` for exact values.
+5. **Scene narrative truth remains primary.** A supported current Scene result that conflicts with a Project commitment produces `CONFLICT`, not overwrite.
+6. **AI never arbitrates authority conflicts.** Conflict/stale/unsupported cases block before the AI request.
 7. **Candidate eligibility is stricter than M6 PASS.** “No problem detected” is not enough evidence to create authority.
-8. **Only deterministic supported families are authority-eligible in v1.** Exact Project constraints are limited to currently supported ownership paths.
-9. **Scope is explicit and narrow.** No Project-wide style homogenization or implicit downstream propagation.
-10. **Evidence can expire.** A confirmed constraint loses authority when the evidence on which it was confirmed changes.
-11. **Persist decisions, derive runtime truth.** Store Director intent; recompute `ACTIVE`, `SATISFIED`, `CONFLICT`, `STALE`, and `INAPPLICABLE` from current evidence.
-12. **Legacy Projects remain valid.** Missing M7 registry data is interpreted as an empty registry.
+8. **Only deterministic supported families are authority-eligible in v1.**
+9. **Scope is explicit and narrow.** No implicit propagation to all downstream Scenes.
+10. **Evidence can expire.** A confirmed constraint loses authority when the evidence under which it was confirmed changes.
+11. **Persist decisions; derive runtime truth.** Store Director intent, recompute runtime status.
+12. **Legacy Projects remain valid.** Missing M7 registry means empty registry.
 13. **Grammar autonomy is preserved.** M7 never selects or rewrites a Scene Grammar.
-14. **Mechanism-based and IP-neutral.** Constraints refer to agency, ownership, supported paths, scope, provenance, and Director decisions, not copyrighted style imitation.
-15. **No merge as part of M7.** The existing Phase II PR remains Draft until explicit product approval.
+14. **Mechanism-based and IP-neutral.** Constraints refer only to supported mechanisms, paths, agency, provenance, scope, and Director decisions.
+15. **No merge as part of M7.** The Phase II PR remains Draft until explicit product approval.
 
 ---
 
-## 4. Architectural alternatives considered
+## 4. Architecture choice
 
-### 4.1 Selected — Independent Project Constraint Registry + Guarded Injection
+### 4.1 Selected — Independent Registry + Guarded Sequence Check
 
-M6 derives Candidates. Director decisions are persisted in a Project Constraint Registry. Before AI completion, a Project Constraint Authority resolver compares current Project evidence, target Scene truth, and the base M5 Skeleton.
+M6 supplies evidence. A Candidate module derives eligible proposals. Director decisions persist in a Project Constraint Registry. A pure authority resolver revalidates evidence and compares confirmed commitments with the current target Scene/base M5 Skeleton before AI completion.
 
 Advantages:
 
-- clear ownership and lifecycle;
+- clear ownership/lifecycle;
 - precise scope;
-- durable Director decisions without storing derived runtime status;
+- durable Director decisions without cached runtime truth;
 - safe staleness handling;
-- does not overload M6, M5 Skeleton compiler, or M4;
-- provides an explicit provenance boundary for future Prompt Compiler / Generation / QA work.
+- M6 stays diagnostic;
+- M5 stays Scene-oriented;
+- M4 keeps its existing Apply-time Scene authority semantics;
+- future Prompt Compiler/Generation/QA receive explicit Project provenance.
 
-### 4.2 Rejected — Write Project constraints directly into the M5 Skeleton compiler
+### 4.2 Rejected — Put Project logic directly in `visual-sequence-skeleton.js`
 
-This would make `visual-sequence-skeleton.js` responsible for both Scene-level Grammar semantics and Project-level continuity commitments. It would make provenance harder to explain and would encourage hidden coupling between Scene and Project authority.
+This would mix Scene Grammar semantics with Project commitments and make provenance harder to reason about.
 
 ### 4.3 Deferred — Project Policy Graph
 
-A Project-wide policy graph could later model dependencies, propagation, exceptions, and long-range constraint networks. It is premature while deterministic evidence is limited to a small ownership subset. M7 v1 deliberately uses a scoped registry instead.
+A general graph for long-range rules, dependencies, propagation, and exceptions is premature. M7 v1 uses immediate, scoped constraints only.
 
 ---
 
-## 5. System boundaries
-
-M7 is composed of four focused runtime modules plus UI integration.
+## 5. Module boundaries
 
 ```text
 project-constraint-candidates.js
@@ -136,79 +134,77 @@ visual-sequence-project-constraints.js
 
 ### 5.1 `project-constraint-candidates.js`
 
-Pure derivation only.
+Pure derivation.
 
 Inputs:
 
+- Project State;
 - current M6 Project Intelligence result;
-- current Project State;
 - target Scene narrative structure;
-- current dismissal ledger.
+- dismissal ledger.
 
 Outputs:
 
-- authority-eligible Candidates;
-- explicit ineligibility reasons when useful for diagnostics.
+- eligible Candidates;
+- deterministic ineligibility reasons where useful.
 
-It must not mutate Project State, M6 output, Scene State, Narrative State, Sequence State, or registry data.
+No mutation.
 
 ### 5.2 `project-constraint-registry.js`
 
-Owns the contract and deterministic transforms for persisted Director decisions:
+Owns persisted Director-decision contracts and pure transforms:
 
 - confirm Candidate;
 - reject/dismiss Candidate fingerprint;
 - revoke constraint;
 - add scoped release exception;
-- create a new revision after stale evidence is reviewed;
-- validate registry structure;
-- preserve history.
+- confirm a new revision after stale evidence review;
+- validate/normalize registry.
 
-This module does not determine whether a constraint is currently active. It persists decisions only.
+This module does not decide whether a constraint is currently active.
 
 ### 5.3 `project-constraint-authority.js`
 
-Pure runtime authority resolver.
+Pure runtime resolver.
 
 Inputs:
 
-- Project State;
+- current Project State;
 - current M6 evidence;
-- confirmed registry;
+- registry;
 - target Scene;
 - target Visual IR / Grammar support;
-- base M5 Sequence Skeleton.
+- base M5 Skeleton.
 
 Outputs:
 
-- per-constraint runtime resolution;
-- aggregate gating result;
-- conflict objects;
-- stale/inapplicable explanations;
-- read-only Project Constraint Context for the Sequence API.
+- current revision validity;
+- `ACTIVE / SATISFIED / CONFLICT / STALE / INAPPLICABLE`;
+- workflow gating;
+- conflict detail;
+- read-only Project Constraint Context for Sequence completion.
 
-It must never mutate registry, Project State, Skeleton, or Scene State.
+No mutation.
 
 ### 5.4 `visual-sequence-project-constraints.js`
 
 Thin bridge between M7 and M5.
 
-Responsibilities:
+It:
 
-- receive a base M5 Skeleton;
-- ask M7 authority resolver whether Sequence synthesis is safe;
-- expose satisfied constraint annotations for downstream provenance;
-- block the Sequence request when required.
-
-It must not duplicate Visual Compiler logic or independently derive Scene State values.
+- receives an already-compiled base M5 Skeleton;
+- invokes M7 resolution;
+- returns allow/block result plus provenance annotations;
+- never reimplements the Visual Compiler;
+- never invents a Project-owned exact Scene State value.
 
 ---
 
-## 6. Correct causal direction for Candidate generation
+## 6. Correct causal direction
 
-M7 must never generate a Project constraint from a relationship that only becomes known after the target Scene has already been directed.
+M7 must be prospective.
 
-The correct temporal direction is:
+The correct direction is:
 
 ```text
 Scene A → Scene B
@@ -216,7 +212,8 @@ already directed and M6-supported
         ↓
 Scene B has a current compiler-backed ownership state
         ↓
-Scene C narrative structure already exists
+Scene C already exists as the immediate next Scene
+and has narrative structure
         ↓
 B ending agency ↔ C starting agency is compatible
         ↓
@@ -246,7 +243,7 @@ SCENE 03 narrative structure
 CONTESTED → CHARACTER
 ```
 
-M7 may now derive:
+M7 may derive:
 
 ```text
 OWNERSHIP CARRY
@@ -255,77 +252,79 @@ SOURCE · SCENE 02
 TARGET · SCENE 03 / SETUP
 ```
 
-Scene 03 must not already be fully directed for this Candidate to have prospective authority in v1.
+### 6.1 Immediate-next-Scene rule
 
-Retroactive Project analysis may still explain an already directed Scene, but it must not silently create a new constraint that claims to have governed that past direction.
+M7 v1 only creates authority-bearing carry Candidates from a source Scene to its **immediate next Scene in `sceneOrder`**. It does not jump over intervening Scenes.
+
+### 6.2 Prospective target rule
+
+A target remains prospective if:
+
+- it exists in Project State;
+- it has narrative structure from Project breakdown/current edits;
+- its visual status is not `directed`.
+
+A target may be `undirected` or `in-progress` provided it has not already established a final directed Scene history. Current evidence will be revalidated again at Sequence time.
+
+Retroactive M6 analysis may explain directed Scenes, but M7 v1 must not create a new constraint that claims to have governed a past directed target.
 
 ---
 
 ## 7. Candidate eligibility
 
-A Candidate is not a Constraint. It is a runtime proposal with zero authority.
+A Candidate is runtime data with zero authority.
 
-An ownership Candidate is eligible only if all required conditions are satisfied.
+An ownership Candidate is eligible only if all required gates pass.
 
-### 7.1 Required evidence gates
+### 7.1 Required gates
 
-1. **Material supported relationship exists upstream.** The source ownership state was established through a meaningful compiler-backed relationship, not merely because an upstream M6 boundary had no warning.
-2. **Relevant value source is `compiler-backed`.** `ai-completed`, `legacy`, `unknown`, and `blocked` are not authority sources in v1.
-3. **Final source value still matches provenance.** M6 provenance/final-state divergence makes the source ineligible.
-4. **Narrative handoff into the target is known and compatible.** Previous Scene ending agency must equal target Scene starting agency after normalization.
-5. **Target scope can be stated exactly.** The Candidate names target Scene, Beat, family, and path.
-6. **The path is authority-eligible.** No unsupported semantic coercion is needed.
-7. **Target is prospective.** M7 v1 does not create authority Candidates for a target Scene that has already been fully directed under another decision history.
-8. **Candidate has not been dismissed for the same evidence fingerprint.** A previously rejected identical proposal stays hidden until relevant evidence changes.
+1. **A material supported upstream relationship exists.** The source state is not eligible merely because an upstream boundary had no warnings.
+2. **Relevant source is `compiler-backed`.**
+3. **Final source value still matches provenance.**
+4. **Target is the immediate next Scene.**
+5. **Source ending agency and target starting agency are both known and compatible.**
+6. **Target is prospective, not already directed.**
+7. **Scope can be expressed exactly: target Scene, Beat, family, path.**
+8. **Path is authority-eligible.**
+9. **No unsupported semantic inference is required.**
+10. **The exact Candidate fingerprint has not been rejected.**
 
-### 7.2 M6 status is not sufficient by itself
+### 7.2 M6 PASS is necessary only where the source relationship requires it, never sufficient
 
-This is forbidden:
+Forbidden logic:
 
 ```js
-if (boundary.status === 'PASS') {
-  return makeConstraintCandidate(boundary);
-}
+if (boundary.status === 'PASS') return candidate;
 ```
 
-A `PASS` can mean only that no evaluated problem was found. Candidate generation additionally requires a material compiler-backed ownership relation that can be meaningfully carried into a future Scene.
+Candidate derivation additionally needs a material compiler-backed ownership response and compatible future handoff.
 
-### 7.3 Hard ineligibility conditions
+### 7.3 Hard ineligibility
 
-The following conditions never produce an authority Candidate in M7 v1:
+No authority Candidate is produced when relevant evidence is:
 
-- `UNRESOLVED` evidence;
-- `provenance-final-state-divergence`;
-- `legacy-provenance`;
-- `missing-provenance`;
-- blocked/partial/unsupported mapping;
-- narrative handoff mismatch;
-- AI-completed-only source;
-- unknown source;
-- a target Scene already fully directed under another history;
-- an exact path that the current deterministic compiler contract does not support as an authority-bearing family.
+- `UNRESOLVED`;
+- provenance/final-state divergent;
+- legacy;
+- missing;
+- blocked;
+- partial/unsupported;
+- AI-completed-only;
+- unknown;
+- handoff mismatched;
+- target already directed;
+- non-adjacent;
+- outside an authority-eligible exact path.
 
 ### 7.4 WARN is not auto-repair input
 
-M6 `WARN` findings do not automatically become constraints.
-
-For example:
-
-```text
-Narrative transfer exists
-but supported Camera response is absent
-WARN
-```
-
-M7 must not convert that into “force Camera to change.” That would turn Project Intelligence into an implicit auto-fix system.
-
-M7 v1 protects relationships already proven to exist; it does not manufacture the missing relationship that caused a warning.
+M6 `WARN` does not become an automatic constraint. M7 protects relationships already proven to exist; it does not use Project authority to manufacture the relationship that M6 says is missing.
 
 ---
 
-## 8. Authority-eligible paths in v1
+## 8. Authority-eligible paths and types
 
-Initial exact Project constraints are limited to paths with deterministic ownership semantics already supported by the Scene Compiler:
+### 8.1 Exact paths in v1
 
 ```text
 agency
@@ -333,16 +332,14 @@ camera.perspective
 color.territory
 ```
 
-Candidate generation should primarily use:
+Cross-Scene Candidate generation should primarily use:
 
 ```text
 camera.perspective
 color.territory
 ```
 
-for cross-Scene ownership carry.
-
-The following do not receive exact Project constraint authority in v1:
+### 8.2 Unsupported exact Project authority in v1
 
 ```text
 space.*
@@ -356,48 +353,19 @@ Line → Boundary
 Intensity → exact Space state
 ```
 
-Unsupported families remain evidence or diagnostics only.
+### 8.3 Constraint types
+
+**`ownership-carry`** — primary v1 type. Carries a current compiler-backed Camera/Color ownership state into the immediate next Scene `SETUP` when narrative handoff is compatible.
+
+**`handoff-guard`** — protects a confirmed endpoint commitment against an unexplained reset. It remains a guard, not a value invention mechanism.
+
+**`transfer-completion`** — reserved schema enum only. Candidate generation must not emit it until a deterministic v1 case is explicitly implemented/tested. Reserving the enum does not grant authority.
 
 ---
 
-## 9. Initial M7 constraint types
+## 9. Scope rules
 
-M7 v1 keeps the authority vocabulary intentionally small.
-
-### 9.1 `ownership-carry`
-
-Carries a currently compiler-backed ownership state from a directed source Scene into the deterministic `SETUP` endpoint of the next target Scene when the narrative handoff is compatible.
-
-Example:
-
-```text
-Scene 02 final Camera authority = MIXED
-Scene 02 ending agency = CONTESTED
-Scene 03 starting agency = CONTESTED
-
-Candidate:
-Scene 03 / SETUP / camera.perspective = MIXED
-```
-
-### 9.2 `handoff-guard`
-
-Protects an already confirmed ownership handoff against an unexplained reset in a target deterministic endpoint. It is a guard, not a value invention mechanism.
-
-If the current Scene Compiler cannot support the relevant path, the result is conflict/review, not Project write-through.
-
-### 9.3 `transfer-completion`
-
-Reserved for cases where a Director-confirmed cross-Scene ownership transfer has a deterministic endpoint in a future Scene and the current narrative explicitly continues that ownership transition.
-
-M7 v1 implementation may defer emitting this type until its exact deterministic cases are proven by tests. The schema may reserve the enum, but unsupported instances must not be fabricated.
-
----
-
-## 10. Scope rules
-
-Every confirmed constraint must have explicit finite scope.
-
-Minimum scope shape:
+Every confirmed constraint has explicit finite scope.
 
 ```js
 {
@@ -409,42 +377,36 @@ Minimum scope shape:
 }
 ```
 
-M7 v1 authority-bearing Candidate generation is limited to deterministic endpoint scope, primarily:
+### 9.1 Endpoint restriction
+
+M7 v1 authority-bearing Candidate generation is limited to deterministic endpoints, primarily:
 
 ```text
 SETUP
 ```
 
-and only where formally justified:
+`NEW OWNERSHIP` may only be used if a future implementation proves an exact prospective Project relation without relying on an AI-selected intermediate Agency. It is not required for the initial implementation.
 
-```text
-NEW OWNERSHIP
-```
+Intermediate Beats (`PRESSURE`, `RUPTURE`, `RELEASE`) remain out of authority-bearing Candidate generation in v1 because their Agency may be constrained-open under M5.
 
-Intermediate Beats such as `PRESSURE`, `RUPTURE`, and `RELEASE` normally have constrained-open agency under M5, so M7 v1 must not pretend their exact ownership value is known before AI completion.
+### 9.2 Forbidden default scopes
 
-The schema may support an exception identified by explicit Beat ID, but v1 Candidate generation must not create speculative middle-Beat exact constraints.
-
-Forbidden default scopes:
-
-- entire Project;
+- whole Project;
 - all downstream Scenes;
-- all Beats in a Scene;
+- all Beats;
 - all Grammars;
-- “maintain visual consistency” without an exact path and boundary.
+- “maintain consistency” without exact path/scope.
 
 ---
 
-## 11. Candidate record
-
-A derived Candidate should be deterministic and machine-readable.
+## 10. Candidate record and fingerprint
 
 Illustrative shape:
 
 ```js
 {
   candidateId: 'candidate-scene02-scene03-camera-carry',
-  candidateFingerprint: 'pcand-...',
+  candidateFingerprint: 'pcand-0123456789abcdef',
   eligibility: 'eligible',
   type: 'ownership-carry',
 
@@ -472,15 +434,13 @@ Illustrative shape:
 }
 ```
 
-Candidates are derived runtime values and are not persisted as canonical Project decisions.
+Candidate objects are never persisted as canonical Project decisions.
 
 ---
 
-## 12. Project Constraint Registry
+## 11. Project Constraint Registry
 
-M7 persists only Director decisions, not runtime Candidate or authority status.
-
-Project State gains an optional backward-compatible field:
+Project State gains one optional backward-compatible field:
 
 ```js
 projectConstraints: {
@@ -490,58 +450,72 @@ projectConstraints: {
 }
 ```
 
-### 12.1 Backward compatibility
+A Project with no field remains valid and normalizes to an empty registry.
 
-An older Project with no `projectConstraints` field remains valid.
+### 11.1 Constraint record is explicitly revisioned
 
-Runtime interpretation:
-
-```text
-projectConstraints missing
-→ empty registry
-```
-
-The registry is initialized only when the Director first confirms/rejects/revokes a Project constraint decision or when a newly created Project explicitly includes an empty registry.
-
-No destructive migration is required.
-
-### 12.2 Persisted constraint shape
-
-Illustrative v1 shape:
+M7 must not use an ambiguous “current value + history array” model. A constraint is a durable identity with explicit immutable revisions.
 
 ```js
 {
   constraintId: 'constraint-camera-carry-001',
-  revision: 1,
-  decision: 'confirmed',
   type: 'ownership-carry',
+  decision: 'confirmed',
+  currentRevision: 2,
 
-  family: 'camera',
-  path: 'camera.perspective',
-  expected: 'mixed',
+  revisions: {
+    '1': {
+      revision: 1,
+      state: 'superseded',
+      family: 'camera',
+      path: 'camera.perspective',
+      expected: 'mixed',
+      scope: {
+        sourceSceneId: 'scene-02',
+        targetSceneId: 'scene-03',
+        beatIds: ['setup']
+      },
+      evidence: {
+        contractVersion: '0.1.0',
+        fingerprint: 'pcf-...',
+        canonicalSnapshot: { /* exact evidence snapshot */ }
+      },
+      exceptions: []
+    },
 
-  scope: {
-    sourceSceneId: 'scene-02',
-    targetSceneId: 'scene-03',
-    beatIds: ['setup']
-  },
-
-  evidence: {
-    fingerprint: 'pcf-...',
-    contractVersion: '0.1.0',
-    sourceBoundaryId: 'scene-01->scene-02',
-    source: 'compiler-backed',
-    snapshot: { /* minimal canonical evidence */ }
-  },
-
-  exceptions: [],
-  history: []
+    '2': {
+      revision: 2,
+      state: 'current',
+      family: 'camera',
+      path: 'camera.perspective',
+      expected: 'character',
+      scope: {
+        sourceSceneId: 'scene-02',
+        targetSceneId: 'scene-03',
+        beatIds: ['setup']
+      },
+      evidence: {
+        contractVersion: '0.1.0',
+        fingerprint: 'pcf-...',
+        canonicalSnapshot: { /* new exact evidence snapshot */ }
+      },
+      exceptions: []
+    }
+  }
 }
 ```
 
-### 12.3 Persisted vs derived state
+Rules:
 
-Persisted Director decisions:
+- `currentRevision` points to exactly one revision while `decision === 'confirmed'`;
+- a new revision marks the previous current revision `superseded`;
+- old revision data is retained unchanged;
+- `decision === 'revoked'` removes all runtime authority but preserves `currentRevision` and revision history for audit;
+- runtime authority always reads only the current revision of a confirmed constraint.
+
+### 11.2 Persisted vs derived state
+
+Persisted:
 
 ```text
 CONFIRMED
@@ -549,7 +523,7 @@ REVOKED
 REJECTED (dismissal ledger)
 ```
 
-Derived runtime states:
+Derived:
 
 ```text
 ACTIVE
@@ -559,19 +533,17 @@ STALE
 INAPPLICABLE
 ```
 
-Runtime states must never be trusted merely because they were previously rendered.
+Derived states are never persisted as authoritative truth.
 
 ---
 
-## 13. Candidate rejection / dismissal ledger
+## 12. Dismissal ledger
 
-Director rejection must be remembered for the exact evidence version of the Candidate.
-
-Example:
+Director rejection is stored against the exact Candidate fingerprint:
 
 ```js
 dismissals: {
-  'pcand-fingerprint-X': {
+  'pcand-0123456789abcdef': {
     decision: 'rejected'
   }
 }
@@ -580,125 +552,136 @@ dismissals: {
 Semantics:
 
 ```text
-same Candidate evidence
-→ stays dismissed
+same evidence + same scope
+→ same Candidate fingerprint
+→ remains dismissed
 
-evidence changes
+material evidence/scope changes
 → new fingerprint
 → new Candidate may appear
 ```
 
-The Director rejects a proposal under a specific evidence state, not the underlying mechanism forever.
+The Director rejects a proposal under one evidence state, not the underlying mechanism forever.
 
 ---
 
-## 14. Evidence fingerprint and staleness
+## 13. Canonical evidence snapshot and fingerprint algorithm
 
-M5 currently records Skeleton version, Reading ID, Strategy ID, Grammar ID, and provenance, but it does not provide a dedicated Skeleton revision fingerprint. M7 must not pretend that such a revision mechanism already exists.
+M5 does not currently provide a dedicated Skeleton revision fingerprint. M7 must not pretend one exists.
 
-M7 therefore owns a deterministic **evidence content fingerprint**.
+M7 owns an **evidence content identity**.
 
-This fingerprint is not a cryptographic trust signature. It is a stable identity for the facts under which the Director confirmed the constraint.
+### 13.1 Canonical snapshot fields
 
-### 14.1 Minimal canonical evidence snapshot
-
-The fingerprint input should contain only facts that can invalidate the authority decision.
-
-Source evidence:
+Source evidence includes only facts capable of invalidating the decision:
 
 - source Scene ID;
-- source Scene narrative role;
-- source Scene agency transition;
+- source narrative role;
+- source agency transition;
 - source applied Beat ID;
 - source Reading ID;
 - source Strategy ID;
 - source Grammar ID;
-- source path;
+- source family/path;
 - source compiler-produced value;
-- current final Scene value;
-- provenance source/status;
-- source M6 integrity state relevant to this path.
+- current final source Scene value;
+- relevant provenance source/status;
+- relevant M6 integrity state.
 
-Target context:
+Target context includes:
 
 - target Scene ID;
 - target narrative role;
 - target agency transition;
-- source → target adjacency/order relation;
+- source/target immediate adjacency and order;
 - constraint type;
 - target Beat scope;
 - family/path;
-- Project Constraint authority contract version.
+- M7 authority contract version.
 
-### 14.2 Canonicalization
+### 13.2 Canonical serialization
 
-Fingerprint creation must use deterministic canonical serialization with stable key ordering and normalized values. Two deep-equal evidence snapshots must generate the same fingerprint.
+`canonicalize(value)` must:
 
-No wall-clock timestamp may participate in equality.
+- recursively sort object keys lexicographically;
+- preserve array order;
+- preserve strings, booleans, numbers, and null exactly after existing domain normalization;
+- omit object properties whose value is `undefined`;
+- never include wall-clock timestamps or object insertion order.
 
-### 14.3 STALE triggers
+The result is serialized as compact JSON.
 
-A confirmed constraint becomes `STALE` if a material evidence component changes, including:
+### 13.3 Fingerprint digest
+
+For synchronous deterministic browser/Node parity, v1 uses **64-bit FNV-1a** over the UTF-8 bytes of the canonical JSON string, implemented with JavaScript `BigInt` and modulo `2^64`.
+
+Output:
+
+```text
+pcf-<16 lowercase hex chars>     // confirmed evidence
+pcand-<16 lowercase hex chars>   // Candidate identity
+```
+
+This digest is **not a security signature** and must not be treated as cryptographic proof.
+
+### 13.4 Collision-safe authority comparison
+
+Runtime staleness must not rely on the digest alone.
+
+The registry stores the canonical evidence snapshot. Current authority revalidation compares canonical serialized snapshot content directly. The digest is a compact identity/display/dismissal key; exact canonical snapshot equality is the authority check.
+
+---
+
+## 14. Staleness
+
+A confirmed current revision becomes `STALE` whenever the current canonical evidence snapshot differs from the snapshot stored in that revision.
+
+Material triggers include:
 
 - source Reading changes;
 - source Strategy changes;
 - source Grammar changes;
 - source applied Beat changes;
-- compiler-backed source value changes;
-- final source Scene State diverges from recorded provenance;
-- target narrative role/agency transition changes in a way that affects handoff/scope;
+- source compiler-backed value changes;
+- final source Scene State diverges;
 - source/target adjacency changes;
 - target Scene identity changes;
-- authority contract version changes incompatibly.
+- target narrative role/agency transition changes in a material way;
+- incompatible M7 contract version change.
 
-### 14.4 STALE semantics
+### 14.1 STALE semantics
 
 ```text
 STALE
 → exact authority = NONE
-→ workflow = REVIEW REQUIRED
+→ workflow = blocked-review-required
 ```
 
 A stale constraint never continues to enforce its old value.
 
-It is also not silently ignored when it targets the current Sequence request. Because the Director previously made an explicit commitment, the workflow must require resolution:
+It is also not silently ignored when it targets the current Sequence request. Because the Director previously made an explicit commitment, the Director must:
 
-- revoke the old constraint; or
-- review current evidence and confirm a new revision.
+- revoke it; or
+- review the new evidence and confirm a new revision.
 
 ---
 
-## 15. Constraint revision history
+## 15. Revision and release semantics
 
-Reconfirmation after changed evidence creates a new revision.
+### 15.1 Reconfirm stale evidence
 
-Example:
+Reconfirmation creates revision N+1 under the same `constraintId`.
 
 ```text
-constraint-camera-carry-001
-
-REV 01
-expected = MIXED
-state = SUPERSEDED
-
-REV 02
-expected = CHARACTER
-state = CONFIRMED
+REV 01 · SUPERSEDED
+REV 02 · CURRENT
 ```
 
-The old decision history remains auditable.
+The previous revision remains auditable.
 
-A new revision must not silently inherit scope exceptions from the previous revision unless the Director explicitly reconfirms them.
+### 15.2 Release exception
 
-This enables later systems to record exactly which Project Constraint revision governed a generation or QA decision.
-
----
-
-## 16. Release exceptions
-
-A Director may release a confirmed constraint for an explicit allowed scope.
-
-Persisted example:
+A release is an explicit Director decision stored inside one revision:
 
 ```js
 exceptions: [
@@ -706,114 +689,87 @@ exceptions: [
     sceneId: 'scene-03',
     beatId: 'setup',
     action: 'release',
-    revision: 1
+    revision: 2
   }
 ]
 ```
 
 Rules:
 
-- exception must match constraint revision;
-- stale/superseded revision exceptions do not automatically carry forward;
-- an exception removes that constraint from authority resolution for the matching scope;
-- it does not mutate Narrative, Strategy, Grammar, or Scene State;
-- it does not mean the underlying Project commitment was globally revoked.
-
-M7 v1 Candidate generation remains endpoint-focused, so exception UI should not imply speculative middle-Beat constraints that the system does not generate.
+- exception revision must equal the containing revision;
+- exceptions do not automatically transfer to a new revision;
+- a matching release makes the constraint `INAPPLICABLE` for that scope;
+- release does not mutate Narrative, Strategy, Grammar, or Scene State.
 
 ---
 
-## 17. Runtime authority resolution
+## 16. Runtime authority states
 
-For each confirmed constraint relevant to the target Scene, derive one runtime result.
+A confirmed constraint may derive:
 
-Suggested shape:
+### `ACTIVE`
 
-```js
-{
-  constraintId,
-  revision,
-  targetSceneId,
-  beatId,
-  path,
-  expected,
+Current revision evidence is valid and the target remains relevant, but no base Skeleton/Scene expectation has yet been evaluated for the Sequence request.
 
-  status:
-    'ACTIVE' |
-    'SATISFIED' |
-    'CONFLICT' |
-    'STALE' |
-    'INAPPLICABLE',
+### `SATISFIED`
 
-  sceneExpectation: null,
-  authority: 'guard',
-  writeAuthority: 'none',
-  workflow: 'allow' | 'blocked-review-required',
-  reason,
-  conflict: null
-}
-```
+Current evidence is valid and the supported Scene Compiler expectation for the scoped path equals the Project expected value.
 
-`writeAuthority` remains `none` for M7 itself. Exact values continue to come from the Scene Compiler when supported.
+### `CONFLICT`
+
+Current evidence is valid but either:
+
+- supported Scene Compiler expectation differs; or
+- target Grammar does not provide exact deterministic support needed to satisfy the confirmed constraint.
+
+### `STALE`
+
+Current canonical evidence differs from the confirmed revision snapshot.
+
+### `INAPPLICABLE`
+
+The constraint is not relevant to the current target/scope, is covered by a matching release exception, or is revoked.
 
 ---
 
-## 18. Conflict resolution rules
+## 17. Conflict resolution
 
-### 18.1 SATISFIED — Project and Scene agree
-
-Example:
+### 17.1 Equal Project and Scene values
 
 ```text
-PROJECT CONSTRAINT
+PROJECT
 camera.perspective = MIXED
 
 SCENE COMPILER
 camera.perspective = MIXED
-```
 
-Result:
-
-```text
-SATISFIED
-workflow = allow
+→ SATISFIED
+→ workflow allow
 ```
 
 The Scene Compiler remains the exact value owner.
 
-### 18.2 CONFLICT — exact supported values disagree
-
-Example:
+### 17.2 Supported values disagree
 
 ```text
-PROJECT CONSTRAINT
+PROJECT
 camera.perspective = MIXED
 
-CURRENT SCENE COMPILER
+SCENE COMPILER
 camera.perspective = CHARACTER
+
+→ CONFLICT
+→ workflow blocked-review-required
+→ AI request count = 0
 ```
 
-Result:
-
-```text
-CONFLICT
-workflow = blocked-review-required
-AI request = NOT STARTED
-```
-
-The system must not:
-
-- allow Project to overwrite Scene Compiler;
-- silently ignore Project commitment;
-- delegate to AI;
-- auto-edit Narrative/Strategy.
-
-Illustrative conflict object:
+Illustrative conflict:
 
 ```js
 {
   status: 'conflict',
-  constraintId: 'constraint-camera-001',
+  constraintId: 'constraint-camera-carry-001',
+  revision: 1,
   path: 'camera.perspective',
   projectExpected: 'mixed',
   sceneExpected: 'character',
@@ -822,11 +778,16 @@ Illustrative conflict object:
 }
 ```
 
-### 18.3 CONFLICT — target Grammar lacks exact support
+The system must not:
 
-A Grammar change is not an error by itself.
+- let Project overwrite Scene Compiler;
+- silently ignore the confirmed Project commitment;
+- ask AI to choose;
+- auto-edit Reading/Strategy.
 
-However, if a confirmed Camera constraint targets Scene 03 and Scene 03 currently selects a Grammar that has no exact supported Camera mapping, M7 cannot safely enforce that commitment.
+### 17.3 Target Grammar unsupported
+
+Grammar diversity remains allowed. However, if a confirmed Camera constraint targets a Scene whose selected Grammar has no exact deterministic Camera mapping, M7 cannot prove the commitment is satisfied.
 
 Result:
 
@@ -836,7 +797,7 @@ reason = TARGET-GRAMMAR-UNSUPPORTED
 AI request = NOT STARTED
 ```
 
-The UI should explicitly distinguish:
+UI must distinguish:
 
 ```text
 GRAMMAR CHANGE IS ALLOWED
@@ -848,35 +809,23 @@ from:
 THIS CONFIRMED CONSTRAINT CANNOT BE SAFELY SATISFIED UNDER THE CURRENT GRAMMAR
 ```
 
-M7 does not switch the Grammar automatically.
+M7 never changes Grammar automatically.
 
-### 18.4 KEEP / RELEASE / REVOKE
+### 17.4 Director actions
 
-On conflict the Director may choose:
+**KEEP** — leaves constraint confirmed and conflict unresolved; Sequence remains blocked.
 
-**KEEP**
-- constraint remains confirmed;
-- conflict remains unresolved;
-- Sequence remains blocked.
+**RELEASE FOR THIS SCOPE** — stores a revision-bound exception; matching scope becomes inapplicable.
 
-**RELEASE FOR THIS SCOPE**
-- persist a matching release exception;
-- resolver ignores this constraint only for that scope;
-- other scope remains intact.
+**REVOKE** — constraint decision becomes revoked; no future authority.
 
-**REVOKE**
-- persisted constraint decision becomes revoked;
-- it contributes no future authority.
-
-M7 v1 does not offer “Override Scene Compiler.”
-
-If the Director wants the Project commitment to become current Scene truth, the correct future flow is to reauthor the Scene Narrative/Strategy and compile again.
+M7 v1 has no `Override Scene Compiler` action.
 
 ---
 
-## 19. Guarded integration with M5
+## 18. Guarded integration with M5
 
-M7 sits after the base M5 Skeleton is compiled and before the Sequence AI request.
+M7 runs after base Skeleton compilation and before AI completion.
 
 ```text
 Confirmed Reading
@@ -909,40 +858,31 @@ SEQUENCE BLOCKED FOR REVIEW
 AI REQUEST COUNT = 0
 ```
 
-M7 must not duplicate `compileBeatExpectations()` or implement its own alternative Visual Compiler.
+M7 must not duplicate `compileBeatExpectations()` or implement an alternative Visual Compiler.
 
 ---
 
-## 20. Deterministic endpoint restriction
+## 19. Deterministic endpoint restriction
 
-M5 already fixes endpoint Agency for:
+M5 fixes endpoint Agency for `SETUP` and `NEW OWNERSHIP`, while intermediate Beat Agency may remain constrained-open.
 
-```text
-SETUP
-NEW OWNERSHIP
-```
+M7 v1 therefore focuses on Project constraints whose relevant Scene Compiler expectation is knowable before AI completion.
 
-while intermediate Beat Agency remains constrained-open.
-
-M7 v1 authority-bearing constraints should therefore resolve only where the relevant Scene Compiler expectation is knowable before AI completion.
-
-Primary supported use:
+Primary implementation target:
 
 ```text
 ownership-carry → SETUP
 ```
 
-`NEW OWNERSHIP` may be allowed only when the exact prospective Project relationship is explicitly supported and does not require guessing an intermediate AI-selected Agency.
-
-M7 must not become a post-AI correction layer for `PRESSURE`, `RUPTURE`, or `RELEASE` in v1.
+M7 must not become a post-AI correction layer for `PRESSURE`, `RUPTURE`, or `RELEASE`.
 
 ---
 
-## 21. Effect on AI Sequence Completion
+## 20. Effect on AI Sequence Completion
 
-M7 does not give AI more write authority.
+M7 gives AI no additional write authority.
 
-Existing M5 rules remain:
+Existing M5 ownership rules remain:
 
 ```text
 compiler-owned / compiler-derived
@@ -955,16 +895,16 @@ open
 → AI may complete within contract
 ```
 
-### 21.1 Read-only Project Constraint Context
+### 20.1 Read-only Project Constraint Context
 
-When all relevant constraints allow Sequence synthesis, the Sequence API may receive a read-only context:
+When all relevant constraints allow synthesis, Sequence API may receive:
 
 ```js
 projectConstraintContext: {
   targetSceneId: 'scene-03',
   constraints: [
     {
-      constraintId: 'constraint-camera-001',
+      constraintId: 'constraint-camera-carry-001',
       revision: 1,
       type: 'ownership-carry',
       beatId: 'setup',
@@ -976,39 +916,35 @@ projectConstraintContext: {
 }
 ```
 
-This context helps AI write narrativeBeat, visualEvents, and rationale consistently.
+This is explanatory context for narrativeBeat/visualEvents/rationale. Prompt contract explicitly forbids the model from writing/overriding constrained paths.
 
-It is explanatory, not authoritative. The prompt must explicitly state that the model must not write or override constrained paths.
-
-Safety still comes from contracts, Skeleton, validator, and assembler rather than model obedience.
+Safety remains contract/validator/compiler based rather than prompt-obedience based.
 
 ---
 
-## 22. M5 assembler and provenance integration
+## 21. M5 assembler and provenance
 
-M7 does not write the exact supported value into the final Scene State patch.
+M7 never writes the supported exact value into the final Scene State patch.
 
-When a constraint is satisfied, the existing Scene Compiler writes the exact value and M7 adds provenance annotation.
-
-Illustrative field provenance:
+When a constraint is satisfied, the existing Scene Compiler produces the value and M7 adds provenance annotation.
 
 ```js
 sequenceProvenance.fields['setup.camera.perspective'] = {
   owner: 'compiler',
   support: 'supported',
   source: 'camera-authority-transfer',
-  projectConstraintIds: ['constraint-camera-001']
+  projectConstraintIds: ['constraint-camera-carry-001']
 }
 ```
 
-Top-level Project constraint provenance:
+Top-level:
 
 ```js
 sequenceProvenance.projectConstraints = {
   registryVersion: '0.1.0',
   resolutions: [
     {
-      constraintId: 'constraint-camera-001',
+      constraintId: 'constraint-camera-carry-001',
       revision: 1,
       result: 'satisfied',
       beatId: 'setup',
@@ -1018,18 +954,16 @@ sequenceProvenance.projectConstraints = {
 }
 ```
 
-This preserves the correct distinction:
+Correct interpretation:
 
 ```text
 Scene Compiler owns exact value
-Project Constraint proves the value also satisfies a Director-confirmed Project commitment
+Project Constraint proves that value also satisfies a Director-confirmed Project commitment
 ```
 
 ---
 
-## 23. Relationship to M3 and M4
-
-M7 does not replace M3 or M4.
+## 22. Relationship to M3 and M4
 
 Final pipeline:
 
@@ -1047,21 +981,21 @@ M4 Guarded Scene Authority
 Explicit Apply
 ```
 
-A normal M7-satisfied Scene should still produce ordinary supported Scene Compiler assertions. M4 should therefore continue to see the expected Scene-level result, typically `CONFIRM` where no raw conflict remains.
+M7 adds no `PROJECT OVERRIDE` action to M4.
 
-No `PROJECT OVERRIDE` action is added to M4.
+Canonical Scene State still mutates only through explicit Apply.
 
-Canonical Scene State still mutates only through the existing explicit Apply boundary.
+Manual DIRECT remains editable afterward; if it changes source evidence used by a confirmed downstream constraint, subsequent M7 revalidation can mark that constraint stale.
 
 ---
 
-## 24. Project State and persistence changes
+## 23. Project State and persistence
 
-`project-contracts.js` must accept an optional `projectConstraints` object without breaking old Projects.
+`project-contracts.js` must accept/validate an optional `projectConstraints` registry.
 
-`project-state.js` should expose focused registry mutation methods rather than encouraging arbitrary callers to edit the registry object directly.
+`project-state.js` should expose focused explicit Director-decision methods rather than arbitrary registry object edits.
 
-Expected mutation categories:
+Expected Project Store actions:
 
 - confirm Candidate;
 - reject Candidate fingerprint;
@@ -1069,15 +1003,17 @@ Expected mutation categories:
 - release scope;
 - confirm new revision.
 
-`project-persistence.js` continues to persist validated Project State. No independent secondary storage system is introduced.
+`project-persistence.js` continues to persist validated Project State. No independent secondary storage is introduced.
 
-The registry must never contain cached runtime `ACTIVE/SATISFIED/CONFLICT/STALE` fields as durable truth.
+Runtime statuses are not persisted as truth.
+
+Project constraints live at Project level, not inside per-Scene workspace snapshots.
 
 ---
 
-## 25. UI architecture
+## 24. UI architecture
 
-Project Workspace order becomes:
+Project Workspace order:
 
 ```text
 PROJECT ARC
@@ -1089,21 +1025,14 @@ PROJECT INTELLIGENCE · SHADOW
 PROJECT CONSTRAINTS · DIRECTOR CONTROL
 ```
 
-M6 remains purely read-only.
-
-### 25.1 Candidate card
+### 24.1 Candidate
 
 ```text
-PROJECT CONSTRAINTS · DIRECTOR CONTROL
-
 CANDIDATE
-────────────────────────
-OWNERSHIP CARRY
-CAMERA
+OWNERSHIP CARRY · CAMERA
 
 SOURCE
-SCENE 02 · MIXED
-COMPILER-BACKED
+SCENE 02 · MIXED · COMPILER-BACKED
 
 TARGET
 SCENE 03 · SETUP
@@ -1111,33 +1040,23 @@ SCENE 03 · SETUP
 SCOPE
 camera.perspective
 
-WHY
-A verified ownership state can be carried through the compatible narrative handoff.
-
 [ REJECT ]              [ CONFIRM ]
 ```
 
-Before Confirm, no Sequence authority changes.
+No authority before Confirm.
 
-### 25.2 Confirmed active card
+### 24.2 Confirmed active
 
 ```text
 CONFIRMED · ACTIVE
-
-CAMERA AUTHORITY
-MIXED
-
-SCENE 02
-→
-SCENE 03 / SETUP
-
-REV 01
-EVIDENCE CURRENT
+CAMERA · MIXED
+SCENE 02 → SCENE 03 / SETUP
+REV 01 · EVIDENCE CURRENT
 
 [ REVOKE ]
 ```
 
-### 25.3 Conflict card
+### 24.3 Conflict
 
 ```text
 CONFIRMED · CONFLICT
@@ -1158,12 +1077,10 @@ BLOCKED
 
 KEEP does not unblock generation.
 
-### 25.4 Stale card
+### 24.4 Stale
 
 ```text
 STALE · AUTHORITY REMOVED
-
-SOURCE EVIDENCE CHANGED
 
 CONFIRMED
 MIXED
@@ -1175,21 +1092,19 @@ CHARACTER
 [ REVIEW NEW REVISION ]
 ```
 
-### 25.5 UI prohibitions
+### 24.5 UI prohibitions
 
 - no auto-confirm;
 - no auto-fix;
-- no hidden Project mutation from expanding details;
-- no `Override Scene Compiler` button;
-- no “unify all Grammars” recommendation;
-- no Project-wide score;
-- no styling that hides `STALE`, `CONFLICT`, or `UNRESOLVED` states behind a simple green/red signal.
+- no hidden mutation from expand/collapse;
+- no Override Scene Compiler button;
+- no forced Grammar unification;
+- no Project-wide coherence score;
+- no simple traffic light that hides conflict/stale reasoning.
 
 ---
 
-## 26. Candidate / Registry / Runtime separation
-
-The four layers must remain conceptually distinct:
+## 25. Layer separation
 
 ```text
 M6 INTELLIGENCE
@@ -1205,23 +1120,19 @@ M7 RUNTIME RESOLUTION
 whether that approval is still valid now
 ```
 
-This separation is essential for later Prompt Compiler, Generation, and QA systems.
-
-They must be able to distinguish:
+Future systems must be able to distinguish:
 
 - current Narrative truth;
 - current Scene Compiler truth;
-- current Director-confirmed Project constraint;
-- Director exception;
-- stale historical Project decision.
+- confirmed Project commitment;
+- Director release exception;
+- stale/superseded historical decision.
 
 ---
 
-## 27. Error and blocking semantics
+## 26. Error and blocking semantics
 
-M7 workflow blocking must be explicit and recoverable.
-
-Suggested Sequence-stage error codes:
+Suggested Sequence-stage codes:
 
 ```text
 PROJECT_CONSTRAINT_CONFLICT
@@ -1229,7 +1140,7 @@ PROJECT_CONSTRAINT_STALE
 PROJECT_CONSTRAINT_TARGET_UNSUPPORTED
 ```
 
-Errors should include structured resolution detail:
+Structured detail:
 
 ```js
 {
@@ -1245,26 +1156,20 @@ Errors should include structured resolution detail:
 }
 ```
 
-The Narrative Workspace must preserve confirmed Reading and Strategy when a Project constraint blocks Sequence synthesis.
+When M7 blocks Sequence:
 
-Retrying Sequence after the Director resolves the constraint should recompile/revalidate current M7 authority before any AI request.
+- confirmed Reading/Strategy remain preserved;
+- no AI Sequence request is sent;
+- no Scene State mutation occurs;
+- after Director resolution, retry recomputes current evidence/base Skeleton before any AI request.
 
 ---
 
-## 28. Determinism and immutability requirements
+## 27. Determinism and immutability
 
-All derivation functions must be deterministic.
+Equal inputs must return deep-equal Candidate/authority results.
 
-For equal inputs:
-
-```text
-deriveConstraintCandidates(input)
-resolveProjectConstraintAuthority(input)
-```
-
-must return deep-equal results.
-
-The following inputs must remain byte-for-byte/deep-equal after pure derivation:
+Pure derivation must not mutate:
 
 - Project State;
 - M6 Project Intelligence;
@@ -1274,24 +1179,30 @@ The following inputs must remain byte-for-byte/deep-equal after pure derivation:
 - Narrative State;
 - Scene State.
 
-Only explicit Director actions may mutate persisted Project registry state.
+Only explicit Director actions may commit a returned registry mutation through Project Store.
 
 ---
 
-## 29. Initial public API targets
+## 28. Public API targets
 
-Exact names may be refined in the implementation plan, but the design target is:
+Exact names may be refined in implementation planning, but target surfaces are:
 
-### Candidate module
+### Candidate
 
 ```js
-deriveConstraintCandidates({ projectState, projectIntelligence, targetSceneId, registry })
+deriveConstraintCandidates({
+  projectState,
+  projectIntelligence,
+  targetSceneId,
+  registry
+})
 ```
 
-### Registry module
+### Registry
 
 ```js
 createEmptyConstraintRegistry()
+normalizeConstraintRegistry(registry)
 validateConstraintRegistry(registry)
 confirmConstraintCandidate(registry, candidate)
 rejectConstraintCandidate(registry, candidate)
@@ -1300,11 +1211,12 @@ releaseConstraintScope(registry, constraintId, exception)
 confirmConstraintRevision(registry, constraintId, candidate)
 ```
 
-### Authority module
+### Evidence / authority
 
 ```js
 buildConstraintEvidenceSnapshot(...)
-fingerprintConstraintEvidence(snapshot)
+canonicalizeConstraintEvidence(snapshot)
+fingerprintCanonicalEvidence(canonicalJson, prefix)
 resolveConstraintRuntime(...)
 resolveProjectConstraintsForSequence(...)
 ```
@@ -1312,115 +1224,112 @@ resolveProjectConstraintsForSequence(...)
 ### M5 bridge
 
 ```js
-prepareProjectConstrainedSequence({ baseSkeleton, projectResolution })
+prepareProjectConstrainedSequence({
+  baseSkeleton,
+  projectResolution
+})
 ```
 
-The bridge must return the original/base Skeleton semantics plus constraint annotations/gating; it must not create a parallel Project-owned Scene State compiler.
+The bridge may annotate/gate the base Skeleton context but must not create a parallel Project-owned Scene State compiler.
 
 ---
 
-## 30. TDD acceptance — Candidate derivation
+## 29. TDD acceptance — Candidate derivation
 
 Required cases:
 
-1. `A→B PASS` contains a material compiler-backed Camera ownership transfer; B ends `CONTESTED`; C begins `CONTESTED`; C is prospective → Camera `ownership-carry` Candidate for C / SETUP.
-2. Same shape with Color ownership → Color Candidate.
-3. Source is `ai-completed` only → no authority Candidate.
-4. Source is `legacy` → no Candidate.
-5. Source is `unknown` → no Candidate.
-6. Source is `blocked` → no Candidate.
-7. Source has provenance/final-state divergence → no Candidate.
-8. B ending agency and C starting agency mismatch → no Candidate.
-9. Upstream boundary is PASS but contains no material ownership relation → no Candidate.
-10. Target Scene already fully directed → no prospective authority Candidate.
-11. Candidate rejected with unchanged fingerprint → candidate suppressed.
-12. Relevant evidence changes → fingerprint changes and a new Candidate may appear.
-13. Input immutability.
-14. Deterministic repeated output.
+1. `A→B PASS` with material compiler-backed Camera transfer; B ends `CONTESTED`; immediate C begins `CONTESTED`; C prospective → Camera `ownership-carry` Candidate for C / SETUP.
+2. Equivalent Color case → Color Candidate.
+3. Upstream PASS with no material compiler-backed ownership response → no Candidate.
+4. AI-completed-only source → no Candidate.
+5. Legacy source → no Candidate.
+6. Unknown source → no Candidate.
+7. Blocked/unsupported source → no Candidate.
+8. Provenance/final-state divergence → no Candidate.
+9. B end vs C start mismatch → no Candidate.
+10. Non-adjacent target → no Candidate.
+11. Target already directed → no prospective authority Candidate.
+12. Rejected identical Candidate fingerprint → suppressed.
+13. Material evidence changes → new fingerprint and Candidate may reappear.
+14. Deterministic repeat.
+15. Input immutability.
 
 ---
 
-## 31. TDD acceptance — Registry
+## 30. TDD acceptance — Registry and revisions
 
-Required cases:
-
-1. Missing registry normalizes to empty backward-compatible state.
-2. Confirm creates revision 1 and persists Candidate evidence fingerprint.
+1. Missing registry normalizes to empty valid registry.
+2. Confirm creates a constraint with `currentRevision = 1` and `revisions['1'].state = 'current'`.
 3. Reject records Candidate fingerprint without creating a constraint.
-4. Revoke preserves history and removes runtime authority.
+4. Revoke preserves revisions but removes runtime authority.
 5. Release exception is scope-specific and revision-bound.
-6. Reconfirm stale evidence creates revision 2; revision 1 remains historical/superseded.
-7. Revision 2 does not automatically inherit revision 1 exceptions.
-8. Invalid paths/types/scopes fail contract validation.
-9. Registry transformations are deterministic.
-10. Input registry is not mutated by pure transform functions unless the Project Store explicitly commits the returned registry.
+6. Reconfirm stale evidence creates revision 2 and marks revision 1 superseded.
+7. Revision 2 does not inherit revision 1 exceptions automatically.
+8. Only one revision may have `state = 'current'` for a confirmed constraint.
+9. Invalid path/type/scope/revision structure fails validation.
+10. Pure transforms do not mutate input registry.
 
 ---
 
-## 32. TDD acceptance — Staleness
+## 31. TDD acceptance — Fingerprint and staleness
 
-Required cases:
-
-1. Equal canonical evidence → fingerprint stable.
-2. Object key order changes only → fingerprint unchanged.
-3. Source Reading ID changes → STALE.
-4. Source Strategy ID changes → STALE.
-5. Source Grammar changes → STALE.
-6. Source applied Beat changes → STALE.
-7. Source compiler-backed value changes → STALE.
-8. Final source Scene State diverges → STALE.
-9. Source/target adjacency changes → STALE.
-10. Target agency transition materially changes → STALE.
-11. STALE returns `authority: none`.
-12. STALE target blocks Sequence for Director review.
-13. Old expected value is never injected or preserved as active authority.
-
----
-
-## 33. TDD acceptance — Authority resolution
-
-Required cases:
-
-1. Confirmed Camera constraint + current evidence valid + Scene Compiler expectation equals Project expected → `SATISFIED`.
-2. Confirmed Color constraint + equal expectation → `SATISFIED`.
-3. Project expected differs from supported Scene Compiler expectation → `CONFLICT`.
-4. Conflict returns workflow blocked before AI.
-5. Target Grammar has no exact supported path → `CONFLICT / TARGET-GRAMMAR-UNSUPPORTED`.
-6. Grammar change alone produces no generic error.
-7. Released matching scope → constraint is `INAPPLICABLE` for that scope and does not gate Sequence.
-8. Revoked constraint → contributes no authority.
-9. Stale constraint → no exact authority and review-required block.
-10. No relevant constraints → normal M5 flow unchanged.
-11. Resolver does not mutate base Skeleton or registry.
-12. Resolver repeat is deterministic.
+1. Equal normalized snapshots → same canonical JSON and digest.
+2. Object key insertion order differences → same canonical JSON/digest.
+3. Array order is preserved and materially different order changes identity.
+4. FNV-1a output is exact 16-character lowercase hex with expected prefix.
+5. Runtime staleness compares canonical snapshot content, not digest alone.
+6. Source Reading change → STALE.
+7. Source Strategy change → STALE.
+8. Source Grammar change → STALE.
+9. Source applied Beat change → STALE.
+10. Source compiler-backed value change → STALE.
+11. Final source Scene divergence → STALE.
+12. Adjacency change → STALE.
+13. Target agency transition material change → STALE.
+14. STALE returns no exact authority and blocks target Sequence for review.
+15. Old expected value is never injected after staleness.
 
 ---
 
-## 34. TDD acceptance — M5 / API / Assembler integration
+## 32. TDD acceptance — Authority resolution
 
-Required cases:
+1. Confirmed Camera constraint + current evidence valid + Scene Compiler equals Project value → `SATISFIED`.
+2. Equivalent Color case → `SATISFIED`.
+3. Current evidence valid but base Skeleton not yet evaluated → `ACTIVE`.
+4. Project expected differs from supported Scene Compiler expectation → `CONFLICT`.
+5. Conflict gates AI request.
+6. Target Grammar lacks exact supported path → `CONFLICT / TARGET-GRAMMAR-UNSUPPORTED`.
+7. Grammar change alone produces no generic error.
+8. Matching release exception → `INAPPLICABLE` for scope.
+9. Revoked constraint → `INAPPLICABLE` / no authority.
+10. Stale constraint → `STALE`, no exact authority, review-required block.
+11. No relevant constraints → normal M5 flow unchanged.
+12. Resolver does not mutate base Skeleton/registry.
+13. Repeat is deterministic.
 
-1. Base M5 Skeleton is compiled before Project authority resolution.
-2. M7 does not change M5 canonical Beat IDs or labels.
-3. SATISFIED Project constraint permits AI Sequence request.
-4. CONFLICT prevents AI Sequence request entirely.
-5. STALE prevents AI Sequence request until reviewed.
-6. Target unsupported constraint prevents AI request.
-7. Sequence API receives only read-only satisfied Project constraint context.
-8. AI completion still cannot write compiler-derived constrained paths.
+---
+
+## 33. TDD acceptance — M5/API/Assembler integration
+
+1. Base M5 Skeleton is compiled before M7 resolution.
+2. M7 does not change canonical five Beat IDs/labels.
+3. SATISFIED constraint permits AI Sequence request.
+4. CONFLICT prevents AI request entirely.
+5. STALE prevents AI request until Director review.
+6. Target unsupported prevents AI request.
+7. Sequence API receives only read-only allowed constraint context.
+8. AI still cannot write compiler-derived constrained paths.
 9. Assembler exact value still comes from Scene Compiler.
-10. Field provenance keeps `owner: compiler` and adds Project constraint IDs.
-11. Top-level Sequence provenance records constraint ID/revision/result.
-12. No Scene State mutation occurs before Apply.
-13. M4 continues to operate with its existing Scene-level authority semantics.
+10. Field provenance retains `owner: compiler` and adds constraint IDs.
+11. Top-level provenance records constraint ID/revision/result.
+12. No Scene State mutation before Apply.
+13. M4 keeps existing Scene-level authority semantics.
 
 ---
 
-## 35. Browser acceptance
+## 34. Browser acceptance
 
-### 35.1 Positive end-to-end flow
-
-Browser acceptance must prove a real Project chain:
+### 34.1 Positive chain
 
 ```text
 DIRECT SCENE 01
@@ -1429,7 +1338,7 @@ DIRECT SCENE 02
 ↓
 M6 verifies 01→02
 ↓
-M7 proposes ownership carry into SCENE 03
+M7 proposes carry into SCENE 03
 ↓
 Director CONFIRM
 ↓
@@ -1451,19 +1360,19 @@ canonical Scene State unchanged
 ↓
 Apply
 ↓
-SCENE 03 SETUP respects Scene Compiler value and confirmed Project constraint
+SCENE 03 SETUP respects Scene Compiler value
 ↓
-Sequence provenance records constraint REV 01
+Sequence provenance records Project constraint REV 01
 ```
 
-### 35.2 Conflict flow
-
-With the same confirmed Project constraint:
+### 34.2 Conflict chain
 
 ```text
-change target Scene Reading / Strategy
+same confirmed Project constraint
 ↓
-Scene Compiler expectation disagrees
+change target Reading/Strategy
+↓
+Scene Compiler disagrees
 ↓
 M7 = CONFLICT
 ↓
@@ -1474,12 +1383,12 @@ Scene State unchanged
 Director sees KEEP / RELEASE / REVOKE
 ```
 
-### 35.3 Stale flow
+### 34.3 Stale chain
 
 ```text
 modify source Scene evidence
 ↓
-fingerprint changes
+canonical snapshot changes
 ↓
 constraint = STALE
 ↓
@@ -1488,75 +1397,75 @@ old expected value has zero authority
 Sequence blocked for review
 ```
 
-### 35.4 Rejection flow
+### 34.4 Rejection chain
 
 ```text
 Candidate appears
 ↓
-Director REJECT
+REJECT
 ↓
-rerender with identical evidence
+identical evidence rerender
 ↓
 Candidate remains dismissed
 ↓
-material source evidence changes
+material evidence changes
 ↓
-new Candidate may appear with a new fingerprint
+new Candidate may appear
 ```
 
-### 35.5 Regression coverage
+### 34.5 Required regression gate
 
-Fresh browser acceptance must continue to cover:
+Fresh browser acceptance continues to cover:
 
-- Director rail interaction;
+- Director rail;
 - Narrative workspace;
 - Visual IR Shadow;
-- M3 Compare;
-- M4 Guarded Authority;
-- M5 compiler-first Sequence positive/negative flows;
+- M3;
+- M4;
+- M5 positive/negative compiler-first flows;
 - Project Workspace Scene switching;
 - Project Arc;
 - Continuity;
-- M6 Project Intelligence positive/legacy/divergence cases.
+- M6 positive/legacy/divergence flows.
 
 ---
 
-## 36. CI requirements
+## 35. CI requirements
 
-M7 joins the existing Director Intelligence CI categories:
+M7 joins existing Director Intelligence CI:
 
-- Node/contracts tests;
-- changed runtime syntax;
+- contracts/Node tests;
+- runtime syntax;
 - Pages assembly/assets;
 - browser acceptance.
 
-A completion claim is invalid until a fresh exact-HEAD run reports success for every required job.
+No completion claim is valid until a fresh exact-HEAD run succeeds.
 
-The final verification must also confirm:
+Final verification also confirms:
 
-- PR remains Draft;
-- PR remains open and unmerged;
+- PR is Draft;
+- PR is open/unmerged;
 - base remains `integration/director-workspace-v2-1`;
-- branch remains strictly ahead of the approved baseline with no unintended behind commits;
-- merge base remains the approved Director V2.1 baseline unless the user explicitly changes strategy.
+- branch remains strictly ahead of approved baseline with no unintended behind commits;
+- merge base remains the approved Director V2.1 baseline unless explicitly changed by the Director.
 
 ---
 
-## 37. Compatibility constraints
+## 36. Compatibility
 
-M7 must preserve:
+M7 preserves:
 
-- old Projects with no M7 registry;
+- old Projects without `projectConstraints`;
 - M6 read-only semantics;
-- existing Project Arc and Continuity behavior;
-- M5 compiler-first generation contracts;
+- Project Arc/Continuity behavior;
+- M5 compiler-first contracts;
 - M4 Apply-time Scene authority;
 - manual DIRECT editability after Apply;
-- explicit Director selection for Reading and Strategy;
-- existing Scene as the fundamental operational unit;
+- explicit Reading/Strategy Director choices;
+- Scene as the fundamental operational unit;
 - no fifth Project mode.
 
-M7 must not require changing old Project Scene workspace shape:
+Per-Scene workspace shape stays:
 
 ```text
 workspace
@@ -1565,11 +1474,11 @@ workspace
 └── sequenceState
 ```
 
-Project Constraints belong at Project level, not inside each Scene workspace snapshot.
+Project constraints are Project-level decisions, not Scene workspace snapshots.
 
 ---
 
-## 38. Explicitly out of scope
+## 37. Explicitly out of scope
 
 M7 does not implement:
 
@@ -1578,70 +1487,69 @@ M7 does not implement:
 - Project-wide generation planning;
 - Visual QA feedback loop;
 - automatic Scene repair;
-- global style consistency score;
+- global style/coherence score;
 - whole-Project Grammar selection;
 - automatic Grammar replacement;
 - Project-over-Scene exact value override;
 - AI arbitration of authority conflicts;
 - speculative exact middle-Beat constraints;
 - exact unsupported Space/Texture/Medium/Line constraints;
-- direct mutation of canonical Scene State by Project Constraints;
-- merge to integration/master.
-
-These may be considered only after M7 demonstrates safe, auditable Project constraint authority.
+- direct canonical Scene State mutation by Project constraints;
+- integration/master merge.
 
 ---
 
-## 39. Success criteria
+## 38. Success criteria
 
-M7 is complete only when all of the following are true:
+M7 is complete only when all are true:
 
 1. M6 remains independently read-only.
-2. Project Constraint Candidates are derived prospectively from eligible upstream compiler-backed evidence plus compatible future Scene narrative handoff.
-3. Candidate generation does not equate every M6 `PASS` with authority eligibility.
-4. AI-completed, legacy, unknown, blocked, divergent, or mismatched evidence cannot create authority Candidates.
-5. Director Confirm is required before Project constraint authority exists.
-6. Director Reject is remembered for the exact Candidate evidence fingerprint.
-7. Confirmed decisions persist in an optional backward-compatible Project registry.
-8. Runtime `ACTIVE/SATISFIED/CONFLICT/STALE/INAPPLICABLE` states are derived, not persisted as truth.
-9. Evidence fingerprinting detects material source/target changes without relying on a nonexistent M5 Skeleton revision fingerprint.
-10. STALE constraints lose exact authority and require Director review before target Sequence generation.
-11. Constraint revisions remain auditable and old exceptions do not silently transfer to new revisions.
-12. v1 authority-bearing scope is narrow and deterministic, primarily target `SETUP`.
-13. SATISFIED constraints do not create a new Scene State owner; Scene Compiler remains exact value owner.
-14. Project/Scene value conflicts block Sequence before AI completion.
-15. Unsupported target Grammar conflicts block Sequence without auto-changing Grammar.
-16. AI never arbitrates Project/Scene authority conflicts.
-17. Sequence AI still writes only M5-open slots.
-18. M5 assembler annotates Project constraint provenance without changing exact value ownership.
-19. M3/M4 retain their existing meanings.
-20. Canonical Scene State still mutates only after explicit Apply.
-21. Project Constraints UI is separate from M6 Shadow inspector and exposes explicit Director control.
-22. Legacy Projects continue to load without destructive migration.
-23. Unit, integration, browser, syntax, and Pages tests pass on fresh exact HEAD.
-24. Existing M0–M6 browser regressions remain green.
-25. PR remains Draft and unmerged pending explicit product review.
+2. Candidates are prospectively derived from eligible upstream compiler-backed evidence plus compatible immediate-next-Scene narrative handoff.
+3. Candidate generation does not equate every M6 PASS with authority eligibility.
+4. AI-completed, legacy, unknown, blocked, divergent, mismatched, non-adjacent, or retroactive evidence cannot create authority Candidates.
+5. Director Confirm is required before authority exists.
+6. Director Reject is remembered for the exact Candidate fingerprint.
+7. Confirmed decisions persist in optional backward-compatible Project registry.
+8. Constraint identity and immutable revisions are explicit via `currentRevision + revisions{}`.
+9. Runtime statuses are derived, not persisted as truth.
+10. Canonical evidence comparison detects material change without relying on a nonexistent M5 Skeleton revision fingerprint.
+11. Fingerprint algorithm is deterministic browser/Node FNV-1a 64-bit and is not treated as cryptographic trust.
+12. STALE constraints lose exact authority and block target Sequence for Director review.
+13. New revisions retain old audit history and do not inherit old exceptions implicitly.
+14. v1 scope is narrow/deterministic, primarily target `SETUP`.
+15. SATISFIED constraints do not create a new Scene State value owner.
+16. Project/Scene value conflict blocks before AI.
+17. Unsupported target Grammar blocks without auto-changing Grammar.
+18. AI never arbitrates authority conflicts.
+19. AI still writes only M5-open slots.
+20. M5 assembler adds Project provenance without changing exact value ownership.
+21. M3/M4 meanings remain unchanged.
+22. Canonical Scene State still mutates only after explicit Apply.
+23. Project Constraints UI is separate from M6 Shadow and exposes explicit Director control.
+24. Legacy Projects load without destructive migration.
+25. Fresh contracts/syntax/Pages/browser CI succeeds on exact HEAD.
+26. Existing M0–M6 regressions remain green.
+27. PR remains Draft and unmerged pending explicit product review.
 
 ---
 
-## 40. Deferred after M7
+## 39. Deferred after M7
 
-After M7 proves that Director-confirmed Project commitments can safely guard Scene synthesis, the next architectural layer can consume the now-explicit distinction among:
+Once M7 proves that Director-confirmed Project commitments can safely guard Scene synthesis, future systems may consume the explicit distinction among:
 
 ```text
 Narrative truth
 Scene Compiler truth
-confirmed Project constraint
-Director exception
-stale historical decision
+confirmed Project constraint revision
+Director release exception
+stale/superseded historical decision
 ```
 
-That makes the following future work substantially safer:
+That enables safer work on:
 
 - Prompt Compiler;
 - Project-aware prompt compilation;
-- generation planning;
-- generation provenance;
+- generation planning/provenance;
 - cross-Scene Visual QA;
 - regeneration decisions;
 - long-range Project policy modeling.
