@@ -9,6 +9,8 @@ const VARIABLES = ['color', 'space', 'camera', 'line', 'texture', 'rhythm', 'age
 const GRAMMAR_IDS = ['spatial-authorship', 'camera-authority-transfer', 'color-ownership-transfer', 'surface-assignment', 'agency-ownership-transfer', 'unresolved'];
 const LEVELS = ['low', 'medium', 'high'];
 const BEAT_IDS = ['setup', 'pressure', 'rupture', 'release', 'new-ownership'];
+const PROJECT_CONSTRAINT_TYPES = ['ownership-carry', 'handoff-guard'];
+const PROJECT_CONSTRAINT_PATHS = ['agency', 'camera.perspective', 'color.territory'];
 
 const isObject = value => Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 const nonEmpty = value => typeof value === 'string' && Boolean(value.trim());
@@ -20,6 +22,31 @@ function failure(errors) {
 
 function success(value) {
   return { valid: true, errors: [], value: clone(value) };
+}
+
+function validateProjectConstraintContext(value, errors) {
+  if (value == null) return null;
+  if (!isObject(value)) {
+    errors.push('projectConstraintContext must be an object or null');
+    return null;
+  }
+  if (!nonEmpty(value.targetSceneId)) errors.push('projectConstraintContext.targetSceneId is required');
+  if (!Array.isArray(value.constraints)) errors.push('projectConstraintContext.constraints must be an array');
+  else value.constraints.forEach((item, index) => {
+    const path = `projectConstraintContext.constraints[${index}]`;
+    if (!isObject(item)) {
+      errors.push(`${path} must be an object`);
+      return;
+    }
+    if (!nonEmpty(item.constraintId)) errors.push(`${path}.constraintId is required`);
+    if (!Number.isInteger(item.revision) || item.revision < 1) errors.push(`${path}.revision must be a positive integer`);
+    if (!PROJECT_CONSTRAINT_TYPES.includes(item.type)) errors.push(`${path}.type is invalid`);
+    if (item.beatId !== 'setup') errors.push(`${path}.beatId must be setup`);
+    if (!PROJECT_CONSTRAINT_PATHS.includes(item.path)) errors.push(`${path}.path is invalid`);
+    if (!nonEmpty(item.expected)) errors.push(`${path}.expected is required`);
+    if (item.resolution !== 'satisfied') errors.push(`${path}.resolution must be satisfied`);
+  });
+  return clone(value);
 }
 
 function validateInput(stage, body = {}) {
@@ -51,6 +78,7 @@ function validateInput(stage, body = {}) {
       if (!Array.isArray(body.sequenceSkeleton.beats) || body.sequenceSkeleton.beats.length !== 5) errors.push('sequenceSkeleton.beats must contain exactly 5 beats');
       if (!Array.isArray(body.sequenceSkeleton.agencyConstraint?.path) || body.sequenceSkeleton.agencyConstraint.path.length < 2) errors.push('sequenceSkeleton.agencyConstraint.path is invalid');
     }
+    validateProjectConstraintContext(body.projectConstraintContext, errors);
   }
 
   if (errors.length) return failure(errors);
@@ -58,6 +86,7 @@ function validateInput(stage, body = {}) {
   if (stage === 'sequence') {
     value.strategy = clone(body.strategy);
     value.sequenceSkeleton = clone(body.sequenceSkeleton);
+    if (body.projectConstraintContext != null) value.projectConstraintContext = clone(body.projectConstraintContext);
   }
   return success(value);
 }
