@@ -2,6 +2,7 @@ const assert = require('assert');
 const { validateProjectState } = require('./project-contracts.js');
 const { createProjectStore } = require('./project-state.js');
 const { createProjectPersistence } = require('./project-persistence.js');
+const registry = require('./project-constraint-registry.js');
 
 function createMemoryStorage() {
   const values = new Map();
@@ -43,6 +44,14 @@ store.saveSceneSnapshot('scene-01', {
 });
 
 assert.deepStrictEqual(persistence.load(), store.getProject(), 'valid Project Store mutations should autosave');
+
+const candidate = {
+  candidateId:'candidate-persistence', candidateFingerprint:'pcand-2222222222222222', type:'ownership-carry', family:'camera', path:'camera.perspective', expected:'mixed',
+  scope:{sourceSceneId:'scene-01',targetSceneId:'scene-02',beatIds:['setup']},
+  evidenceSnapshot:{sourceSceneId:'scene-01',targetSceneId:'scene-02',path:'camera.perspective',expected:'mixed'}
+};
+store.setProjectConstraints(registry.confirmCandidate(registry.createEmptyRegistry(), candidate));
+assert.deepStrictEqual(persistence.load().projectConstraints, store.getProject().projectConstraints, 'Project Constraint Registry should autosave with Project State');
 
 const reloadedStore = createProjectStore(persistence.load());
 assert.deepStrictEqual(reloadedStore.getProject(), store.getProject(), 'saved Project should hydrate a fresh Project Store without losing Scene workspace state');
