@@ -3,17 +3,24 @@
   const continuity = typeof module === 'object' && module.exports ? require('./project-continuity.js') : root?.VDOSProjectContinuity;
   const intelligence = typeof module === 'object' && module.exports ? require('./project-intelligence.js') : root?.VDOSProjectIntelligence;
   const intelligenceInspector = typeof module === 'object' && module.exports ? require('./project-intelligence-inspector.js') : root?.VDOSProjectIntelligenceInspector;
-  const api = factory(projectArc, continuity, intelligence, intelligenceInspector, root);
+  const constraintRegistry = typeof module === 'object' && module.exports ? require('./project-constraint-registry.js') : root?.VDOSProjectConstraintRegistry;
+  const constraintCandidates = typeof module === 'object' && module.exports ? require('./project-constraint-candidates.js') : root?.VDOSProjectConstraintCandidates;
+  const constraintAuthority = typeof module === 'object' && module.exports ? require('./project-constraint-authority.js') : root?.VDOSProjectConstraintAuthority;
+  const constraintInspector = typeof module === 'object' && module.exports ? require('./project-constraint-inspector.js') : root?.VDOSProjectConstraintInspector;
+  const api = factory(projectArc, continuity, intelligence, intelligenceInspector, constraintRegistry, constraintCandidates, constraintAuthority, constraintInspector, root);
   if (typeof module === 'object' && module.exports) module.exports = api;
   if (root) root.VDOSProjectWorkspace = api;
-})(typeof window !== 'undefined' ? window : globalThis, (projectArc, continuity, intelligence, intelligenceInspector, root) => {
+})(typeof window !== 'undefined' ? window : globalThis, (projectArc, continuity, intelligence, intelligenceInspector, constraintRegistry, constraintCandidates, constraintAuthority, constraintInspector, root) => {
   'use strict';
 
-  if (!projectArc || !continuity || !intelligence || !intelligenceInspector) throw new Error('Project Arc, Continuity, Project Intelligence and Project Intelligence Inspector are required before project-workspace.js');
+  if (!projectArc || !continuity || !intelligence || !intelligenceInspector || !constraintRegistry || !constraintCandidates || !constraintAuthority || !constraintInspector) {
+    throw new Error('Project Arc, Continuity, Project Intelligence and Project Constraint dependencies are required before project-workspace.js');
+  }
   const { deriveProjectArc } = projectArc;
   const { deriveContinuity } = continuity;
   const { deriveProjectIntelligence } = intelligence;
   const { renderProjectIntelligence } = intelligenceInspector;
+  const { renderProjectConstraints } = constraintInspector;
   const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const sceneNumber = index => String(index + 1).padStart(2, '0');
   const agencyLabel = values => Array.isArray(values) ? values.map(v => String(v).toUpperCase()).join(' → ') : '—';
@@ -62,9 +69,27 @@
     return `<div class="project-findings">${findings.map(item => `<article class="project-finding" data-status="${esc(item.status)}"><header><span>${esc(item.status)}</span><strong>${esc(item.boundary || item.sceneIds?.[0] || 'PROJECT')}</strong></header><h3>${esc(item.title)}</h3><p>${esc(item.detail)}</p><div>${(item.sceneIds || []).map(id => `<button type="button" data-action="open-scene" data-scene-id="${esc(id)}">OPEN ${esc(id.toUpperCase())}</button>`).join('')}</div></article>`).join('')}</div>`;
   }
 
+  function deriveConstraintOverview(project, intelligenceState) {
+    const registryState = project?.projectConstraints || constraintRegistry.createEmptyRegistry();
+    const candidates = constraintCandidates.deriveProjectConstraintCandidates({ projectState:project || {}, projectIntelligence:intelligenceState || {}, registry:registryState });
+    const targetIds = [...new Set(Object.values(registryState.constraints || {}).filter(item => item?.decision === 'confirmed').map(item => item?.revisions?.[String(item.currentRevision)]?.scope?.targetSceneId).filter(Boolean))];
+    const resolutions = [];
+    const conflicts = [];
+    targetIds.forEach(targetSceneId => {
+      const result = constraintAuthority.resolveProjectConstraintAuthority({
+        projectState:project || {}, projectIntelligence:intelligenceState || {}, registry:registryState,
+        targetSceneId, visualIR:null, baseSkeleton:null
+      });
+      resolutions.push(...(result.resolutions || []));
+      conflicts.push(...(result.conflicts || []));
+    });
+    return { registry:registryState, candidates, authorityState:{ mode:'guarded', safeToComplete:!resolutions.some(item => item.status === 'STALE' || item.status === 'CONFLICT'), resolutions, conflicts } };
+  }
+
   function renderProjectWorkspace(project, arcState = deriveProjectArc(project || {}), continuityState = deriveContinuity(project || {}), intelligenceState = deriveProjectIntelligence(project || {})) {
     const safeProject = project || { title:'Untitled Project', projectIntent:'', sceneOrder:[], scenes:{}, activeSceneId:null };
     const progress = projectProgress(safeProject);
+    const constraints = deriveConstraintOverview(safeProject, intelligenceState);
     return `<section class="project-workspace-panel" aria-labelledby="project-arc-title">
       <header class="project-header">
         <div><p class="project-kicker">PROJECT CONTEXT</p><h2>${esc(safeProject.title || 'Untitled Project')}</h2><p>${esc(safeProject.projectIntent || 'Build the narrative structure, then direct each Scene as part of one visual system')}</p></div>
@@ -75,6 +100,7 @@
       <section class="project-arc" aria-labelledby="project-arc-title"><div class="project-section-head"><p>PROJECT SCALE</p><h2 id="project-arc-title">Project Arc</h2><span>${progress.directed} / ${progress.total} DIRECTED</span></div>${renderArc(safeProject, arcState)}</section>
       <section class="project-continuity" aria-labelledby="project-continuity-title"><div class="project-section-head"><p>CAUSE → RESPONSE</p><h2 id="project-continuity-title">Cross-Scene Continuity</h2><span>${esc(continuityState?.status || 'UNRESOLVED')}</span></div>${renderContinuity(continuityState)}</section>
       ${renderProjectIntelligence(intelligenceState)}
+      ${renderProjectConstraints({ candidates:constraints.candidates, authorityState:constraints.authorityState, registry:constraints.registry })}
     </section>`;
   }
 
@@ -151,6 +177,34 @@
     };
   }
 
+  function applyConstraintAction(action, button, projectStore) {
+    if (!['confirm-project-constraint','reject-project-constraint','revoke-project-constraint','release-project-constraint','review-project-constraint'].includes(action)) return false;
+    const project = projectStore.getProject();
+    const intelligenceState = deriveProjectIntelligence(project);
+    const registryState = project?.projectConstraints || constraintRegistry.createEmptyRegistry();
+    const candidates = constraintCandidates.deriveProjectConstraintCandidates({ projectState:project, projectIntelligence:intelligenceState, registry:registryState });
+    const candidateFingerprint = button?.dataset?.candidateFingerprint;
+    const constraintId = button?.dataset?.constraintId;
+    let next = registryState;
+    if (action === 'confirm-project-constraint' || action === 'reject-project-constraint') {
+      const candidate = candidates.find(item => item.candidateFingerprint === candidateFingerprint);
+      if (!candidate) return true;
+      next = action === 'confirm-project-constraint' ? constraintRegistry.confirmCandidate(registryState, candidate) : constraintRegistry.rejectCandidate(registryState, candidate);
+    } else if (action === 'revoke-project-constraint') {
+      next = constraintRegistry.revokeConstraint(registryState, constraintId);
+    } else if (action === 'release-project-constraint') {
+      next = constraintRegistry.releaseConstraintScope(registryState, constraintId, { sceneId:button?.dataset?.sceneId, beatId:button?.dataset?.beatId });
+    } else if (action === 'review-project-constraint') {
+      const constraint = registryState.constraints?.[constraintId];
+      const revision = constraint?.revisions?.[String(constraint?.currentRevision)];
+      const replacement = candidates.find(item => item.path === revision?.path && item.scope?.sourceSceneId === revision?.scope?.sourceSceneId && item.scope?.targetSceneId === revision?.scope?.targetSceneId);
+      if (!replacement) return true;
+      next = constraintRegistry.reconfirmConstraint(registryState, constraintId, replacement);
+    }
+    projectStore.setProjectConstraints(next);
+    return true;
+  }
+
   function initProjectWorkspace(rootElement, options = {}) {
     if (!rootElement) throw new Error('Project Workspace root is required.');
     const { projectStore, breakdownState, projectRuntime = null, apiClient = null } = options;
@@ -215,18 +269,14 @@
       if (!button || button.disabled) return;
       const action = button.dataset.action;
       const sceneId = button.dataset.sceneId;
+      if (applyConstraintAction(action, button, projectStore)) { render(); return; }
       if (action === 'edit-project') { projectEditError = ''; view = 'edit'; render(); return; }
       if (action === 'cancel-project-edit') { projectEditError = ''; view = 'project'; render(); return; }
       if (action === 'save-project-edit') {
         const title = rootElement.querySelector('[data-project-meta-field="title"]')?.value || '';
         const projectIntent = rootElement.querySelector('[data-project-meta-field="projectIntent"]')?.value || '';
-        try {
-          projectStore.updateProjectMetadata({ title, projectIntent });
-          projectEditError = '';
-          view = 'project';
-        } catch (error) {
-          projectEditError = error?.message || 'Project metadata could not be saved.';
-        }
+        try { projectStore.updateProjectMetadata({ title, projectIntent }); projectEditError = ''; view = 'project'; }
+        catch (error) { projectEditError = error?.message || 'Project metadata could not be saved.'; }
         render(); return;
       }
       if (action === 'show-breakdown') { view = 'breakdown'; render(); return; }
@@ -274,5 +324,5 @@
     };
   }
 
-  return { renderProjectWorkspace, renderProjectEditor, renderBreakdownInput, renderBreakdownProposal, initProjectWorkspace };
+  return { renderProjectWorkspace, renderProjectEditor, renderBreakdownInput, renderBreakdownProposal, deriveConstraintOverview, applyConstraintAction, initProjectWorkspace };
 });
