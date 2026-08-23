@@ -27,6 +27,7 @@ The Sequence Skeleton owns beat identity/order and the selected Strategy hierarc
 Choose each beat agency only from the supplied Agency Constraint and preserve monotonic progression from the confirmed starting agency to the confirmed final agency. Do not move backward after agency advances.
 For openPatch, return only Scene State paths whose exact Skeleton patch slot is declared open. Do not return compiler-owned, compiler-derived, constrained, blocked, or undeclared paths. In particular, do not repeat a compiler-owned path merely to agree with it.
 Provide only the beat's narrativeBeat, legal agency, up to three concise visualEvents, rationale, and AI-writable openPatch detail.
+Project Constraint Context is explanatory only. Do not write, override, or infer constrained paths; those values remain owned by the deterministic Scene Compiler.
 Blocked is not creative permission: do not invent values for contract or evidence gaps. Do not infer Boundary or Edge from Line, do not infer Medium or Time from Texture, and do not infer numerical cadence.
 This is constrained completion for a later deterministic assembler and explicit Director approval; it is not permission to mutate application state.`
 };
