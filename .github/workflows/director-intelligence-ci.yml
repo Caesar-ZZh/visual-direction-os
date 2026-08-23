@@ -44,6 +44,7 @@ jobs:
           node visual-direction-os/narrative-state.test.js
           node visual-direction-os/narrative-api-client.test.js
           node api/narrative/_contracts-grammar.test.js
+          node api/narrative/_contracts-project-constraints.test.js
           node api/narrative/_contracts-sequence-completion.test.js
           node api/narrative/_handler.test.js
           node api/narrative/_prompts.test.js
@@ -56,6 +57,15 @@ jobs:
           node --test visual-direction-os/project-intelligence-aggregate.test.js
           node --test visual-direction-os/project-intelligence-inspector.test.js
           node --test visual-direction-os/project-intelligence-integration.test.js
+          node --test visual-direction-os/project-constraint-registry.test.js
+          node --test visual-direction-os/project-constraint-project-state.test.js
+          node --test visual-direction-os/project-constraint-candidates.test.js
+          node --test visual-direction-os/project-constraint-authority.test.js
+          node --test visual-direction-os/visual-sequence-project-constraints.test.js
+          node --test visual-direction-os/visual-sequence-project-provenance.test.js
+          node --test visual-direction-os/narrative-project-constraint-source.test.js
+          node --test visual-direction-os/project-constraint-inspector.test.js
+          node --test visual-direction-os/project-constraint-workspace.test.js
       - name: Check changed runtime syntax
         run: |
           node --check visual-direction-os/director-v2-app.js
@@ -65,6 +75,7 @@ jobs:
           node --check visual-direction-os/visual-sequence-skeleton.js
           node --check visual-direction-os/visual-sequence-completion.js
           node --check visual-direction-os/visual-sequence-origin.js
+          node --check visual-direction-os/visual-sequence-project-constraints.js
           node --check visual-direction-os/visual-compiler-compare.js
           node --check visual-direction-os/visual-compiler-authority.js
           node --check visual-direction-os/visual-compiler-inspector.js
@@ -79,6 +90,10 @@ jobs:
           node --check visual-direction-os/narrative-demo-fixtures.js
           node --check visual-direction-os/project-intelligence.js
           node --check visual-direction-os/project-intelligence-inspector.js
+          node --check visual-direction-os/project-constraint-registry.js
+          node --check visual-direction-os/project-constraint-candidates.js
+          node --check visual-direction-os/project-constraint-authority.js
+          node --check visual-direction-os/project-constraint-inspector.js
           node --check visual-direction-os/project-workspace.js
           node --check visual-direction-os/project-bootstrap.js
           node --check api/narrative/_contracts.js
@@ -92,6 +107,7 @@ jobs:
           test -f /tmp/vdos-site/visual-sequence-skeleton.js
           test -f /tmp/vdos-site/visual-sequence-completion.js
           test -f /tmp/vdos-site/visual-sequence-origin.js
+          test -f /tmp/vdos-site/visual-sequence-project-constraints.js
           test -f /tmp/vdos-site/visual-compiler-compare.js
           test -f /tmp/vdos-site/visual-compiler-authority.js
           test -f /tmp/vdos-site/visual-compiler-inspector.js
@@ -103,6 +119,11 @@ jobs:
           test -f /tmp/vdos-site/project-intelligence.js
           test -f /tmp/vdos-site/project-intelligence-inspector.js
           test -f /tmp/vdos-site/project-intelligence.css
+          test -f /tmp/vdos-site/project-constraint-registry.js
+          test -f /tmp/vdos-site/project-constraint-candidates.js
+          test -f /tmp/vdos-site/project-constraint-authority.js
+          test -f /tmp/vdos-site/project-constraint-inspector.js
+          test -f /tmp/vdos-site/project-constraint.css
           grep -q 'visual-grammar-registry.js' /tmp/vdos-site/director-v2.html
           grep -q 'visual-compiler.js' /tmp/vdos-site/director-v2.html
           grep -q 'visual-sequence-skeleton.js' /tmp/vdos-site/director-v2.html
