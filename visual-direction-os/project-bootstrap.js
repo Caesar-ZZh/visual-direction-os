@@ -5,9 +5,9 @@
 })(typeof window !== 'undefined' ? window : globalThis, root => {
   'use strict';
 
-  const VERSION = '20260822-1535';
+  const VERSION = '20260823-m7';
   const DEMO_STORY = 'A young employee enters a routine assignment meeting expecting to comply. During the conversation, he realizes the assignment itself is a mechanism of control. Recognition turns into explicit refusal, and he leaves the institution acting from self-authored agency.';
-  const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[ch]));
   const clone = value => value == null ? value : JSON.parse(JSON.stringify(value));
 
   function deriveProjectApiBase(narrativeBase = '') {
@@ -103,9 +103,7 @@
   async function loadOptionalPersistence(loader = loadScript) {
     try {
       const persistenceApi = await loader(`project-persistence.js?v=${VERSION}`, 'VDOSProjectPersistence');
-      if (!persistenceApi || typeof persistenceApi.createProjectPersistence !== 'function') {
-        throw new Error('VDOSProjectPersistence is unavailable after project-persistence.js');
-      }
+      if (!persistenceApi || typeof persistenceApi.createProjectPersistence !== 'function') throw new Error('VDOSProjectPersistence is unavailable after project-persistence.js');
       return { enabled:true, api:persistenceApi, error:null };
     } catch (error) {
       if (root?.console?.warn) root.console.warn('Project persistence unavailable; Project Workspace will continue without local save.', error);
@@ -114,6 +112,7 @@
   }
 
   async function loadProjectDependencies() {
+    await loadScript(`project-constraint-registry.js?v=${VERSION}`, 'VDOSProjectConstraintRegistry');
     await Promise.all([
       loadStyle(`project-workspace.css?v=${VERSION}`),
       loadStyle(`project-context.css?v=${VERSION}`),
@@ -133,6 +132,9 @@
       loadScript(`project-continuity.js?v=${VERSION}`, 'VDOSProjectContinuity')
     ]);
     await loadScript(`project-intelligence.js?v=${VERSION}`, 'VDOSProjectIntelligence');
+    await loadScript(`project-constraint-candidates.js?v=${VERSION}`, 'VDOSProjectConstraintCandidates');
+    await loadScript(`project-constraint-authority.js?v=${VERSION}`, 'VDOSProjectConstraintAuthority');
+    await loadScript(`visual-sequence-project-constraints.js?v=${VERSION}`, 'VDOSVisualSequenceProjectConstraints');
     await loadScript(`project-intelligence-inspector.js?v=${VERSION}`, 'VDOSProjectIntelligenceInspector');
     await loadScript(`project-workspace.js?v=${VERSION}`, 'VDOSProjectWorkspace');
     const persistence = await loadOptionalPersistence();
@@ -182,37 +184,23 @@
     return deriveProjectApiBase(narrative);
   }
 
-  function narrativeBase() {
-    return document.querySelector('meta[name="vdos-narrative-api-base"]')?.content?.trim() || '';
-  }
+  function narrativeBase() { return document.querySelector('meta[name="vdos-narrative-api-base"]')?.content?.trim() || ''; }
 
   function currentProjectContext(store) {
-    const project = store.getProject();
-    const sceneId = project?.activeSceneId;
-    if (!sceneId) return null;
+    const project = store.getProject(); const sceneId = project?.activeSceneId; if (!sceneId) return null;
     return root.VDOSProjectContextContract.projectContextForScene(project, sceneId);
   }
 
   function injectNarrativeProjectContext(context) {
-    const narrativeRoot = document.querySelector('#narrative-root');
-    if (!narrativeRoot) return;
-    narrativeRoot.querySelector('.project-narrative-context')?.remove();
-    if (!context) return;
-    const stages = narrativeRoot.querySelector('.narrative-stages');
-    if (stages) stages.insertAdjacentHTML('afterend', renderNarrativeProjectContext(context));
+    const narrativeRoot = document.querySelector('#narrative-root'); if (!narrativeRoot) return;
+    narrativeRoot.querySelector('.project-narrative-context')?.remove(); if (!context) return;
+    const stages = narrativeRoot.querySelector('.narrative-stages'); if (stages) stages.insertAdjacentHTML('afterend', renderNarrativeProjectContext(context));
   }
 
   function createNarrativeRuntime(store, params) {
     let controller = root.VDOSNarrativeWorkspaceController || null;
-    const demoMode = params.get('narrativeDemo') === '1';
-    const baseUrl = narrativeBase();
-
-    function destroyController() {
-      controller?.destroy?.();
-      controller = null;
-      root.VDOSNarrativeWorkspaceController = null;
-    }
-
+    const demoMode = params.get('narrativeDemo') === '1'; const baseUrl = narrativeBase();
+    function destroyController() { controller?.destroy?.(); controller = null; root.VDOSNarrativeWorkspaceController = null; }
     return {
       getState() { return controller?.getDraftState?.() || null; },
       abort() { destroyController(); },
@@ -236,12 +224,9 @@
     return {
       getState() { return root.VDOSSequenceDirectorController?.getSequence?.() || null; },
       restore(snapshot) {
-        const controller = root.VDOSSequenceDirectorController;
-        if (!controller?.setSequence) return null;
-        const sequence = snapshot || root.VDOSSequenceDirectorModel?.DEFAULT_SEQUENCE;
-        if (!sequence) return null;
-        controller.setSequence(sequence, { playhead:scene.getSceneState?.()?.playhead || 0 });
-        return sequence;
+        const controller = root.VDOSSequenceDirectorController; if (!controller?.setSequence) return null;
+        const sequence = snapshot || root.VDOSSequenceDirectorModel?.DEFAULT_SEQUENCE; if (!sequence) return null;
+        controller.setSequence(sequence, { playhead:scene.getSceneState?.()?.playhead || 0 }); return sequence;
       }
     };
   }
@@ -252,190 +237,73 @@
   }
 
   function createNoopPersistence(reason = null) {
-    return {
-      enabled:false,
-      reason:reason?.message || String(reason || 'Persistence unavailable'),
-      key:null,
-      load(){ return null; },
-      save(project){ return clone(project); },
-      clear(){},
-      bind(){ return () => {}; }
-    };
+    return { enabled:false, reason:reason?.message || String(reason || 'Persistence unavailable'), key:null, load(){ return null; }, save(project){ return clone(project); }, clear(){}, bind(){ return () => {}; } };
   }
 
   function createPersistence(options, demoMode, persistenceApi = root?.VDOSProjectPersistence) {
     if (options.projectPersistence) return options.projectPersistence;
-    if (!persistenceApi || typeof persistenceApi.createProjectPersistence !== 'function') {
-      return createNoopPersistence(new Error('Persistence module unavailable'));
-    }
-    const persistenceOptions = {
-      onError(error) {
-        if (root?.console?.warn) root.console.warn('Project persistence write failed; continuing without interrupting the workspace.', error);
-      }
-    };
+    if (!persistenceApi || typeof persistenceApi.createProjectPersistence !== 'function') return createNoopPersistence(new Error('Persistence module unavailable'));
+    const persistenceOptions = { onError(error) { if (root?.console?.warn) root.console.warn('Project persistence write failed; continuing without interrupting the workspace.', error); } };
     if (Object.prototype.hasOwnProperty.call(options, 'storage')) persistenceOptions.storage = options.storage;
-    if (options.persistenceKey) persistenceOptions.key = options.persistenceKey;
-    else if (demoMode) persistenceOptions.key = 'vdos-project-v2.1-demo';
-    try {
-      const persistence = persistenceApi.createProjectPersistence(persistenceOptions);
-      if (persistence && persistence.enabled == null) persistence.enabled = true;
-      return persistence;
-    } catch (error) {
-      if (root?.console?.warn) root.console.warn('Project persistence initialization failed; continuing without local save.', error);
-      return createNoopPersistence(error);
-    }
+    if (options.persistenceKey) persistenceOptions.key = options.persistenceKey; else if (demoMode) persistenceOptions.key = 'vdos-project-v2.1-demo';
+    try { const persistence = persistenceApi.createProjectPersistence(persistenceOptions); if (persistence && persistence.enabled == null) persistence.enabled = true; return persistence; }
+    catch (error) { if (root?.console?.warn) root.console.warn('Project persistence initialization failed; continuing without local save.', error); return createNoopPersistence(error); }
   }
 
   async function initProjectShell(options = {}) {
     const dependencyStatus = await loadProjectDependencies();
     if (root.VDOSProjectContext) return root.VDOSProjectContext;
-    const scene = options.scene || root.VDOSScene;
-    if (!scene) throw new Error('VDOSScene is required before Project Bootstrap.');
-    const params = new URLSearchParams(root.location?.search || '');
-    const demoMode = options.demoMode ?? params.get('projectDemo') === '1';
-    const rootNode = options.rootNode || ensureRoot();
-    const sceneContextRoot = ensureSceneContextRoot(rootNode);
-    let persistence = createPersistence(options, demoMode, dependencyStatus?.persistence?.api || root?.VDOSProjectPersistence);
-    let hydratedProject = null;
-    if (!options.projectStore) {
-      try {
-        hydratedProject = persistence.load();
-      } catch (error) {
-        if (root?.console?.warn) root.console.warn('Project persistence hydration failed; continuing with a fresh Project.', error);
-        persistence = createNoopPersistence(error);
-      }
-    }
-    const store = options.projectStore || root.VDOSProjectState.createProjectStore(hydratedProject);
-    if (!store.getProject()) store.createProject(createInitialProjectInput(demoMode));
+    const scene = options.scene || root.VDOSScene; if (!scene) throw new Error('VDOSScene is required before Project Bootstrap.');
+    const params = new URLSearchParams(root.location?.search || ''); const demoMode = options.demoMode ?? params.get('projectDemo') === '1';
+    const rootNode = options.rootNode || ensureRoot(); const sceneContextRoot = ensureSceneContextRoot(rootNode);
+    let persistence = createPersistence(options, demoMode, dependencyStatus?.persistence?.api || root?.VDOSProjectPersistence); let hydratedProject = null;
+    if (!options.projectStore) { try { hydratedProject = persistence.load(); } catch (error) { if (root?.console?.warn) root.console.warn('Project persistence hydration failed; continuing with a fresh Project.', error); persistence = createNoopPersistence(error); } }
+    const store = options.projectStore || root.VDOSProjectState.createProjectStore(hydratedProject); if (!store.getProject()) store.createProject(createInitialProjectInput(demoMode));
     let unbindPersistence = () => {};
-    if (!options.disablePersistence) {
-      try {
-        unbindPersistence = persistence.bind(store);
-      } catch (error) {
-        if (root?.console?.warn) root.console.warn('Project persistence binding failed; continuing without local save.', error);
-        persistence = createNoopPersistence(error);
-      }
-    }
+    if (!options.disablePersistence) { try { unbindPersistence = persistence.bind(store); } catch (error) { if (root?.console?.warn) root.console.warn('Project persistence binding failed; continuing without local save.', error); persistence = createNoopPersistence(error); } }
     const breakdownState = options.breakdownState || root.VDOSProjectBreakdownState.createProjectBreakdownState();
-    const apiClient = options.apiClient || root.VDOSProjectBreakdownApiClient.createProjectBreakdownApiClient({
-      baseUrl:options.baseUrl ?? configuredBase(),
-      demoMode,
-      fixtures:root.VDOSProjectBreakdownFixtures
-    });
+    const apiClient = options.apiClient || root.VDOSProjectBreakdownApiClient.createProjectBreakdownApiClient({ baseUrl:options.baseUrl ?? configuredBase(), demoMode, fixtures:root.VDOSProjectBreakdownFixtures });
     const narrativeRuntime = createNarrativeRuntime(store, params);
-    const runtime = options.projectRuntime || root.VDOSProjectRuntime.createProjectRuntime({
-      projectStore:store,
-      sceneRuntime:sceneAdapter(scene),
-      narrativeRuntime,
-      sequenceRuntime:createSequenceRuntime(scene),
-      abortTransient:() => narrativeRuntime.abort()
-    });
-    const workspace = root.VDOSProjectWorkspace.initProjectWorkspace(rootNode, {
-      projectStore:store,
-      breakdownState,
-      projectRuntime:runtime,
-      apiClient
-    });
-    const context = {
-      store,
-      persistence,
-      persistenceEnabled:persistence?.enabled !== false,
-      persistenceLoadError:dependencyStatus?.persistence?.error || null,
-      unbindPersistence,
-      breakdownState,
-      apiClient,
-      runtime,
-      workspace,
-      demoMode,
-      rootNode,
-      sceneContextRoot
-    };
+    const runtime = options.projectRuntime || root.VDOSProjectRuntime.createProjectRuntime({ projectStore:store, sceneRuntime:sceneAdapter(scene), narrativeRuntime, sequenceRuntime:createSequenceRuntime(scene), abortTransient:() => narrativeRuntime.abort() });
+    const workspace = root.VDOSProjectWorkspace.initProjectWorkspace(rootNode, { projectStore:store, breakdownState, projectRuntime:runtime, apiClient });
+    const context = { store, persistence, persistenceEnabled:persistence?.enabled !== false, persistenceLoadError:dependencyStatus?.persistence?.error || null, unbindPersistence, breakdownState, apiClient, runtime, workspace, demoMode, rootNode, sceneContextRoot };
     root.VDOSProjectContext = context;
 
     function syncSceneContext() {
-      const loadedSceneId = runtime.getLoadedSceneId?.();
-      const project = store.getProject();
-      const html = loadedSceneId ? renderSceneContextBar(project, loadedSceneId) : '';
-      sceneContextRoot.innerHTML = html;
-      sceneContextRoot.hidden = !html;
+      const loadedSceneId = runtime.getLoadedSceneId?.(); const project = store.getProject(); const html = loadedSceneId ? renderSceneContextBar(project, loadedSceneId) : '';
+      sceneContextRoot.innerHTML = html; sceneContextRoot.hidden = !html;
     }
 
     sceneContextRoot.addEventListener('click', async event => {
-      const button = event.target.closest?.('[data-project-scene-nav]');
-      if (!button || button.disabled) return;
+      const button = event.target.closest?.('[data-project-scene-nav]'); if (!button || button.disabled) return;
       const action = button.dataset.projectSceneNav;
-      if (action === 'project') {
-        workspace.showProject();
-        rootNode.scrollIntoView({behavior:'auto',block:'start'});
-        return;
-      }
+      if (action === 'project') { workspace.showProject(); rootNode.scrollIntoView({behavior:'auto',block:'start'}); return; }
       const sceneId = button.dataset.sceneId;
-      if (sceneId) {
-        await runtime.switchScene(sceneId);
-        syncSceneContext();
-        scrollToNarrative();
-      }
+      if (sceneId) { await runtime.switchScene(sceneId); syncSceneContext(); scrollToNarrative(); }
     });
 
-    store.subscribe(syncSceneContext);
-    runtime.subscribe(syncSceneContext);
-
+    store.subscribe(syncSceneContext); runtime.subscribe(syncSceneContext);
     let sceneSyncChain = Promise.resolve();
     root.addEventListener('vdos:scene-state', event => {
-      const source = String(event?.detail?.source || '');
-      const loadedSceneId = runtime.getLoadedSceneId?.();
-      if (!loadedSceneId) return;
-      const persistenceMode = shouldPersistSceneEvent(source, runtime);
-      if (!persistenceMode) return;
-      sceneSyncChain = sceneSyncChain.then(async () => {
-        await runtime.captureActiveScene();
-        if (persistenceMode === 'directed') runtime.markVisualDirected(loadedSceneId);
-        else runtime.markVisualInProgress(loadedSceneId);
-      }).catch(error => console.error(error));
+      const source = String(event?.detail?.source || ''); const loadedSceneId = runtime.getLoadedSceneId?.(); if (!loadedSceneId) return;
+      const persistenceMode = shouldPersistSceneEvent(source, runtime); if (!persistenceMode) return;
+      sceneSyncChain = sceneSyncChain.then(async () => { await runtime.captureActiveScene(); if (persistenceMode === 'directed') runtime.markVisualDirected(loadedSceneId); else runtime.markVisualInProgress(loadedSceneId); }).catch(error => console.error(error));
     });
 
     root.addEventListener('vdos:project-scene-open', event => {
-      const sceneId = event?.detail?.sceneId;
-      if (!store.getProject()?.scenes?.[sceneId]) return;
-      syncSceneContext();
-      scrollToNarrative();
+      const sceneId = event?.detail?.sceneId; if (!store.getProject()?.scenes?.[sceneId]) return;
+      syncSceneContext(); scrollToNarrative();
     });
     return context;
   }
 
   function showBootstrapError(error) {
-    console.error(error);
-    const stage = document.querySelector('.stage');
-    if (!stage || document.querySelector('.project-bootstrap-error')) return;
-    const message = document.createElement('p');
-    message.className = 'project-bootstrap-error';
-    message.setAttribute('role','alert');
-    message.dataset.error = String(error?.message || error || 'Unknown Project bootstrap error').slice(0,240);
-    message.textContent = 'Project Workspace failed to initialize. Single-Scene Director remains available.';
-    stage.insertBefore(message, stage.firstChild);
+    console.error(error); const stage = document.querySelector('.stage'); if (!stage || document.querySelector('.project-bootstrap-error')) return;
+    const message = document.createElement('p'); message.className = 'project-bootstrap-error'; message.setAttribute('role','alert'); message.dataset.error = String(error?.message || error || 'Unknown Project bootstrap error').slice(0,240); message.textContent = 'Project Workspace failed to initialize. Single-Scene Director remains available.'; stage.insertBefore(message, stage.firstChild);
   }
 
-  function autoInit() {
-    if (typeof document === 'undefined') return;
-    initProjectShell().catch(showBootstrapError);
-  }
+  function autoInit() { if (typeof document === 'undefined') return; initProjectShell().catch(showBootstrapError); }
+  if (typeof document !== 'undefined') { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',autoInit,{once:true}); else autoInit(); }
 
-  if (typeof document !== 'undefined') {
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',autoInit,{once:true});
-    else autoInit();
-  }
-
-  return {
-    deriveProjectApiBase,
-    createInitialProjectInput,
-    createNarrativeApiProxy,
-    renderSceneContextBar,
-    renderNarrativeProjectContext,
-    shouldPersistSceneEvent,
-    createNoopPersistence,
-    loadOptionalPersistence,
-    createPersistence,
-    loadProjectDependencies,
-    initProjectShell
-  };
+  return { deriveProjectApiBase, createInitialProjectInput, createNarrativeApiProxy, renderSceneContextBar, renderNarrativeProjectContext, shouldPersistSceneEvent, createNoopPersistence, loadOptionalPersistence, createPersistence, loadProjectDependencies, initProjectShell };
 });
