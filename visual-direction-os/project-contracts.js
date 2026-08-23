@@ -1,9 +1,14 @@
 ((root, factory) => {
-  const api = factory();
+  const constraintRegistry = typeof module === 'object' && module.exports
+    ? require('./project-constraint-registry.js')
+    : null;
+  const api = factory(root, constraintRegistry);
   if (typeof module === 'object' && module.exports) module.exports = api;
   if (root) root.VDOSProjectContracts = api;
-})(typeof window !== 'undefined' ? window : globalThis, () => {
+})(typeof window !== 'undefined' ? window : globalThis, (root, constraintRegistry) => {
   'use strict';
+
+  const currentConstraintRegistry = () => constraintRegistry || root?.VDOSProjectConstraintRegistry || null;
 
   const SCENE_ROLES = ['setup','development','pressure','recognition','escalation','rupture','reversal','release','resolution','transition'];
   const AGENCIES = ['world','contested','shared','character'];
@@ -106,6 +111,14 @@
     }
     if (value.activeSceneId != null && (!nonEmpty(value.activeSceneId) || !value.scenes?.[value.activeSceneId])) {
       errors.push('activeSceneId must be null or reference an existing scene');
+    }
+    if (value.projectConstraints != null) {
+      const registryApi = currentConstraintRegistry();
+      if (!registryApi?.validateRegistry) errors.push('projectConstraints.registry is unavailable');
+      else {
+        const checked = registryApi.validateRegistry(value.projectConstraints);
+        checked.errors.forEach(error => errors.push(`projectConstraints.${error}`));
+      }
     }
     return result(errors, value);
   }
