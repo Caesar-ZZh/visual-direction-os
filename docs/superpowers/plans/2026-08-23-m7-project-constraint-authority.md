@@ -4,9 +4,9 @@
 
 **Goal:** Build M7 Project Constraint Authority so high-evidence cross-Scene ownership relationships can become Director-confirmed, revisioned Project commitments that guard future M5 Sequence synthesis without creating a new Scene State writer.
 
-**Architecture:** M6 remains read-only and derives the evidence basis. M7 adds a dependency-light Project Constraint Registry, pure Candidate derivation, a pure runtime Authority resolver, and a thin Sequence bridge that blocks AI completion before request time when a confirmed constraint is stale or conflicts with current Scene Compiler truth. Project decisions persist in Project State; runtime states remain derived. M5 remains the exact value writer through the existing Scene Compiler and assembler, while M7 only adds guard semantics and provenance annotations.
+**Architecture:** M6 stays read-only. M7 adds a dependency-light Registry, pure prospective Candidate derivation, a pure runtime Authority resolver, and a thin pre-AI Sequence guard. Project decisions persist; runtime status is recomputed. M5 remains the exact Scene State value writer and M4 remains the final Apply-time Scene authority.
 
-**Tech Stack:** Vanilla JavaScript UMD modules, Node `node:test`, browser Playwright, existing Project Store/localStorage persistence, existing M5 Visual Compiler/Skeleton/Completion pipeline, GitHub Actions.
+**Tech Stack:** Vanilla JavaScript UMD modules, Node `node:test`, Playwright, existing Project Store/localStorage persistence, existing M5 Visual Compiler/Skeleton/Completion pipeline, GitHub Actions.
 
 **Spec:** `docs/superpowers/specs/2026-08-23-m7-project-constraint-authority-design.md`
 
@@ -15,121 +15,118 @@
 - M6 `PROJECT INTELLIGENCE · SHADOW` remains read-only.
 - Candidate authority is zero until explicit Director confirmation.
 - M7 v1 never introduces `owner: project` as a Scene State writer.
-- Project constraints never silently override a supported Scene Compiler expectation.
-- Project/Scene conflicts and stale confirmed constraints block Sequence **before** the AI request.
+- Project constraints never silently override supported Scene Compiler truth.
+- Conflict or stale review gates run before `beginRequest('sequence')`; AI request count must remain zero.
 - AI never arbitrates Project-vs-Scene authority.
-- Authority-bearing Candidate generation is prospective, immediate-next-Scene only, and primarily `SETUP` scoped.
-- Exact authority paths in v1 are limited to `agency`, `camera.perspective`, and `color.territory`; cross-Scene Candidate generation primarily uses Camera/Color.
-- `ai-completed`, `legacy`, `unknown`, `blocked`, partial, unsupported, divergent, handoff-mismatched, non-adjacent, or already-directed targets never produce authority Candidates.
-- M6 `WARN` is diagnostic evidence, not auto-repair input.
-- Missing `projectConstraints` is valid legacy state and normalizes to an empty registry.
-- Persist only Director decisions/history; derive `ACTIVE`, `SATISFIED`, `CONFLICT`, `STALE`, `INAPPLICABLE` at runtime.
+- Authority Candidates are prospective, immediate-next-Scene only, and initially `SETUP` scoped.
+- Exact authority paths are limited to `agency`, `camera.perspective`, `color.territory`; Candidate generation initially emits Camera/Color `ownership-carry` only.
+- `ai-completed`, `legacy`, `unknown`, `blocked`, partial, unsupported, divergent, handoff-mismatched, non-adjacent, already-directed targets, and M6 `WARN` never create authority Candidates.
+- Missing `projectConstraints` remains valid legacy Project state.
+- Persist only Director decisions/history; derive `ACTIVE`, `SATISFIED`, `CONFLICT`, `STALE`, `INAPPLICABLE`.
 - Staleness compares canonical evidence snapshot content, not digest alone.
-- Fingerprint digest is deterministic 64-bit FNV-1a over UTF-8 canonical JSON using `BigInt`; it is not a security signature.
-- Revision history is explicit: `currentRevision` + immutable `revisions{}`.
-- Release exceptions bind to exactly one constraint revision and never auto-transfer to a new revision.
-- Grammar changes remain allowed; unsupported target Grammar for a confirmed path yields review conflict, not forced Grammar change.
-- Existing M3/M4/M5/M6 semantics remain unchanged unless this plan explicitly adds read-only M7 annotations.
-- Canonical Scene State still mutates only through explicit Apply.
-- Existing PR #4 stays Draft and must not be merged during M7 implementation.
+- Digest is deterministic UTF-8 FNV-1a 64-bit using `BigInt`; it is an identity helper, not a security signature.
+- Registry history uses `currentRevision` + immutable `revisions{}`.
+- Release exceptions are revision-local.
+- Grammar diversity remains valid. A confirmed path unsupported by the target Grammar is a review conflict, not a reason to rewrite Grammar.
+- Canonical Scene State still mutates only after explicit Apply.
+- M3/M4/M5/M6 behavior stays intact except for read-only M7 provenance annotation.
+- PR #4 remains Draft and unmerged.
 
 ---
 
 ## File Map
 
-### New runtime modules
+**Create runtime**
+- `visual-direction-os/project-constraint-registry.js` — fingerprints, validation, revisions, dismissals, Director decision transforms.
+- `visual-direction-os/project-constraint-candidates.js` — pure prospective Candidate derivation.
+- `visual-direction-os/project-constraint-authority.js` — pure current-evidence + Scene Compiler resolution.
+- `visual-direction-os/visual-sequence-project-constraints.js` — thin pre-AI Sequence guard/context bridge.
+- `visual-direction-os/project-constraint-inspector.js` — pure Director Control renderer.
+- `visual-direction-os/project-constraint.css` — UI styling.
 
-- `visual-direction-os/project-constraint-registry.js` — canonical serialization/fingerprints, registry validation, Director decision transforms, revisions, dismissals, release exceptions.
-- `visual-direction-os/project-constraint-candidates.js` — pure prospective Candidate derivation from M6 + Project State and current dismissal ledger.
-- `visual-direction-os/project-constraint-authority.js` — pure runtime revalidation and `ACTIVE/SATISFIED/CONFLICT/STALE/INAPPLICABLE` resolution.
-- `visual-direction-os/visual-sequence-project-constraints.js` — thin pre-AI bridge from base M5 Skeleton to M7 authority resolution and Sequence gate/context.
-- `visual-direction-os/project-constraint-inspector.js` — pure Project Constraint Director Control renderer.
-- `visual-direction-os/project-constraint.css` — restrained styles for Candidate/confirmed/conflict/stale cards.
-
-### New tests
-
+**Create tests**
 - `visual-direction-os/project-constraint-registry.test.js`
 - `visual-direction-os/project-constraint-project-state.test.js`
 - `visual-direction-os/project-constraint-candidates.test.js`
 - `visual-direction-os/project-constraint-authority.test.js`
 - `visual-direction-os/visual-sequence-project-constraints.test.js`
 - `visual-direction-os/project-constraint-inspector.test.js`
+- `visual-direction-os/project-constraint-workspace.test.js`
 - `visual-direction-os/project-constraint-browser.spec.js`
 
-### Existing files to modify
-
-- `visual-direction-os/project-contracts.js` — accept optional registry and delegate validation to the registry module.
-- `visual-direction-os/project-state.js` — expose a validated `setProjectConstraints(registry)` mutation for explicit Director decisions only.
-- `visual-direction-os/project-persistence.test.js` — prove legacy load and registry round-trip.
-- `visual-direction-os/project-bootstrap.js` — load M7 dependencies in deterministic order and provide current Project constraint context to Narrative Workspace.
-- `visual-direction-os/project-workspace.js` — render Director Control after M6 and wire confirm/reject/revoke/review/release actions through Project Store.
-- `visual-direction-os/narrative-workspace.js` — run M7 gate after base Skeleton compilation and before `beginRequest('sequence')`/AI call.
-- `visual-direction-os/visual-sequence-completion.js` — add optional satisfied Project constraint provenance annotations without changing value ownership.
-- `visual-direction-os/visual-sequence-completion.test.js` — prove annotations preserve `owner: compiler` and do not change values.
-- `visual-direction-os/narrative-api-client.js` — pass optional read-only `projectConstraintContext` to Sequence API.
-- `api/narrative/_contracts.js` — accept/validate optional read-only Project constraint Sequence context.
-- `api/narrative/_prompts.js` — explain Project constraint context to AI while explicitly forbidding constrained-path writes.
+**Modify**
+- `visual-direction-os/project-contracts.js`
+- `visual-direction-os/project-state.js`
+- `visual-direction-os/project-persistence.test.js`
+- `visual-direction-os/project-bootstrap.js`
+- `visual-direction-os/project-workspace.js`
+- `visual-direction-os/narrative-workspace.js`
+- `visual-direction-os/narrative-api-client.js`
+- `visual-direction-os/visual-sequence-completion.js`
+- `visual-direction-os/visual-sequence-completion.test.js`
+- `api/narrative/_contracts.js`
 - `api/narrative/_contracts-sequence-completion.test.js`
+- `api/narrative/_prompts.js`
 - `api/narrative/_prompts.test.js`
-- `.github/workflows/director-intelligence-ci.yml` — add M7 contracts, syntax, Pages assets, and browser acceptance.
+- `.github/workflows/director-intelligence-ci.yml`
 
 ---
 
-### Task 1: Registry primitives, canonical evidence identity, revisions, and Director decisions
+### Task 1: Registry primitives and revisioned Director decisions
 
 **Files:**
 - Create: `visual-direction-os/project-constraint-registry.js`
 - Create: `visual-direction-os/project-constraint-registry.test.js`
 
 **Interfaces:**
-- Produces:
-  - `REGISTRY_VERSION = '0.1.0'`
-  - `AUTHORITY_CONTRACT_VERSION = '0.1.0'`
-  - `createEmptyRegistry() -> {schemaVersion,constraints,dismissals}`
-  - `canonicalize(value) -> JSON-compatible value`
-  - `canonicalJSONString(value) -> string`
-  - `fnv1a64(input) -> 16-char lowercase hex string`
-  - `fingerprintSnapshot(prefix, snapshot) -> string`
-  - `validateRegistry(registry) -> {valid,errors,value?}`
-  - `confirmCandidate(registry, candidate) -> registry`
-  - `rejectCandidate(registry, candidate) -> registry`
-  - `revokeConstraint(registry, constraintId) -> registry`
-  - `releaseConstraintScope(registry, constraintId, {sceneId,beatId}) -> registry`
-  - `reconfirmConstraint(registry, constraintId, candidate) -> registry`
-  - `getCurrentRevision(constraint) -> revision|null`
-- Consumes no Project Store and no M6 modules; keep this module dependency-light so it can load before `project-contracts.js`.
 
-- [ ] **Step 1: Write failing canonicalization/fingerprint tests**
+```js
+REGISTRY_VERSION = '0.1.0'
+AUTHORITY_CONTRACT_VERSION = '0.1.0'
+createEmptyRegistry()
+canonicalize(value)
+canonicalJSONString(value)
+fnv1a64(input)
+fingerprintSnapshot(prefix, snapshot)
+validateRegistry(registry)
+confirmCandidate(registry, candidate)
+rejectCandidate(registry, candidate)
+revokeConstraint(registry, constraintId)
+releaseConstraintScope(registry, constraintId, {sceneId, beatId})
+reconfirmConstraint(registry, constraintId, candidate)
+getCurrentRevision(constraint)
+```
+
+This module has no dependency on Project Store or M6 so Bootstrap can load it before `project-contracts.js`.
+
+- [ ] **Step 1: Write RED canonicalization/fingerprint tests**
 
 ```js
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const registry = require('./project-constraint-registry.js');
 
-test('canonical JSON ignores object insertion order but preserves arrays', () => {
-  const a = { z: 1, a: { y: 2, x: 3 }, list: ['b','a'] };
-  const b = { list: ['b','a'], a: { x: 3, y: 2 }, z: 1 };
+test('canonical JSON sorts object keys and preserves array order', () => {
+  const a = {z:1,a:{y:2,x:3},list:['b','a']};
+  const b = {list:['b','a'],a:{x:3,y:2},z:1};
   assert.equal(registry.canonicalJSONString(a), registry.canonicalJSONString(b));
-  assert.equal(registry.fingerprintSnapshot('pcf', a), registry.fingerprintSnapshot('pcf', b));
   assert.match(registry.fingerprintSnapshot('pcf', a), /^pcf-[0-9a-f]{16}$/);
 });
 
-test('canonicalization omits undefined object keys', () => {
-  assert.equal(registry.canonicalJSONString({ a:1, b:undefined }), '{"a":1}');
+test('undefined object properties are omitted', () => {
+  assert.equal(registry.canonicalJSONString({a:1,b:undefined}), '{"a":1}');
 });
 ```
 
 - [ ] **Step 2: Run RED**
 
-Run:
-
 ```bash
 node --test visual-direction-os/project-constraint-registry.test.js
 ```
 
-Expected: FAIL because `project-constraint-registry.js` does not exist.
+Expected: FAIL because the module does not exist.
 
-- [ ] **Step 3: Implement canonicalization and deterministic FNV-1a**
+- [ ] **Step 3: Implement canonical identity**
 
 ```js
 const MASK_64 = (1n << 64n) - 1n;
@@ -146,9 +143,7 @@ function canonicalize(value) {
   return out;
 }
 
-function canonicalJSONString(value) {
-  return JSON.stringify(canonicalize(value));
-}
+function canonicalJSONString(value) { return JSON.stringify(canonicalize(value)); }
 
 function fnv1a64(input) {
   let hash = FNV_OFFSET;
@@ -160,9 +155,9 @@ function fnv1a64(input) {
 }
 ```
 
-- [ ] **Step 4: Add RED tests for registry lifecycle**
+- [ ] **Step 4: Add RED lifecycle tests**
 
-Use a deterministic Candidate fixture:
+Use this fixture:
 
 ```js
 const candidate = {
@@ -175,8 +170,12 @@ const candidate = {
   scope:{sourceSceneId:'scene-02',targetSceneId:'scene-03',beatIds:['setup']},
   evidenceSnapshot:{sourceSceneId:'scene-02',targetSceneId:'scene-03',path:'camera.perspective',expected:'mixed'}
 };
+```
 
-test('confirm creates revision 1 and preserves immutable evidence snapshot', () => {
+Assert:
+
+```js
+test('confirm creates immutable REV 01', () => {
   const next = registry.confirmCandidate(registry.createEmptyRegistry(), candidate);
   const item = Object.values(next.constraints)[0];
   assert.equal(item.decision, 'confirmed');
@@ -186,36 +185,39 @@ test('confirm creates revision 1 and preserves immutable evidence snapshot', () 
   assert.deepEqual(item.revisions['1'].evidence.canonicalSnapshot, candidate.evidenceSnapshot);
 });
 
-test('reject stores only candidate fingerprint', () => {
+test('reject persists only the Candidate fingerprint', () => {
   const next = registry.rejectCandidate(registry.createEmptyRegistry(), candidate);
   assert.equal(next.dismissals[candidate.candidateFingerprint].decision, 'rejected');
   assert.deepEqual(next.constraints, {});
 });
 
-test('reconfirm supersedes old revision and release exception stays revision-local', () => {
-  let state = registry.confirmCandidate(registry.createEmptyRegistry(), candidate);
-  const id = Object.keys(state.constraints)[0];
-  state = registry.releaseConstraintScope(state, id, {sceneId:'scene-03',beatId:'setup'});
-  const changed = {...candidate, expected:'character', evidenceSnapshot:{...candidate.evidenceSnapshot,expected:'character'}};
-  state = registry.reconfirmConstraint(state, id, changed);
-  assert.equal(state.constraints[id].currentRevision, 2);
-  assert.equal(state.constraints[id].revisions['1'].state, 'superseded');
-  assert.equal(state.constraints[id].revisions['1'].exceptions.length, 1);
-  assert.equal(state.constraints[id].revisions['2'].exceptions.length, 0);
+test('reconfirm supersedes REV 01 and does not inherit its release exception', () => {
+  let next = registry.confirmCandidate(registry.createEmptyRegistry(), candidate);
+  const id = Object.keys(next.constraints)[0];
+  next = registry.releaseConstraintScope(next, id, {sceneId:'scene-03',beatId:'setup'});
+  next = registry.reconfirmConstraint(next, id, {
+    ...candidate,
+    expected:'character',
+    evidenceSnapshot:{...candidate.evidenceSnapshot,expected:'character'}
+  });
+  assert.equal(next.constraints[id].currentRevision, 2);
+  assert.equal(next.constraints[id].revisions['1'].state, 'superseded');
+  assert.equal(next.constraints[id].revisions['1'].exceptions.length, 1);
+  assert.equal(next.constraints[id].revisions['2'].exceptions.length, 0);
 });
 ```
 
-- [ ] **Step 5: Implement registry lifecycle + validator minimally**
+- [ ] **Step 5: Implement lifecycle + validation**
 
-Validation must reject:
-- unknown `schemaVersion`;
-- `confirmed` constraint with missing current revision;
+`validateRegistry()` must reject:
+- wrong `schemaVersion`;
+- invalid decision outside `confirmed|revoked`;
+- confirmed constraint without `currentRevision`;
 - current revision whose `state !== 'current'`;
-- release exception whose `revision` differs from containing revision;
-- missing `canonicalSnapshot` or fingerprint;
-- invalid decision other than `confirmed`/`revoked`.
+- missing evidence `canonicalSnapshot`/fingerprint;
+- exception whose `revision` differs from containing revision.
 
-Do not persist `ACTIVE/SATISFIED/CONFLICT/STALE/INAPPLICABLE` anywhere in registry data.
+Never persist runtime statuses.
 
 - [ ] **Step 6: Run GREEN**
 
@@ -235,30 +237,29 @@ git commit -m "feat: add project constraint registry primitives"
 
 ---
 
-### Task 2: Backward-compatible Project State + persistence integration
+### Task 2: Backward-compatible Project State and persistence
 
 **Files:**
 - Modify: `visual-direction-os/project-contracts.js`
 - Modify: `visual-direction-os/project-state.js`
-- Create: `visual-direction-os/project-constraint-project-state.test.js`
+- Modify: `visual-direction-os/project-bootstrap.js`
 - Modify: `visual-direction-os/project-persistence.test.js`
-- Modify: `visual-direction-os/project-bootstrap.js` load order only in this task
+- Create: `visual-direction-os/project-constraint-project-state.test.js`
 
 **Interfaces:**
-- `project-contracts.js` consumes `VDOSProjectConstraintRegistry.validateRegistry`.
-- `project-state.js` adds `setProjectConstraints(nextRegistry)`.
-- Older Project objects with no `projectConstraints` remain valid and unchanged until the first Director decision.
+- `project-contracts.js` delegates optional registry validation to `VDOSProjectConstraintRegistry.validateRegistry`.
+- Project Store adds `setProjectConstraints(nextRegistry)`.
 
-- [ ] **Step 1: Write RED tests for legacy and new Project contracts**
+- [ ] **Step 1: Write RED legacy/new contract tests**
 
 ```js
-test('legacy project without projectConstraints remains valid', () => {
-  const legacy = validProjectFixture();
-  delete legacy.projectConstraints;
-  assert.equal(contracts.validateProjectState(legacy).valid, true);
+test('legacy Project without projectConstraints remains valid', () => {
+  const project = validProjectFixture();
+  delete project.projectConstraints;
+  assert.equal(contracts.validateProjectState(project).valid, true);
 });
 
-test('project accepts a valid M7 registry and rejects an invalid one', () => {
+test('valid registry is accepted and invalid registry rejected', () => {
   const project = validProjectFixture();
   project.projectConstraints = registry.createEmptyRegistry();
   assert.equal(contracts.validateProjectState(project).valid, true);
@@ -267,10 +268,10 @@ test('project accepts a valid M7 registry and rejects an invalid one', () => {
 });
 ```
 
-- [ ] **Step 2: Write RED store mutation test**
+- [ ] **Step 2: Write RED Store mutation test**
 
 ```js
-test('setProjectConstraints commits only validated Director registry state', () => {
+test('setProjectConstraints commits only validated Director decision state', () => {
   const store = stateApi.createProjectStore(validProjectFixture());
   const nextRegistry = registry.rejectCandidate(registry.createEmptyRegistry(), candidateFixture());
   const result = store.setProjectConstraints(nextRegistry);
@@ -286,26 +287,11 @@ node --test visual-direction-os/project-constraint-project-state.test.js
 node visual-direction-os/project-persistence.test.js
 ```
 
-Expected: FAIL because Project contracts/store do not know `projectConstraints` or `setProjectConstraints`.
+Expected: FAIL on missing Project registry support.
 
-- [ ] **Step 4: Implement Project contract delegation and store mutation**
+- [ ] **Step 4: Implement Project contract dependency correctly**
 
-At UMD load:
-
-```js
-const constraintRegistry = typeof module === 'object' && module.exports
-  ? require('./project-constraint-registry.js')
-  : root?.VDOSProjectConstraintRegistry;
-```
-
-In `validateProjectState`:
-
-```js
-if (value.projectConstraints != null) {
-  const checked = constraintRegistry.validateRegistry(value.projectConstraints);
-  checked.errors.forEach(error => errors.push(`projectConstraints.${error}`));
-}
-```
+Change the UMD wrapper so `project-contracts.js` receives both `root` and registry; Node requires `./project-constraint-registry.js`, browser reads `root.VDOSProjectConstraintRegistry`. Validate `projectConstraints` only when present.
 
 In Project Store:
 
@@ -320,40 +306,21 @@ function setProjectConstraints(nextRegistry) {
 }
 ```
 
-Do not add runtime authority status fields to Project State.
+Expose it from `createProjectStore()`.
 
-- [ ] **Step 5: Update Bootstrap deterministic load order**
+- [ ] **Step 5: Lock Bootstrap load order**
 
-Load dependency-light registry first, then Project contracts:
+Before the existing Project contracts group:
 
 ```js
 await loadScript(`project-constraint-registry.js?v=${VERSION}`, 'VDOSProjectConstraintRegistry');
-await Promise.all([
-  loadStyle(`project-workspace.css?v=${VERSION}`),
-  loadStyle(`project-context.css?v=${VERSION}`),
-  loadStyle(`project-intelligence.css?v=${VERSION}`),
-  loadScript(`project-contracts.js?v=${VERSION}`, 'VDOSProjectContracts'),
-  loadScript(`project-context.js?v=${VERSION}`, 'VDOSProjectContextContract')
-]);
 ```
 
-Do not load Candidates/Authority/UI yet; later tasks add them.
+Then load `project-contracts.js`; do not put these two in the same `Promise.all`.
 
 - [ ] **Step 6: Add persistence round-trip test**
 
-```js
-test('persistence round-trips a confirmed registry and still loads legacy projects', () => {
-  const storage = memoryStorage();
-  const persistence = createProjectPersistence({storage,key:'m7'});
-  const project = validProjectFixture();
-  project.projectConstraints = confirmedRegistryFixture();
-  persistence.save(project);
-  assert.deepEqual(persistence.load().projectConstraints, project.projectConstraints);
-
-  storage.setItem('m7', JSON.stringify({version:1,project:legacyProjectFixture()}));
-  assert.equal(persistence.load().projectConstraints, undefined);
-});
-```
+Save/load a Project with a confirmed Registry and separately load a legacy Project without the field. Both must validate.
 
 - [ ] **Step 7: Run GREEN**
 
@@ -367,47 +334,48 @@ node --check visual-direction-os/project-state.js
 node --check visual-direction-os/project-bootstrap.js
 ```
 
-Expected: PASS.
-
 - [ ] **Step 8: Commit**
 
 ```bash
-git add visual-direction-os/project-contracts.js visual-direction-os/project-state.js visual-direction-os/project-bootstrap.js visual-direction-os/project-constraint-project-state.test.js visual-direction-os/project-persistence.test.js
+git add visual-direction-os/project-contracts.js visual-direction-os/project-state.js visual-direction-os/project-bootstrap.js visual-direction-os/project-persistence.test.js visual-direction-os/project-constraint-project-state.test.js
 git commit -m "feat: persist project constraint decisions"
 ```
 
 ---
 
-### Task 3: Prospective Candidate derivation from M6 evidence
+### Task 3: Prospective Candidate derivation
 
 **Files:**
 - Create: `visual-direction-os/project-constraint-candidates.js`
 - Create: `visual-direction-os/project-constraint-candidates.test.js`
 
 **Interfaces:**
-- Consumes:
-  - `projectIntelligence` from `deriveProjectIntelligence(projectState)`.
-  - registry `canonicalJSONString()` + `fingerprintSnapshot()`.
-- Produces:
-  - `buildConstraintEvidenceSnapshot({projectState,projectIntelligence,sourceSceneId,targetSceneId,family,path,type,beatIds})`
-  - `deriveProjectConstraintCandidates({projectState,projectIntelligence,registry}) -> Candidate[]`
-- Candidate exact `expected` value must be read from source final Scene State (`workspace.sceneState`) rather than M6 normalized `CONTESTED` labels.
-
-- [ ] **Step 1: Write positive RED Camera carry test**
-
-Create a 3-Scene fixture:
-- Scene 01 and Scene 02 directed with compiler-first provenance.
-- M6 boundary `scene-01->scene-02` is `PASS`.
-- Scene 02 final `camera.perspective === 'mixed'` and M6 source is `compiler-backed`.
-- Scene 02 narrative ends `contested`.
-- Scene 03 is `undirected` and starts `contested`.
 
 ```js
-test('derives immediate-next Scene SETUP Camera carry from material compiler-backed evidence', () => {
+buildConstraintEvidenceSnapshot({
+  projectState, projectIntelligence,
+  sourceSceneId, targetSceneId,
+  family, path, type, beatIds
+})
+
+deriveProjectConstraintCandidates({projectState, projectIntelligence, registry})
+```
+
+Exact `expected` comes from source final `workspace.sceneState`, never from M6 normalized `CONTESTED` labels.
+
+- [ ] **Step 1: Write RED positive Camera carry fixture**
+
+Use Scene 01→02 as an existing `PASS` compiler-backed Camera transfer, then an undirected immediate Scene 03 whose starting agency equals Scene 02 ending agency.
+
+```js
+test('derives immediate-next SETUP Camera carry', () => {
   const intelligence = deriveProjectIntelligence(project);
-  const candidates = deriveProjectConstraintCandidates({projectState:project,projectIntelligence:intelligence,registry:createEmptyRegistry()});
+  const candidates = api.deriveProjectConstraintCandidates({
+    projectState:project,
+    projectIntelligence:intelligence,
+    registry:registry.createEmptyRegistry()
+  });
   assert.equal(candidates.length, 1);
-  assert.equal(candidates[0].type, 'ownership-carry');
   assert.equal(candidates[0].path, 'camera.perspective');
   assert.equal(candidates[0].expected, 'mixed');
   assert.deepEqual(candidates[0].scope.beatIds, ['setup']);
@@ -417,42 +385,19 @@ test('derives immediate-next Scene SETUP Camera carry from material compiler-bac
 
 - [ ] **Step 2: Write RED ineligibility matrix**
 
-Cover each case independently:
+Independently prove zero Candidates for:
+- AI-completed source;
+- legacy/missing/unknown/divergent source;
+- blocked source;
+- M6 WARN source relationship;
+- handoff mismatch;
+- non-adjacent target;
+- target already `directed`;
+- unsupported path.
 
-```js
-for (const name of [
-  'ai-completed source',
-  'legacy source',
-  'unknown/divergent source',
-  'blocked source',
-  'handoff mismatch',
-  'non-adjacent target',
-  'already directed target',
-  'M6 WARN source relation'
-]) {
-  test(`${name} does not produce authority Candidate`, () => {
-    assert.deepEqual(deriveProjectConstraintCandidates(fixtureFor(name)), []);
-  });
-}
-```
+- [ ] **Step 3: Write RED dismissal identity test**
 
-Also prove exact Camera/Color values come from final Scene State, not normalized M6 authority labels.
-
-- [ ] **Step 3: Write dismissal RED test**
-
-```js
-test('identical rejected Candidate stays hidden until evidence changes', () => {
-  const first = deriveProjectConstraintCandidates(input)[0];
-  const dismissed = rejectCandidate(createEmptyRegistry(), first);
-  assert.deepEqual(deriveProjectConstraintCandidates({...input,registry:dismissed}), []);
-
-  const changed = deepClone(input.projectState);
-  changed.scenes['scene-03'].narrativeRole.turningPoint = 'A materially revised transition.';
-  const next = deriveProjectConstraintCandidates({...input,projectState:changed,projectIntelligence:deriveProjectIntelligence(changed),registry:dismissed});
-  assert.equal(next.length, 1);
-  assert.notEqual(next[0].candidateFingerprint, first.candidateFingerprint);
-});
-```
+Reject Candidate A, rerun unchanged -> zero. Then materially change target `agencyTransition` while preserving compatible starting agency, e.g. `['contested','character']` -> `['contested','shared','character']`; derive a new fingerprint and Candidate.
 
 - [ ] **Step 4: Run RED**
 
@@ -460,39 +405,34 @@ test('identical rejected Candidate stays hidden until evidence changes', () => {
 node --test visual-direction-os/project-constraint-candidates.test.js
 ```
 
-Expected: FAIL because Candidate module is missing.
+- [ ] **Step 5: Implement minimal pure algorithm**
 
-- [ ] **Step 5: Implement minimal pure derivation**
-
-Algorithm:
-
-```js
-for each sourceSceneId at index 1..sceneOrder.length-2:
-  sourceBoundary = intelligence.boundaries.find(toSceneId === sourceSceneId)
-  targetSceneId = sceneOrder[index + 1]
-  require sourceBoundary.status === 'PASS'
-  require target.status.visual !== 'directed'
-  require source narrative end === target narrative start
-  for family/path in [['camera','camera.perspective'],['color','color.territory']]:
-    require source record sources[family] === 'compiler-backed'
-    require sourceBoundary visualResponse contains changed compiler-backed item for family
-    read exact expected from source workspace.sceneState
+```text
+for source Scene indexes 1 .. length-2:
+  sourceBoundary = boundary whose toSceneId == sourceSceneId
+  target = immediate next Scene only
+  require sourceBoundary PASS and material changed compiler-backed response
+  require target not directed
+  require source ending agency == target starting agency
+  for camera/color:
+    require source M6 source == compiler-backed
+    read exact final value from source Scene State
     build canonical evidence snapshot
-    candidateFingerprint = fingerprintSnapshot('pcand', snapshot)
-    skip if registry.dismissals[candidateFingerprint]
-    emit Candidate scoped to target SETUP
+    fingerprint pcand-...
+    skip identical dismissal
+    emit ownership-carry -> target SETUP
 ```
 
-Keep `transfer-completion` reserved; do not emit it in Task 3.
+Do not emit `transfer-completion` in v1.
 
-- [ ] **Step 6: Run GREEN + immutability/determinism**
+- [ ] **Step 6: Run GREEN + determinism/immutability**
 
 ```bash
 node --test visual-direction-os/project-constraint-candidates.test.js
 node --check visual-direction-os/project-constraint-candidates.js
 ```
 
-Add assertions that inputs are unchanged and repeated derivation is deep-equal.
+Repeated input must be deep-equal and inputs unchanged.
 
 - [ ] **Step 7: Commit**
 
@@ -503,17 +443,26 @@ git commit -m "feat: derive prospective project constraint candidates"
 
 ---
 
-### Task 4: Runtime Project Constraint Authority resolver
+### Task 4: Runtime Authority resolver
 
 **Files:**
 - Create: `visual-direction-os/project-constraint-authority.js`
 - Create: `visual-direction-os/project-constraint-authority.test.js`
 
 **Interfaces:**
-- Consumes registry, Candidate evidence snapshot builder, and `visual-compiler.js`.
-- Produces:
-  - `resolveProjectConstraintAuthority({projectState,projectIntelligence,registry,targetSceneId,visualIR,baseSkeleton})`
-  - return shape:
+
+```js
+resolveProjectConstraintAuthority({
+  projectState,
+  projectIntelligence,
+  registry,
+  targetSceneId,
+  visualIR,
+  baseSkeleton
+})
+```
+
+Return:
 
 ```js
 {
@@ -521,14 +470,9 @@ git commit -m "feat: derive prospective project constraint candidates"
   targetSceneId,
   safeToComplete,
   resolutions:[{
-    constraintId,
-    revision,
+    constraintId, revision,
     status:'ACTIVE'|'SATISFIED'|'CONFLICT'|'STALE'|'INAPPLICABLE',
-    path,
-    beatId,
-    expected,
-    sceneExpected,
-    reason
+    path, beatId, expected, sceneExpected, reason
   }],
   conflicts:[],
   projectConstraintContext:{targetSceneId,constraints:[]}
@@ -537,100 +481,72 @@ git commit -m "feat: derive prospective project constraint candidates"
 
 - [ ] **Step 1: Write RED staleness tests**
 
-```js
-test('changed canonical evidence makes confirmed constraint STALE with zero authority', () => {
-  const result = resolveProjectConstraintAuthority(staleFixture());
-  assert.equal(result.safeToComplete, false);
-  assert.equal(result.resolutions[0].status, 'STALE');
-  assert.equal(result.resolutions[0].sceneExpected, null);
-});
-```
+Change each material canonical field separately: source final value, Reading/Strategy/Grammar/applied Beat, target agency transition, source/target adjacency. Expect `STALE`, `safeToComplete=false`, zero exact authority.
 
-Test staleness for:
-- source final value change;
-- source Reading/Strategy/Grammar/applied Beat change;
-- target narrative transition change;
-- source/target adjacency reorder.
-
-- [ ] **Step 2: Write RED satisfied/conflict tests**
-
-Use target Scene `SETUP` agency from base Skeleton.
+- [ ] **Step 2: Write RED SATISFIED and target-Grammar CONFLICT tests**
 
 ```js
-test('matching Scene Compiler expectation is SATISFIED', () => {
-  const result = resolveProjectConstraintAuthority(cameraSatisfiedFixture());
+test('matching supported Camera expectation is SATISFIED', () => {
+  const result = api.resolveProjectConstraintAuthority(satisfiedFixture());
   assert.equal(result.safeToComplete, true);
   assert.equal(result.resolutions[0].status, 'SATISFIED');
   assert.equal(result.resolutions[0].expected, 'mixed');
   assert.equal(result.resolutions[0].sceneExpected, 'mixed');
 });
 
-test('different supported Scene Compiler expectation is CONFLICT', () => {
-  const result = resolveProjectConstraintAuthority(cameraConflictFixture());
+test('confirmed Camera path under target Color-only Grammar is review conflict', () => {
+  const result = api.resolveProjectConstraintAuthority(unsupportedGrammarFixture());
   assert.equal(result.safeToComplete, false);
   assert.equal(result.resolutions[0].status, 'CONFLICT');
-  assert.equal(result.resolutions[0].reason, 'SCENE_COMPILER_DISAGREES');
-});
-
-test('target Grammar without exact path support is review conflict', () => {
-  const result = resolveProjectConstraintAuthority(unsupportedTargetGrammarFixture());
-  assert.equal(result.safeToComplete, false);
   assert.equal(result.resolutions[0].reason, 'TARGET_GRAMMAR_UNSUPPORTED');
 });
 ```
 
-- [ ] **Step 3: Write RED release/revoke tests**
+- [ ] **Step 3: Keep a defensive supported-value disagreement test**
 
-```js
-test('matching revision-local release makes constraint INAPPLICABLE and non-blocking', () => {
-  const result = resolveProjectConstraintAuthority(releasedFixture());
-  assert.equal(result.safeToComplete, true);
-  assert.equal(result.resolutions[0].status, 'INAPPLICABLE');
-});
+Construct a deliberately contradictory confirmed Registry fixture whose canonical snapshot is internally current but whose stored expected value disagrees with the current supported Scene Compiler assertion. Expect `CONFLICT/SCENE_COMPILER_DISAGREES`.
 
-test('revoked constraints do not participate', () => {
-  const result = resolveProjectConstraintAuthority(revokedFixture());
-  assert.deepEqual(result.resolutions, []);
-  assert.equal(result.safeToComplete, true);
-});
-```
+This is an invariant-hardening path, not the normal v1 ownership-carry UX: a normal current Camera/Color carry with compatible handoff should naturally agree at `SETUP`.
 
-- [ ] **Step 4: Run RED**
+- [ ] **Step 4: Write RED release/revoke/ACTIVE tests**
+
+- current-revision release -> `INAPPLICABLE`, non-blocking;
+- revoked -> omitted from participation;
+- current evidence + no Skeleton -> `ACTIVE`.
+
+- [ ] **Step 5: Run RED**
 
 ```bash
 node --test visual-direction-os/project-constraint-authority.test.js
 ```
 
-Expected: FAIL because authority module is missing.
-
-- [ ] **Step 5: Implement resolver in strict order**
-
-Per confirmed current revision targeting `targetSceneId`:
+- [ ] **Step 6: Implement strict resolver order**
 
 ```text
-1. matching current-revision release? -> INAPPLICABLE
-2. rebuild current canonical evidence snapshot
-3. snapshot content differs? -> STALE, safeToComplete=false
-4. no baseSkeleton yet? -> ACTIVE
-5. locate scoped deterministic endpoint Beat (`setup` in v1)
-6. derive Scene Compiler supported assertion using Visual Compiler
-7. no supported assertion for path? -> CONFLICT/TARGET_GRAMMAR_UNSUPPORTED
-8. assertion.expected === revision.expected? -> SATISFIED
-9. otherwise -> CONFLICT/SCENE_COMPILER_DISAGREES
+1. ignore revoked
+2. current-revision release? -> INAPPLICABLE
+3. rebuild current canonical snapshot
+4. snapshot differs? -> STALE, block
+5. no baseSkeleton? -> ACTIVE
+6. locate scoped deterministic Beat (SETUP)
+7. ask Visual Compiler for supported assertion
+8. no supported assertion for path? -> CONFLICT/TARGET_GRAMMAR_UNSUPPORTED
+9. exact value equal? -> SATISFIED
+10. exact value differs? -> CONFLICT/SCENE_COMPILER_DISAGREES
 ```
 
-`projectConstraintContext.constraints` includes only `SATISFIED` entries and is explanatory/read-only.
+Only `SATISFIED` items enter `projectConstraintContext`.
 
-- [ ] **Step 6: Run GREEN + immutability**
+- [ ] **Step 7: Run GREEN**
 
 ```bash
 node --test visual-direction-os/project-constraint-authority.test.js
 node --check visual-direction-os/project-constraint-authority.js
 ```
 
-Assert no input mutation and deterministic repeat output.
+Add input-immutability and repeated-output equality assertions.
 
-- [ ] **Step 7: Commit**
+- [ ] **Step 8: Commit**
 
 ```bash
 git add visual-direction-os/project-constraint-authority.js visual-direction-os/project-constraint-authority.test.js
@@ -639,40 +555,53 @@ git commit -m "feat: resolve guarded project constraint authority"
 
 ---
 
-### Task 5: Guard M5 Sequence before AI and annotate compiler provenance
+### Task 5: Guard M5 before AI and annotate compiler provenance
 
 **Files:**
 - Create: `visual-direction-os/visual-sequence-project-constraints.js`
 - Create: `visual-direction-os/visual-sequence-project-constraints.test.js`
 - Modify: `visual-direction-os/narrative-workspace.js`
 - Modify: `visual-direction-os/project-bootstrap.js`
+- Modify: `visual-direction-os/narrative-api-client.js`
 - Modify: `visual-direction-os/visual-sequence-completion.js`
 - Modify: `visual-direction-os/visual-sequence-completion.test.js`
-- Modify: `visual-direction-os/narrative-api-client.js`
 - Modify: `api/narrative/_contracts.js`
 - Modify: `api/narrative/_contracts-sequence-completion.test.js`
 - Modify: `api/narrative/_prompts.js`
 - Modify: `api/narrative/_prompts.test.js`
 
 **Interfaces:**
-- `guardProjectConstraints(args)` returns authority result or throws `PROJECT_CONSTRAINT_REVIEW_REQUIRED` before AI request.
-- Narrative Workspace receives:
-  - `projectConstraintGuard`
-  - `projectConstraintProvider() -> {projectState,projectIntelligence,registry,targetSceneId}`
-- `assembleSequenceProposal` gains optional `projectConstraintResolutions=[]`.
+
+```js
+guardProjectConstraints(args)
+```
+
+returns Authority result or throws `PROJECT_CONSTRAINT_REVIEW_REQUIRED` before AI request creation.
+
+Narrative Workspace options gain:
+
+```js
+projectConstraintGuard
+projectConstraintProvider() -> {projectState,projectIntelligence,registry,targetSceneId}
+```
+
+Assembler gains optional:
+
+```js
+projectConstraintResolutions = []
+```
 
 - [ ] **Step 1: Write RED bridge tests**
 
 ```js
-test('guard returns satisfied read-only context without mutating Skeleton', () => {
+test('satisfied guard is read-only', () => {
   const before = structuredClone(skeleton);
-  const result = bridge.guardProjectConstraints({...fixture,skeleton});
+  const result = bridge.guardProjectConstraints({...fixture,baseSkeleton:skeleton});
   assert.equal(result.safeToComplete, true);
-  assert.equal(result.projectConstraintContext.constraints[0].resolution, 'satisfied');
   assert.deepEqual(skeleton, before);
 });
 
-test('guard throws review-required for conflict or stale', () => {
+test('stale/conflict throws review-required', () => {
   assert.throws(
     () => bridge.guardProjectConstraints(conflictFixture()),
     error => error.code === 'PROJECT_CONSTRAINT_REVIEW_REQUIRED'
@@ -685,8 +614,6 @@ test('guard throws review-required for conflict or stale', () => {
 ```bash
 node --test visual-direction-os/visual-sequence-project-constraints.test.js
 ```
-
-Expected: FAIL because bridge is missing.
 
 - [ ] **Step 3: Implement thin bridge**
 
@@ -703,18 +630,11 @@ function guardProjectConstraints(args) {
 }
 ```
 
-No Skeleton writes.
+No Skeleton mutation.
 
-- [ ] **Step 4: Integrate guard into `requestSequence()` before AI request creation**
+- [ ] **Step 4: Integrate into `requestSequence()` at the correct side of the AI boundary**
 
-After base Skeleton compilation/reuse, but before:
-
-```js
-({ token,controller } = beginRequest('sequence'));
-rawCompletion = await api.sequence(...);
-```
-
-insert:
+After base Skeleton compile/reuse and before `beginRequest('sequence')`:
 
 ```js
 const constraintInput = projectConstraintProvider?.() || null;
@@ -724,13 +644,13 @@ const constraintResult = constraintInput
       visualIR,
       baseSkeleton:skeleton
     })
-  : { projectConstraintContext:null, resolutions:[] };
+  : {projectConstraintContext:null,resolutions:[]};
 ```
 
-Then call AI only after guard succeeds:
+Only then:
 
 ```js
-({ token,controller } = beginRequest('sequence'));
+({token,controller} = beginRequest('sequence'));
 rawCompletion = await api.sequence({
   narrative:current.input,
   directorIntent:current.directorIntent,
@@ -741,11 +661,11 @@ rawCompletion = await api.sequence({
 }, controller.signal);
 ```
 
-The pre-token/pre-controller guard path must render a recoverable Sequence error with code `PROJECT_CONSTRAINT_REVIEW_REQUIRED`; it must not fabricate a failed API request token.
+If guard throws before token creation, render a recoverable Sequence error directly; do not fabricate a failed API token.
 
-- [ ] **Step 5: Bootstrap M7 context provider**
+- [ ] **Step 5: Load/provide M7 runtime in Bootstrap**
 
-Load modules after M6 and before Project Workspace/Narrative use:
+After M6:
 
 ```js
 await loadScript(`project-constraint-candidates.js?v=${VERSION}`, 'VDOSProjectConstraintCandidates');
@@ -753,7 +673,7 @@ await loadScript(`project-constraint-authority.js?v=${VERSION}`, 'VDOSProjectCon
 await loadScript(`visual-sequence-project-constraints.js?v=${VERSION}`, 'VDOSVisualSequenceProjectConstraints');
 ```
 
-When restoring Narrative Workspace, pass:
+Pass to Narrative restore:
 
 ```js
 projectConstraintGuard: root.VDOSVisualSequenceProjectConstraints,
@@ -761,19 +681,19 @@ projectConstraintProvider: () => {
   const projectState = store.getProject();
   return {
     projectState,
-    projectIntelligence: root.VDOSProjectIntelligence.deriveProjectIntelligence(projectState),
-    registry: projectState?.projectConstraints || root.VDOSProjectConstraintRegistry.createEmptyRegistry(),
-    targetSceneId: projectState?.activeSceneId || null
+    projectIntelligence:root.VDOSProjectIntelligence.deriveProjectIntelligence(projectState),
+    registry:projectState?.projectConstraints || root.VDOSProjectConstraintRegistry.createEmptyRegistry(),
+    targetSceneId:projectState?.activeSceneId || null
   };
 }
 ```
 
-- [ ] **Step 6: Add assembler provenance RED tests**
+- [ ] **Step 6: Add assembler provenance RED test**
 
 ```js
-test('satisfied Project constraint annotates compiler provenance without changing owner/value', () => {
+test('SATISFIED Project constraint annotates compiler provenance without changing owner/value', () => {
   const assembled = assembleSequenceProposal({
-    skeleton, completion, visualIR,
+    skeleton,completion,visualIR,
     projectConstraintResolutions:[{
       constraintId:'constraint-camera-001',revision:1,status:'SATISFIED',beatId:'setup',path:'camera.perspective'
     }]
@@ -785,7 +705,7 @@ test('satisfied Project constraint annotates compiler provenance without changin
 });
 ```
 
-Top-level provenance:
+Also add:
 
 ```js
 sequenceProvenance.projectConstraints = {
@@ -794,45 +714,34 @@ sequenceProvenance.projectConstraints = {
 };
 ```
 
-Do not annotate conflict/stale paths because Sequence must not reach assembly.
+- [ ] **Step 7: Extend Sequence API contract/prompt read-only context**
 
-- [ ] **Step 7: Extend API contract/prompt with read-only context**
-
-Contract accepts optional:
+Optional input:
 
 ```js
 projectConstraintContext: {
-  targetSceneId: string,
-  constraints: [{
+  targetSceneId:string,
+  constraints:[{
     constraintId:string,
     revision:number,
-    type:string,
+    type:'ownership-carry'|'handoff-guard',
     beatId:'setup',
-    path:'camera.perspective'|'color.territory'|'agency',
+    path:'agency'|'camera.perspective'|'color.territory',
     expected:string,
     resolution:'satisfied'
   }]
 }
 ```
 
-Prompt text must include an explicit instruction equivalent to:
+Prompt must state:
 
 ```text
-Project Constraint Context is explanatory only. Do not write, override, or infer constrained paths. Return only AI-open completion fields allowed by the supplied Sequence Skeleton.
+Project Constraint Context is explanatory only. Do not write, override, or infer constrained paths. Return only AI-open fields allowed by the supplied Sequence Skeleton.
 ```
 
-- [ ] **Step 8: Prove AI is never called on conflict**
+- [ ] **Step 8: Prove AI request count is zero for guard failure**
 
-Add Narrative Workspace unit/integration test with a spy API:
-
-```js
-let sequenceCalls = 0;
-const api = { ...baseApi, async sequence(){ sequenceCalls += 1; return fixture; } };
-// guard fixture returns conflict
-await triggerSequence();
-assert.equal(sequenceCalls, 0);
-assert.match(rootNode.textContent, /PROJECT_CONSTRAINT_REVIEW_REQUIRED|Project constraint review/i);
-```
+Add a Narrative Workspace test/spied demo API. Trigger Sequence with a guard that throws `PROJECT_CONSTRAINT_REVIEW_REQUIRED`; assert `sequenceCalls === 0`, no proposal, no canonical Scene mutation.
 
 - [ ] **Step 9: Run GREEN**
 
@@ -849,47 +758,36 @@ node --check api/narrative/_contracts.js
 node --check api/narrative/_prompts.js
 ```
 
-Expected: PASS.
-
 - [ ] **Step 10: Commit**
 
 ```bash
-git add visual-direction-os/visual-sequence-project-constraints.js visual-direction-os/visual-sequence-project-constraints.test.js visual-direction-os/narrative-workspace.js visual-direction-os/project-bootstrap.js visual-direction-os/visual-sequence-completion.js visual-direction-os/visual-sequence-completion.test.js visual-direction-os/narrative-api-client.js api/narrative/_contracts.js api/narrative/_contracts-sequence-completion.test.js api/narrative/_prompts.js api/narrative/_prompts.test.js
+git add visual-direction-os/visual-sequence-project-constraints.js visual-direction-os/visual-sequence-project-constraints.test.js visual-direction-os/narrative-workspace.js visual-direction-os/project-bootstrap.js visual-direction-os/narrative-api-client.js visual-direction-os/visual-sequence-completion.js visual-direction-os/visual-sequence-completion.test.js api/narrative/_contracts.js api/narrative/_contracts-sequence-completion.test.js api/narrative/_prompts.js api/narrative/_prompts.test.js
 git commit -m "feat: guard compiler-first Sequence with project constraints"
 ```
 
 ---
 
-### Task 6: Project Constraints · Director Control UI and explicit decision actions
+### Task 6: Project Constraints · Director Control UI
 
 **Files:**
 - Create: `visual-direction-os/project-constraint-inspector.js`
 - Create: `visual-direction-os/project-constraint-inspector.test.js`
+- Create: `visual-direction-os/project-constraint-workspace.test.js`
 - Create: `visual-direction-os/project-constraint.css`
 - Modify: `visual-direction-os/project-workspace.js`
 - Modify: `visual-direction-os/project-bootstrap.js`
-- Modify: `visual-direction-os/project-workspace.spec.js` only for stable ordering/non-regression assertions if needed
 
 **Interfaces:**
-- Inspector consumes `{candidates,authorityState,registry}` and renders HTML only.
-- Project Workspace derives Candidates/Authority state read-only, then invokes registry transforms + `store.setProjectConstraints()` only from explicit button actions.
-- UI order:
+- Pure inspector consumes `{candidates,authorityState,registry}`.
+- Project Workspace computes current candidates/overview authority read-only.
+- Only explicit actions call Registry transforms then `store.setProjectConstraints()`.
+- UI order: Arc → Continuity → M6 Intelligence → `PROJECT CONSTRAINTS · DIRECTOR CONTROL`.
 
-```text
-PROJECT ARC
-↓
-CROSS-SCENE CONTINUITY
-↓
-PROJECT INTELLIGENCE · SHADOW
-↓
-PROJECT CONSTRAINTS · DIRECTOR CONTROL
-```
-
-- [ ] **Step 1: Write RED pure renderer tests**
+- [ ] **Step 1: Write RED renderer tests**
 
 ```js
-test('renders zero-authority Candidate with Confirm and Reject', () => {
-  const html = renderProjectConstraints({candidates:[candidate],registry:createEmptyRegistry(),authorityState:null});
+test('Candidate renders Confirm/Reject with zero authority wording', () => {
+  const html = inspector.renderProjectConstraints({candidates:[candidate],registry:registry.createEmptyRegistry(),authorityState:null});
   assert.match(html, /PROJECT CONSTRAINTS · DIRECTOR CONTROL/);
   assert.match(html, /CANDIDATE/);
   assert.match(html, /CONFIRM/);
@@ -897,67 +795,39 @@ test('renders zero-authority Candidate with Confirm and Reject', () => {
   assert.doesNotMatch(html, /owner: project/i);
 });
 
-test('renders stale as AUTHORITY REMOVED and conflict as AI COMPLETION NOT STARTED', () => {
-  assert.match(renderProjectConstraints(staleState), /AUTHORITY REMOVED/);
-  assert.match(renderProjectConstraints(conflictState), /AI COMPLETION[\s\S]*NOT STARTED/);
+test('stale and conflict copy exposes review semantics', () => {
+  assert.match(inspector.renderProjectConstraints(staleState), /AUTHORITY REMOVED/);
+  assert.match(inspector.renderProjectConstraints(conflictState), /AI COMPLETION[\s\S]*NOT STARTED/);
 });
 ```
 
-Also test dynamic content escaping.
+Also test HTML escaping.
 
-- [ ] **Step 2: Run RED**
+- [ ] **Step 2: Write RED pure Workspace ordering test**
+
+Require `project-workspace.js`, call exported `renderProjectWorkspace()` with deterministic Project/M6 data, and assert string position:
+
+```js
+const html = workspace.renderProjectWorkspace(project);
+assert.ok(html.indexOf('PROJECT INTELLIGENCE · SHADOW') < html.indexOf('PROJECT CONSTRAINTS · DIRECTOR CONTROL'));
+```
+
+If the M6 renderer text is generated through markup rather than literal header text, assert stable data attributes instead: `[data-project-intelligence]` precedes `[data-project-constraints]` in returned HTML.
+
+- [ ] **Step 3: Run RED**
 
 ```bash
 node --test visual-direction-os/project-constraint-inspector.test.js
+node --test visual-direction-os/project-constraint-workspace.test.js
 ```
 
-Expected: FAIL because inspector is missing.
+- [ ] **Step 4: Implement inspector + CSS + Bootstrap loading**
 
-- [ ] **Step 3: Implement pure renderer + CSS**
+Load style with existing Project styles and load `project-constraint-inspector.js` after Candidate/Authority modules and before `project-workspace.js`.
 
-Required Candidate copy:
+Do not add numeric score, auto-fix, “Force Project Value”, or automatic Grammar unification.
 
-```text
-PROJECT CONSTRAINTS · DIRECTOR CONTROL
-CANDIDATE
-OWNERSHIP CARRY
-SOURCE
-TARGET
-EVIDENCE · COMPILER-BACKED
-[REJECT] [CONFIRM]
-```
-
-Required confirmed runtime labels:
-
-```text
-CONFIRMED · ACTIVE
-CONFIRMED · SATISFIED
-CONFIRMED · CONFLICT
-STALE · AUTHORITY REMOVED
-REVOKED
-```
-
-Do not add a numeric score, `Fix automatically`, or `Force Project Value` button.
-
-- [ ] **Step 4: Load inspector/styles in Bootstrap**
-
-Add style:
-
-```js
-loadStyle(`project-constraint.css?v=${VERSION}`)
-```
-
-After Candidate/Authority modules:
-
-```js
-await loadScript(`project-constraint-inspector.js?v=${VERSION}`, 'VDOSProjectConstraintInspector');
-```
-
-Then load `project-workspace.js`.
-
-- [ ] **Step 5: Wire Project Workspace rendering**
-
-Inside Project rendering:
+- [ ] **Step 5: Wire Workspace render**
 
 ```js
 const registryState = project?.projectConstraints || constraintRegistry.createEmptyRegistry();
@@ -976,174 +846,105 @@ const authorityState = constraintAuthority.resolveProjectConstraintAuthority({
 });
 ```
 
-At Project overview level, no Skeleton means confirmed relevant constraints may be `ACTIVE`; do not fake `SATISFIED` without a current base Skeleton.
+Without Skeleton, eligible confirmed constraints may show `ACTIVE`; never fake `SATISFIED`.
 
-Render after M6:
+- [ ] **Step 6: Wire explicit Director actions using existing delegated `data-action` pattern**
 
-```js
-${renderProjectIntelligence(intelligenceState)}
-${renderProjectConstraints({candidates,authorityState,registry:registryState})}
+```text
+confirm-project-constraint -> confirmCandidate -> setProjectConstraints
+reject-project-constraint -> rejectCandidate -> setProjectConstraints
+revoke-project-constraint -> revokeConstraint -> setProjectConstraints
+release-project-constraint -> releaseConstraintScope -> setProjectConstraints
+review-project-constraint -> derive current replacement -> reconfirmConstraint -> setProjectConstraints
 ```
 
-- [ ] **Step 6: Wire explicit Director actions only**
+Each action mutates only `projectConstraints`; Scene/Narrative/Sequence snapshots remain byte-for-byte unchanged.
 
-Use existing delegated `data-action` pattern:
-- `confirm-project-constraint` -> find Candidate -> `confirmCandidate()` -> `store.setProjectConstraints()`.
-- `reject-project-constraint` -> `rejectCandidate()` -> persist.
-- `revoke-project-constraint` -> `revokeConstraint()` -> persist.
-- `release-project-constraint` -> `releaseConstraintScope()` -> persist.
-- `review-project-constraint` -> derive current replacement Candidate/evidence, then `reconfirmConstraint()` only after explicit Director click.
+- [ ] **Step 7: Add Workspace unit assertions for registry-only mutation**
 
-Every action must mutate only `project.projectConstraints`, never Scene/Narrative/Sequence state.
-
-- [ ] **Step 7: Add integration mutation-boundary tests**
-
-Before/after Confirm/Reject/Revoke:
-
-```js
-const sceneBefore = structuredClone(store.getProject().scenes);
-clickConstraintAction();
-assert.deepEqual(store.getProject().scenes, sceneBefore);
-assert.notDeepEqual(store.getProject().projectConstraints, previousRegistry);
-```
+Expose/route action helpers so the test can call the same handler path with a fake Store. Snapshot `project.scenes` before Confirm/Reject/Revoke and assert unchanged while Registry changes.
 
 - [ ] **Step 8: Run GREEN**
 
 ```bash
 node --test visual-direction-os/project-constraint-inspector.test.js
-node visual-direction-os/project-workspace.test.js 2>/dev/null || true
+node --test visual-direction-os/project-constraint-workspace.test.js
 node --check visual-direction-os/project-constraint-inspector.js
 node --check visual-direction-os/project-workspace.js
 node --check visual-direction-os/project-bootstrap.js
 ```
 
-If there is no `project-workspace.test.js`, rely on the existing `project-workspace.spec.js` in Task 7; do not create a fake command or new unrelated unit suite solely to satisfy this step.
-
 - [ ] **Step 9: Commit**
 
 ```bash
-git add visual-direction-os/project-constraint-inspector.js visual-direction-os/project-constraint-inspector.test.js visual-direction-os/project-constraint.css visual-direction-os/project-workspace.js visual-direction-os/project-bootstrap.js
+git add visual-direction-os/project-constraint-inspector.js visual-direction-os/project-constraint-inspector.test.js visual-direction-os/project-constraint-workspace.test.js visual-direction-os/project-constraint.css visual-direction-os/project-workspace.js visual-direction-os/project-bootstrap.js
 git commit -m "feat: add project constraint director controls"
 ```
 
 ---
 
-### Task 7: Browser acceptance, CI gates, exact-HEAD verification, and PR metadata
+### Task 7: Browser acceptance, CI, exact-HEAD verification, and Draft PR handoff
 
 **Files:**
 - Create: `visual-direction-os/project-constraint-browser.spec.js`
 - Modify: `.github/workflows/director-intelligence-ci.yml`
-- Modify: PR #4 metadata only after exact-HEAD verification succeeds.
+- Update PR #4 metadata only after exact-HEAD verification succeeds.
 
-**Interfaces:**
-- Browser tests use existing public `VDOSProjectContext.store/runtime/workspace` and Narrative UI. Do not add production test hooks.
+- [ ] **Step 1: Positive browser chain**
 
-- [ ] **Step 1: Write positive end-to-end browser acceptance**
-
-Build a deterministic three-Scene Project via public Project Store APIs:
+Using public Project Store/Runtime APIs only:
 
 ```text
 Scene 01 directed
-↓
-Scene 02 directed with compiler-backed Camera MIXED
-↓
-M6 verifies Scene 01→02
-↓
-Scene 03 narrative starts CONTESTED and remains undirected
-↓
-M7 Candidate appears
-↓
-Director CONFIRM
-↓
-Open Scene 03
-↓
-Confirm Reading + compatible Camera strategy
-↓
-M7 SATISFIED before AI
-↓
-Sequence Preview
-↓
-canonical Scene State unchanged
-↓
-Apply
-↓
-SETUP camera = MIXED
-↓
-M5 provenance contains constraint ID/revision while owner remains compiler
+→ Scene 02 directed with compiler-backed Camera MIXED
+→ M6 verifies 01→02
+→ Scene 03 undirected starts CONTESTED
+→ M7 Candidate appears
+→ Director CONFIRM REV 01
+→ open Scene 03
+→ confirm Reading + compatible Camera strategy
+→ guard SATISFIED
+→ AI completion runs
+→ Sequence Preview, Scene State unchanged
+→ Apply
+→ SETUP Camera MIXED
+→ provenance owner=compiler + constraint ID/revision annotation
 ```
 
-Assertions must include DOM order:
+Assert M7 DOM appears after M6.
 
-```js
-const intelligenceTop = await page.locator('[data-project-intelligence]').evaluate(el => el.offsetTop);
-const constraintsTop = await page.locator('[data-project-constraints]').evaluate(el => el.offsetTop);
-expect(constraintsTop).toBeGreaterThan(intelligenceTop);
-```
+- [ ] **Step 2: Reachable conflict browser chain**
 
-- [ ] **Step 2: Write conflict browser acceptance with AI call count = 0**
-
-Use a deterministic demo API spy or existing demo client instrumentation without adding production hooks. Confirm a Camera carry, then choose/change Scene 03 Reading/Strategy so the current Scene Compiler expects a different exact Camera authority.
-
-Assert:
+Keep confirmed Camera carry evidence current, then choose a target Strategy/Grammar that does not provide exact Camera support (for example Color ownership). Assert:
 
 ```text
 CONFIRMED · CONFLICT
-WRITE AUTHORITY · BLOCKED
+TARGET GRAMMAR UNSUPPORTED
 AI COMPLETION · NOT STARTED
 ```
 
-and no Sequence proposal appears; canonical Scene State remains unchanged.
+and no proposal/canonical mutation. This is the primary user-reachable v1 conflict path.
 
-- [ ] **Step 3: Write stale browser acceptance**
+- [ ] **Step 3: Stale browser chain**
 
-After confirming REV 01, mutate source Scene 02 evidence through existing Director/Public Project APIs so canonical evidence changes.
-
-Assert:
+After REV 01, materially edit target Reading agency transition or source evidence through existing Director/Public Project APIs. Assert:
 
 ```text
 STALE · AUTHORITY REMOVED
 ```
 
-Then verify Sequence remains review-blocked until Director explicitly revokes or reviews a new revision.
+and Sequence remains review-blocked until explicit Revoke or Review New Revision.
 
-- [ ] **Step 4: Write dismissal/revision browser acceptance**
+- [ ] **Step 4: Dismissal/revision browser chain**
 
-- Reject Candidate -> it disappears and does not reappear on rerender.
-- Change material evidence -> new fingerprint Candidate appears.
-- Confirm REV 01 -> change evidence -> Review New Revision -> REV 02 current, REV 01 superseded.
-- A REV 01 release exception does not auto-transfer to REV 02.
+- Reject unchanged Candidate -> it stays hidden.
+- Change material compatible evidence -> new fingerprint Candidate appears.
+- Confirm REV 01 -> make stale -> Review New Revision -> REV 02 current, REV 01 superseded.
+- REV 01 release exception does not appear in REV 02.
 
-- [ ] **Step 5: Add M7 Node/syntax/Pages gates to CI**
+- [ ] **Step 5: Extend CI contracts/syntax/Pages**
 
-Contracts job adds:
-
-```bash
-node --test visual-direction-os/project-constraint-registry.test.js
-node --test visual-direction-os/project-constraint-project-state.test.js
-node --test visual-direction-os/project-constraint-candidates.test.js
-node --test visual-direction-os/project-constraint-authority.test.js
-node --test visual-direction-os/visual-sequence-project-constraints.test.js
-node --test visual-direction-os/project-constraint-inspector.test.js
-```
-
-Syntax adds all six new JS runtime modules.
-
-Pages assembly asserts these exist:
-
-```bash
-test -f /tmp/vdos-site/project-constraint-registry.js
-test -f /tmp/vdos-site/project-constraint-candidates.js
-test -f /tmp/vdos-site/project-constraint-authority.js
-test -f /tmp/vdos-site/visual-sequence-project-constraints.js
-test -f /tmp/vdos-site/project-constraint-inspector.js
-test -f /tmp/vdos-site/project-constraint.css
-```
-
-Browser job appends `visual-direction-os/project-constraint-browser.spec.js` while keeping all M0–M6 suites, including `project-workspace.spec.js` and `project-intelligence-browser.spec.js`.
-
-- [ ] **Step 6: Run full local-equivalent verification before final commit**
-
-Run every M7 Node test plus existing directly touched regression suites:
+Contracts add:
 
 ```bash
 node --test visual-direction-os/project-constraint-registry.test.js
@@ -1152,6 +953,21 @@ node --test visual-direction-os/project-constraint-candidates.test.js
 node --test visual-direction-os/project-constraint-authority.test.js
 node --test visual-direction-os/visual-sequence-project-constraints.test.js
 node --test visual-direction-os/project-constraint-inspector.test.js
+node --test visual-direction-os/project-constraint-workspace.test.js
+```
+
+Syntax adds all five new JS modules plus the Sequence bridge. Pages assembly asserts the six new runtime/style assets exist. Browser job appends `project-constraint-browser.spec.js` and keeps every current M0–M6 browser suite.
+
+- [ ] **Step 6: Run complete local-equivalent Node verification**
+
+```bash
+node --test visual-direction-os/project-constraint-registry.test.js
+node --test visual-direction-os/project-constraint-project-state.test.js
+node --test visual-direction-os/project-constraint-candidates.test.js
+node --test visual-direction-os/project-constraint-authority.test.js
+node --test visual-direction-os/visual-sequence-project-constraints.test.js
+node --test visual-direction-os/project-constraint-inspector.test.js
+node --test visual-direction-os/project-constraint-workspace.test.js
 node --test visual-direction-os/project-intelligence.test.js
 node --test visual-direction-os/project-intelligence-aggregate.test.js
 node --test visual-direction-os/visual-sequence-completion.test.js
@@ -1162,7 +978,9 @@ node api/narrative/_contracts-sequence-completion.test.js
 node api/narrative/_prompts.test.js
 ```
 
-Then browser:
+Expected: 0 failures.
+
+- [ ] **Step 7: Run full browser regression**
 
 ```bash
 python3 -m http.server 4173 --directory visual-direction-os >/tmp/vdos-m7-server.log 2>&1 &
@@ -1183,33 +1001,27 @@ npx playwright test \
 
 Expected: 0 failures.
 
-- [ ] **Step 7: Commit CI/browser gate**
+- [ ] **Step 8: Commit final M7 browser/CI gate**
 
 ```bash
 git add visual-direction-os/project-constraint-browser.spec.js .github/workflows/director-intelligence-ci.yml
 git commit -m "test: verify project constraint authority end to end"
 ```
 
-- [ ] **Step 8: Require fresh exact-HEAD GitHub Actions success**
+- [ ] **Step 9: Require fresh exact-HEAD GitHub Actions**
 
-Do not claim M7 complete until the workflow run for the exact final commit reports:
+For the exact final commit, require:
 
 ```text
 contracts: completed / success
 browser: completed / success
 ```
 
-If the exact HEAD changes after a fix, discard the previous verification and require a new exact-HEAD run.
+Any subsequent fix invalidates that evidence and requires a new exact-HEAD run.
 
-- [ ] **Step 9: Re-check baseline and PR safety**
+- [ ] **Step 10: Re-check baseline + PR safety**
 
-Compare final HEAD against:
-
-```text
-fbf3329557c02452a9175ab0d9ed02bf55a8368a
-```
-
-Require:
+Against Director v2.1 baseline `fbf3329557c02452a9175ab0d9ed02bf55a8368a`, require:
 
 ```text
 status = ahead
@@ -1226,47 +1038,35 @@ merged = false
 base = integration/director-workspace-v2-1
 ```
 
-- [ ] **Step 10: Update Draft PR metadata only after verification**
+- [ ] **Step 11: Update Draft PR metadata only after verification**
 
-Change title to:
+Title:
 
 ```text
 Phase II M7: guarded Project Constraint Authority
 ```
 
-PR body must include:
-- Candidate eligibility;
-- explicit Director Confirm/Reject;
-- revisioned registry/staleness;
-- Project-vs-Scene conflict blocking before AI;
-- no `owner: project` write channel;
-- exact final HEAD + CI run number;
-- commit-pinned raw.githack review URL;
-- explicit “keep Draft / do not merge yet”.
+Body must include Candidate eligibility, Director Confirm/Reject, revision/staleness, pre-AI conflict blocking, no Project write owner, exact final HEAD/CI run, commit-pinned raw.githack review URL, and explicit “keep Draft / do not merge yet”.
 
 ---
 
 ## Final Acceptance Checklist
 
-M7 is ready for product review only when all are true:
-
-- Candidate generation is prospective and immediate-next-Scene only.
-- Candidate exact expected values come from current final source Scene State and compiler-backed provenance.
-- Identical dismissed Candidate does not reappear; materially changed evidence can produce a new Candidate.
-- Confirm creates revision 1; reconfirm creates revision N+1 and supersedes old revision without rewriting history.
-- Release exceptions are revision-local.
-- Missing registry remains backward-compatible.
-- Runtime stale comparison uses canonical snapshot equality, not digest equality alone.
-- Stale current constraint has zero exact authority and blocks for Director review.
-- Matching Scene Compiler expectation yields `SATISFIED`.
-- Different supported expectation yields `CONFLICT`.
-- Unsupported target Grammar yields review conflict without automatic Grammar change.
-- Conflict/stale prevents AI Sequence request.
-- Satisfied constraint does not modify base Skeleton or Scene Compiler value.
-- Assembler provenance still says `owner: compiler`; Project constraint ID/revision is annotation only.
-- Canonical Scene State still changes only after explicit Apply.
-- M6 remains read-only and unchanged in meaning.
-- Existing Project Arc, Continuity, M3, M4, M5, and M6 regressions pass.
-- `PROJECT CONSTRAINTS · DIRECTOR CONTROL` renders after M6 and exposes no auto-fix/force-Project button.
-- Exact final HEAD receives fresh green contracts + browser CI.
+- Prospective immediate-next Candidate generation only.
+- Exact expected value comes from current compiler-backed final source Scene State.
+- Dismissal identity works and materially changed compatible evidence can re-propose.
+- REV 01/REV N history is immutable and explicit.
+- Release is revision-local.
+- Legacy Projects load without Registry migration.
+- Staleness is canonical snapshot inequality, not digest inequality alone.
+- STALE has zero exact authority and requires Director review.
+- Matching supported Scene Compiler result is `SATISFIED`.
+- Unsupported target Grammar is a reachable `CONFLICT`; defensive supported-value disagreement is also handled.
+- Conflict/stale causes zero AI Sequence requests.
+- M7 never mutates base Skeleton to invent an exact value.
+- Assembler value provenance remains `owner: compiler`; M7 IDs/revisions are annotations only.
+- Canonical Scene State changes only after Apply.
+- M6 remains read-only; Arc/Continuity/M3/M4/M5/M6 regressions pass.
+- Director Control renders after M6 and has no auto-fix/force-Project action.
+- Fresh exact-HEAD contracts + browser CI pass.
 - PR #4 remains Draft and unmerged.
