@@ -13,13 +13,13 @@ const contracts = require('./narrative-contracts.js');
 const clone = value => JSON.parse(JSON.stringify(value));
 const unknown = field => ({ value:'UNKNOWN', status:'unknown', evidenceStatus:'unresolved', source:'not-yet-compiled', basis:`${field} unresolved` });
 
-function reading(start = 'world', end = 'character') {
+function reading(path = ['world','contested','shared','character']) {
   const field = value => ({ value, sourceType:'explicit', basis:'fixture' });
   return {
     id:'reading-01', title:'Control transfer', confidence:'high',
     narrativeProblem:field('control'), coreConflict:field('obedience vs agency'),
     startingState:field('compliance'), endingState:field('refusal'), turningPoint:field('recognition'),
-    agencyTransition:{ value:[start,end], sourceType:'explicit', basis:'fixture' }
+    agencyTransition:{ value:clone(path), sourceType:'explicit', basis:'fixture' }
   };
 }
 
@@ -54,9 +54,10 @@ function visualIRFor(confirmedReading = reading()) {
 }
 
 function completionFor(skeleton) {
-  const agencies = skeleton.agencyConstraint.start === 'contested'
-    ? ['contested','contested','shared','shared','character']
-    : ['world','contested','contested','shared','character'];
+  const path = skeleton.agencyConstraint.path;
+  const last = path.length - 1;
+  const indices = [0, Math.min(1,last), Math.min(1,last), Math.max(last - 1,0), last];
+  const agencies = indices.map(index => path[index]);
   return { sequenceCompletion:{ beats:skeleton.beats.map((beat,index) => ({
     id:beat.id,
     narrativeBeat:`Narrative ${beat.id}`,
@@ -68,17 +69,11 @@ function completionFor(skeleton) {
 }
 
 function baseSequence() {
-  return {
-    beats:contracts.BEAT_IDS.map((id,index) => ({
-      id,
-      label:['SETUP','PRESSURE','RUPTURE','RELEASE','NEW OWNERSHIP'][index],
-      start:index / 5,
-      end:(index + 1) / 5,
-      narrativePurpose:`old-${id}`,
-      primaryVariable:'space', supportingVariables:[], restrainedVariables:[], scenePatch:{}
-    })),
-    events:[]
-  };
+  const labels = ['SETUP','PRESSURE','RUPTURE','RELEASE','NEW OWNERSHIP'];
+  return { beats:contracts.BEAT_IDS.map((id,index) => ({
+    id,label:labels[index],start:index / 5,end:(index + 1) / 5,
+    narrativePurpose:`old-${id}`,primaryVariable:'space',supportingVariables:[],restrainedVariables:[],scenePatch:{}
+  })),events:[] };
 }
 
 function merge(base, patch) {
@@ -95,31 +90,23 @@ function buildContext({ appliedBeatIds = [], activeBeatId = 'setup', confirmedRe
   const visualIR = visualIRFor(confirmedReading);
   const skeleton = skeletonApi.compileSequenceSkeleton({confirmedReading,selectedStrategy,visualIR});
   const assembled = completionApi.assembleSequenceProposal({
-    skeleton,
-    completion:completionFor(skeleton),
-    visualIR,
-    projectConstraintResolutions:projectResolutions,
-    projectConstraintRegistryVersion:'0.1.0'
+    skeleton, completion:completionFor(skeleton), visualIR,
+    projectConstraintResolutions:projectResolutions, projectConstraintRegistryVersion:'0.1.0'
   });
   const proposal = assembled.sequenceProposal;
   const provenance = assembled.sequenceProvenance;
   const sequence = narrativeApply.buildSequenceFromProposal(proposal,baseSequence(),appliedBeatIds);
   let sequenceApplyState = applyEvidence.createEmptySequenceApplyState();
-  if (appliedBeatIds.length) {
-    sequenceApplyState = applyEvidence.recordAppliedBeats(sequenceApplyState,{
-      source:{readingId:confirmedReading.id,strategyId:selectedStrategy.id,grammarId:provenance.grammarId,sequenceOrigin:provenance.origin,skeletonVersion:provenance.skeletonVersion},
-      proposal,provenance,sequence,beatIds:appliedBeatIds
-    });
-  }
+  if (appliedBeatIds.length) sequenceApplyState = applyEvidence.recordAppliedBeats(sequenceApplyState,{
+    source:{readingId:confirmedReading.id,strategyId:selectedStrategy.id,grammarId:provenance.grammarId,sequenceOrigin:provenance.origin,skeletonVersion:provenance.skeletonVersion},
+    proposal,provenance,sequence,beatIds:appliedBeatIds
+  });
   const activeProposal = proposal.beats.find(item => item.id === activeBeatId);
   const sceneState = merge({narrativeState:activeBeatId,playhead:0,agency:'world',ownership:{character:'low',world:'high',narrative:'medium'},variables:{}},activeProposal?.sceneStatePatch || {});
   return {
     sceneId:'scene-03',
-    narrativeState:{
-      input:'A young employee enters the office.', confirmedReading, selectedStrategy,
-      sequenceSkeleton:skeleton, sequenceProposal:proposal, sequenceProvenance:provenance, sequenceApplyState
-    },
-    visualIR, sequence, sceneState, projectConstraintContext
+    narrativeState:{input:'A young employee enters the office.',confirmedReading,selectedStrategy,sequenceSkeleton:skeleton,sequenceProposal:proposal,sequenceProvenance:provenance,sequenceApplyState},
+    visualIR,sequence,sceneState,projectConstraintContext
   };
 }
 
@@ -140,14 +127,13 @@ function projectConstraintFixture() {
     {id:'scene-02->scene-03',fromSceneId:'scene-02',toSceneId:'scene-03',status:'UNRESOLVED',visualResponse:[]}
   ],findings:[]};
   const candidate=candidateApi.deriveProjectConstraintCandidates({projectState,projectIntelligence,registry:registryApi.createEmptyRegistry()})[0];
-  const registry=registryApi.confirmCandidate(registryApi.createEmptyRegistry(),candidate);
-  return {projectState,projectIntelligence,registry,targetSceneId:'scene-03'};
+  return {projectState,projectIntelligence,registry:registryApi.confirmCandidate(registryApi.createEmptyRegistry(),candidate),targetSceneId:'scene-03'};
 }
 
 test('before Apply all five Beat packages are DRAFT', () => {
   const set=compiler.compileGenerationPromptSet(buildContext());
   assert.deepEqual(set.packages.map(item=>item.readiness.status),['DRAFT','DRAFT','DRAFT','DRAFT','DRAFT']);
-  assert.equal(set.summary.draft,5);assert.equal(set.summary.ready,0);assert.equal(set.summary.blocked,0);
+  assert.deepEqual(set.summary,{draft:5,ready:0,blocked:0});
 });
 
 test('selected Apply makes only selected valid Beats READY', () => {
@@ -155,7 +141,7 @@ test('selected Apply makes only selected valid Beats READY', () => {
   assert.equal(set.packages.find(item=>item.promptIR.beatId==='rupture').readiness.status,'READY');
   assert.equal(set.packages.find(item=>item.promptIR.beatId==='release').readiness.status,'READY');
   assert.equal(set.packages.find(item=>item.promptIR.beatId==='setup').readiness.status,'DRAFT');
-  assert.equal(set.summary.ready,2);assert.equal(set.summary.draft,3);
+  assert.deepEqual(set.summary,{draft:3,ready:2,blocked:0});
 });
 
 test('non-backbone UNKNOWN remains OPEN and does not block READY', () => {
@@ -192,7 +178,7 @@ test('malformed backbone fails with controlled domain codes', () => {
 
 test('M7 STALE blocks only its scoped Beat and removes current project support', () => {
   const projectConstraintContext=projectConstraintFixture();
-  const confirmedReading=reading('contested','character');
+  const confirmedReading=reading(['contested','shared','character']);
   const visualIR=visualIRFor(confirmedReading);
   const selectedStrategy=strategy();
   const skeleton=skeletonApi.compileSequenceSkeleton({confirmedReading,selectedStrategy,visualIR});
@@ -211,7 +197,7 @@ test('M7 STALE blocks only its scoped Beat and removes current project support',
 
 test('M7 current compiler disagreement blocks its scoped Beat as CONFLICT', () => {
   const projectConstraintContext=projectConstraintFixture();
-  const confirmedReading=reading('contested','character');
+  const confirmedReading=reading(['contested','shared','character']);
   const visualIR=visualIRFor(confirmedReading);
   const selectedStrategy=strategy();
   const skeleton=skeletonApi.compileSequenceSkeleton({confirmedReading,selectedStrategy,visualIR});
