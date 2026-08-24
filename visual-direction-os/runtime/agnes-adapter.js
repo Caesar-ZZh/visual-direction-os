@@ -24,6 +24,10 @@
     return list.filter((item) => typeof item === 'string' && item.trim()).map((item) => item.trim());
   }
 
+  function clone(value) {
+    return value == null ? value : JSON.parse(JSON.stringify(value));
+  }
+
   function assertCompiled(compiled) {
     if (!compiled || typeof compiled !== 'object') throw new Error('Agnes adapter requires compiled Visual IR output');
     if (!Array.isArray(compiled.must) || !compiled.must.length) throw new Error('Agnes adapter requires compiled MUST rules');
@@ -102,6 +106,15 @@
     return request;
   }
 
+  function applyIterationDelta(request, delta = {}) {
+    if (!request || typeof request !== 'object') throw new Error('Iteration delta requires an Agnes request');
+    const revised = clone(request);
+    const appendix = String(delta?.promptAppendix || '').trim();
+    if (!appendix) return revised;
+    revised.prompt = `${String(revised.prompt || '').trim()}\n\n${appendix}`.trim();
+    return revised;
+  }
+
   return {
     AGNES_MODEL,
     AGNES_ENDPOINT,
@@ -110,6 +123,7 @@
     AGNES_REFERENCE_ROLES: Object.freeze(Object.keys(REFERENCE_ROLES)),
     buildReferenceInstructions,
     buildAgnesPrompt,
-    buildAgnesRequest
+    buildAgnesRequest,
+    applyIterationDelta
   };
 });
