@@ -5,7 +5,7 @@
 })(typeof window !== 'undefined' ? window : globalThis, root => {
   'use strict';
 
-  const VERSION = '20260823-m7-controls';
+  const VERSION = '20260824-m8-prompt-compiler';
   const DEMO_STORY = 'A young employee enters a routine assignment meeting expecting to comply. During the conversation, he realizes the assignment itself is a mechanism of control. Recognition turns into explicit refusal, and he leaves the institution acting from self-authored agency.';
   const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const clone = value => value == null ? value : JSON.parse(JSON.stringify(value));
@@ -81,11 +81,13 @@
 
   async function loadProjectDependencies() {
     await loadScript(`project-constraint-registry.js?v=${VERSION}`, 'VDOSProjectConstraintRegistry');
+    await loadScript(`generation-prompt-apply-evidence.js?v=${VERSION}`, 'VDOSGenerationPromptApplyEvidence');
     await Promise.all([
       loadStyle(`project-workspace.css?v=${VERSION}`),
       loadStyle(`project-context.css?v=${VERSION}`),
       loadStyle(`project-intelligence.css?v=${VERSION}`),
       loadStyle(`project-constraint.css?v=${VERSION}`),
+      loadStyle(`generation-prompt.css?v=${VERSION}`),
       loadScript(`project-contracts.js?v=${VERSION}`, 'VDOSProjectContracts'),
       loadScript(`project-context.js?v=${VERSION}`, 'VDOSProjectContextContract')
     ]);
@@ -101,6 +103,11 @@
     await loadScript(`project-constraint-candidates.js?v=${VERSION}`, 'VDOSProjectConstraintCandidates');
     await loadScript(`project-constraint-authority.js?v=${VERSION}`, 'VDOSProjectConstraintAuthority');
     await loadScript(`visual-sequence-project-constraints.js?v=${VERSION}`, 'VDOSVisualSequenceProjectConstraints');
+    await loadScript(`generation-prompt-ir.js?v=${VERSION}`, 'VDOSGenerationPromptIR');
+    await loadScript(`prompt-language-registry.js?v=${VERSION}`, 'VDOSPromptLanguageRegistry');
+    await loadScript(`generation-prompt-renderer.js?v=${VERSION}`, 'VDOSGenerationPromptRenderer');
+    await loadScript(`generation-prompt-compiler.js?v=${VERSION}`, 'VDOSGenerationPromptCompiler');
+    await loadScript(`generation-prompt-inspector.js?v=${VERSION}`, 'VDOSGenerationPromptInspector');
     await loadScript(`project-intelligence-inspector.js?v=${VERSION}`, 'VDOSProjectIntelligenceInspector');
     await loadScript(`project-constraint-inspector.js?v=${VERSION}`, 'VDOSProjectConstraintInspector');
     await loadScript(`project-workspace.js?v=${VERSION}`, 'VDOSProjectWorkspace');
@@ -164,7 +171,16 @@
         controller = root.VDOSNarrativeWorkspace.initNarrativeWorkspace(narrativeRoot, {
           draft, api, demoMode, baseUrl,
           projectConstraintGuard: root.VDOSVisualSequenceProjectConstraints,
-          projectConstraintProvider: () => currentProjectConstraintContext(store)
+          projectConstraintProvider: () => currentProjectConstraintContext(store),
+          generationPromptCompiler: root.VDOSGenerationPromptCompiler,
+          generationPromptInspector: root.VDOSGenerationPromptInspector,
+          generationPromptContextProvider: () => ({
+            sceneId: store.getProject()?.activeSceneId || null,
+            visualIR: root.VDOSVisualIRShadowController?.getVisualIR?.() || null,
+            sequence: root.VDOSSequenceDirectorController?.getSequence?.() || null,
+            sceneState: root.VDOSScene?.getSceneState?.() || null,
+            projectConstraintContext: currentProjectConstraintContext(store)
+          })
         });
         root.VDOSNarrativeWorkspaceController = controller;
         injectNarrativeProjectContext(projectContext);
