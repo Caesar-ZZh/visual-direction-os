@@ -54,3 +54,10 @@ test('Prompt Inspector re-evaluates readiness when current Scene State changes a
   assert.match(source,/addEventListener/);
   assert.match(source,/removeEventListener/);
 });
+
+test('Prompt Inspector re-evaluates current M7 authority when Project Store changes', () => {
+  const source = read('generation-prompt-inspector.js');
+  assert.match(source,/VDOSProjectContext\?\.store\?\.subscribe/);
+  assert.match(source,/unsubscribeProject/);
+  assert.match(source,/unsubscribeProject\?\.\(\)/);
+});
