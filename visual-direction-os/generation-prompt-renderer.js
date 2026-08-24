@@ -5,14 +5,18 @@
   const language = typeof module === 'object' && module.exports
     ? require('./prompt-language-registry.js')
     : root?.VDOSPromptLanguageRegistry;
-  const api = factory(promptIR, language);
+  const registry = typeof module === 'object' && module.exports
+    ? require('./project-constraint-registry.js')
+    : root?.VDOSProjectConstraintRegistry;
+  const api = factory(promptIR, language, registry);
   if (typeof module === 'object' && module.exports) module.exports = api;
   if (root) root.VDOSGenerationPromptRenderer = api;
-})(typeof window !== 'undefined' ? window : globalThis, (promptIR, language) => {
+})(typeof window !== 'undefined' ? window : globalThis, (promptIR, language, registry) => {
   'use strict';
 
   if (!promptIR?.validatePromptIR) throw new Error('VDOSGenerationPromptIR is required before generation-prompt-renderer.js');
   if (!language?.getExactPhrase || !language?.renderStructuralDirective) throw new Error('VDOSPromptLanguageRegistry is required before generation-prompt-renderer.js');
+  if (!registry?.canonicalJSONString) throw new Error('VDOSProjectConstraintRegistry is required before generation-prompt-renderer.js');
 
   const RENDERER_VERSION = '0.1.0';
   const clone = value => value == null ? value : JSON.parse(JSON.stringify(value));
@@ -28,7 +32,7 @@
     if (typeof value === 'string') return value.trim();
     if (value == null) return '';
     if (typeof value === 'number' || typeof value === 'boolean') return String(value);
-    return JSON.stringify(value);
+    return registry.canonicalJSONString(value);
   }
 
   function sentence(value) {
