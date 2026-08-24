@@ -38,6 +38,18 @@ try {
   assert.ok(fs.existsSync(path.join(output, 'director-v2.html')), 'Compatibility director-v2.html must remain published');
   assert.ok(fs.existsSync(path.join(output, 'director-v2.css')), 'Studio shared assets must remain at the publish root');
 
+  for (const asset of [
+    'generation-prompt-apply-evidence.js',
+    'generation-prompt-ir.js',
+    'prompt-language-registry.js',
+    'generation-prompt-renderer.js',
+    'generation-prompt-compiler.js',
+    'generation-prompt-inspector.js',
+    'generation-prompt.css'
+  ]) {
+    assert.ok(fs.existsSync(path.join(output, asset)), `M8 Prompt asset must be published: ${asset}`);
+  }
+
   console.log('build-pages-site.test.js passed');
 } finally {
   fs.rmSync(output, { recursive:true, force:true });
