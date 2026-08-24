@@ -69,7 +69,7 @@
             <p>Only the endpoint is stored locally. The Agnes credential remains a server environment variable.</p>
             <label for="generation-proxy-input"><span>PROXY ENDPOINT</span><input id="generation-proxy-input" type="url" autocomplete="off" placeholder="https://your-proxy.vercel.app/api/agnes-generate"></label>
             <button type="button" id="generation-proxy-save">Save endpoint</button>
-            <small>Runtime `window.VDOS_GENERATION_PROXY` overrides this local value.</small>
+            <small>Runtime window.VDOS_GENERATION_PROXY overrides this local value.</small>
           </details>
           <div class="generation-actions"><button type="button" class="generation-preview" id="generation-preview">Refresh request</button><button type="button" class="generation-submit" id="generation-submit" disabled><span>GENERATE</span><small>Secure proxy</small></button></div>
           <p class="generation-status" id="generation-status" role="status">Run DIRECT first to create an active Visual IR.</p>
