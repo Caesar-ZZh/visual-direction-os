@@ -110,19 +110,35 @@
       sequenceController.setSequence(nextSequence, { playhead: currentPlayhead });
       applySceneAtCurrentPlayhead(nextSequence);
 
+      let receiptFailure = null;
+      try {
+        workspace.recordSequenceApplyEvidence?.({
+          proposal: proposalForApply,
+          sequence: nextSequence,
+          beatIds
+        });
+        workspace.syncGenerationPromptInspector?.();
+      } catch (error) {
+        receiptFailure = error;
+      }
+
       const labels = beats.filter(beat => beatIds.includes(beat.id)).map(beat => beat.label);
-      status.textContent = guarded
-        ? `COMPILER GUARDED · Applied ${labels.join(' · ')} to Director.`
-        : `COMPILER UNRESOLVED · AI proposal applied ${labels.join(' · ')} to Director.`;
+      status.textContent = receiptFailure
+        ? `PROMPT AUTHORITY · RECEIPT FAILED · Applied ${labels.join(' · ')} to Director.`
+        : guarded
+          ? `COMPILER GUARDED · Applied ${labels.join(' · ')} to Director.`
+          : `COMPILER UNRESOLVED · AI proposal applied ${labels.join(' · ')} to Director.`;
       root.document.querySelectorAll('[data-narrative-stage]').forEach(node => {
         if (node.dataset.narrativeStage === '5') node.setAttribute('aria-current', 'step');
         else node.removeAttribute('aria-current');
       });
-      action.textContent = 'Applied to Director';
+      action.textContent = receiptFailure ? 'Applied · Prompt unavailable' : 'Applied to Director';
       root.document.querySelector('[data-narrative-live]')?.replaceChildren(root.document.createTextNode(
-        guarded
-          ? 'Compiler-guarded Narrative proposal applied. DIRECT remains manually editable.'
-          : 'Narrative proposal applied without resolved compiler authority. DIRECT remains manually editable.'
+        receiptFailure
+          ? `Director Apply succeeded, but Prompt generation authority remains unavailable: ${receiptFailure.message || 'Apply receipt could not be recorded.'}`
+          : guarded
+            ? 'Compiler-guarded Narrative proposal applied. DIRECT remains manually editable.'
+            : 'Narrative proposal applied without resolved compiler authority. DIRECT remains manually editable.'
       ));
     });
 
