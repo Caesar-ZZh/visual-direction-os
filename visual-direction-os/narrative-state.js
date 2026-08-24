@@ -2,10 +2,10 @@
   const contracts = typeof module === 'object' && module.exports
     ? require('./narrative-contracts.js')
     : root?.VDOSNarrativeContracts;
-  const api = factory(contracts);
+  const api = factory(contracts, root);
   if (typeof module === 'object' && module.exports) module.exports = api;
   if (root) root.VDOSNarrativeState = api;
-})(typeof window !== 'undefined' ? window : globalThis, contracts => {
+})(typeof window !== 'undefined' ? window : globalThis, (contracts, root) => {
   'use strict';
 
   if (!contracts) throw new Error('VDOSNarrativeContracts is required before narrative-state.js');
@@ -13,8 +13,18 @@
   const REQUEST_STAGES = ['interpret', 'strategy', 'sequence'];
   const READING_FIELDS = ['narrativeProblem', 'coreConflict', 'startingState', 'endingState', 'turningPoint', 'agencyTransition'];
 
+  function resolveApplyEvidence() {
+    const api = typeof module === 'object' && module.exports
+      ? require('./generation-prompt-apply-evidence.js')
+      : root?.VDOSGenerationPromptApplyEvidence;
+    if (!api?.createEmptySequenceApplyState || !api?.validateSequenceApplyState || !api?.recordAppliedBeats) {
+      throw new Error('VDOSGenerationPromptApplyEvidence is required before Narrative State Apply Evidence operations.');
+    }
+    return api;
+  }
+
   const initialRequest = () => ({ status: 'idle', token: 0, error: null });
-  const initialState = () => ({
+  const initialState = applyEvidence => ({
     stage: 'input',
     input: '',
     directorIntent: '',
@@ -30,6 +40,7 @@
     sequenceCompletion: null,
     sequenceProposal: null,
     sequenceProvenance: null,
+    sequenceApplyState: applyEvidence.createEmptySequenceApplyState(),
     selectedBeatIds: clone(BEAT_IDS),
     applyMode: 'all',
     clarification: null,
@@ -42,7 +53,14 @@
   });
 
   function createNarrativeState(initial = {}) {
-    let state = { ...initialState(), ...clone(initial) };
+    const applyEvidence = resolveApplyEvidence();
+    const initialClone = clone(initial);
+    if (Object.prototype.hasOwnProperty.call(initialClone, 'sequenceApplyState')) {
+      const checked = applyEvidence.validateSequenceApplyState(initialClone.sequenceApplyState);
+      if (!checked.valid) throw new Error(`Invalid Sequence Apply Evidence: ${checked.errors.join('; ')}`);
+      initialClone.sequenceApplyState = checked.value;
+    }
+    let state = { ...initialState(applyEvidence), ...initialClone };
     const listeners = new Set();
 
     const notify = source => {
@@ -74,11 +92,16 @@
       stages.forEach(stageName => resetRequest(stageName, true));
     }
 
+    function resetApplyEvidence() {
+      state.sequenceApplyState = applyEvidence.createEmptySequenceApplyState();
+    }
+
     function clearSequenceArtifacts() {
       state.sequenceSkeleton = null;
       state.sequenceCompletion = null;
       state.sequenceProposal = null;
       state.sequenceProvenance = null;
+      resetApplyEvidence();
       state.selectedBeatIds = clone(BEAT_IDS);
       state.applyMode = 'all';
     }
@@ -213,6 +236,7 @@
       state.sequenceCompletion = null;
       state.sequenceProposal = null;
       state.sequenceProvenance = null;
+      resetApplyEvidence();
       state.stage = 'strategy';
       state.selectedBeatIds = clone(BEAT_IDS);
       state.applyMode = 'all';
@@ -230,6 +254,7 @@
       state.sequenceCompletion = clone(completionCheck.value);
       state.sequenceProposal = clone(proposalCheck.value.sequenceProposal);
       state.sequenceProvenance = clone(provenance);
+      resetApplyEvidence();
       state.stage = 'sequence';
       state.selectedBeatIds = clone(BEAT_IDS);
       state.applyMode = 'all';
@@ -244,6 +269,7 @@
       state.sequenceCompletion = clone(completionCheck.value);
       state.sequenceProposal = null;
       state.sequenceProvenance = null;
+      resetApplyEvidence();
       state.stage = 'sequence';
       state.selectedBeatIds = clone(BEAT_IDS);
       state.applyMode = 'all';
@@ -258,10 +284,35 @@
       state.sequenceCompletion = null;
       state.sequenceProvenance = null;
       state.sequenceProposal = clone(checked.value.sequenceProposal);
+      resetApplyEvidence();
       state.stage = 'sequence';
       state.selectedBeatIds = clone(BEAT_IDS);
       state.applyMode = 'all';
       notify('sequence-result');
+      return getState();
+    }
+
+    function recordSequenceApplyEvidence({ proposal, provenance, sequence, beatIds } = {}) {
+      if (!state.confirmedReading?.id) throw new Error('Confirm a Narrative Reading before recording Sequence Apply Evidence.');
+      if (!state.selectedStrategy?.id) throw new Error('Select a Visual Direction Strategy before recording Sequence Apply Evidence.');
+      if (!provenance || provenance.origin !== 'compiler-first') throw new Error('Compiler-first Sequence provenance is required before recording Apply Evidence.');
+      const source = {
+        readingId: state.confirmedReading.id,
+        strategyId: state.selectedStrategy.id,
+        grammarId: provenance.grammarId || null,
+        sequenceOrigin: provenance.origin || null,
+        skeletonVersion: provenance.skeletonVersion || state.sequenceSkeleton?.version || null
+      };
+      state.sequenceApplyState = applyEvidence.recordAppliedBeats(state.sequenceApplyState, {
+        source, proposal, provenance, sequence, beatIds
+      });
+      notify('sequence-apply-evidence');
+      return getState();
+    }
+
+    function clearSequenceApplyEvidence() {
+      resetApplyEvidence();
+      notify('sequence-apply-evidence-clear');
       return getState();
     }
 
@@ -338,6 +389,8 @@
       setSequenceCompletionResult,
       setSequenceCompletionFailure,
       setSequenceResult,
+      recordSequenceApplyEvidence,
+      clearSequenceApplyEvidence,
       toggleBeat,
       setApplyMode,
       setClarificationAnswer,
