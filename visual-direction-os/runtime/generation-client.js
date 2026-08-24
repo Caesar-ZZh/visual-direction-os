@@ -39,6 +39,7 @@
       provider: String(provider || request.model || 'unknown'),
       request: clone(request),
       result: clone(result),
+      visualIR: clone(ir || null),
       visualIRVersion: ir?.metadata?.version || null,
       grammarId: valueOf(ir?.world?.grammarId, null),
       measurements: null,
