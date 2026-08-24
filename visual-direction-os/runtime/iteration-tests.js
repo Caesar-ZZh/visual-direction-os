@@ -50,5 +50,7 @@ assert.equal(artifact.measurements, null);
 assert.equal(artifact.evaluation, null);
 assert.deepEqual(artifact.request, request);
 assert.notEqual(artifact.request, request, 'artifact must snapshot the request');
+assert.deepEqual(artifact.visualIR, ir);
+assert.notEqual(artifact.visualIR, ir, 'artifact must snapshot the Visual IR used to generate it');
 
 console.log('iteration tests passed');
