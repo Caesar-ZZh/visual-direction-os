@@ -12,19 +12,31 @@
   const { clone, BEAT_IDS, validateInterpretResponse, validateStrategyResponse, validateSequenceCompletionResponse, validateSequenceResponse } = contracts;
   const REQUEST_STAGES = ['interpret', 'strategy', 'sequence'];
   const READING_FIELDS = ['narrativeProblem', 'coreConflict', 'startingState', 'endingState', 'turningPoint', 'agencyTransition'];
+  const EMPTY_APPLY_STATE = Object.freeze({ schemaVersion:'0.1.0', revision:0, beats:{} });
+
+  function optionalApplyEvidence() {
+    if (typeof module === 'object' && module.exports) {
+      try { return require('./generation-prompt-apply-evidence.js'); }
+      catch { return null; }
+    }
+    return root?.VDOSGenerationPromptApplyEvidence || null;
+  }
 
   function resolveApplyEvidence() {
-    const api = typeof module === 'object' && module.exports
-      ? require('./generation-prompt-apply-evidence.js')
-      : root?.VDOSGenerationPromptApplyEvidence;
+    const api = optionalApplyEvidence();
     if (!api?.createEmptySequenceApplyState || !api?.validateSequenceApplyState || !api?.recordAppliedBeats) {
       throw new Error('VDOSGenerationPromptApplyEvidence is required before Narrative State Apply Evidence operations.');
     }
     return api;
   }
 
+  function createEmptyApplyState() {
+    const api = optionalApplyEvidence();
+    return api?.createEmptySequenceApplyState ? api.createEmptySequenceApplyState() : clone(EMPTY_APPLY_STATE);
+  }
+
   const initialRequest = () => ({ status: 'idle', token: 0, error: null });
-  const initialState = applyEvidence => ({
+  const initialState = () => ({
     stage: 'input',
     input: '',
     directorIntent: '',
@@ -40,7 +52,7 @@
     sequenceCompletion: null,
     sequenceProposal: null,
     sequenceProvenance: null,
-    sequenceApplyState: applyEvidence.createEmptySequenceApplyState(),
+    sequenceApplyState: createEmptyApplyState(),
     selectedBeatIds: clone(BEAT_IDS),
     applyMode: 'all',
     clarification: null,
@@ -53,14 +65,14 @@
   });
 
   function createNarrativeState(initial = {}) {
-    const applyEvidence = resolveApplyEvidence();
     const initialClone = clone(initial);
     if (Object.prototype.hasOwnProperty.call(initialClone, 'sequenceApplyState')) {
+      const applyEvidence = resolveApplyEvidence();
       const checked = applyEvidence.validateSequenceApplyState(initialClone.sequenceApplyState);
       if (!checked.valid) throw new Error(`Invalid Sequence Apply Evidence: ${checked.errors.join('; ')}`);
       initialClone.sequenceApplyState = checked.value;
     }
-    let state = { ...initialState(applyEvidence), ...initialClone };
+    let state = { ...initialState(), ...initialClone };
     const listeners = new Set();
 
     const notify = source => {
@@ -93,7 +105,7 @@
     }
 
     function resetApplyEvidence() {
-      state.sequenceApplyState = applyEvidence.createEmptySequenceApplyState();
+      state.sequenceApplyState = createEmptyApplyState();
     }
 
     function clearSequenceArtifacts() {
@@ -296,6 +308,7 @@
       if (!state.confirmedReading?.id) throw new Error('Confirm a Narrative Reading before recording Sequence Apply Evidence.');
       if (!state.selectedStrategy?.id) throw new Error('Select a Visual Direction Strategy before recording Sequence Apply Evidence.');
       if (!provenance || provenance.origin !== 'compiler-first') throw new Error('Compiler-first Sequence provenance is required before recording Apply Evidence.');
+      const applyEvidence = resolveApplyEvidence();
       const source = {
         readingId: state.confirmedReading.id,
         strategyId: state.selectedStrategy.id,
