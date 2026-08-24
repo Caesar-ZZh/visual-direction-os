@@ -47,3 +47,11 @@ test('receipt failure is surfaced without inventing rollback or generation autho
   assert.match(source,/Prompt generation authority remains unavailable/);
   assert.doesNotMatch(source,/rollbackSequenceApply|rollbackSceneApply/);
 });
+
+test('Prompt Inspector re-evaluates readiness when current Scene State changes after Apply', () => {
+  const source = read('narrative-workspace.js');
+  assert.match(source,/scene\?\.subscribeSceneState/);
+  assert.match(source,/unsubscribePromptScene/);
+  assert.match(source,/syncGenerationPromptInspector\(\)/);
+  assert.match(source,/unsubscribePromptScene\?\.\(\)/);
+});
