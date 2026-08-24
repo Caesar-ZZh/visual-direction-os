@@ -208,9 +208,15 @@
       ? antiRulesValue.value.map(value => ({ value:clone(value), owner:'grammar/evidence', authorityClass:'anti-rule', source:antiRulesValue.source || `grammar:${visualIR.grammar?.id || 'unresolved'}` }))
       : [];
 
-    const satisfiedProject = (projectResolutions || [])
-      .filter(item => item?.status === 'SATISFIED' && item?.beatId === beatId)
-      .map(item => ({ constraintId:item.constraintId, revision:item.revision, result:'satisfied', path:item.path }));
+    const satisfiedProject = [];
+    const seenProject = new Set();
+    required.filter(item => item?.kind === 'exact').forEach(item => {
+      (item.projectSupport || []).forEach(support => {
+        if (!support?.constraintId || seenProject.has(support.constraintId)) return;
+        seenProject.add(support.constraintId);
+        satisfiedProject.push({ constraintId:support.constraintId, revision:support.revision, result:'satisfied', path:item.path });
+      });
+    });
 
     const prompt = {
       schemaVersion:PROMPT_IR_VERSION,
