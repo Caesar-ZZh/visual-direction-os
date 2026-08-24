@@ -24,7 +24,7 @@
     section.innerHTML = `
       <header class="evaluation-head"><div><small>VISUAL QA / EVIDENCE LAYER</small><h3>Measure what is measurable. <em>Judge what is semantic.</em></h3><p>M3 never turns pixel statistics into fake narrative certainty. Every check declares where its evidence comes from.</p></div><div class="evaluation-artifact"><span>ARTIFACT</span><strong id="evaluation-artifact-id">—</strong><small id="evaluation-summary">—</small></div></header>
       <div class="evaluation-columns">
-        <section class="evaluation-measured"><header><span>MEASURED SIGNALS</span><small>Canvas / value / saturation / edge / density</small></header><p class="measurement-warning" id="measurement-warning" hidden></p><div id="evaluation-measured-list"></div></section>
+        <section class="evaluation-measured"><header><span>MEASURED SIGNALS</span><small>Canvas / value / saturation / edge / density</small></header><div id="measurement-raw" class="measurement-raw"></div><p class="measurement-warning" id="measurement-warning" hidden></p><div id="evaluation-measured-list"></div></section>
         <section class="evaluation-human"><header><span>DIRECTOR JUDGMENT</span><small>PASS / NEEDS WORK / NOT SURE</small></header><div id="evaluation-human-list"></div></section>
       </div>
       <section class="deviation-ledger"><header><div><span>DEVIATION LEDGER</span><h4>What survives into the next generation?</h4></div><button type="button" id="evaluation-redirect" disabled><span>RE-DIRECT & GENERATE</span><small>Compile iteration delta</small></button></header><div class="deviation-columns"><article><span>PRESERVE</span><div id="delta-preserve"></div></article><article><span>CORRECT</span><div id="delta-correct"></div></article><article><span>UNRESOLVED</span><div id="delta-unresolved"></div></article></div><details><summary>Iteration prompt appendix</summary><pre id="delta-prompt"></pre></details></section>`;
@@ -41,11 +41,34 @@
     return 'UNSUPPORTED';
   }
 
+  function renderRawMeasurements() {
+    const node = $('#measurement-raw');
+    if (!node) return;
+    const m = state.measurements;
+    if (!m) {
+      node.innerHTML = '<p class="measurement-raw-empty">No pixel measurements available.</p>';
+      return;
+    }
+    const metrics = [
+      ['CANVAS', `${m.width}×${m.height}`],
+      ['ASPECT', m.aspectRatio],
+      ['LUMA', m.meanLuminance],
+      ['LUMA σ', m.luminanceStdDev],
+      ['SAT', m.meanSaturation],
+      ['HIGH SAT', m.highSaturationShare],
+      ['EDGE', m.edgeDensity],
+      ['LOCAL Δ', m.localContrast],
+      ['ENTROPY', m.entropyProxy]
+    ];
+    node.innerHTML = metrics.map(([label, value]) => `<div><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join('');
+  }
+
   function renderMeasured() {
     const list = $('#evaluation-measured-list');
     if (!list || !state.report) return;
+    renderRawMeasurements();
     const checks = state.report.checks.filter((check) => check.evidenceMode === 'measured' || ['canvas-ratio','saturation-direction','detail-density','value-contrast','edge-activity'].includes(check.id));
-    list.innerHTML = checks.map((check) => `<article class="evaluation-check" data-status="${escapeHtml(check.status)}"><div><span>${escapeHtml(check.label)}</span><b>${statusLabel(check)}</b></div><strong>${escapeHtml(check.observed || 'No measurable evidence')}</strong><p>${escapeHtml(check.reason)}</p><small>TARGET / ${escapeHtml(check.target || 'unknown')}</small></article>`).join('');
+    list.innerHTML = checks.map((check) => `<article class="evaluation-check" data-status="${escapeHtml(check.status)}"><div><span>${escapeHtml(check.label)}</span><b>${statusLabel(check)}</b></div><strong>${escapeHtml(check.observed || (check.status === 'unsupported' ? 'Target not safely mappable' : 'No comparable observation'))}</strong><p>${escapeHtml(check.reason)}</p><small>TARGET / ${escapeHtml(check.target || 'unknown')}</small></article>`).join('');
     const warning = $('#measurement-warning');
     if (warning) {
       warning.hidden = !state.measurementError;
@@ -90,7 +113,7 @@
     const summary = state.report.summary;
     if ($('#evaluation-summary')) $('#evaluation-summary').textContent = `${summary.measuredPass} measured pass · ${summary.measuredWarn} measured warn · ${summary.humanPassed} judged pass · ${summary.humanNeedsWork} needs work · ${summary.unresolved} unresolved`;
     const redirect = $('#evaluation-redirect');
-    if (redirect) redirect.disabled = !state.delta.promptAppendix || typeof root.VisualDirectionOS?.generation?.generate !== 'function' || !root.VisualDirectionOS?.generation?.proxy;
+    if (redirect) redirect.disabled = !state.delta.promptAppendix || typeof root.VisualDirectionOS?.generation?.generate !== 'function';
   }
 
   function recompute() {
