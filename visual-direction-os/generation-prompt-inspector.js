@@ -134,6 +134,7 @@
     let view = 'structure';
     let observer = null;
     let slot = null;
+    let unsubscribeProject = () => {};
 
     const ensureSlot = () => {
       if (slot?.isConnected) return slot;
@@ -171,6 +172,8 @@
 
     const handleSceneState = () => render();
     root?.addEventListener?.('vdos:scene-state', handleSceneState);
+    const projectStore = root?.VDOSProjectContext?.store;
+    if (projectStore?.subscribe) unsubscribeProject = projectStore.subscribe(() => render());
     if (typeof MutationObserver !== 'undefined') {
       observer = new MutationObserver(() => {
         if (!slot?.isConnected) render();
@@ -183,6 +186,7 @@
       destroy() {
         observer?.disconnect();
         root?.removeEventListener?.('vdos:scene-state', handleSceneState);
+        unsubscribeProject?.();
         slot?.replaceChildren();
       }
     };
