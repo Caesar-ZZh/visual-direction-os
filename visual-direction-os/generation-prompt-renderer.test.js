@@ -66,3 +66,9 @@ test('OPEN and BLOCKED fields are absent from generation-facing text',()=>{
  assert.doesNotMatch(out.neutralText,/space\.depth|unresolved-evidence|medium/i);
  assert.doesNotMatch(out.negativeText,/space\.depth|medium/i);
 });
+
+test('semantic object key order does not change typed visual-event rendering',()=>{
+ const first=structuredClone(ir);first.content.visualEvents=[{value:{type:'camera',label:'enter'},owner:'ai',source:'sequence-completion'}];
+ const second=structuredClone(ir);second.content.visualEvents=[{value:{label:'enter',type:'camera'},owner:'ai',source:'sequence-completion'}];
+ assert.equal(renderer.renderPromptIR(first).neutralText,renderer.renderPromptIR(second).neutralText);
+});
