@@ -39,6 +39,7 @@
     loadStylesheet('runtime/runtime.css');
     loadStylesheet('runtime/generation.css');
     loadStylesheet('runtime/evaluation.css');
+    loadStylesheet('runtime/evaluation-metrics.css');
     for (const asset of runtimeAssets) await loadScript(asset);
     const status = document.querySelector('.rail-status span:nth-child(2)');
     if (status) status.textContent = 'Director + generation + evaluation online';
