@@ -12,6 +12,16 @@ const base = createDefaultVisualIR('test');
 assert.equal(validateVisualIR(base).valid, true, 'default Visual IR should validate');
 assert.equal(base.narrative.verb.status, 'unknown', 'default IR should preserve UNKNOWN state');
 assert.equal(base.temporal.evidenceStatus, 'unknown', 'default IR should expose evidence state');
+assert.throws(
+  () => compileVisualIR(createDefaultVisualIR('x')),
+  /compileVisualIR: evidence insufficient/,
+  'default UNKNOWN Visual IR must not compile into degraded prompt text'
+);
+assert.throws(
+  () => compileVisualIR({ metadata: { schema: 'VisualIR', version: '0.1.0' } }),
+  /compileVisualIR: invalid VisualIR/,
+  'malformed Visual IR should fail with a compiler validation error'
+);
 
 assert.deepEqual(Object.keys(grammarRegistry).sort(), ['boundary-relational', 'institutional-authority', 'medium-locality', 'spatial-authorship']);
 assert.equal(grammarRegistry['medium-locality'].temporal.evidenceStatus, 'evidence_incomplete');
@@ -42,7 +52,16 @@ for (const ir of [irA, irB, irC]) {
   assert.ok(compiled.antiRules.length > 0, 'compiler should preserve anti-rules');
   assert.match(compiled.prompt, /MUST:/);
   assert.match(compiled.prompt, /ANTI-RULES:/);
+  assert.match(compiled.prompt, /IR 0\.1\.0/);
+  assert.match(compiled.prompt, /grammar/i);
+  assert.equal(compiled.version, '0.1.0', 'compiler should expose IR version provenance');
+  assert.equal(compiled.grammarId, ir.world.grammarId.value, 'compiler should expose grammar provenance');
   for (const rule of ir.antiRules) assert.ok(compiled.antiRules.includes(rule));
 }
+
+const compiledC = compileVisualIR(irC);
+assert.ok(compiledC.evidenceGaps.length > 0, 'medium-locality compiler output should expose evidence gaps');
+assert.match(compiledC.prompt, /EVIDENCE GAPS:/, 'prompt should render evidence gaps from ir.evidence.gaps');
+assert.ok(compiledC.evidenceGaps.some((gap) => gap.field === 'temporal.signature'));
 
 console.log('runtime tests passed');
