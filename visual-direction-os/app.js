@@ -8,7 +8,10 @@
     'runtime/narrative-interpreter.js',
     'runtime/decision-engine.js',
     'runtime/prompt-compiler.js',
-    'runtime/director-ui.js'
+    'runtime/agnes-adapter.js',
+    'runtime/generation-client.js',
+    'runtime/director-ui.js',
+    'runtime/generation-ui.js'
   ];
 
   function loadScript(src) {
@@ -21,16 +24,20 @@
     });
   }
 
+  function loadStylesheet(href) {
+    if (document.querySelector(`link[href="${href}"]`)) return;
+    const stylesheet = document.createElement('link');
+    stylesheet.rel = 'stylesheet';
+    stylesheet.href = href;
+    document.head.append(stylesheet);
+  }
+
   async function bootVisualDirectionOS() {
-    if (!document.querySelector('link[href="runtime/runtime.css"]')) {
-      const stylesheet = document.createElement('link');
-      stylesheet.rel = 'stylesheet';
-      stylesheet.href = 'runtime/runtime.css';
-      document.head.append(stylesheet);
-    }
+    loadStylesheet('runtime/runtime.css');
+    loadStylesheet('runtime/generation.css');
     for (const asset of runtimeAssets) await loadScript(asset);
     const status = document.querySelector('.rail-status span:nth-child(2)');
-    if (status) status.textContent = 'Director runtime online';
+    if (status) status.textContent = 'Director + generation runtime online';
   }
 
   bootVisualDirectionOS().catch((error) => {
