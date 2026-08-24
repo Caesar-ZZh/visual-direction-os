@@ -36,6 +36,15 @@
         targetSceneId: projectState.activeSceneId || null
       };
     });
+    const generationPromptCompiler = options.generationPromptCompiler || root.VDOSGenerationPromptCompiler || null;
+    const generationPromptInspector = options.generationPromptInspector || root.VDOSGenerationPromptInspector || null;
+    const generationPromptContextProvider = options.generationPromptContextProvider || (() => ({
+      sceneId: root.VDOSProjectContext?.store?.getProject?.()?.activeSceneId || null,
+      visualIR: visualIRProvider?.() || null,
+      sequence: root.VDOSSequenceDirectorController?.getSequence?.() || null,
+      sceneState: scene?.getSceneState?.() || null,
+      projectConstraintContext: projectConstraintProvider?.() || null
+    }));
     if (!contracts || !stateFactory || !apiFactory || !skeletonCompiler || !completionAssembler) throw new Error('Narrative workspace dependencies are missing.');
 
     const params = new URLSearchParams(root.location?.search || '');
@@ -45,6 +54,7 @@
     const api = options.api || apiFactory.createNarrativeApiClient({ baseUrl: configuredBase, demoMode, fixtures });
     const controllers = { interpret:null, strategy:null, sequence:null };
     let destroyed = false;
+    let promptInspectorController = null;
 
     rootNode.innerHTML = `
       <div class="narrative-shell">
@@ -83,6 +93,43 @@
 
     const setStage = index => rootNode.querySelectorAll('[data-narrative-stage]').forEach(node => Number(node.dataset.narrativeStage) === index ? node.setAttribute('aria-current','step') : node.removeAttribute('aria-current'));
     const setBusy = (busy,message) => { submitButton.disabled = busy || (!demoMode && !configuredBase); if (message) live.textContent = message; };
+
+    function getGenerationPromptSet() {
+      const state = draft.getState();
+      if (!generationPromptCompiler?.compileGenerationPromptSet || !state.sequenceProposal || !state.sequenceProvenance) return null;
+      const context = generationPromptContextProvider?.() || {};
+      const sceneId = context.sceneId || root.VDOSProjectContext?.store?.getProject?.()?.activeSceneId || null;
+      const visualIR = context.visualIR || visualIRProvider?.() || null;
+      const sequence = context.sequence || root.VDOSSequenceDirectorController?.getSequence?.() || null;
+      const sceneState = context.sceneState || scene?.getSceneState?.() || null;
+      const projectConstraintContext = context.projectConstraintContext || projectConstraintProvider?.() || null;
+      if (!sceneId || !visualIR || !sequence) return null;
+      return generationPromptCompiler.compileGenerationPromptSet({
+        sceneId,
+        narrativeState:state,
+        visualIR,
+        sequence,
+        sceneState,
+        projectConstraintContext
+      });
+    }
+
+    function syncGenerationPromptInspector() {
+      return promptInspectorController?.sync?.() || false;
+    }
+
+    function recordSequenceApplyEvidence({ proposal, sequence, beatIds } = {}) {
+      const state = draft.getState();
+      if (!state.sequenceProvenance) throw new Error('Sequence provenance is required before recording Prompt Apply Evidence.');
+      const next = draft.recordSequenceApplyEvidence({
+        proposal,
+        provenance:state.sequenceProvenance,
+        sequence,
+        beatIds
+      });
+      syncGenerationPromptInspector();
+      return next;
+    }
 
     function abortStage(stage) {
       const controller = controllers[stage];
@@ -214,12 +261,28 @@
       const state = draft.getState(); setStage(4); const beats = state.sequenceProposal?.beats || [];
       output.innerHTML = `<div class="narrative-section-head"><p class="eyebrow">04 / Proposal preview</p><h3>Sequence before state mutation</h3><p>The proposal remains isolated from canonical Scene State until an explicit Apply action.</p></div><div class="narrative-sequence-grid">${beats.map((beat,index) => `<article class="narrative-sequence-beat" data-sequence-proposal-beat data-beat-id="${escapeHtml(beat.id)}"><div class="narrative-beat-index">${String(index+1).padStart(2,'0')}</div><div class="narrative-beat-copy"><div class="narrative-beat-head"><strong data-beat-label>${escapeHtml(beat.label)}</strong><span>AGENCY · ${escapeHtml(beat.agency.toUpperCase())}</span></div><p>${escapeHtml(beat.narrativeBeat)}</p><div class="narrative-beat-variables"><b>PRIMARY · ${escapeHtml(beat.primaryVariable.toUpperCase())}</b><span>SUPPORT · ${escapeHtml(beat.supportingVariables.join(' / ').toUpperCase() || '—')}</span><span>RESTRAIN · ${escapeHtml(beat.restrainedVariables.join(' / ').toUpperCase() || '—')}</span></div><div class="narrative-events">${beat.visualEvents.length ? beat.visualEvents.map(event => `<span>${escapeHtml(typeof event==='string'?event:event.type)}</span>`).join('') : '<span>NO EVENT</span>'}</div></div></article>`).join('')}</div><div class="narrative-apply-preview"><span>05 / APPLY</span><strong>Not applied yet</strong><p>DIRECT and Sequence Director remain unchanged in Preview mode.</p></div>`;
       live.textContent = 'Compiler-first Sequence proposal ready. Canonical Scene State is still unchanged.';
+      syncGenerationPromptInspector();
+    }
+
+    if (generationPromptInspector?.initGenerationPromptInspector) {
+      promptInspectorController = generationPromptInspector.initGenerationPromptInspector(output, {
+        getPromptSet:getGenerationPromptSet,
+        initialBeatId:'setup'
+      });
     }
 
     sceneInput.addEventListener('input',handleInputEdit); intentInput.addEventListener('input',handleInputEdit);
     form.addEventListener('submit',async event => { event.preventDefault(); syncDraft(); if (!sceneInput.value.trim()) { live.textContent = 'Add a scene description before interpretation.'; sceneInput.focus(); return; } await requestInterpret(); });
 
-    return { api, scene, getDraftState:() => draft.getState(), destroy(){ destroyed=true; abortAll(); rootNode.replaceChildren(); } };
+    return {
+      api,
+      scene,
+      getDraftState:() => draft.getState(),
+      getGenerationPromptSet,
+      recordSequenceApplyEvidence,
+      syncGenerationPromptInspector,
+      destroy(){ destroyed=true; abortAll(); promptInspectorController?.destroy?.(); rootNode.replaceChildren(); }
+    };
   }
 
   function autoInit() {
