@@ -66,3 +66,11 @@ test('readProposalPath supports agency, ownership and variables paths',()=>{
  assert.equal(promptIR.readProposalPath(beat,'ownership.character'),'high');
  assert.equal(promptIR.readProposalPath(beat,'camera.perspective'),'mixed');
 });
+
+test('project support requires both current SATISFIED resolution and stored compiler annotation',()=>{
+ const args=structuredClone(baseArgs);
+ args.projectResolutions.push({constraintId:'constraint-ghost',revision:1,status:'SATISFIED',beatId:'setup',path:'camera.perspective'});
+ const ir=promptIR.buildGenerationPromptIR(args);
+ assert.deepEqual(ir.source.projectConstraints.map(item=>item.constraintId),['constraint-1']);
+ assert.deepEqual(ir.provenance.projectConstraintRefs.map(item=>item.constraintId),['constraint-1']);
+});
