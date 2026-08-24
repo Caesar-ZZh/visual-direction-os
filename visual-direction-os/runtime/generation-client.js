@@ -7,6 +7,15 @@
 
   const DEFAULT_AGNES_ENDPOINT = 'https://apihub.agnes-ai.com/v1/images/generations';
 
+  function clone(value) {
+    return value == null ? value : JSON.parse(JSON.stringify(value));
+  }
+
+  function valueOf(node, fallback = null) {
+    if (node && typeof node === 'object' && 'value' in node) return node.value;
+    return node ?? fallback;
+  }
+
   function normalizeGenerationResponse(payload) {
     const item = payload && Array.isArray(payload.data) ? payload.data[0] : null;
     if (item?.url) {
@@ -17,6 +26,24 @@
       return { kind: 'base64', src, revisedPrompt: item.revised_prompt ?? null };
     }
     throw new Error('Generation response did not include an image URL or Base64 payload');
+  }
+
+  function createGenerationArtifact({ provider, request, result, ir, id, createdAt } = {}) {
+    if (!request || typeof request !== 'object') throw new Error('Generation artifact requires the executed request');
+    if (!result || typeof result !== 'object' || !result.src) throw new Error('Generation artifact requires a generation result');
+    const timestamp = createdAt || new Date().toISOString();
+    const randomId = root?.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+    return {
+      id: id || `gen-${randomId}`,
+      createdAt: timestamp,
+      provider: String(provider || request.model || 'unknown'),
+      request: clone(request),
+      result: clone(result),
+      visualIRVersion: ir?.metadata?.version || null,
+      grammarId: valueOf(ir?.world?.grammarId, null),
+      measurements: null,
+      evaluation: null
+    };
   }
 
   async function readError(response) {
@@ -59,5 +86,5 @@
     });
   }
 
-  return { normalizeGenerationResponse, generateViaProxy, generateDirectAgnes };
+  return { normalizeGenerationResponse, createGenerationArtifact, generateViaProxy, generateDirectAgnes };
 });
