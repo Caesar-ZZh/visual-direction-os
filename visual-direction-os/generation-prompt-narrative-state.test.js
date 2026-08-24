@@ -1,5 +1,8 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const vm = require('node:vm');
+const contracts = require('./narrative-contracts.js');
 const { createNarrativeState } = require('./narrative-state.js');
 const evidence = require('./generation-prompt-apply-evidence.js');
 
@@ -20,6 +23,17 @@ test('Narrative State initializes and restores sequenceApplyState', () => {
   const valid = evidence.recordAppliedBeats(receiptState,{source:{readingId:'reading-01',strategyId:'strategy-01',grammarId:'camera-authority-transfer',sequenceOrigin:'compiler-first',skeletonVersion:'0.1.0'},proposal,provenance:sourceState.sequenceProvenance,sequence,beatIds:['rupture']});
   const restored = createNarrativeState({ sequenceApplyState:valid });
   assert.equal(restored.getState().sequenceApplyState.revision, 1);
+});
+
+test('browser-style legacy Narrative init works before M8 Apply Evidence helper is loaded', () => {
+  const source = fs.readFileSync(require.resolve('./narrative-state.js'),'utf8');
+  const browserRoot = { VDOSNarrativeContracts:contracts };
+  const context = vm.createContext({ window:browserRoot, globalThis:browserRoot, console });
+  vm.runInContext(source, context);
+  const draft = browserRoot.VDOSNarrativeState.createNarrativeState();
+  assert.equal(draft.getState().sequenceApplyState.schemaVersion,'0.1.0');
+  assert.equal(draft.getState().sequenceApplyState.revision,0);
+  assert.deepEqual(Object.keys(draft.getState().sequenceApplyState.beats),[]);
 });
 
 test('malformed restored sequenceApplyState fails with controlled error', () => {
