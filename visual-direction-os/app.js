@@ -10,8 +10,11 @@
     'runtime/prompt-compiler.js',
     'runtime/agnes-adapter.js',
     'runtime/generation-client.js',
+    'runtime/image-measurements.js',
+    'runtime/evaluation-engine.js',
     'runtime/director-ui.js',
-    'runtime/generation-ui.js'
+    'runtime/generation-ui-m3.js',
+    'runtime/evaluation-ui.js'
   ];
 
   function loadScript(src) {
@@ -35,9 +38,10 @@
   async function bootVisualDirectionOS() {
     loadStylesheet('runtime/runtime.css');
     loadStylesheet('runtime/generation.css');
+    loadStylesheet('runtime/evaluation.css');
     for (const asset of runtimeAssets) await loadScript(asset);
     const status = document.querySelector('.rail-status span:nth-child(2)');
-    if (status) status.textContent = 'Director + generation runtime online';
+    if (status) status.textContent = 'Director + generation + evaluation online';
   }
 
   bootVisualDirectionOS().catch((error) => {
