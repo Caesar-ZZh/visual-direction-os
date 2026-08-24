@@ -1,5 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
 const inspector = require('./generation-prompt-inspector.js');
 
 const makePackage = (beatId, status) => ({
@@ -75,4 +76,10 @@ test('rendered view handles blocked renderer output without inventing text', () 
   const html=inspector.renderGenerationPromptInspector(blocked,{activeBeatId:'release',view:'rendered'});
   assert.match(html,/RENDERED PROMPT UNAVAILABLE/);
   assert.match(html,/PROJECT_CONSTRAINT_STALE/);
+});
+
+test('MutationObserver ignores mutations caused by its own connected slot render', () => {
+  const source = fs.readFileSync(require.resolve('./generation-prompt-inspector.js'),'utf8');
+  assert.match(source,/MutationObserver\(\(\) => \{\s*if \(!slot\?\.isConnected\) render\(\);\s*\}\)/);
+  assert.doesNotMatch(source,/MutationObserver\(\(\) => render\(\)\)/);
 });
