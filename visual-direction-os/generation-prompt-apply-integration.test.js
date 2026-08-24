@@ -49,9 +49,8 @@ test('receipt failure is surfaced without inventing rollback or generation autho
 });
 
 test('Prompt Inspector re-evaluates readiness when current Scene State changes after Apply', () => {
-  const source = read('narrative-workspace.js');
-  assert.match(source,/scene\?\.subscribeSceneState/);
-  assert.match(source,/unsubscribePromptScene/);
-  assert.match(source,/syncGenerationPromptInspector\(\)/);
-  assert.match(source,/unsubscribePromptScene\?\.\(\)/);
+  const source = read('generation-prompt-inspector.js');
+  assert.match(source,/vdos:scene-state/);
+  assert.match(source,/addEventListener/);
+  assert.match(source,/removeEventListener/);
 });
