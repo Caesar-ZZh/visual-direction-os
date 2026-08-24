@@ -1,8 +1,8 @@
 ((root, factory) => {
-  const api = factory();
+  const api = factory(root);
   if (typeof module === 'object' && module.exports) module.exports = api;
   if (root) root.VDOSGenerationPromptInspector = api;
-})(typeof window !== 'undefined' ? window : globalThis, () => {
+})(typeof window !== 'undefined' ? window : globalThis, root => {
   'use strict';
 
   const BEAT_LABELS = {
@@ -169,6 +169,8 @@
       return true;
     };
 
+    const handleSceneState = () => render();
+    root?.addEventListener?.('vdos:scene-state', handleSceneState);
     if (typeof MutationObserver !== 'undefined') {
       observer = new MutationObserver(() => {
         if (!slot?.isConnected) render();
@@ -176,7 +178,14 @@
       observer.observe(rootNode, { childList:true, subtree:true });
     }
     render();
-    return { sync:render, destroy() { observer?.disconnect(); slot?.replaceChildren(); } };
+    return {
+      sync:render,
+      destroy() {
+        observer?.disconnect();
+        root?.removeEventListener?.('vdos:scene-state', handleSceneState);
+        slot?.replaceChildren();
+      }
+    };
   }
 
   return { buildInspectorModel, renderGenerationPromptInspector, initGenerationPromptInspector };
