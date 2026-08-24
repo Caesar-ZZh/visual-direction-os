@@ -170,7 +170,9 @@
     };
 
     if (typeof MutationObserver !== 'undefined') {
-      observer = new MutationObserver(() => render());
+      observer = new MutationObserver(() => {
+        if (!slot?.isConnected) render();
+      });
       observer.observe(rootNode, { childList:true, subtree:true });
     }
     render();
