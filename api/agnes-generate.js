@@ -145,7 +145,7 @@ async function handler(req, res) {
 }
 
 module.exports = handler;
-module.exports.AGNE_ENDPOINT = AGNES_ENDPOINT;
+module.exports.AGNES_ENDPOINT = AGNES_ENDPOINT;
 module.exports.validateRequest = validateRequest;
 module.exports.resolveAllowedOrigin = resolveAllowedOrigin;
 module.exports.buildUpstreamPayload = buildUpstreamPayload;
