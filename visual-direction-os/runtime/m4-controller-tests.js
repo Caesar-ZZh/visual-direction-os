@@ -53,15 +53,15 @@ function createFakeMemory() {
 function generationArtifact(id, iterationOf = null) {
   return {
     id,
-    createdAt:`2026-08-25T00:0${id === 'g1' ? '1' : '2'}:00.000Z`,
+    createdAt:`2026-08-25T00:${String(id.length + (iterationOf ? 2 : 1)).padStart(2,'0')}:00.000Z`,
     provider:'agnes-image-2.1-flash',
-    request:{ model:'agnes-image-2.1-flash', prompt:iterationOf ? 'BASE\n\nDELTA' : 'BASE', ratio:'16:9', return_base64:true, extra_body:{response_format:'b64_json'} },
+    request:{ model:'agnes-image-2.1-flash', prompt:iterationOf ? 'BASE\n\nCHILD HISTORICAL DELTA' : 'BASE', ratio:'16:9', return_base64:true, extra_body:{response_format:'b64_json'} },
     baseRequest:{ model:'agnes-image-2.1-flash', prompt:'BASE', ratio:'16:9', return_base64:true, extra_body:{response_format:'b64_json'} },
     result:{ kind:'base64', src:'data:image/png;base64,AAAA' },
     visualIR:{ metadata:{version:'0.1.0'} },
     iterationOf,
     parentArtifactId:iterationOf,
-    iterationDelta:iterationOf ? { entries:[{checkId:'canvas-ratio',label:'Canvas Ratio',intent:'preserve',evidenceMode:'measured',instruction:'preserve canvas'}], promptAppendix:'DELTA' } : null
+    iterationDelta:iterationOf ? { entries:[{checkId:'canvas-ratio',label:'Canvas Ratio',intent:'preserve',evidenceMode:'measured',instruction:'preserve canvas'}], promptAppendix:'CHILD HISTORICAL DELTA' } : null
   };
 }
 
@@ -69,7 +69,7 @@ function evaluationDetail(artifact, measuredStatus = 'pass') {
   const report = {
     artifactId:artifact.id,
     checks:[
-      { id:'canvas-ratio', label:'Canvas Ratio', evidenceMode:'measured', status:measuredStatus, target:'16:9', observed:'16:9', reason:measuredStatus === 'pass' ? 'correct' : 'wrong' },
+      { id:'canvas-ratio', label:'Canvas Ratio', evidenceMode:'measured', status:measuredStatus, target:'16:9', observed:measuredStatus, reason:measuredStatus === 'pass' ? 'correct' : 'wrong' },
       { id:'narrative-verb', label:'Narrative Verb', evidenceMode:'human_required', status:'pass', target:'WITHDRAW', observed:'pass', reason:'director pass' }
     ],
     summary:{ measuredPass:measuredStatus === 'pass' ? 1 : 0, measuredWarn:measuredStatus === 'warn' ? 1 : 0, humanPassed:1, humanNeedsWork:0, unresolved:0 }
@@ -81,10 +81,10 @@ function evaluationDetail(artifact, measuredStatus = 'pass') {
       intent:check.status === 'pass' ? 'preserve' : 'correct',
       sourceStatus:check.status,
       evidenceMode:check.evidenceMode,
-      instruction:`${check.label}: ${check.status === 'pass' ? 'preserve' : 'correct'}`
+      instruction:`${check.label}: ${check.status === 'pass' ? 'preserve current success' : 'correct current failure'}`
     })),
-    preserve:measuredStatus === 'pass' ? ['Canvas Ratio: preserve'] : [],
-    correct:measuredStatus === 'warn' ? ['Canvas Ratio: correct'] : [],
+    preserve:measuredStatus === 'pass' ? ['Canvas Ratio: preserve current success'] : [],
+    correct:measuredStatus === 'warn' ? ['Canvas Ratio: correct current failure'] : [],
     unresolved:[],
     promptAppendix:'ITERATION / EVALUATION DELTA'
   };
@@ -96,11 +96,16 @@ function evaluationDetail(artifact, measuredStatus = 'pass') {
   const emitted = [];
   const objectUrls = [];
   const revoked = [];
+  const generationRuns = [];
   const controller = createM4Controller({
     memory,
     compareArtifacts,
     deriveMemoryForPath,
     compileMemoryAppendix,
+    generationRunner:async (input) => {
+      generationRuns.push(clone(input));
+      return { id:`branch-${generationRuns.length}`, iterationOf:input.artifact.id };
+    },
     now:() => '2026-08-25T00:00:00.000Z',
     createObjectURL:(blob) => { const url = `blob:test-${objectUrls.length + 1}`; objectUrls.push([url, blob]); return url; },
     revokeObjectURL:(url) => revoked.push(url),
@@ -149,6 +154,25 @@ function evaluationDetail(artifact, measuredStatus = 'pass') {
   assert.equal(state.comparison.semanticComparisons.find((row) => row.checkId === 'narrative-verb').state, 'improved');
   assert.equal(state.memory.locked.some((row) => row.checkId === 'narrative-verb'), true, 'explicit improved director comparison can lock semantic rule on selected B path');
 
+  const branchResult = await controller.redirectFromArtifact('g1');
+  assert.equal(branchResult.iterationOf, 'g1');
+  assert.equal(generationRuns.length, 1);
+  assert.equal(generationRuns[0].artifact.id, 'g1');
+  assert.equal(generationRuns[0].artifact.baseRequest.prompt, 'BASE');
+  assert.equal((generationRuns[0].promptAppendix.match(/ITERATION \/ DIRECTOR MEMORY/g) || []).length, 1, 'branch prompt must contain exactly one bounded M4 appendix');
+  assert.doesNotMatch(generationRuns[0].promptAppendix, /CHILD HISTORICAL DELTA/, 'branching from g1 must not inherit g2 historical delta');
+  assert.match(generationRuns[0].promptAppendix, /Canvas Ratio/);
+
+  const g2b = generationArtifact('g2b', 'g1');
+  await controller.ingestGeneration(g2b);
+  await controller.ingestEvaluation(evaluationDetail(g2b, 'warn'));
+  const memoryA = controller.getMemoryFor('g2');
+  const memoryB = controller.getMemoryFor('g2b');
+  assert.equal(memoryA.locked.some((row) => row.checkId === 'canvas-ratio'), true, 'sibling regression must not unlock successful path A');
+  assert.equal(memoryB.locked.some((row) => row.checkId === 'canvas-ratio'), false);
+  assert.equal(memoryB.active.some((row) => row.checkId === 'canvas-ratio'), true);
+  assert.equal(memoryB.locked.some((row) => row.checkId === 'narrative-verb'), false, 'semantic conclusion on sibling g2 must not leak to g2b');
+
   const renderUrl1 = await controller.getRenderableImage('g2');
   const renderUrl2 = await controller.getRenderableImage('g2');
   assert.equal(renderUrl1, renderUrl2, 'object URL must be cached per artifact');
@@ -163,9 +187,9 @@ function evaluationDetail(artifact, measuredStatus = 'pass') {
   });
   await restored.boot();
   const restoredState = restored.getState();
-  assert.equal(restoredState.artifacts.length, 2);
+  assert.equal(restoredState.artifacts.length, 3);
   assert.equal(restoredState.selectedAId, 'g1');
-  assert.equal(restoredState.selectedBId, 'g2');
+  assert.equal(restoredState.selectedBId, 'g2b');
   assert.ok(restoredState.comparison);
 
   memory.setNextPersistenceStatus('not_persisted');
@@ -181,6 +205,7 @@ function evaluationDetail(artifact, measuredStatus = 'pass') {
   state = controller.getState();
   assert.equal(state.artifacts.some((row) => row.id === 'g2'), false);
   assert.equal(state.artifacts.some((row) => row.id === 'g3'), false);
+  assert.equal(state.artifacts.some((row) => row.id === 'g2b'), true, 'deleting branch A must not delete sibling branch B');
   assert.equal(revoked.includes(renderUrl1), true, 'deleting subtree must revoke cached image URLs');
 
   assert.ok(emitted.length > 0, 'controller should emit state changes');
