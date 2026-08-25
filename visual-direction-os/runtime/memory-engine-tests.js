@@ -52,6 +52,12 @@ artifacts = [
 memory = deriveMemoryForPath({ artifacts, comparisons:[], pathHeadId:'g2' });
 assert.equal(memory.locked.some((row) => row.checkId === 'canvas-ratio'), false, 'warn to pass must not lock immediately');
 assert.equal(memory.active.some((row) => row.checkId === 'canvas-ratio'), true, 'resolved-once measured rule stays active until confirmed by next pass');
+const confirming = memory.active.find((row) => row.checkId === 'canvas-ratio');
+assert.equal(confirming.state, 'confirming');
+const confirmingAppendix = compileMemoryAppendix({ currentDelta:{entries:[]}, memory });
+assert.match(confirmingAppendix, /PRESERVE CONFIRMING/);
+assert.match(confirmingAppendix, /preserve the newly successful measured behavior/i);
+assert.doesNotMatch(confirmingAppendix, /CORRECT ACTIVE:[\s\S]*preserve the newly successful measured behavior/i, 'a newly successful rule needs confirmation by preservation, not another correction');
 
 artifacts = [
   measuredArtifact('g1', null, 'warn'),
@@ -109,7 +115,7 @@ const appendix = compileMemoryAppendix({
   ] },
   memory:{
     locked:[{ checkId:'canvas-ratio', label:'Canvas Ratio', instruction:'Canvas Ratio: preserve 16:9.' }],
-    active:[{ checkId:'saturation-direction', label:'Saturation Direction', instruction:'Saturation Direction: reduce global saturation.' }],
+    active:[{ checkId:'saturation-direction', label:'Saturation Direction', state:'unresolved', instruction:'Saturation Direction: reduce global saturation.' }],
     watch:[{ checkId:'camera-allegiance', label:'Camera Allegiance', instruction:'Do not force this.' }]
   }
 });
