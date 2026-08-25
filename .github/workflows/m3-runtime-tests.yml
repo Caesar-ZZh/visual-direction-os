@@ -45,6 +45,9 @@ jobs:
       - name: Run M3 iteration suite
         run: node visual-direction-os/runtime/iteration-tests.js
 
+      - name: Run M3 redirect controller suite
+        run: node visual-direction-os/runtime/iteration-controller-tests.js
+
       - name: Run Cloudflare secure proxy suite
         run: node cloudflare/agnes-proxy-worker-tests.mjs
 
@@ -58,6 +61,7 @@ jobs:
           node --check visual-direction-os/runtime/generation-client.js
           node --check visual-direction-os/runtime/image-measurements.js
           node --check visual-direction-os/runtime/evaluation-engine.js
+          node --check visual-direction-os/runtime/iteration-controller.js
           node --check visual-direction-os/runtime/generation-ui-m3.js
           node --check visual-direction-os/runtime/evaluation-ui.js
           node --check visual-direction-os/app.js
