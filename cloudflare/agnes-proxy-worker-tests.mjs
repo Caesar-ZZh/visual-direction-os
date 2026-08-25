@@ -78,6 +78,13 @@ assert.equal(preflight.status, 204);
 assert.equal(preflight.headers.get('Access-Control-Allow-Origin'), ALLOWED_ORIGIN);
 assert.match(preflight.headers.get('Access-Control-Allow-Headers') || '', /X-VDOS-Proxy-Token/i);
 
+const wrongMethod = await handleRequest(new Request('https://worker.example/api/agnes-generate', {
+  method: 'GET',
+  headers: { Origin: ALLOWED_ORIGIN }
+}), env, { fetchImpl: fetch, timingSafeEqualFn: timingSafe });
+assert.equal(wrongMethod.status, 405);
+assert.equal(wrongMethod.headers.get('Allow'), 'POST, OPTIONS');
+
 const missingOrigin = await handleRequest(new Request('https://worker.example/api/agnes-generate', {
   method: 'POST',
   headers: {
