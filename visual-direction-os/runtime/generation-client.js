@@ -6,6 +6,7 @@
   'use strict';
 
   const DEFAULT_AGNES_ENDPOINT = 'https://apihub.agnes-ai.com/v1/images/generations';
+  const PROXY_TOKEN_HEADER = 'X-VDOS-Proxy-Token';
 
   function clone(value) {
     return value == null ? value : JSON.parse(JSON.stringify(value));
@@ -72,10 +73,15 @@
     return normalizeGenerationResponse(await response.json());
   }
 
-  async function generateViaProxy(request, { endpoint, fetchImpl } = {}) {
+  async function generateViaProxy(request, { endpoint, proxyToken, fetchImpl } = {}) {
     const safeEndpoint = String(endpoint || '').trim();
+    const safeToken = String(proxyToken || '').trim();
     if (!safeEndpoint) throw new Error('A generation proxy endpoint is required');
-    return postGeneration(safeEndpoint, request, { fetchImpl });
+    if (!safeToken) throw new Error('A session proxy token is required');
+    return postGeneration(safeEndpoint, request, {
+      fetchImpl,
+      headers: { [PROXY_TOKEN_HEADER]: safeToken }
+    });
   }
 
   async function generateDirectAgnes(request, { apiKey, endpoint = DEFAULT_AGNES_ENDPOINT, fetchImpl } = {}) {
@@ -87,5 +93,11 @@
     });
   }
 
-  return { normalizeGenerationResponse, createGenerationArtifact, generateViaProxy, generateDirectAgnes };
+  return {
+    PROXY_TOKEN_HEADER,
+    normalizeGenerationResponse,
+    createGenerationArtifact,
+    generateViaProxy,
+    generateDirectAgnes
+  };
 });
