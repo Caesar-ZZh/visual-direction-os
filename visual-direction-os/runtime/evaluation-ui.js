@@ -19,7 +19,8 @@
   const document = root.document;
   const $ = (selector, base = document) => base.querySelector(selector);
   const state = { artifact:null, measurements:null, measurementError:'', human:{}, report:null, delta:null, redirectBusy:false, redirectMessage:'' };
-  const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+  const clone = (value) => value == null ? value : JSON.parse(JSON.stringify(value));
+  const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;' }[c]));
 
   function buildPanel() {
     const generation = $('#generation-console');
@@ -137,10 +138,15 @@
     state.delta = compileReDirectionDelta(state.report);
     state.artifact.measurements = state.measurements;
     state.artifact.evaluation = state.report;
+    state.artifact.humanJudgments = clone(state.human);
+    state.artifact.evaluationDelta = clone(state.delta);
     if (!state.redirectBusy) state.redirectMessage = '';
     renderMeasured();
     renderHuman();
     renderLedger();
+    root.dispatchEvent(new CustomEvent('vdos:evaluation-updated', {
+      detail:{ artifact:state.artifact, human:clone(state.human), report:state.report, delta:state.delta }
+    }));
   }
 
   function loadImage(src) {
