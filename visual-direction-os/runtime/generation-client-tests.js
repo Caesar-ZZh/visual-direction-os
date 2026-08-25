@@ -23,11 +23,16 @@ const request = { model: 'agnes-image-2.1-flash', prompt: 'test', size: '1K', ra
     proxyCall = { url, options };
     return { ok: true, json: async () => ({ data: [{ url: 'https://example.com/proxy.png' }] }) };
   };
-  const proxied = await generateViaProxy(request, { endpoint: '/api/agnes-generate', fetchImpl: proxyFetch });
+  const proxied = await generateViaProxy(request, {
+    endpoint: '/api/agnes-generate',
+    proxyToken: 'session-proxy-secret',
+    fetchImpl: proxyFetch
+  });
   assert.equal(proxyCall.url, '/api/agnes-generate');
   assert.equal(proxyCall.options.method, 'POST');
   assert.equal(proxyCall.options.headers['Content-Type'], 'application/json');
-  assert.equal('Authorization' in proxyCall.options.headers, false, 'browser proxy calls must not receive Agnes credentials');
+  assert.equal(proxyCall.options.headers['X-VDOS-Proxy-Token'], 'session-proxy-secret');
+  assert.equal('Authorization' in proxyCall.options.headers, false, 'browser proxy calls must never receive Agnes credentials');
   assert.deepEqual(JSON.parse(proxyCall.options.body), request);
   assert.equal(proxied.src, 'https://example.com/proxy.png');
 
@@ -40,7 +45,16 @@ const request = { model: 'agnes-image-2.1-flash', prompt: 'test', size: '1K', ra
   assert.equal(directCall.options.headers.Authorization, 'Bearer secret');
   assert.equal(direct.kind, 'base64');
 
-  await assert.rejects(() => generateViaProxy(request, { endpoint: '', fetchImpl: proxyFetch }), /proxy endpoint/i);
+  await assert.rejects(() => generateViaProxy(request, {
+    endpoint: '',
+    proxyToken: 'session-proxy-secret',
+    fetchImpl: proxyFetch
+  }), /proxy endpoint/i);
+  await assert.rejects(() => generateViaProxy(request, {
+    endpoint: '/api/agnes-generate',
+    proxyToken: '',
+    fetchImpl: proxyFetch
+  }), /proxy token/i);
   await assert.rejects(() => generateDirectAgnes(request, { apiKey: '', fetchImpl: directFetch }), /API key/i);
 
   const failingFetch = async () => ({ ok: false, status: 429, text: async () => '{"error":{"message":"rate limited"}}' });
