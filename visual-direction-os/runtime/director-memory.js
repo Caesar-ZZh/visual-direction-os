@@ -72,6 +72,7 @@
       evaluation: clone(artifact.evaluation || null),
       humanJudgments: clone(artifact.humanJudgments || {}),
       iterationDelta: clone(artifact.iterationDelta || null),
+      evaluationDelta: clone(artifact.evaluationDelta || null),
       comparison: clone(artifact.comparison || null),
       imageBlob,
       imageMimeType: imageBlob?.type || null,
@@ -158,7 +159,7 @@
           ensureIndex(comparisonStore, 'artifactBId', 'artifactBId');
         };
         request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error || new Error('Unable to open M4 IndexedDB')); 
+        request.onerror = () => reject(request.error || new Error('Unable to open M4 IndexedDB'));
         request.onblocked = () => reject(new Error('M4 IndexedDB upgrade is blocked by another page'));
       });
       return dbPromise;
@@ -320,6 +321,15 @@
     async function listArtifacts(projectId) { return store.listArtifacts(projectId); }
     async function getChildren(parentArtifactId) { return store.getChildren(parentArtifactId); }
     async function getLatestProject() { return store.getLatestProject(); }
+    async function saveComparison(record) {
+      if (typeof store.putComparison !== 'function') return record;
+      await store.putComparison(record);
+      return record;
+    }
+    async function listComparisons(projectId) {
+      if (typeof store.listComparisons !== 'function') return [];
+      return store.listComparisons(projectId);
+    }
 
     async function estimateStorage() {
       if (!storage || typeof storage.estimate !== 'function') return null;
@@ -355,6 +365,8 @@
       listArtifacts,
       getChildren,
       getLatestProject,
+      saveComparison,
+      listComparisons,
       estimateStorage,
       deleteSubtree,
       clearProject
