@@ -158,17 +158,18 @@
 
   function compileMemoryAppendix({ currentDelta, memory } = {}) {
     const entries = currentDelta?.entries || [];
-    const preserve = dedupe([
-      ...(memory?.locked || []).map((row) => row.instruction || `${row.label}: preserve the validated behavior.`),
-      ...entries.filter((entry) => entry.intent === 'preserve').map((entry) => entry.instruction)
-    ]);
+    const locked = dedupe((memory?.locked || []).map((row) => row.instruction || `${row.label}: preserve the validated behavior.`));
+    const confirming = dedupe((memory?.active || []).filter((row) => row.state === 'confirming').map((row) => row.instruction || `${row.label}: preserve the newly successful behavior for confirmation.`));
+    const currentPreserve = dedupe(entries.filter((entry) => entry.intent === 'preserve').map((entry) => entry.instruction));
     const correct = dedupe([
-      ...(memory?.active || []).map((row) => row.instruction || `${row.label}: correct the regressed or unresolved behavior.`),
+      ...(memory?.active || []).filter((row) => row.state !== 'confirming').map((row) => row.instruction || `${row.label}: correct the regressed or unresolved behavior.`),
       ...entries.filter((entry) => entry.intent === 'correct').map((entry) => entry.instruction)
     ]);
 
     const sections = [];
-    if (preserve.length) sections.push(`PRESERVE LOCKED:\n${preserve.map((item) => `- ${item}`).join('\n')}`);
+    if (locked.length) sections.push(`PRESERVE LOCKED:\n${locked.map((item) => `- ${item}`).join('\n')}`);
+    if (confirming.length) sections.push(`PRESERVE CONFIRMING:\n${confirming.map((item) => `- ${item}`).join('\n')}`);
+    if (currentPreserve.length) sections.push(`PRESERVE CURRENT:\n${currentPreserve.map((item) => `- ${item}`).join('\n')}`);
     if (correct.length) sections.push(`CORRECT ACTIVE:\n${correct.map((item) => `- ${item}`).join('\n')}`);
     return sections.length ? `ITERATION / DIRECTOR MEMORY\n\n${sections.join('\n\n')}` : '';
   }
