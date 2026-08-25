@@ -13,6 +13,20 @@ const b64 = normalizeGenerationResponse({ data: [{ b64_json: 'AAAA' }] });
 assert.equal(b64.kind, 'base64');
 assert.equal(b64.src, 'data:image/png;base64,AAAA');
 assert.equal(b64.revisedPrompt, null);
+
+const base64Request = {
+  model: 'agnes-image-2.1-flash',
+  prompt: 'test base64',
+  size: '1K',
+  ratio: '1:1',
+  return_base64: true,
+  extra_body: { response_format: 'b64_json' }
+};
+const dualResponse = normalizeGenerationResponse({
+  data: [{ url: 'https://example.com/fallback.png', b64_json: 'CCCC' }]
+}, base64Request);
+assert.equal(dualResponse.kind, 'base64', 'a Base64 request must not be downgraded to a remote URL when both fields are present');
+assert.equal(dualResponse.src, 'data:image/png;base64,CCCC');
 assert.throws(() => normalizeGenerationResponse({ data: [] }), /did not include an image/i);
 
 const request = { model: 'agnes-image-2.1-flash', prompt: 'test', size: '1K', ratio: '1:1', extra_body: { response_format: 'url' } };
@@ -35,6 +49,18 @@ const request = { model: 'agnes-image-2.1-flash', prompt: 'test', size: '1K', ra
   assert.equal('Authorization' in proxyCall.options.headers, false, 'browser proxy calls must never receive Agnes credentials');
   assert.deepEqual(JSON.parse(proxyCall.options.body), request);
   assert.equal(proxied.src, 'https://example.com/proxy.png');
+
+  const dualFetch = async () => ({
+    ok: true,
+    json: async () => ({ data: [{ url: 'https://example.com/fallback.png', b64_json: 'DDDD' }] })
+  });
+  const proxiedBase64 = await generateViaProxy(base64Request, {
+    endpoint: '/api/agnes-generate',
+    proxyToken: 'session-proxy-secret',
+    fetchImpl: dualFetch
+  });
+  assert.equal(proxiedBase64.kind, 'base64', 'generateViaProxy must preserve the requested Base64 output mode');
+  assert.equal(proxiedBase64.src, 'data:image/png;base64,DDDD');
 
   let directCall;
   const directFetch = async (url, options) => {
