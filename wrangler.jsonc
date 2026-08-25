@@ -6,7 +6,7 @@
   "compatibility_flags": ["nodejs_compat"],
   "workers_dev": true,
   "vars": {
-    "VDOS_ALLOWED_ORIGINS": "https://caesar-zzh.github.io",
+    "VDOS_ALLOWED_ORIGINS": "https://caesar-zzh.github.io,https://raw.githack.com",
     "AGNES_TIMEOUT_MS": "300000"
   }
 }
