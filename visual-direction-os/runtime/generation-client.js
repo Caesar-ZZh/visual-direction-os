@@ -39,7 +39,7 @@
     throw new Error('Generation response did not include an image URL or Base64 payload');
   }
 
-  function createGenerationArtifact({ provider, request, result, ir, id, createdAt } = {}) {
+  function createGenerationArtifact({ provider, request, baseRequest = null, result, ir, id, createdAt } = {}) {
     if (!request || typeof request !== 'object') throw new Error('Generation artifact requires the executed request');
     if (!result || typeof result !== 'object' || !result.src) throw new Error('Generation artifact requires a generation result');
     const timestamp = createdAt || new Date().toISOString();
@@ -49,6 +49,7 @@
       createdAt: timestamp,
       provider: String(provider || request.model || 'unknown'),
       request: clone(request),
+      baseRequest: clone(baseRequest || request),
       result: clone(result),
       visualIR: clone(ir || null),
       visualIRVersion: ir?.metadata?.version || null,
