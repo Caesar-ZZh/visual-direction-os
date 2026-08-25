@@ -229,8 +229,10 @@
     setStatus('Generating through Cloudflare secure Agnes proxy…', 'busy');
     try {
       const result = await generateViaProxy(request, { endpoint, proxyToken: token });
-      const artifact = createGenerationArtifact({ provider:AGNES_MODEL, request, result, ir:context.visualIR || currentIR() });
+      const baseRequest = clone(context.baseRequest || request);
+      const artifact = createGenerationArtifact({ provider:AGNES_MODEL, request, baseRequest, result, ir:context.visualIR || currentIR() });
       artifact.iterationOf = context.iterationOf || null;
+      artifact.parentArtifactId = context.iterationOf || null;
       artifact.iterationDelta = context.iterationDelta ? clone(context.iterationDelta) : null;
       state.activeArtifact = artifact;
       renderArtifact(artifact);
