@@ -87,12 +87,9 @@
     if (!['url', 'b64_json'].includes(responseFormat)) throw new Error(`Unsupported Agnes response format: ${responseFormat}`);
 
     const normalizedReferences = Array.isArray(references) ? references.map(normalizeReference) : [];
-    const extraBody = {};
+    const extraBody = { response_format: responseFormat };
     if (normalizedReferences.length) {
       extraBody.image = normalizedReferences.map((reference) => reference.source);
-      extraBody.response_format = responseFormat;
-    } else if (responseFormat === 'url') {
-      extraBody.response_format = 'url';
     }
 
     const request = {
