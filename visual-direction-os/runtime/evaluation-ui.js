@@ -3,15 +3,22 @@
   if (!root || !root.document) return;
 
   const runtime = root.VisualDirectionRuntime || {};
-  const { measurePixels, evaluateArtifact, compileReDirectionDelta, applyIterationDelta } = runtime;
-  if (![measurePixels, evaluateArtifact, compileReDirectionDelta, applyIterationDelta].every((fn) => typeof fn === 'function')) {
+  const {
+    measurePixels,
+    evaluateArtifact,
+    compileReDirectionDelta,
+    applyIterationDelta,
+    canRedirect,
+    runGenerationIteration
+  } = runtime;
+  if (![measurePixels, evaluateArtifact, compileReDirectionDelta, applyIterationDelta, canRedirect, runGenerationIteration].every((fn) => typeof fn === 'function')) {
     console.error('[Visual Direction OS] Evaluation runtime failed to initialize.');
     return;
   }
 
   const document = root.document;
   const $ = (selector, base = document) => base.querySelector(selector);
-  const state = { artifact:null, measurements:null, measurementError:'', human:{}, report:null, delta:null };
+  const state = { artifact:null, measurements:null, measurementError:'', human:{}, report:null, delta:null, redirectBusy:false, redirectMessage:'' };
   const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
 
   function buildPanel() {
@@ -27,7 +34,7 @@
         <section class="evaluation-measured"><header><span>MEASURED SIGNALS</span><small>Canvas / value / saturation / edge / density</small></header><div id="measurement-raw" class="measurement-raw"></div><p class="measurement-warning" id="measurement-warning" hidden></p><div id="evaluation-measured-list"></div></section>
         <section class="evaluation-human"><header><span>DIRECTOR JUDGMENT</span><small>PASS / NEEDS WORK / NOT SURE</small></header><div id="evaluation-human-list"></div></section>
       </div>
-      <section class="deviation-ledger"><header><div><span>DEVIATION LEDGER</span><h4>What survives into the next generation?</h4></div><button type="button" id="evaluation-redirect" disabled><span>RE-DIRECT & GENERATE</span><small>Compile iteration delta</small></button></header><div class="deviation-columns"><article><span>PRESERVE</span><div id="delta-preserve"></div></article><article><span>CORRECT</span><div id="delta-correct"></div></article><article><span>UNRESOLVED</span><div id="delta-unresolved"></div></article></div><details><summary>Iteration prompt appendix</summary><pre id="delta-prompt"></pre></details></section>`;
+      <section class="deviation-ledger"><header><div><span>DEVIATION LEDGER</span><h4>What survives into the next generation?</h4></div><button type="button" id="evaluation-redirect" disabled><span>RE-DIRECT & GENERATE</span><small id="evaluation-redirect-state">Compile iteration delta</small></button></header><div class="deviation-columns"><article><span>PRESERVE</span><div id="delta-preserve"></div></article><article><span>CORRECT</span><div id="delta-correct"></div></article><article><span>UNRESOLVED</span><div id="delta-unresolved"></div></article></div><details><summary>Iteration prompt appendix</summary><pre id="delta-prompt"></pre></details></section>`;
     generation.append(section);
     $('#evaluation-redirect')?.addEventListener('click', redirectAndGenerate);
   }
@@ -39,6 +46,12 @@
     if (check.status === 'not_sure') return 'NOT SURE';
     if (check.status === 'needs_judgment') return 'JUDGE';
     return 'UNSUPPORTED';
+  }
+
+  function setRedirectMessage(message) {
+    state.redirectMessage = String(message || '');
+    const node = $('#evaluation-redirect-state');
+    if (node) node.textContent = state.redirectMessage || 'Compile iteration delta';
   }
 
   function renderRawMeasurements() {
@@ -113,7 +126,9 @@
     const summary = state.report.summary;
     if ($('#evaluation-summary')) $('#evaluation-summary').textContent = `${summary.measuredPass} measured pass · ${summary.measuredWarn} measured warn · ${summary.humanPassed} judged pass · ${summary.humanNeedsWork} needs work · ${summary.unresolved} unresolved`;
     const redirect = $('#evaluation-redirect');
-    if (redirect) redirect.disabled = !state.delta.promptAppendix || typeof root.VisualDirectionOS?.generation?.generate !== 'function';
+    const ready = canRedirect(state.delta);
+    if (redirect) redirect.disabled = !ready || state.redirectBusy;
+    if (!state.redirectBusy && !state.redirectMessage) setRedirectMessage(ready ? 'Generate corrected iteration' : 'Compile iteration delta');
   }
 
   function recompute() {
@@ -122,6 +137,7 @@
     state.delta = compileReDirectionDelta(state.report);
     state.artifact.measurements = state.measurements;
     state.artifact.evaluation = state.report;
+    if (!state.redirectBusy) state.redirectMessage = '';
     renderMeasured();
     renderHuman();
     renderLedger();
@@ -161,6 +177,7 @@
     state.measurements = null;
     state.measurementError = '';
     state.human = {};
+    state.redirectMessage = '';
     const panel = $('#evaluation-console');
     if (panel) panel.hidden = false;
     if ($('#evaluation-artifact-id')) $('#evaluation-artifact-id').textContent = artifact.id;
@@ -175,12 +192,29 @@
   }
 
   async function redirectAndGenerate() {
-    if (!state.artifact || !state.delta?.promptAppendix) return;
-    const generation = root.VisualDirectionOS?.generation;
-    if (!generation?.generate) return;
-    const revised = applyIterationDelta(state.artifact.request, state.delta);
-    generation.setRequest?.(revised, { label:'ITERATION / QA DELTA' });
-    await generation.generate(revised, { iterationOf:state.artifact.id, iterationDelta:state.delta, visualIR:state.artifact.visualIR });
+    if (state.redirectBusy || !state.artifact || !canRedirect(state.delta)) return;
+    state.redirectBusy = true;
+    setRedirectMessage('Generating corrected iteration…');
+    renderLedger();
+    try {
+      const artifact = await runGenerationIteration({
+        root,
+        artifact: state.artifact,
+        delta: state.delta,
+        applyIterationDelta
+      });
+      if (!artifact) {
+        const upstreamStatus = String($('#generation-status')?.textContent || '').trim();
+        throw new Error(upstreamStatus || 'Iteration generation did not return an artifact');
+      }
+      setRedirectMessage(`Generated ${artifact.id}`);
+    } catch (error) {
+      console.error('[Visual Direction OS] Re-direction failed:', error);
+      setRedirectMessage(error.message || 'Re-direction failed');
+    } finally {
+      state.redirectBusy = false;
+      renderLedger();
+    }
   }
 
   buildPanel();
