@@ -1,7 +1,7 @@
 const assert = require('node:assert/strict');
 const { compareArtifacts } = require('./comparison-engine.js');
 const { deriveMemoryForPath, compileMemoryAppendix } = require('./memory-engine.js');
-const { createM4Controller } = require('./m4-controller.js');
+const { createM4Controller, createBrowserGenerationRunner } = require('./m4-controller.js');
 
 function clone(value) { return value == null ? value : structuredClone(value); }
 
@@ -92,6 +92,25 @@ function evaluationDetail(artifact, measuredStatus = 'pass') {
 }
 
 (async () => {
+  const browserRunnerCalls = [];
+  const fakeRoot = { VisualDirectionOS:{ generation:{ generate:async () => null } } };
+  const browserRunner = createBrowserGenerationRunner({
+    root:fakeRoot,
+    runGenerationIteration:async (input) => { browserRunnerCalls.push(input); return { id:'browser-branch' }; },
+    applyIterationDelta:(request, delta) => ({ ...request, prompt:`${request.prompt}\n\n${delta.promptAppendix}` })
+  });
+  const browserArtifact = generationArtifact('browser-root');
+  browserArtifact.evaluationDelta = evaluationDetail(browserArtifact, 'pass').delta;
+  const browserResult = await browserRunner({ artifact:browserArtifact, promptAppendix:'ITERATION / DIRECTOR MEMORY\n\nPRESERVE CURRENT:\n- Keep canvas' });
+  assert.equal(browserResult.id, 'browser-branch');
+  assert.equal(browserRunnerCalls.length, 1);
+  assert.equal(browserRunnerCalls[0].root, fakeRoot);
+  assert.equal(browserRunnerCalls[0].artifact.id, 'browser-root');
+  assert.deepEqual(browserRunnerCalls[0].delta, browserArtifact.evaluationDelta);
+  assert.deepEqual(browserRunnerCalls[0].baseRequest, browserArtifact.baseRequest);
+  assert.match(browserRunnerCalls[0].promptAppendix, /ITERATION \/ DIRECTOR MEMORY/);
+  assert.equal(typeof browserRunnerCalls[0].applyIterationDelta, 'function');
+
   const memory = createFakeMemory();
   const emitted = [];
   const objectUrls = [];
