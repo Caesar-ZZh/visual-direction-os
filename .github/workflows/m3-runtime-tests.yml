@@ -63,6 +63,9 @@ jobs:
       - name: Run M4 app boot suite
         run: node visual-direction-os/runtime/app-boot-tests.js
 
+      - name: Run M4 headless browser acceptance
+        run: node visual-direction-os/runtime/browser-acceptance-tests.js
+
       - name: Run Cloudflare secure proxy suite
         run: node cloudflare/agnes-proxy-worker-tests.mjs
 
@@ -84,5 +87,6 @@ jobs:
           node --check visual-direction-os/runtime/memory-engine.js
           node --check visual-direction-os/runtime/m4-controller.js
           node --check visual-direction-os/runtime/lineage-ui.js
+          node --check visual-direction-os/runtime/browser-acceptance-tests.js
           node --check visual-direction-os/app.js
           node --check cloudflare/agnes-proxy-worker.mjs
