@@ -1,7 +1,10 @@
 (function attachM4Controller(root, factory) {
   const api = factory();
-  if (typeof module !== 'undefined' && module.exports) module.exports = api;
-  if (!root) return;
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = api;
+    return;
+  }
+  if (!root || typeof root.addEventListener !== 'function') return;
 
   root.VisualDirectionRuntime = Object.assign(root.VisualDirectionRuntime || {}, api);
   const runtime = root.VisualDirectionRuntime;
@@ -9,15 +12,15 @@
   function unavailableMemory(error) {
     const fail = async () => { throw error; };
     return {
-      getLatestProject: fail,
-      ensureProject: fail,
-      listArtifacts: fail,
-      listComparisons: async () => [],
-      saveGenerationArtifact: fail,
-      saveComparison: async (row) => row,
-      estimateStorage: async () => null,
-      deleteSubtree: fail,
-      clearProject: fail
+      getLatestProject:fail,
+      ensureProject:fail,
+      listArtifacts:fail,
+      listComparisons:async () => [],
+      saveGenerationArtifact:fail,
+      saveComparison:async (row) => row,
+      estimateStorage:async () => null,
+      deleteSubtree:fail,
+      clearProject:fail
     };
   }
 
@@ -47,21 +50,18 @@
     if (event.detail?.artifact) controller.ingestEvaluation(event.detail).catch((error) => console.error('[Visual Direction OS M4] Evaluation ingest failed:', error));
   });
   root.addEventListener('beforeunload', () => controller.dispose());
-
   root.VisualDirectionOS = Object.assign(root.VisualDirectionOS || {}, { m4:controller });
 })(typeof globalThis !== 'undefined' ? globalThis : this, function m4ControllerFactory() {
   'use strict';
 
   const SEMANTIC_STATES = new Set(['improved', 'unchanged', 'regressed', 'not_sure']);
-
-  function clone(value) {
+  const clone = (value) => {
     if (value == null) return value;
     if (typeof structuredClone === 'function') return structuredClone(value);
     return JSON.parse(JSON.stringify(value));
-  }
-
-  function emptyMemory() { return { pathArtifactIds:[], locked:[], active:[], watch:[] }; }
-  function pairKey(a, b) { return `${a || ''}::${b || ''}`; }
+  };
+  const emptyMemory = () => ({ pathArtifactIds:[], locked:[], active:[], watch:[] });
+  const pairKey = (a, b) => `${a || ''}::${b || ''}`;
 
   function createM4Controller({
     memory,
@@ -95,13 +95,12 @@
       persistenceWarning:''
     };
 
-    function getArtifactLocal(id) { return state.artifacts.find((row) => row.id === id) || null; }
-    function sortedArtifacts(rows = state.artifacts) { return [...rows].sort((a,b) => (a.generationIndex || 0) - (b.generationIndex || 0)); }
-    function nextGenerationIndex() { return state.artifacts.reduce((max,row) => Math.max(max, Number(row.generationIndex) || 0), 0) + 1; }
-
-    function snapshot() { return clone(state); }
-    function emit() { onState(snapshot()); }
-    function getState() { return snapshot(); }
+    const sorted = (rows = state.artifacts) => [...rows].sort((a,b) => (a.generationIndex || 0) - (b.generationIndex || 0));
+    const localArtifact = (id) => state.artifacts.find((row) => row.id === id) || null;
+    const nextIndex = () => state.artifacts.reduce((max,row) => Math.max(max, Number(row.generationIndex) || 0), 0) + 1;
+    const snapshot = () => clone(state);
+    const emit = () => onState(snapshot());
+    const getState = () => snapshot();
 
     async function refreshStorage() {
       try { state.storage = await memory.estimateStorage(); }
@@ -117,22 +116,39 @@
         judgmentsByPair.set(key, judgments);
         for (const [checkId, decision] of Object.entries(judgments)) {
           if (decision?.state !== 'improved') continue;
-          if (!semanticLocksByHead.has(record.artifactBId)) semanticLocksByHead.set(record.artifactBId, {});
-          semanticLocksByHead.get(record.artifactBId)[checkId] = true;
+          const locks = { ...(semanticLocksByHead.get(record.artifactBId) || {}) };
+          locks[checkId] = true;
+          semanticLocksByHead.set(record.artifactBId, locks);
         }
       }
     }
 
     function chooseDefaultSelection() {
-      const evaluated = sortedArtifacts().filter((row) => row.evaluation);
-      const latest = [...evaluated].reverse().find((row) => row.parentArtifactId && getArtifactLocal(row.parentArtifactId));
-      if (!latest) {
-        if (!state.selectedAId || !getArtifactLocal(state.selectedAId)) state.selectedAId = null;
-        if (!state.selectedBId || !getArtifactLocal(state.selectedBId)) state.selectedBId = null;
+      const latest = [...sorted().filter((row) => row.evaluation)].reverse().find((row) => row.parentArtifactId && localArtifact(row.parentArtifactId));
+      if (latest) {
+        state.selectedAId = latest.parentArtifactId;
+        state.selectedBId = latest.id;
         return;
       }
-      state.selectedAId = latest.parentArtifactId;
-      state.selectedBId = latest.id;
+      if (!localArtifact(state.selectedAId)) state.selectedAId = null;
+      if (!localArtifact(state.selectedBId)) state.selectedBId = null;
+    }
+
+    function recomputeDerived() {
+      const a = localArtifact(state.selectedAId);
+      const b = localArtifact(state.selectedBId);
+      state.comparison = a?.evaluation && b?.evaluation
+        ? compareArtifacts({ artifactA:a, artifactB:b, directorJudgments:judgmentsByPair.get(pairKey(a.id,b.id)) || {} })
+        : null;
+      const head = b || sorted().filter((row) => row.evaluation).at(-1) || null;
+      state.memory = head
+        ? deriveMemoryForPath({
+            artifacts:state.artifacts,
+            comparisons:state.comparisons,
+            pathHeadId:head.id,
+            semanticLocks:semanticLocksByHead.get(head.id) || {}
+          })
+        : emptyMemory();
     }
 
     async function persistCurrentComparison() {
@@ -155,23 +171,6 @@
       }
     }
 
-    function recomputeDerived() {
-      const artifactA = getArtifactLocal(state.selectedAId);
-      const artifactB = getArtifactLocal(state.selectedBId);
-      state.comparison = artifactA?.evaluation && artifactB?.evaluation
-        ? compareArtifacts({ artifactA, artifactB, directorJudgments:judgmentsByPair.get(pairKey(artifactA.id, artifactB.id)) || {} })
-        : null;
-      const head = artifactB || sortedArtifacts().filter((row) => row.evaluation).at(-1) || null;
-      state.memory = head
-        ? deriveMemoryForPath({
-            artifacts:state.artifacts,
-            comparisons:state.comparisons,
-            pathHeadId:head.id,
-            semanticLocks:semanticLocksByHead.get(head.id) || {}
-          })
-        : emptyMemory();
-    }
-
     async function boot() {
       state.restoreError = '';
       state.persistenceWarning = '';
@@ -182,8 +181,7 @@
           project = await memory.ensureProject({ createdAt:timestamp, updatedAt:timestamp });
         }
         state.project = clone(project);
-        const rows = await memory.listArtifacts(project.id);
-        state.artifacts = sortedArtifacts(rows || []);
+        state.artifacts = sorted(await memory.listArtifacts(project.id) || []);
         state.comparisons = typeof memory.listComparisons === 'function' ? clone(await memory.listComparisons(project.id) || []) : [];
         restoreComparisonMetadata(state.comparisons);
         chooseDefaultSelection();
@@ -212,26 +210,26 @@
     async function ingestGeneration(artifact) {
       if (!artifact?.id) throw new Error('M4 generation ingest requires an artifact');
       await ensureProject();
-      const existing = getArtifactLocal(artifact.id);
+      const existing = localArtifact(artifact.id);
       const parentArtifactId = artifact.iterationOf || artifact.parentArtifactId || existing?.parentArtifactId || null;
-      const parent = parentArtifactId ? getArtifactLocal(parentArtifactId) : null;
+      const parent = parentArtifactId ? localArtifact(parentArtifactId) : null;
       const enriched = {
         ...(existing ? clone(existing) : {}),
         ...clone(artifact),
         projectId:state.project.id,
         parentArtifactId,
         rootArtifactId:parent ? (parent.rootArtifactId || parent.id) : (existing?.rootArtifactId || artifact.id),
-        generationIndex:existing?.generationIndex || nextGenerationIndex(),
+        generationIndex:existing?.generationIndex || nextIndex(),
         persistenceStatus:existing?.persistenceStatus || null
       };
-      state.artifacts = sortedArtifacts(state.artifacts.filter((row) => row.id !== artifact.id).concat(enriched));
+      state.artifacts = sorted(state.artifacts.filter((row) => row.id !== artifact.id).concat(enriched));
       emit();
       return clone(enriched);
     }
 
     async function ingestEvaluation({ artifact, human = {}, report, delta } = {}) {
       if (!artifact?.id || !report || !delta) throw new Error('M4 evaluation ingest requires artifact, report, and delta');
-      let current = getArtifactLocal(artifact.id);
+      let current = localArtifact(artifact.id);
       if (!current) current = await ingestGeneration(artifact);
       const incomingIterationDelta = clone(current.iterationDelta || artifact.iterationDelta || null);
       const enriched = {
@@ -247,6 +245,7 @@
         iterationDelta:incomingIterationDelta,
         evaluationDelta:clone(delta)
       };
+
       const persisted = await memory.saveGenerationArtifact({
         artifact:enriched,
         lineage:{
@@ -263,14 +262,13 @@
         persistenceStatus:persisted.persistenceStatus,
         persistenceError:persisted.persistenceError || ''
       };
-      state.artifacts = sortedArtifacts(state.artifacts.filter((row) => row.id !== merged.id).concat(merged));
+      state.artifacts = sorted(state.artifacts.filter((row) => row.id !== merged.id).concat(merged));
+
       if (persisted.persistenceStatus === 'not_persisted') state.persistenceWarning = `Generation ${merged.id} not persisted: ${persisted.persistenceError || 'storage write failed'}`;
       else if (persisted.persistenceStatus === 'meta_only') state.persistenceWarning = `Generation ${merged.id}: image not persisted; metadata is saved.`;
       else state.persistenceWarning = '';
 
-      try {
-        state.project = await memory.ensureProject({ ...state.project, updatedAt:now() });
-      } catch (_) {}
+      try { state.project = await memory.ensureProject({ ...state.project, updatedAt:now() }); } catch (_) {}
       chooseDefaultSelection();
       recomputeDerived();
       await persistCurrentComparison();
@@ -280,7 +278,7 @@
     }
 
     async function selectA(id) {
-      if (id != null && !getArtifactLocal(id)) throw new Error(`Unknown A artifact: ${id}`);
+      if (id != null && !localArtifact(id)) throw new Error(`Unknown A artifact: ${id}`);
       state.selectedAId = id || null;
       recomputeDerived();
       emit();
@@ -288,7 +286,7 @@
     }
 
     async function selectB(id) {
-      if (id != null && !getArtifactLocal(id)) throw new Error(`Unknown B artifact: ${id}`);
+      if (id != null && !localArtifact(id)) throw new Error(`Unknown B artifact: ${id}`);
       state.selectedBId = id || null;
       recomputeDerived();
       emit();
@@ -303,8 +301,8 @@
       judgments[checkId] = { state:semanticState, note:String(note || '').trim() };
       judgmentsByPair.set(key, judgments);
 
-      const artifactB = getArtifactLocal(state.selectedBId);
-      const semanticCheck = artifactB?.evaluation?.checks?.find((check) => check.id === checkId && check.evidenceMode === 'human_required');
+      const b = localArtifact(state.selectedBId);
+      const semanticCheck = b?.evaluation?.checks?.find((check) => check.id === checkId && check.evidenceMode === 'human_required');
       const locks = { ...(semanticLocksByHead.get(state.selectedBId) || {}) };
       if (semanticState === 'improved' && semanticCheck?.status === 'pass') locks[checkId] = true;
       else delete locks[checkId];
@@ -317,12 +315,15 @@
     }
 
     async function getRenderableImage(id) {
-      const artifact = getArtifactLocal(id);
+      const artifact = localArtifact(id);
       if (!artifact) return null;
       if (objectUrls.has(id)) return objectUrls.get(id);
       if (artifact.imageBlob && typeof createObjectURL === 'function') {
         const url = createObjectURL(artifact.imageBlob);
-        if (url) { objectUrls.set(id, url); return url; }
+        if (url) {
+          objectUrls.set(id, url);
+          return url;
+        }
       }
       return artifact.result?.src || null;
     }
@@ -341,19 +342,18 @@
     function revokeIds(ids) {
       for (const id of ids) {
         const url = objectUrls.get(id);
-        if (url) {
-          try { revokeObjectURL(url); } catch (_) {}
-          objectUrls.delete(id);
-        }
+        if (!url) continue;
+        try { revokeObjectURL(url); } catch (_) {}
+        objectUrls.delete(id);
       }
     }
 
     async function deleteSubtree(id) {
-      if (!getArtifactLocal(id)) return [];
-      const stateIds = stateSubtreeIds(id);
-      let persistedIds = [];
-      try { persistedIds = await memory.deleteSubtree(id); } catch (_) { persistedIds = []; }
-      const ids = new Set([...stateIds, ...(persistedIds || [])]);
+      if (!localArtifact(id)) return [];
+      const ids = stateSubtreeIds(id);
+      try {
+        for (const persistedId of await memory.deleteSubtree(id) || []) ids.add(persistedId);
+      } catch (_) {}
       revokeIds(ids);
       state.artifacts = state.artifacts.filter((row) => !ids.has(row.id));
       state.comparisons = state.comparisons.filter((row) => !ids.has(row.artifactAId) && !ids.has(row.artifactBId));
@@ -370,8 +370,7 @@
     }
 
     async function clearProject() {
-      const projectId = state.project?.id;
-      if (projectId) await memory.clearProject(projectId);
+      if (state.project?.id) await memory.clearProject(state.project.id);
       revokeIds(new Set(state.artifacts.map((row) => row.id)));
       state.project = null;
       state.artifacts = [];
@@ -389,7 +388,7 @@
     }
 
     function getMemoryFor(id) {
-      if (!getArtifactLocal(id)) return emptyMemory();
+      if (!localArtifact(id)) return emptyMemory();
       return clone(deriveMemoryForPath({
         artifacts:state.artifacts,
         comparisons:state.comparisons,
@@ -399,21 +398,24 @@
     }
 
     function getCurrentMemoryAppendix() {
-      const head = getArtifactLocal(state.selectedBId) || sortedArtifacts().filter((row) => row.evaluation).at(-1) || null;
+      const head = localArtifact(state.selectedBId) || sorted().filter((row) => row.evaluation).at(-1) || null;
       if (!head) return '';
       return compileMemoryAppendix({ currentDelta:head.evaluationDelta || null, memory:getMemoryFor(head.id) });
     }
 
     async function redirectFromArtifact(id) {
       if (typeof generationRunner !== 'function') throw new Error('M4 branch generation runner is not configured');
-      const artifact = getArtifactLocal(id);
+      const artifact = localArtifact(id);
       if (!artifact) throw new Error(`Unknown generation artifact: ${id}`);
-      return generationRunner({ artifact:clone(artifact), memory:getMemoryFor(id), promptAppendix:compileMemoryAppendix({ currentDelta:artifact.evaluationDelta || null, memory:getMemoryFor(id) }) });
+      const branchMemory = getMemoryFor(id);
+      return generationRunner({
+        artifact:clone(artifact),
+        memory:branchMemory,
+        promptAppendix:compileMemoryAppendix({ currentDelta:artifact.evaluationDelta || null, memory:branchMemory })
+      });
     }
 
-    function dispose() {
-      revokeIds(new Set(objectUrls.keys()));
-    }
+    function dispose() { revokeIds(new Set(objectUrls.keys())); }
 
     return {
       boot,
