@@ -12,6 +12,7 @@
     'runtime/generation-client.js',
     'runtime/image-measurements.js',
     'runtime/evaluation-engine.js',
+    'runtime/iteration-controller.js',
     'runtime/director-ui.js',
     'runtime/generation-ui-m3.js',
     'runtime/evaluation-ui.js'
