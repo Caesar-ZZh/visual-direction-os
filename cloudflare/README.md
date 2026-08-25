@@ -25,6 +25,8 @@ The existing Worker project can be reused:
 - Production branch: `phase2-m3-generation-evaluation-loop`
 - Deploy command: `npx wrangler deploy`
 
+Production deployment is triggered by a push to the configured production branch through Cloudflare Workers Builds. The dashboard's manual static-file uploader is not used for this Worker.
+
 After deployment, the existing `workers.dev` hostname becomes an API Worker rather than a static-site deployment. GitHub Pages remains the product frontend.
 
 ## Endpoints
