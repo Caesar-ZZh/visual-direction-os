@@ -51,6 +51,9 @@ jobs:
       - name: Run M4 director memory suite
         run: node visual-direction-os/runtime/director-memory-tests.js
 
+      - name: Run M4 comparison engine suite
+        run: node visual-direction-os/runtime/comparison-engine-tests.js
+
       - name: Run Cloudflare secure proxy suite
         run: node cloudflare/agnes-proxy-worker-tests.mjs
 
