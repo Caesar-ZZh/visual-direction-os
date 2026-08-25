@@ -1,0 +1,92 @@
+name: M3 Runtime Tests
+
+on:
+  push:
+    branches:
+      - phase2-m3-generation-evaluation-loop
+    paths:
+      - "cloudflare/**"
+      - "visual-direction-os/**"
+      - "wrangler.jsonc"
+      - "package.json"
+      - ".github/workflows/m3-runtime-tests.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  runtime-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Run Visual IR regression suite
+        run: node visual-direction-os/runtime/runtime-tests.js
+
+      - name: Run Agnes adapter regression suite
+        run: node visual-direction-os/runtime/agnes-adapter-tests.js
+
+      - name: Run generation client regression suite
+        run: node visual-direction-os/runtime/generation-client-tests.js
+
+      - name: Run M3 image measurement suite
+        run: node visual-direction-os/runtime/image-measurements-tests.js
+
+      - name: Run M3 evaluation engine suite
+        run: node visual-direction-os/runtime/evaluation-engine-tests.js
+
+      - name: Run M3 iteration suite
+        run: node visual-direction-os/runtime/iteration-tests.js
+
+      - name: Run M3 redirect controller suite
+        run: node visual-direction-os/runtime/iteration-controller-tests.js
+
+      - name: Run M4 director memory suite
+        run: node visual-direction-os/runtime/director-memory-tests.js
+
+      - name: Run M4 comparison engine suite
+        run: node visual-direction-os/runtime/comparison-engine-tests.js
+
+      - name: Run M4 memory policy suite
+        run: node visual-direction-os/runtime/memory-engine-tests.js
+
+      - name: Run M4 orchestration controller suite
+        run: node visual-direction-os/runtime/m4-controller-tests.js
+
+      - name: Run M4 app boot suite
+        run: node visual-direction-os/runtime/app-boot-tests.js
+
+      - name: Run M4 headless browser acceptance
+        run: node visual-direction-os/runtime/browser-acceptance-tests-v2.js
+
+      - name: Run Cloudflare secure proxy suite
+        run: node cloudflare/agnes-proxy-worker-tests.mjs
+
+      - name: Validate deployment configuration JSON
+        run: |
+          node -e "JSON.parse(require('fs').readFileSync('wrangler.jsonc','utf8')); JSON.parse(require('fs').readFileSync('package.json','utf8')); console.log('deployment config json passed')"
+
+      - name: Syntax-check browser and proxy runtime
+        run: |
+          node --check visual-direction-os/runtime/agnes-adapter.js
+          node --check visual-direction-os/runtime/generation-client.js
+          node --check visual-direction-os/runtime/image-measurements.js
+          node --check visual-direction-os/runtime/evaluation-engine.js
+          node --check visual-direction-os/runtime/iteration-controller.js
+          node --check visual-direction-os/runtime/generation-ui-m3.js
+          node --check visual-direction-os/runtime/evaluation-ui.js
+          node --check visual-direction-os/runtime/director-memory.js
+          node --check visual-direction-os/runtime/comparison-engine.js
+          node --check visual-direction-os/runtime/memory-engine.js
+          node --check visual-direction-os/runtime/m4-controller.js
+          node --check visual-direction-os/runtime/lineage-ui.js
+          node --check visual-direction-os/runtime/browser-acceptance-tests-v2.js
+          node --check visual-direction-os/app.js
+          node --check cloudflare/agnes-proxy-worker.mjs

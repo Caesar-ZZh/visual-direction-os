@@ -1,0 +1,12 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "visual-direction-os",
+  "main": "cloudflare/agnes-proxy-worker.mjs",
+  "compatibility_date": "2026-08-25",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "vars": {
+    "VDOS_ALLOWED_ORIGINS": "https://caesar-zzh.github.io,https://raw.githack.com",
+    "AGNES_TIMEOUT_MS": "300000"
+  }
+}
