@@ -204,27 +204,40 @@
     };
   }
 
-  function compileReDirectionDelta(report) {
-    const preserve = [];
-    const correct = [];
-    const unresolved = [];
-    for (const check of report?.checks || []) {
-      if (check.status === 'pass') {
-        preserve.push(`${check.label}: preserve the currently successful behavior. ${check.reason}`);
-      } else if (check.status === 'warn') {
-        correct.push(`${check.label}: ${check.reason} Target: ${check.target}. Observed: ${check.observed}.`);
-      } else if (check.status === 'needs_work') {
-        correct.push(`${check.label}: ${check.note || check.reason} Target: ${check.target}`);
-      } else if (['unsupported', 'needs_judgment', 'not_sure'].includes(check.status)) {
-        unresolved.push(`${check.label}: ${check.reason}`);
-      }
+  function deltaEntry(check) {
+    let intent = 'unresolved';
+    let instruction = `${check.label}: ${check.reason}`;
+    if (check.status === 'pass') {
+      intent = 'preserve';
+      instruction = `${check.label}: preserve the currently successful behavior. ${check.reason}`;
+    } else if (check.status === 'warn') {
+      intent = 'correct';
+      instruction = `${check.label}: ${check.reason} Target: ${check.target}. Observed: ${check.observed}.`;
+    } else if (check.status === 'needs_work') {
+      intent = 'correct';
+      instruction = `${check.label}: ${check.note || check.reason} Target: ${check.target}`;
     }
+    return {
+      checkId:check.id,
+      label:check.label,
+      intent,
+      sourceStatus:check.status,
+      evidenceMode:check.evidenceMode,
+      instruction
+    };
+  }
+
+  function compileReDirectionDelta(report) {
+    const entries = (report?.checks || []).map(deltaEntry);
+    const preserve = entries.filter((entry) => entry.intent === 'preserve').map((entry) => entry.instruction);
+    const correct = entries.filter((entry) => entry.intent === 'correct').map((entry) => entry.instruction);
+    const unresolved = entries.filter((entry) => entry.intent === 'unresolved').map((entry) => entry.instruction);
 
     const sections = [];
     if (preserve.length) sections.push(`PRESERVE:\n${preserve.map((item) => `- ${item}`).join('\n')}`);
     if (correct.length) sections.push(`CORRECT:\n${correct.map((item) => `- ${item}`).join('\n')}`);
     const promptAppendix = sections.length ? `ITERATION / EVALUATION DELTA\n${sections.join('\n\n')}` : '';
-    return { preserve, correct, unresolved, promptAppendix };
+    return { preserve, correct, unresolved, promptAppendix, entries };
   }
 
   return { evaluateArtifact, compileReDirectionDelta, directionFromText };
