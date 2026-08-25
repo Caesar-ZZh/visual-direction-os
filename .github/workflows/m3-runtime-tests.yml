@@ -60,6 +60,9 @@ jobs:
       - name: Run M4 orchestration controller suite
         run: node visual-direction-os/runtime/m4-controller-tests.js
 
+      - name: Run M4 app boot suite
+        run: node visual-direction-os/runtime/app-boot-tests.js
+
       - name: Run Cloudflare secure proxy suite
         run: node cloudflare/agnes-proxy-worker-tests.mjs
 
