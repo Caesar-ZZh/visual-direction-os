@@ -144,6 +144,26 @@ function fixture(origin, phase) {
   })()`;
 }
 
+async function stopBrowser(browser) {
+  if (!browser || browser.exitCode != null) return;
+  await new Promise((resolve) => {
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(forceTimer);
+      clearTimeout(giveUpTimer);
+      resolve();
+    };
+    const forceTimer = setTimeout(() => {
+      if (browser.exitCode == null) browser.kill('SIGKILL');
+    }, 2000);
+    const giveUpTimer = setTimeout(finish, 5000);
+    browser.once('exit', finish);
+    browser.kill('SIGTERM');
+  });
+}
+
 (async()=>{
   const site=await server(); const port=site.address().port; const origin=`http://127.0.0.1:${port}`; const debug=await openPort(); const profile=fs.mkdtempSync(path.join(os.tmpdir(),'vdos-chrome-'));
   const browser=spawn(chromeBinary(),['--headless=new','--no-sandbox','--disable-gpu','--disable-dev-shm-usage',`--remote-debugging-port=${debug}`,`--user-data-dir=${profile}`,'--no-first-run','--no-default-browser-check',`${origin}/index.html`],{stdio:'ignore'});
@@ -156,5 +176,10 @@ function fixture(origin, phase) {
     const next=await cdp.eval(fixture(origin,'after')); assert.deepEqual(next.restoredCheck,{count:2,a:'g1',b:'g2',rootDelta:true,childDelta:true}); assert.equal(next.regressed,1); assert.equal(next.active,true); assert.equal(next.locked,false); assert.equal(next.aLocked,true); assert.equal(next.bLocked,false); assert.equal(next.parent,'g1'); assert.equal(next.basePrompt,'BASE'); assert.equal(next.appendices,1); assert.equal(next.leaked,false); assert.equal(next.metaStatus,'meta_only'); assert.equal(next.failedStatus,'not_persisted');
     const loaded2=cdp.event('Page.loadEventFired'); await cdp.call('Page.reload',{ignoreCache:true}); await loaded2; await waitReady(cdp); const final=await cdp.eval(`(()=>{const s=globalThis.VisualDirectionOS.m4.getState();return{ids:s.artifacts.map(r=>r.id),meta:s.artifacts.find(r=>r.id==='meta')?.persistenceStatus}})()`); assert.equal(final.ids.includes('failed'),false); assert.equal(final.ids.includes('g1'),true); assert.equal(final.ids.includes('g2'),true); assert.equal(final.meta,'meta_only');
     console.log('browser acceptance v2 passed');
-  } finally { cdp?.close(); browser.kill('SIGTERM'); site.close(); fs.rmSync(profile,{recursive:true,force:true}); }
+  } finally {
+    cdp?.close();
+    site.close();
+    await stopBrowser(browser);
+    fs.rmSync(profile,{recursive:true,force:true,maxRetries:5,retryDelay:100});
+  }
 })().catch(error=>{console.error(error);process.exit(1)});
