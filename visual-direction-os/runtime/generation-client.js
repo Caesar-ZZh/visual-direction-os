@@ -17,15 +17,25 @@
     return node ?? fallback;
   }
 
-  function normalizeGenerationResponse(payload) {
+  function requestsBase64(request) {
+    return request?.return_base64 === true || request?.extra_body?.response_format === 'b64_json';
+  }
+
+  function base64Result(item) {
+    const src = String(item.b64_json).startsWith('data:') ? item.b64_json : `data:image/png;base64,${item.b64_json}`;
+    return { kind: 'base64', src, revisedPrompt: item.revised_prompt ?? null };
+  }
+
+  function normalizeGenerationResponse(payload, request = null) {
     const item = payload && Array.isArray(payload.data) ? payload.data[0] : null;
+    if (requestsBase64(request)) {
+      if (item?.b64_json) return base64Result(item);
+      if (item?.url) throw new Error('Base64 generation was requested, but Agnes returned only a remote image URL');
+    }
     if (item?.url) {
       return { kind: 'url', src: item.url, revisedPrompt: item.revised_prompt ?? null };
     }
-    if (item?.b64_json) {
-      const src = String(item.b64_json).startsWith('data:') ? item.b64_json : `data:image/png;base64,${item.b64_json}`;
-      return { kind: 'base64', src, revisedPrompt: item.revised_prompt ?? null };
-    }
+    if (item?.b64_json) return base64Result(item);
     throw new Error('Generation response did not include an image URL or Base64 payload');
   }
 
@@ -70,7 +80,7 @@
       body: JSON.stringify(request)
     });
     if (!response?.ok) throw new Error(await readError(response || {}));
-    return normalizeGenerationResponse(await response.json());
+    return normalizeGenerationResponse(await response.json(), request);
   }
 
   async function generateViaProxy(request, { endpoint, proxyToken, fetchImpl } = {}) {
