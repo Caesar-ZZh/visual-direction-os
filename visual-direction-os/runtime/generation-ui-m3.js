@@ -26,7 +26,9 @@
   function currentCompiled() { return root.VisualDirectionOS?.activeCompiled || null; }
   function currentIR() { return root.VisualDirectionOS?.activeIR || null; }
   function storedProxy() { try { return String(root.localStorage?.getItem('vdos-generation-proxy') || '').trim(); } catch (_) { return ''; } }
+  function storedProxyToken() { try { return String(root.sessionStorage?.getItem('vdos-proxy-token') || '').trim(); } catch (_) { return ''; } }
   function proxyEndpoint() { return String(root.VDOS_GENERATION_PROXY || storedProxy() || '').trim(); }
+  function proxyToken() { return storedProxyToken(); }
 
   function normalizeProxyUrl(raw) {
     const value = String(raw || '').trim();
@@ -49,7 +51,7 @@
     section.id = 'generation-console';
     section.innerHTML = `
       <header class="generation-head">
-        <div><small>IMAGE GENERATION / M3 EXECUTION</small><h3>Generate through <em>Agnes Image 2.1 Flash.</em></h3><p>The Visual IR remains model-neutral. Execution goes through a separate secure proxy so provider credentials never enter GitHub Pages.</p></div>
+        <div><small>IMAGE GENERATION / M3 EXECUTION</small><h3>Generate through <em>Agnes Image 2.1 Flash.</em></h3><p>The Visual IR remains model-neutral. Execution goes through a separate Cloudflare Worker so the Agnes credential never enters GitHub Pages.</p></div>
         <div class="generation-provider"><span>MODEL</span><strong>${escapeHtml(AGNES_MODEL)}</strong><small id="generation-provider-state">Proxy not configured</small></div>
       </header>
       <div class="generation-grid">
@@ -65,13 +67,14 @@
             <div id="generation-reference-list" class="reference-list" aria-live="polite"></div>
           </div>
           <details class="generation-proxy-config" id="generation-proxy-config">
-            <summary>Secure generation proxy</summary>
-            <p>Only the endpoint is stored locally. The Agnes credential remains a server environment variable.</p>
-            <label for="generation-proxy-input"><span>PROXY ENDPOINT</span><input id="generation-proxy-input" type="url" autocomplete="off" placeholder="https://your-proxy.vercel.app/api/agnes-generate"></label>
-            <button type="button" id="generation-proxy-save">Save endpoint</button>
-            <small>Runtime window.VDOS_GENERATION_PROXY overrides this local value.</small>
+            <summary>Cloudflare secure generation proxy</summary>
+            <p>The Agnes key stays in a Worker Secret. The separate proxy token only authorizes this browser session to use your Worker.</p>
+            <label for="generation-proxy-input"><span>PROXY ENDPOINT</span><input id="generation-proxy-input" type="url" autocomplete="off" placeholder="https://your-worker.workers.dev/api/agnes-generate"></label>
+            <label for="generation-proxy-token"><span>SESSION PROXY TOKEN</span><input id="generation-proxy-token" type="password" autocomplete="off" placeholder="Matches Worker secret VDOS_PROXY_TOKEN"></label>
+            <button type="button" id="generation-proxy-save">Save connection</button>
+            <small>Endpoint persists locally. Proxy token lives only in sessionStorage and is cleared with the browser session. The Agnes API key is never stored here.</small>
           </details>
-          <div class="generation-actions"><button type="button" class="generation-preview" id="generation-preview">Refresh request</button><button type="button" class="generation-submit" id="generation-submit" disabled><span>GENERATE</span><small>Secure proxy</small></button></div>
+          <div class="generation-actions"><button type="button" class="generation-preview" id="generation-preview">Refresh request</button><button type="button" class="generation-submit" id="generation-submit" disabled><span>GENERATE</span><small>Cloudflare → Agnes</small></button></div>
           <p class="generation-status" id="generation-status" role="status">Run DIRECT first to create an active Visual IR.</p>
         </div>
         <div class="generation-preview-pane"><div class="generation-preview-head"><span>AGNES REQUEST</span><small id="generation-request-mode">WAITING FOR VISUAL IR</small></div><pre id="generation-request-preview" tabindex="0">No active request.</pre></div>
@@ -80,7 +83,9 @@
     if (inspector) output.insertBefore(section, inspector); else output.append(section);
 
     const proxyInput = $('#generation-proxy-input');
+    const tokenInput = $('#generation-proxy-token');
     if (proxyInput) proxyInput.value = proxyEndpoint();
+    if (tokenInput) tokenInput.value = proxyToken();
     $('#generation-size')?.addEventListener('change', refreshRequest);
     $('#generation-ratio')?.addEventListener('change', refreshRequest);
     $('#generation-format')?.addEventListener('change', refreshRequest);
@@ -100,22 +105,22 @@
 
   function saveProxy() {
     const input = $('#generation-proxy-input');
-    if (!input) return;
+    const tokenInput = $('#generation-proxy-token');
+    if (!input || !tokenInput) return;
     try {
       const endpoint = normalizeProxyUrl(input.value);
-      if (root.VDOS_GENERATION_PROXY) {
-        setStatus('Runtime proxy configuration is active and overrides the local endpoint.');
-      } else if (endpoint) {
-        root.localStorage?.setItem('vdos-generation-proxy', endpoint);
-        input.value = endpoint;
-        setStatus('Secure proxy endpoint saved. No provider credential is stored in the browser.', 'success');
-      } else {
-        root.localStorage?.removeItem('vdos-generation-proxy');
-        setStatus('Local proxy endpoint cleared. Request preview remains available.');
+      const token = String(tokenInput.value || '').trim();
+      if (!root.VDOS_GENERATION_PROXY) {
+        if (endpoint) root.localStorage?.setItem('vdos-generation-proxy', endpoint);
+        else root.localStorage?.removeItem('vdos-generation-proxy');
       }
+      if (token) root.sessionStorage?.setItem('vdos-proxy-token', token);
+      else root.sessionStorage?.removeItem('vdos-proxy-token');
+      input.value = proxyEndpoint();
+      setStatus(endpoint && token ? 'Secure proxy connection saved for this browser session.' : 'Proxy configuration updated; endpoint and session token are both required to generate.', endpoint && token ? 'success' : 'info');
       syncExecutionState();
     } catch (error) {
-      setStatus(error.message || 'Invalid proxy endpoint.', 'error');
+      setStatus(error.message || 'Invalid proxy configuration.', 'error');
     }
   }
 
@@ -173,12 +178,14 @@
 
   function syncExecutionState() {
     const endpoint = proxyEndpoint();
-    const ready = Boolean(state.request && endpoint);
+    const token = proxyToken();
+    const ready = Boolean(state.request && endpoint && token);
     if ($('#generation-submit')) $('#generation-submit').disabled = !ready;
-    if ($('#generation-provider-state')) $('#generation-provider-state').textContent = endpoint ? 'Secure proxy connected' : 'Proxy not configured';
+    if ($('#generation-provider-state')) $('#generation-provider-state').textContent = endpoint && token ? 'Cloudflare proxy authenticated' : endpoint ? 'Proxy token required' : 'Proxy not configured';
     const details = $('#generation-proxy-config');
-    if (details && !endpoint) details.open = true;
-    if (state.request && !endpoint) setStatus('Request compiled. Configure the secure proxy endpoint to enable generation.');
+    if (details && (!endpoint || !token)) details.open = true;
+    if (state.request && !endpoint) setStatus('Request compiled. Configure the Cloudflare Worker endpoint to enable generation.');
+    else if (state.request && endpoint && !token) setStatus('Worker endpoint configured. Enter the session proxy token to enable generation.');
   }
 
   function setRequest(request, { label = 'ITERATION REQUEST' } = {}) {
@@ -212,14 +219,16 @@
   async function generate(requestOverride = null, context = {}) {
     const request = requestOverride && requestOverride.model ? clone(requestOverride) : clone(state.request);
     const endpoint = proxyEndpoint();
+    const token = proxyToken();
     if (!request) return null;
-    if (!endpoint) { setStatus('Secure proxy endpoint is required before generation.', 'error'); return null; }
+    if (!endpoint) { setStatus('Cloudflare Worker endpoint is required before generation.', 'error'); return null; }
+    if (!token) { setStatus('Session proxy token is required before generation.', 'error'); return null; }
     $('#generation-submit')?.setAttribute('disabled', '');
     state.request = clone(request);
     renderRequest(state.request, context.iterationOf ? 'ITERATION REQUEST' : ($('#generation-request-mode')?.textContent || 'AGNES REQUEST'));
-    setStatus('Generating through secure Agnes proxy…', 'busy');
+    setStatus('Generating through Cloudflare secure Agnes proxy…', 'busy');
     try {
-      const result = await generateViaProxy(request, { endpoint });
+      const result = await generateViaProxy(request, { endpoint, proxyToken: token });
       const artifact = createGenerationArtifact({ provider:AGNES_MODEL, request, result, ir:context.visualIR || currentIR() });
       artifact.iterationOf = context.iterationOf || null;
       artifact.iterationDelta = context.iterationDelta ? clone(context.iterationDelta) : null;
