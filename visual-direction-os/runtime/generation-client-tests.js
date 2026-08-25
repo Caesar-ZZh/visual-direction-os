@@ -1,6 +1,7 @@
 const assert = require('node:assert/strict');
 const {
   normalizeGenerationResponse,
+  createGenerationArtifact,
   generateViaProxy,
   generateDirectAgnes
 } = require('./generation-client.js');
@@ -28,6 +29,31 @@ const dualResponse = normalizeGenerationResponse({
 assert.equal(dualResponse.kind, 'base64', 'a Base64 request must not be downgraded to a remote URL when both fields are present');
 assert.equal(dualResponse.src, 'data:image/png;base64,CCCC');
 assert.throws(() => normalizeGenerationResponse({ data: [] }), /did not include an image/i);
+
+const iteratedRequest = { model:'agnes-image-2.1-flash', prompt:'BASE\n\nOLD DELTA', ratio:'16:9', return_base64:true, extra_body:{ response_format:'b64_json' } };
+const cleanBaseRequest = { model:'agnes-image-2.1-flash', prompt:'BASE', ratio:'16:9', return_base64:true, extra_body:{ response_format:'b64_json' } };
+const artifactWithBase = createGenerationArtifact({
+  provider:'agnes-image-2.1-flash',
+  request:iteratedRequest,
+  baseRequest:cleanBaseRequest,
+  result:{ kind:'base64', src:'data:image/png;base64,AAAA' },
+  ir:{ metadata:{ version:'0.1.0' } },
+  id:'gen-base-test',
+  createdAt:'2026-08-25T00:00:00.000Z'
+});
+assert.deepEqual(artifactWithBase.baseRequest, cleanBaseRequest);
+assert.notEqual(artifactWithBase.baseRequest, cleanBaseRequest, 'artifact baseRequest must be an immutable snapshot');
+assert.equal(artifactWithBase.request.prompt, 'BASE\n\nOLD DELTA');
+assert.equal(artifactWithBase.baseRequest.prompt, 'BASE');
+const rootArtifact = createGenerationArtifact({
+  provider:'agnes-image-2.1-flash',
+  request:cleanBaseRequest,
+  result:{ kind:'base64', src:'data:image/png;base64,AAAA' },
+  ir:{},
+  id:'gen-root-test'
+});
+assert.deepEqual(rootArtifact.baseRequest, cleanBaseRequest, 'root artifact should default baseRequest to its executed request');
+assert.notEqual(rootArtifact.baseRequest, cleanBaseRequest);
 
 const request = { model: 'agnes-image-2.1-flash', prompt: 'test', size: '1K', ratio: '1:1', extra_body: { response_format: 'url' } };
 
