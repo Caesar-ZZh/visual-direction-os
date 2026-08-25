@@ -5,9 +5,10 @@ on:
     branches:
       - phase2-m3-generation-evaluation-loop
     paths:
-      - "api/**"
+      - "cloudflare/**"
       - "visual-direction-os/**"
-      - "vercel.json"
+      - "wrangler.jsonc"
+      - "package.json"
       - ".github/workflows/m3-runtime-tests.yml"
   workflow_dispatch:
 
@@ -44,8 +45,12 @@ jobs:
       - name: Run M3 iteration suite
         run: node visual-direction-os/runtime/iteration-tests.js
 
-      - name: Run secure proxy suite
-        run: node api/agnes-generate-tests.js
+      - name: Run Cloudflare secure proxy suite
+        run: node cloudflare/agnes-proxy-worker-tests.mjs
+
+      - name: Validate deployment configuration JSON
+        run: |
+          node -e "JSON.parse(require('fs').readFileSync('wrangler.jsonc','utf8')); JSON.parse(require('fs').readFileSync('package.json','utf8')); console.log('deployment config json passed')"
 
       - name: Syntax-check browser and proxy runtime
         run: |
@@ -56,4 +61,4 @@ jobs:
           node --check visual-direction-os/runtime/generation-ui-m3.js
           node --check visual-direction-os/runtime/evaluation-ui.js
           node --check visual-direction-os/app.js
-          node --check api/agnes-generate.js
+          node --check cloudflare/agnes-proxy-worker.mjs
