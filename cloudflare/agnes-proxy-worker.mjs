@@ -105,10 +105,10 @@ function jsonResponse(payload, status = 200, origin = null, extraHeaders = {}) {
   return new Response(JSON.stringify(payload), { status, headers });
 }
 
-function errorResponse(status, message, code, origin = null, details = undefined) {
+function errorResponse(status, message, code, origin = null, details = undefined, extraHeaders = {}) {
   const error = { message, code };
   if (details) error.details = details;
-  return jsonResponse({ error }, status, origin);
+  return jsonResponse({ error }, status, origin, extraHeaders);
 }
 
 function healthResponse() {
