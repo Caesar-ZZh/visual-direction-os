@@ -1,0 +1,12 @@
+{
+  "name": "visual-direction-os",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:cloudflare": "node cloudflare/agnes-proxy-worker-tests.mjs",
+    "deploy:cloudflare": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "4.125.0"
+  }
+}
