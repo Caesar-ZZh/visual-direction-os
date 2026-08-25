@@ -3,7 +3,7 @@ name: M3 Runtime Tests
 on:
   push:
     branches:
-      - phase2-m3-generation-evaluation-loop
+      - master
     paths:
       - "cloudflare/**"
       - "visual-direction-os/**"
