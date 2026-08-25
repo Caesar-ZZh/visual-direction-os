@@ -31,11 +31,18 @@
     memory = unavailableMemory(error);
   }
 
+  const generationRunner = api.createBrowserGenerationRunner({
+    root,
+    runGenerationIteration:runtime.runGenerationIteration,
+    applyIterationDelta:runtime.applyIterationDelta
+  });
+
   const controller = api.createM4Controller({
     memory,
     compareArtifacts:runtime.compareArtifacts,
     deriveMemoryForPath:runtime.deriveMemoryForPath,
     compileMemoryAppendix:runtime.compileMemoryAppendix,
+    generationRunner,
     now:() => new Date().toISOString(),
     createObjectURL:(blob) => root.URL?.createObjectURL?.(blob) || null,
     revokeObjectURL:(url) => root.URL?.revokeObjectURL?.(url),
@@ -62,6 +69,23 @@
   };
   const emptyMemory = () => ({ pathArtifactIds:[], locked:[], active:[], watch:[] });
   const pairKey = (a, b) => `${a || ''}::${b || ''}`;
+
+  function createBrowserGenerationRunner({ root, runGenerationIteration, applyIterationDelta } = {}) {
+    return async function browserGenerationRunner({ artifact, promptAppendix } = {}) {
+      if (!artifact?.id || !artifact?.request) throw new Error('A generation artifact is required for branch re-direction');
+      if (!artifact.evaluationDelta?.promptAppendix && !String(promptAppendix || '').trim()) throw new Error('The selected artifact has no compiled evaluation delta');
+      if (typeof runGenerationIteration !== 'function') throw new Error('M3 iteration runner is unavailable');
+      if (typeof applyIterationDelta !== 'function') throw new Error('M3 iteration compiler is unavailable');
+      return runGenerationIteration({
+        root,
+        artifact,
+        delta:artifact.evaluationDelta,
+        promptAppendix:String(promptAppendix || '').trim() || artifact.evaluationDelta.promptAppendix,
+        baseRequest:clone(artifact.baseRequest || artifact.request),
+        applyIterationDelta
+      });
+    };
+  }
 
   function createM4Controller({
     memory,
@@ -435,5 +459,5 @@
     };
   }
 
-  return { createM4Controller };
+  return { createM4Controller, createBrowserGenerationRunner };
 });
