@@ -48,8 +48,8 @@ assert.equal('image' in textRequest, false, 'image must never be sent at the top
 assert.equal('image' in textRequest.extra_body, false, 'text-to-image should omit image input');
 
 const textBase64Request = buildAgnesRequest({ compiled, size: '1K', ratio: '1:1', responseFormat: 'b64_json' });
-assert.equal(textBase64Request.return_base64, true, 'text-to-image Base64 should use return_base64 per Agnes docs');
-assert.equal('response_format' in textBase64Request.extra_body, false, 'text-to-image Base64 should not rely on extra_body.response_format');
+assert.equal(textBase64Request.return_base64, true, 'text-to-image Base64 should keep return_base64 for Agnes compatibility');
+assert.equal(textBase64Request.extra_body.response_format, 'b64_json', 'text-to-image Base64 should explicitly request b64_json so the provider cannot fall back to URL');
 
 const refs = [
   { source: 'data:image/png;base64,AAAA', role: 'character', preserve: ['identity', 'silhouette'] },
