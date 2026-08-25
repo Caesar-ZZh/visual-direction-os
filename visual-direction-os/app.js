@@ -49,19 +49,19 @@
     loadStylesheet('runtime/lineage.css');
     for (const asset of runtimeAssets) await loadScript(asset);
 
-    let m4State = null;
-    try {
-      m4State = await globalThis.VisualDirectionOS?.m4?.boot?.();
-    } catch (error) {
-      console.error('[Visual Direction OS M4] Persistent memory boot failed:', error);
-    }
-
     const status = document.querySelector('.rail-status span:nth-child(2)');
-    if (status) {
+    if (status) status.textContent = 'Director + generation + evaluation online · memory restoring';
+
+    const m4Boot = globalThis.VisualDirectionOS?.m4?.boot?.();
+    Promise.resolve(m4Boot).then((m4State) => {
+      if (!status) return;
       status.textContent = m4State?.restoreError
         ? 'Director + generation + evaluation online · memory unavailable'
         : 'Director + generation + evaluation + memory online';
-    }
+    }).catch((error) => {
+      console.error('[Visual Direction OS M4] Persistent memory boot failed:', error);
+      if (status) status.textContent = 'Director + generation + evaluation online · memory unavailable';
+    });
   }
 
   bootVisualDirectionOS().catch((error) => {
