@@ -8,8 +8,5 @@
   "vars": {
     "VDOS_ALLOWED_ORIGINS": "https://caesar-zzh.github.io",
     "AGNES_TIMEOUT_MS": "300000"
-  },
-  "secrets": {
-    "required": ["AGNES_API_KEY", "VDOS_PROXY_TOKEN"]
   }
 }
