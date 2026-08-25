@@ -57,6 +57,9 @@ jobs:
       - name: Run M4 memory policy suite
         run: node visual-direction-os/runtime/memory-engine-tests.js
 
+      - name: Run M4 orchestration controller suite
+        run: node visual-direction-os/runtime/m4-controller-tests.js
+
       - name: Run Cloudflare secure proxy suite
         run: node cloudflare/agnes-proxy-worker-tests.mjs
 
