@@ -76,5 +76,10 @@ jobs:
           node --check visual-direction-os/runtime/iteration-controller.js
           node --check visual-direction-os/runtime/generation-ui-m3.js
           node --check visual-direction-os/runtime/evaluation-ui.js
+          node --check visual-direction-os/runtime/director-memory.js
+          node --check visual-direction-os/runtime/comparison-engine.js
+          node --check visual-direction-os/runtime/memory-engine.js
+          node --check visual-direction-os/runtime/m4-controller.js
+          node --check visual-direction-os/runtime/lineage-ui.js
           node --check visual-direction-os/app.js
           node --check cloudflare/agnes-proxy-worker.mjs
