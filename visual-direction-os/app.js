@@ -15,7 +15,12 @@
     'runtime/iteration-controller.js',
     'runtime/director-ui.js',
     'runtime/generation-ui-m3.js',
-    'runtime/evaluation-ui.js'
+    'runtime/evaluation-ui.js',
+    'runtime/director-memory.js',
+    'runtime/comparison-engine.js',
+    'runtime/memory-engine.js',
+    'runtime/m4-controller.js',
+    'runtime/lineage-ui.js'
   ];
 
   function loadScript(src) {
@@ -41,9 +46,22 @@
     loadStylesheet('runtime/generation.css');
     loadStylesheet('runtime/evaluation.css');
     loadStylesheet('runtime/evaluation-metrics.css');
+    loadStylesheet('runtime/lineage.css');
     for (const asset of runtimeAssets) await loadScript(asset);
+
+    let m4State = null;
+    try {
+      m4State = await globalThis.VisualDirectionOS?.m4?.boot?.();
+    } catch (error) {
+      console.error('[Visual Direction OS M4] Persistent memory boot failed:', error);
+    }
+
     const status = document.querySelector('.rail-status span:nth-child(2)');
-    if (status) status.textContent = 'Director + generation + evaluation online';
+    if (status) {
+      status.textContent = m4State?.restoreError
+        ? 'Director + generation + evaluation online · memory unavailable'
+        : 'Director + generation + evaluation + memory online';
+    }
   }
 
   bootVisualDirectionOS().catch((error) => {
