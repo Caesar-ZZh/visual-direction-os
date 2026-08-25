@@ -1,7 +1,0 @@
-{
-  "functions": {
-    "api/agnes-generate.js": {
-      "maxDuration": 300
-    }
-  }
-}
