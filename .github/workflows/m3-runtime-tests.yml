@@ -48,6 +48,9 @@ jobs:
       - name: Run M3 redirect controller suite
         run: node visual-direction-os/runtime/iteration-controller-tests.js
 
+      - name: Run M4 director memory suite
+        run: node visual-direction-os/runtime/director-memory-tests.js
+
       - name: Run Cloudflare secure proxy suite
         run: node cloudflare/agnes-proxy-worker-tests.mjs
 
