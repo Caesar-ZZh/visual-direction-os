@@ -95,4 +95,23 @@ assert.match(delta.promptAppendix, /PRESERVE:/);
 assert.match(delta.promptAppendix, /CORRECT:/);
 assert.doesNotMatch(delta.promptAppendix, /NOT SURE|unresolved/i, 'unresolved items must not become generation instructions');
 
+assert.ok(Array.isArray(delta.entries), 'M4 requires structured delta entries while retaining M3 arrays');
+const narrativeEntry = delta.entries.find((entry) => entry.checkId === 'narrative-verb');
+const primaryEntry = delta.entries.find((entry) => entry.checkId === 'primary-variable');
+const cameraEntry = delta.entries.find((entry) => entry.checkId === 'camera-allegiance');
+assert.equal(narrativeEntry.intent, 'preserve');
+assert.equal(narrativeEntry.evidenceMode, 'human_required');
+assert.equal(primaryEntry.intent, 'correct');
+assert.match(primaryEntry.instruction, /Boundary is not carrying the main read/i);
+assert.equal(cameraEntry.intent, 'unresolved');
+
+const structuredReport = { checks:[
+  { id:'detail-density', label:'Detail Density', status:'warn', evidenceMode:'measured', target:'low', observed:'density proxy 0.51', reason:'too dense' },
+  { id:'canvas-ratio', label:'Canvas Ratio', status:'pass', evidenceMode:'measured', target:'16:9', observed:'16:9', reason:'correct' }
+] };
+const structuredDelta = compileReDirectionDelta(structuredReport);
+assert.equal(structuredDelta.correct.length, 1);
+assert.equal(structuredDelta.entries.find((entry) => entry.checkId === 'detail-density').intent, 'correct');
+assert.equal(structuredDelta.entries.find((entry) => entry.checkId === 'canvas-ratio').intent, 'preserve');
+
 console.log('evaluation engine tests passed');
