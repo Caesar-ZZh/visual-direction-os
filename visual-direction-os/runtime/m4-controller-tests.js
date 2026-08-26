@@ -18,6 +18,7 @@ function createFakeMemory() {
       return clone(project);
     },
     async getLatestProject(){ return clone(project); },
+    async getProject(id){ return project?.id === id ? clone(project) : null; },
     async saveGenerationArtifact({ artifact, lineage }) {
       const status = nextPersistenceStatus;
       nextPersistenceStatus = 'persisted';
@@ -47,6 +48,30 @@ function createFakeMemory() {
       return ids;
     },
     async clearProject(projectId){ for (const [id,row] of artifacts) if (row.projectId === projectId) artifacts.delete(id); project = null; }
+  };
+}
+
+function createProjectSwitchMemory() {
+  const projects = new Map();
+  const artifacts = new Map();
+  const comparisons = new Map();
+  return {
+    seedProject(row){ projects.set(row.id, clone(row)); },
+    seedArtifact(row){ artifacts.set(row.id, clone(row)); },
+    seedComparison(row){ comparisons.set(row.id, clone(row)); },
+    async getProject(id){ return clone(projects.get(id) || null); },
+    async getLatestProject(){
+      return clone([...projects.values()].sort((a,b) => String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')))[0] || null);
+    },
+    async ensureProject(input = {}) {
+      const timestamp = input.updatedAt || '2026-08-25T00:00:00.000Z';
+      const row = { id:input.id || 'project-created', title:input.title || 'Untitled Director Project', createdAt:input.createdAt || timestamp, updatedAt:timestamp };
+      projects.set(row.id, clone(row));
+      return clone(row);
+    },
+    async listArtifacts(projectId){ return [...artifacts.values()].filter((row) => row.projectId === projectId).map(clone); },
+    async listComparisons(projectId){ return [...comparisons.values()].filter((row) => row.projectId === projectId).map(clone); },
+    async estimateStorage(){ return { usage:4096, quota:16384 }; }
   };
 }
 
@@ -89,6 +114,24 @@ function evaluationDetail(artifact, measuredStatus = 'pass') {
     promptAppendix:'ITERATION / EVALUATION DELTA'
   };
   return { artifact, human:{ 'narrative-verb':{status:'pass'} }, report, delta };
+}
+
+function persistedEvaluatedArtifact({ id, projectId, parentArtifactId = null, rootArtifactId = id, generationIndex, measuredStatus = 'pass' }) {
+  const artifact = generationArtifact(id, parentArtifactId);
+  const detail = evaluationDetail(artifact, measuredStatus);
+  return {
+    ...artifact,
+    projectId,
+    parentArtifactId,
+    rootArtifactId,
+    generationIndex,
+    evaluation:detail.report,
+    humanJudgments:detail.human,
+    evaluationDelta:detail.delta,
+    persistenceStatus:'persisted',
+    imageBlob:new Blob([`image-${id}`], {type:'image/png'}),
+    imageMimeType:'image/png'
+  };
 }
 
 (async () => {
@@ -226,6 +269,79 @@ function evaluationDetail(artifact, measuredStatus = 'pass') {
   assert.equal(state.artifacts.some((row) => row.id === 'g3'), false);
   assert.equal(state.artifacts.some((row) => row.id === 'g2b'), true, 'deleting branch A must not delete sibling branch B');
   assert.equal(revoked.includes(renderUrl1), true, 'deleting subtree must revoke cached image URLs');
+
+  const switchMemory = createProjectSwitchMemory();
+  switchMemory.seedProject({id:'project-a',title:'Project A',createdAt:'2026-08-24T00:00:00.000Z',updatedAt:'2026-08-25T00:00:00.000Z'});
+  switchMemory.seedProject({id:'project-b',title:'Project B',createdAt:'2026-08-24T00:00:00.000Z',updatedAt:'2026-08-26T00:00:00.000Z'});
+  switchMemory.seedArtifact(persistedEvaluatedArtifact({id:'a1',projectId:'project-a',rootArtifactId:'a1',generationIndex:1}));
+  switchMemory.seedArtifact(persistedEvaluatedArtifact({id:'a2',projectId:'project-a',parentArtifactId:'a1',rootArtifactId:'a1',generationIndex:2}));
+  switchMemory.seedArtifact(persistedEvaluatedArtifact({id:'b1',projectId:'project-b',rootArtifactId:'b1',generationIndex:1}));
+  switchMemory.seedArtifact(persistedEvaluatedArtifact({id:'b2',projectId:'project-b',parentArtifactId:'b1',rootArtifactId:'b1',generationIndex:2}));
+  switchMemory.seedComparison({
+    id:'b1::b2',projectId:'project-b',artifactAId:'b1',artifactBId:'b2',
+    directorJudgments:{'narrative-verb':{state:'improved',note:'Project B only'}},
+    comparison:{summary:{stablePass:1}},updatedAt:'2026-08-26T00:00:00.000Z'
+  });
+
+  const switchRevoked = [];
+  let switchUrlCount = 0;
+  const switching = createM4Controller({
+    memory:switchMemory,
+    compareArtifacts,
+    deriveMemoryForPath,
+    compileMemoryAppendix,
+    createObjectURL:() => `blob:switch-${++switchUrlCount}`,
+    revokeObjectURL:(url) => switchRevoked.push(url),
+    now:() => '2026-08-26T00:30:00.000Z'
+  });
+
+  await switching.boot({projectId:'project-a'});
+  let switchState = switching.getState();
+  assert.equal(switchState.project.id, 'project-a', 'explicit boot project must win over latest updatedAt project');
+  assert.deepEqual(switchState.artifacts.map((row) => row.id), ['a1','a2']);
+  assert.equal(switchState.selectedAId, 'a1');
+  assert.equal(switchState.selectedBId, 'a2');
+  assert.equal(switchState.memory.locked.some((row) => row.checkId === 'narrative-verb'), false, 'Project B semantic judgment must not leak into Project A');
+
+  const projectAUrl = await switching.getRenderableImage('a2');
+  assert.match(projectAUrl, /^blob:switch-/);
+  await switching.openProject('project-b');
+  switchState = switching.getState();
+  assert.equal(switchState.project.id, 'project-b');
+  assert.deepEqual(switchState.artifacts.map((row) => row.id), ['b1','b2']);
+  assert.equal(switchState.selectedAId, 'b1');
+  assert.equal(switchState.selectedBId, 'b2');
+  assert.equal(switchState.memory.locked.some((row) => row.checkId === 'narrative-verb'), true, 'selected project comparison judgments must restore on switch');
+  assert.equal(switchRevoked.includes(projectAUrl), true, 'successful project switch must revoke prior project object URLs');
+
+  const beforeMissingOpen = switching.getState();
+  await assert.rejects(() => switching.openProject('project-missing'), /missing|unknown|project/i);
+  assert.deepEqual(switching.getState(), beforeMissingOpen, 'opening a missing project must preserve current working state');
+
+  const exportSnapshot = switching.getExportSnapshot();
+  assert.equal(exportSnapshot.project.id, 'project-b');
+  assert.deepEqual(exportSnapshot.artifacts.map((row) => row.id), ['b1','b2']);
+  assert.equal(exportSnapshot.comparisons.length, 1);
+  assert.ok(exportSnapshot.memorySnapshot, 'export snapshot must expose current derived memory');
+  exportSnapshot.project.title = 'MUTATED';
+  exportSnapshot.artifacts[0].id = 'mutated-artifact';
+  exportSnapshot.comparisons[0].id = 'mutated-comparison';
+  exportSnapshot.memorySnapshot.locked.length = 0;
+  const afterSnapshotMutation = switching.getState();
+  assert.equal(afterSnapshotMutation.project.title, 'Project B', 'export snapshot project must be detached from controller state');
+  assert.equal(afterSnapshotMutation.artifacts[0].id, 'b1', 'export snapshot artifacts must be detached from controller state');
+  assert.equal(afterSnapshotMutation.comparisons[0].id, 'b1::b2', 'export snapshot comparisons must be detached from controller state');
+  assert.equal(afterSnapshotMutation.memory.locked.some((row) => row.checkId === 'narrative-verb'), true, 'export snapshot memory must be detached from controller state');
+
+  const staleBoot = createM4Controller({
+    memory:switchMemory,
+    compareArtifacts,
+    deriveMemoryForPath,
+    compileMemoryAppendix,
+    now:() => '2026-08-26T00:30:00.000Z'
+  });
+  await staleBoot.boot({projectId:'project-does-not-exist'});
+  assert.equal(staleBoot.getState().project.id, 'project-b', 'stale preferred project ID must fall back to latest existing project');
 
   assert.ok(emitted.length > 0, 'controller should emit state changes');
   console.log('m4 controller tests passed');
