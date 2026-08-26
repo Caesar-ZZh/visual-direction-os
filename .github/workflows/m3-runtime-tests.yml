@@ -79,11 +79,11 @@ jobs:
       - name: Run M5 project library suite
         run: node visual-direction-os/runtime/project-library-tests.js
 
-      - name: Run M4 headless browser acceptance
-        run: node visual-direction-os/runtime/browser-acceptance-tests-v2.js
-
       - name: Run M5 headless browser acceptance
         run: node visual-direction-os/runtime/project-package-browser-acceptance-tests.js
+
+      - name: Run M4 headless browser acceptance
+        run: node visual-direction-os/runtime/browser-acceptance-tests-v2.js
 
       - name: Run Cloudflare secure proxy suite
         run: node cloudflare/agnes-proxy-worker-tests.mjs
