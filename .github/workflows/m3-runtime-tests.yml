@@ -4,6 +4,16 @@ on:
   push:
     branches:
       - master
+      - m5-project-package-reproducibility
+    paths:
+      - "cloudflare/**"
+      - "visual-direction-os/**"
+      - "wrangler.jsonc"
+      - "package.json"
+      - ".github/workflows/m3-runtime-tests.yml"
+  pull_request:
+    branches:
+      - master
     paths:
       - "cloudflare/**"
       - "visual-direction-os/**"
@@ -63,6 +73,24 @@ jobs:
       - name: Run M4 app boot suite
         run: node visual-direction-os/runtime/app-boot-tests.js
 
+      - name: Run M5 runtime fingerprint suite
+        run: node visual-direction-os/runtime/runtime-fingerprint-tests.js
+
+      - name: Run M5 schema migration suite
+        run: node visual-direction-os/runtime/schema-migrations-tests.js
+
+      - name: Run M5 archive codec suite
+        run: node visual-direction-os/runtime/vdos-codec-tests.js
+
+      - name: Run M5 project package suite
+        run: node visual-direction-os/runtime/project-package-tests.js
+
+      - name: Run M5 project library suite
+        run: node visual-direction-os/runtime/project-library-tests.js
+
+      - name: Run M5 headless browser acceptance
+        run: node visual-direction-os/runtime/project-package-browser-acceptance-tests.js
+
       - name: Run M4 headless browser acceptance
         run: node visual-direction-os/runtime/browser-acceptance-tests-v2.js
 
@@ -87,6 +115,18 @@ jobs:
           node --check visual-direction-os/runtime/memory-engine.js
           node --check visual-direction-os/runtime/m4-controller.js
           node --check visual-direction-os/runtime/lineage-ui.js
+          node --check visual-direction-os/runtime/runtime-fingerprint.js
+          node --check visual-direction-os/runtime/runtime-fingerprint-tests.js
+          node --check visual-direction-os/runtime/schema-migrations.js
+          node --check visual-direction-os/runtime/schema-migrations-tests.js
+          node --check visual-direction-os/runtime/vdos-codec.js
+          node --check visual-direction-os/runtime/vdos-codec-tests.js
+          node --check visual-direction-os/runtime/project-package.js
+          node --check visual-direction-os/runtime/project-package-tests.js
+          node --check visual-direction-os/runtime/project-library.js
+          node --check visual-direction-os/runtime/project-library-tests.js
+          node --check visual-direction-os/runtime/project-package-ui.js
+          node --check visual-direction-os/runtime/project-package-browser-acceptance-tests.js
           node --check visual-direction-os/runtime/browser-acceptance-tests-v2.js
           node --check visual-direction-os/app.js
           node --check cloudflare/agnes-proxy-worker.mjs

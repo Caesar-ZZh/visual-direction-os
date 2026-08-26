@@ -24,19 +24,57 @@ function makeArtifact(id = 'gen-1', result = { kind:'base64', src:'data:image/pn
 function createFakeStore() {
   const artifacts = new Map();
   const projects = new Map();
+  const comparisons = new Map();
   let failWrites = false;
+  let failBundle = false;
   return {
     artifacts,
     projects,
+    comparisons,
     setFailWrites(value){ failWrites = Boolean(value); },
+    setFailBundle(value){ failBundle = Boolean(value); },
     async putArtifact(row){ if (failWrites) throw new Error('quota exceeded'); artifacts.set(row.id, structuredClone(row)); return row; },
     async getArtifact(id){ return artifacts.get(id) || null; },
     async listArtifacts(projectId){ return [...artifacts.values()].filter((row) => row.projectId === projectId); },
     async getChildren(parentId){ return [...artifacts.values()].filter((row) => row.parentArtifactId === parentId); },
     async putProject(project){ projects.set(project.id, structuredClone(project)); return project; },
+    async getProject(id){ return projects.get(id) ? structuredClone(projects.get(id)) : null; },
+    async listProjects(){ return [...projects.values()].map((row) => structuredClone(row)).sort((a,b) => String(b.updatedAt).localeCompare(String(a.updatedAt))); },
     async getLatestProject(){ return [...projects.values()].sort((a,b) => String(b.updatedAt).localeCompare(String(a.updatedAt)))[0] || null; },
+    async putComparison(row){ comparisons.set(row.id, structuredClone(row)); return row; },
+    async listComparisons(projectId){ return [...comparisons.values()].filter((row) => row.projectId === projectId).map((row) => structuredClone(row)); },
+    async loadProjectBundle(projectId){
+      return {
+        project:projects.get(projectId) ? structuredClone(projects.get(projectId)) : null,
+        artifacts:[...artifacts.values()].filter((row) => row.projectId === projectId).map((row) => structuredClone(row)),
+        comparisons:[...comparisons.values()].filter((row) => row.projectId === projectId).map((row) => structuredClone(row))
+      };
+    },
+    async commitProjectBundle({ mode, project, artifacts:incomingArtifacts = [], comparisons:incomingComparisons = [], replaceProjectId = null }){
+      if (failBundle) throw new Error('bundle transaction aborted');
+      const nextProjects = new Map([...projects].map(([id,row]) => [id, structuredClone(row)]));
+      const nextArtifacts = new Map([...artifacts].map(([id,row]) => [id, structuredClone(row)]));
+      const nextComparisons = new Map([...comparisons].map(([id,row]) => [id, structuredClone(row)]));
+      if (mode === 'replace') {
+        const target = replaceProjectId || project.id;
+        nextProjects.delete(target);
+        for (const [id,row] of nextArtifacts) if (row.projectId === target) nextArtifacts.delete(id);
+        for (const [id,row] of nextComparisons) if (row.projectId === target) nextComparisons.delete(id);
+      }
+      nextProjects.set(project.id, structuredClone(project));
+      for (const row of incomingArtifacts) nextArtifacts.set(row.id, structuredClone(row));
+      for (const row of incomingComparisons) nextComparisons.set(row.id, structuredClone(row));
+      projects.clear(); for (const [id,row] of nextProjects) projects.set(id,row);
+      artifacts.clear(); for (const [id,row] of nextArtifacts) artifacts.set(id,row);
+      comparisons.clear(); for (const [id,row] of nextComparisons) comparisons.set(id,row);
+      return { project:structuredClone(project), artifactCount:incomingArtifacts.length, comparisonCount:incomingComparisons.length };
+    },
     async deleteArtifacts(ids){ ids.forEach((id) => artifacts.delete(id)); },
-    async clearProject(projectId){ for (const [id,row] of artifacts) if (row.projectId === projectId) artifacts.delete(id); projects.delete(projectId); }
+    async clearProject(projectId){
+      for (const [id,row] of artifacts) if (row.projectId === projectId) artifacts.delete(id);
+      for (const [id,row] of comparisons) if (row.projectId === projectId) comparisons.delete(id);
+      projects.delete(projectId);
+    }
   };
 }
 
@@ -114,6 +152,40 @@ function createFakeStore() {
   const estimate = await memory.estimateStorage();
   assert.deepEqual(estimate, { usage:1024, quota:4096 });
 
+  // M5 multi-project read boundary.
+  await memory.ensureProject({ id:'project-2', title:'Second', createdAt:'2026-08-25T01:00:00.000Z', updatedAt:'2026-08-25T01:00:00.000Z' });
+  assert.equal((await memory.getProject('project-2')).title, 'Second');
+  assert.deepEqual((await memory.listProjects()).map((row) => row.id), ['project-2','project-1']);
+
+  const importedProject = { id:'project-import', title:'Imported', createdAt:'2026-08-26T00:00:00.000Z', updatedAt:'2026-08-26T00:00:00.000Z' };
+  const importedArtifacts = [
+    { id:'import-g1', projectId:'project-import', rootArtifactId:'import-g1', parentArtifactId:null, generationIndex:1, persistenceStatus:'persisted' }
+  ];
+  const importedComparisons = [
+    { id:'import-g1::import-g1', projectId:'project-import', artifactAId:'import-g1', artifactBId:'import-g1' }
+  ];
+  await memory.commitProjectBundle({ mode:'copy', project:importedProject, artifacts:importedArtifacts, comparisons:importedComparisons });
+  const importedBundle = await memory.loadProjectBundle('project-import');
+  assert.equal(importedBundle.project.title, 'Imported');
+  assert.deepEqual(importedBundle.artifacts.map((row) => row.id), ['import-g1']);
+  assert.deepEqual(importedBundle.comparisons.map((row) => row.id), ['import-g1::import-g1']);
+
+  // Replace must be atomic: a failed bundle transaction leaves old rows untouched.
+  const beforeReplace = structuredClone(await memory.loadProjectBundle('project-import'));
+  store.setFailBundle(true);
+  await assert.rejects(
+    () => memory.commitProjectBundle({
+      mode:'replace',
+      replaceProjectId:'project-import',
+      project:{ ...importedProject, title:'Replacement' },
+      artifacts:[{ ...importedArtifacts[0], id:'replacement-g1' }],
+      comparisons:[]
+    }),
+    /transaction aborted/i
+  );
+  store.setFailBundle(false);
+  assert.deepEqual(await memory.loadProjectBundle('project-import'), beforeReplace, 'failed replace must preserve the existing project bundle exactly');
+
   await memory.deleteSubtree('gen-1');
   assert.equal(await memory.getArtifact('gen-1'), null);
   assert.equal(await memory.getArtifact('gen-2'), null);
@@ -121,6 +193,7 @@ function createFakeStore() {
 
   await memory.clearProject('project-1');
   assert.equal((await memory.listArtifacts('project-1')).length, 0);
+  assert.equal(await memory.getProject('project-1'), null);
 
   console.log('director memory tests passed');
 })().catch((error) => {

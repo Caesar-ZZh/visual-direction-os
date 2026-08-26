@@ -127,6 +127,36 @@
     if (!store.indexNames.contains(name)) store.createIndex(name, keyPath, options);
   }
 
+  function sortProjects(rows = []) {
+    return [...rows].sort((a, b) => {
+      const byTime = String(b?.updatedAt || '').localeCompare(String(a?.updatedAt || ''));
+      return byTime || String(a?.id || '').localeCompare(String(b?.id || ''));
+    });
+  }
+
+  function sortArtifacts(rows = []) {
+    return [...rows].sort((a, b) => {
+      const byIndex = (Number(a?.generationIndex) || 0) - (Number(b?.generationIndex) || 0);
+      return byIndex || String(a?.id || '').localeCompare(String(b?.id || ''));
+    });
+  }
+
+  function assertProjectBundle({ mode, project, artifacts = [], comparisons = [], replaceProjectId = null } = {}) {
+    if (!['copy', 'replace'].includes(mode)) throw new Error(`Unsupported project bundle mode: ${mode}`);
+    if (!project?.id) throw new Error('Project bundle requires project.id');
+    if (!Array.isArray(artifacts) || !Array.isArray(comparisons)) throw new Error('Project bundle artifacts and comparisons must be arrays');
+    if (mode === 'replace' && !String(replaceProjectId || project.id).trim()) throw new Error('Replace bundle requires a target project id');
+    for (const row of artifacts) {
+      if (!row?.id) throw new Error('Project bundle artifact id is required');
+      if (row.projectId !== project.id) throw new Error(`Artifact ${row.id} does not belong to project ${project.id}`);
+    }
+    for (const row of comparisons) {
+      if (!row?.id) throw new Error('Project bundle comparison id is required');
+      if (row.projectId !== project.id) throw new Error(`Comparison ${row.id} does not belong to project ${project.id}`);
+    }
+    return { mode, project, artifacts, comparisons, replaceProjectId:replaceProjectId || null };
+  }
+
   function createIndexedDbStore(runtimeRoot = root) {
     const indexedDB = runtimeRoot?.indexedDB;
     if (!indexedDB) throw new Error('IndexedDB is unavailable in this browser');
@@ -168,87 +198,168 @@
     async function getAllByIndex(storeName, indexName, value) {
       const db = await open();
       const tx = db.transaction(storeName, 'readonly');
+      const done = transactionToPromise(tx);
       const rows = await requestToPromise(tx.objectStore(storeName).index(indexName).getAll(value));
-      await transactionToPromise(tx);
+      await done;
       return rows || [];
+    }
+
+    function deleteByProject(tx, storeName, projectId) {
+      return new Promise((resolve, reject) => {
+        const index = tx.objectStore(storeName).index('projectId');
+        const request = index.openCursor(projectId);
+        request.onsuccess = () => {
+          const cursor = request.result;
+          if (!cursor) return resolve();
+          cursor.delete();
+          cursor.continue();
+        };
+        request.onerror = () => reject(request.error || new Error(`Unable to clear ${storeName}`));
+      });
     }
 
     return {
       async putProject(project) {
         const db = await open();
         const tx = db.transaction('projects', 'readwrite');
+        const done = transactionToPromise(tx);
         tx.objectStore('projects').put(clone(project));
-        await transactionToPromise(tx);
+        await done;
         return project;
+      },
+      async getProject(id) {
+        const db = await open();
+        const tx = db.transaction('projects', 'readonly');
+        const done = transactionToPromise(tx);
+        const result = await requestToPromise(tx.objectStore('projects').get(id));
+        await done;
+        return result ? clone(result) : null;
+      },
+      async listProjects() {
+        const db = await open();
+        const tx = db.transaction('projects', 'readonly');
+        const done = transactionToPromise(tx);
+        const rows = await requestToPromise(tx.objectStore('projects').getAll());
+        await done;
+        return sortProjects((rows || []).map((row) => clone(row)));
       },
       async getLatestProject() {
         const db = await open();
         const tx = db.transaction('projects', 'readonly');
+        const done = transactionToPromise(tx);
         const index = tx.objectStore('projects').index('updatedAt');
         const result = await new Promise((resolve, reject) => {
           const request = index.openCursor(null, 'prev');
           request.onsuccess = () => resolve(request.result?.value || null);
           request.onerror = () => reject(request.error || new Error('Unable to read latest M4 project'));
         });
-        await transactionToPromise(tx);
-        return result;
+        await done;
+        return result ? clone(result) : null;
       },
       async putArtifact(row) {
         const db = await open();
         const tx = db.transaction('artifacts', 'readwrite');
+        const done = transactionToPromise(tx);
         tx.objectStore('artifacts').put(row);
-        await transactionToPromise(tx);
+        await done;
         return row;
       },
       async getArtifact(id) {
         const db = await open();
         const tx = db.transaction('artifacts', 'readonly');
+        const done = transactionToPromise(tx);
         const result = await requestToPromise(tx.objectStore('artifacts').get(id));
-        await transactionToPromise(tx);
+        await done;
         return result || null;
       },
       async listArtifacts(projectId) {
         const rows = await getAllByIndex('artifacts', 'projectId', projectId);
-        return rows.sort((a, b) => (a.generationIndex || 0) - (b.generationIndex || 0));
+        return sortArtifacts(rows);
       },
       async getChildren(parentArtifactId) {
         const rows = await getAllByIndex('artifacts', 'parentArtifactId', parentArtifactId);
-        return rows.sort((a, b) => (a.generationIndex || 0) - (b.generationIndex || 0));
+        return sortArtifacts(rows);
       },
       async deleteArtifacts(ids) {
         const db = await open();
         const tx = db.transaction('artifacts', 'readwrite');
+        const done = transactionToPromise(tx);
         const store = tx.objectStore('artifacts');
         for (const id of ids) store.delete(id);
-        await transactionToPromise(tx);
+        await done;
       },
       async clearProject(projectId) {
         const db = await open();
         const tx = db.transaction(['projects','artifacts','comparisons'], 'readwrite');
+        const done = transactionToPromise(tx);
         tx.objectStore('projects').delete(projectId);
-        const deleteByProject = (storeName) => new Promise((resolve, reject) => {
-          const index = tx.objectStore(storeName).index('projectId');
-          const request = index.openCursor(projectId);
-          request.onsuccess = () => {
-            const cursor = request.result;
-            if (!cursor) return resolve();
-            cursor.delete();
-            cursor.continue();
-          };
-          request.onerror = () => reject(request.error || new Error(`Unable to clear ${storeName}`));
-        });
-        await Promise.all([deleteByProject('artifacts'), deleteByProject('comparisons')]);
-        await transactionToPromise(tx);
+        await Promise.all([
+          deleteByProject(tx, 'artifacts', projectId),
+          deleteByProject(tx, 'comparisons', projectId)
+        ]);
+        await done;
       },
       async putComparison(row) {
         const db = await open();
         const tx = db.transaction('comparisons', 'readwrite');
+        const done = transactionToPromise(tx);
         tx.objectStore('comparisons').put(clone(row));
-        await transactionToPromise(tx);
+        await done;
         return row;
       },
       async listComparisons(projectId) {
         return getAllByIndex('comparisons', 'projectId', projectId);
+      },
+      async loadProjectBundle(projectId) {
+        const db = await open();
+        const tx = db.transaction(['projects','artifacts','comparisons'], 'readonly');
+        const done = transactionToPromise(tx);
+        const projectRequest = requestToPromise(tx.objectStore('projects').get(projectId));
+        const artifactsRequest = requestToPromise(tx.objectStore('artifacts').index('projectId').getAll(projectId));
+        const comparisonsRequest = requestToPromise(tx.objectStore('comparisons').index('projectId').getAll(projectId));
+        const [project, artifacts, comparisons] = await Promise.all([projectRequest, artifactsRequest, comparisonsRequest]);
+        await done;
+        return {
+          project:project ? clone(project) : null,
+          artifacts:sortArtifacts((artifacts || []).map((row) => clone(row))),
+          comparisons:(comparisons || []).map((row) => clone(row))
+        };
+      },
+      async commitProjectBundle(input = {}) {
+        const bundle = assertProjectBundle(input);
+        const db = await open();
+        const tx = db.transaction(['projects','artifacts','comparisons'], 'readwrite');
+        const done = transactionToPromise(tx);
+        const projectStore = tx.objectStore('projects');
+        const artifactStore = tx.objectStore('artifacts');
+        const comparisonStore = tx.objectStore('comparisons');
+
+        try {
+          if (bundle.mode === 'replace') {
+            const targetId = bundle.replaceProjectId || bundle.project.id;
+            projectStore.delete(targetId);
+            await Promise.all([
+              deleteByProject(tx, 'artifacts', targetId),
+              deleteByProject(tx, 'comparisons', targetId)
+            ]);
+          }
+
+          const addOrPutProject = bundle.mode === 'copy' ? projectStore.add.bind(projectStore) : projectStore.put.bind(projectStore);
+          addOrPutProject(clone(bundle.project));
+          for (const row of bundle.artifacts) artifactStore.add(clone(row));
+          for (const row of bundle.comparisons) comparisonStore.add(clone(row));
+          await done;
+        } catch (error) {
+          try { if (tx.readyState !== 'done') tx.abort(); } catch (_) {}
+          try { await done; } catch (_) {}
+          throw error;
+        }
+
+        return {
+          project:clone(bundle.project),
+          artifactCount:bundle.artifacts.length,
+          comparisonCount:bundle.comparisons.length
+        };
       }
     };
   }
@@ -265,7 +376,9 @@
         id,
         createdAt: input.createdAt || now,
         updatedAt: now,
-        title: input.title || 'Untitled Director Project'
+        title: input.title || 'Untitled Director Project',
+        ...(input.provenance ? { provenance:clone(input.provenance) } : {}),
+        ...(input.importAudit ? { importAudit:clone(input.importAudit) } : {})
       };
       await store.putProject(project);
       return project;
@@ -321,6 +434,27 @@
     async function listArtifacts(projectId) { return store.listArtifacts(projectId); }
     async function getChildren(parentArtifactId) { return store.getChildren(parentArtifactId); }
     async function getLatestProject() { return store.getLatestProject(); }
+    async function getProject(id) {
+      if (typeof store.getProject !== 'function') throw new Error('Persistence store cannot read projects by id');
+      return store.getProject(id);
+    }
+    async function listProjects() {
+      if (typeof store.listProjects !== 'function') throw new Error('Persistence store cannot list projects');
+      return store.listProjects();
+    }
+    async function loadProjectBundle(projectId) {
+      if (typeof store.loadProjectBundle === 'function') return store.loadProjectBundle(projectId);
+      const project = await getProject(projectId);
+      return {
+        project,
+        artifacts:await listArtifacts(projectId),
+        comparisons:await listComparisons(projectId)
+      };
+    }
+    async function commitProjectBundle(bundle) {
+      if (typeof store.commitProjectBundle !== 'function') throw new Error('Persistence store cannot commit project bundles atomically');
+      return store.commitProjectBundle(bundle);
+    }
     async function saveComparison(record) {
       if (typeof store.putComparison !== 'function') return record;
       await store.putComparison(record);
@@ -365,6 +499,10 @@
       listArtifacts,
       getChildren,
       getLatestProject,
+      getProject,
+      listProjects,
+      loadProjectBundle,
+      commitProjectBundle,
       saveComparison,
       listComparisons,
       estimateStorage,

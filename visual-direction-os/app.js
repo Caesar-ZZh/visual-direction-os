@@ -1,6 +1,15 @@
 (() => {
   'use strict';
 
+  const packageRuntimeAssets = [
+    'vendor/fflate.min.js',
+    'runtime/runtime-fingerprint.js',
+    'runtime/schema-migrations.js',
+    'runtime/vdos-codec.js',
+    'runtime/project-package.js',
+    'runtime/project-library.js'
+  ];
+
   const runtimeAssets = [
     'runtime/product-shell.js',
     'runtime/visual-ir.js',
@@ -47,12 +56,18 @@
     loadStylesheet('runtime/evaluation.css');
     loadStylesheet('runtime/evaluation-metrics.css');
     loadStylesheet('runtime/lineage.css');
+    loadStylesheet('runtime/project-package.css');
+
+    // M3/M4 are the critical director path. Project-package tooling is optional
+    // and must never delay DIRECT / GENERATE / EVALUATE or persistent M4 restore.
     for (const asset of runtimeAssets) await loadScript(asset);
 
     const status = document.querySelector('.rail-status span:nth-child(2)');
     if (status) status.textContent = 'Director + generation + evaluation online · memory restoring';
 
-    const m4Boot = globalThis.VisualDirectionOS?.m4?.boot?.();
+    let preferredProjectId = null;
+    try { preferredProjectId = localStorage.getItem('vdos-active-project-id'); } catch (_) {}
+    const m4Boot = globalThis.VisualDirectionOS?.m4?.boot?.({ projectId:preferredProjectId });
     Promise.resolve(m4Boot).then((m4State) => {
       if (!status) return;
       status.textContent = m4State?.restoreError
@@ -61,6 +76,28 @@
     }).catch((error) => {
       console.error('[Visual Direction OS M4] Persistent memory boot failed:', error);
       if (status) status.textContent = 'Director + generation + evaluation online · memory unavailable';
+    });
+
+    // Load the portable-project stack after M4 has mounted. This IIFE is
+    // deliberately not awaited so package failures/latency cannot take down M3/M4.
+    (async () => {
+      let packageRuntimeReady = true;
+      for (const asset of packageRuntimeAssets) {
+        try {
+          await loadScript(asset);
+        } catch (error) {
+          packageRuntimeReady = false;
+          console.error('[Visual Direction OS M5] Optional package runtime unavailable:', error);
+          break;
+        }
+      }
+      if (packageRuntimeReady) {
+        loadScript('runtime/project-package-ui.js').catch((error) => {
+          console.error('[Visual Direction OS M5] Project workspace unavailable:', error);
+        });
+      }
+    })().catch((error) => {
+      console.error('[Visual Direction OS M5] Project package boot failed:', error);
     });
   }
 

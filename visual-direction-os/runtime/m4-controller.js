@@ -13,6 +13,7 @@
     const fail = async () => { throw error; };
     return {
       getLatestProject:fail,
+      getProject:fail,
       ensureProject:fail,
       listArtifacts:fail,
       listComparisons:async () => [],
@@ -195,33 +196,110 @@
       }
     }
 
-    async function boot() {
-      state.restoreError = '';
-      state.persistenceWarning = '';
+    async function readProjectState(project) {
+      if (!project?.id) throw new Error('M4 project loading requires a project');
+      const [artifacts, comparisons] = await Promise.all([
+        memory.listArtifacts(project.id),
+        typeof memory.listComparisons === 'function' ? memory.listComparisons(project.id) : Promise.resolve([])
+      ]);
+      return {
+        project:clone(project),
+        artifacts:sorted(artifacts || []),
+        comparisons:clone(comparisons || [])
+      };
+    }
+
+    function cloneMap(source) {
+      return new Map([...source.entries()].map(([key, value]) => [key, clone(value)]));
+    }
+
+    function restoreMap(target, source) {
+      target.clear();
+      for (const [key, value] of source) target.set(key, clone(value));
+    }
+
+    async function loadProjectState(loaded) {
+      const previousState = snapshot();
+      const previousJudgments = cloneMap(judgmentsByPair);
+      const previousLocks = cloneMap(semanticLocksByHead);
       try {
-        let project = await memory.getLatestProject();
-        if (!project) {
-          const timestamp = now();
-          project = await memory.ensureProject({ createdAt:timestamp, updatedAt:timestamp });
-        }
-        state.project = clone(project);
-        state.artifacts = sorted(await memory.listArtifacts(project.id) || []);
-        state.comparisons = typeof memory.listComparisons === 'function' ? clone(await memory.listComparisons(project.id) || []) : [];
+        state.project = clone(loaded.project);
+        state.artifacts = sorted(loaded.artifacts || []);
+        state.comparisons = clone(loaded.comparisons || []);
+        state.selectedAId = null;
+        state.selectedBId = null;
+        state.comparison = null;
+        state.memory = emptyMemory();
+        state.restoreError = '';
+        state.persistenceWarning = '';
         restoreComparisonMetadata(state.comparisons);
         chooseDefaultSelection();
         recomputeDerived();
         await refreshStorage();
       } catch (error) {
+        Object.assign(state, previousState);
+        restoreMap(judgmentsByPair, previousJudgments);
+        restoreMap(semanticLocksByHead, previousLocks);
+        throw error;
+      }
+      revokeIds(new Set(objectUrls.keys()));
+      return snapshot();
+    }
+
+    async function boot({ projectId = null } = {}) {
+      state.restoreError = '';
+      state.persistenceWarning = '';
+      try {
+        let project = null;
+        const requestedId = String(projectId || '').trim();
+        if (requestedId && typeof memory.getProject === 'function') project = await memory.getProject(requestedId);
+        if (!project) project = await memory.getLatestProject();
+        if (!project) {
+          const timestamp = now();
+          project = await memory.ensureProject({ createdAt:timestamp, updatedAt:timestamp });
+        }
+        const loaded = await readProjectState(project);
+        await loadProjectState(loaded);
+      } catch (error) {
         state.restoreError = String(error?.message || error);
+        state.project = null;
         state.artifacts = [];
         state.comparisons = [];
         state.selectedAId = null;
         state.selectedBId = null;
         state.comparison = null;
         state.memory = emptyMemory();
+        judgmentsByPair.clear();
+        semanticLocksByHead.clear();
       }
       emit();
       return snapshot();
+    }
+
+    async function openProject(projectId) {
+      const id = String(projectId || '').trim();
+      if (!id) throw new Error('Project ID is required');
+      if (typeof memory.getProject !== 'function') throw new Error('Director memory cannot open projects by ID');
+      const project = await memory.getProject(id);
+      if (!project) throw new Error(`Unknown project: ${id}`);
+      const loaded = await readProjectState(project);
+      await loadProjectState(loaded);
+      emit();
+      return snapshot();
+    }
+
+    function getExportSnapshot() {
+      const head = localArtifact(state.selectedBId) || sorted().filter((row) => row.evaluation).at(-1) || null;
+      return clone({
+        project:state.project,
+        artifacts:state.artifacts,
+        comparisons:state.comparisons,
+        memorySnapshot:{
+          ...state.memory,
+          computedAt:now(),
+          pathHeadArtifactId:head?.id || null
+        }
+      });
     }
 
     async function ensureProject() {
@@ -443,7 +521,9 @@
 
     return {
       boot,
+      openProject,
       getState,
+      getExportSnapshot,
       ingestGeneration,
       ingestEvaluation,
       selectA,
