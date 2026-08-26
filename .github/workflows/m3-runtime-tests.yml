@@ -64,6 +64,12 @@ jobs:
       - name: Run M4 app boot suite
         run: node visual-direction-os/runtime/app-boot-tests.js
 
+      - name: Run M5 runtime fingerprint suite
+        run: node visual-direction-os/runtime/runtime-fingerprint-tests.js
+
+      - name: Run M5 schema migration suite
+        run: node visual-direction-os/runtime/schema-migrations-tests.js
+
       - name: Run M4 headless browser acceptance
         run: node visual-direction-os/runtime/browser-acceptance-tests-v2.js
 
