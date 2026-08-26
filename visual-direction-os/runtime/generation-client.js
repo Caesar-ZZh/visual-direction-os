@@ -39,9 +39,10 @@
     throw new Error('Generation response did not include an image URL or Base64 payload');
   }
 
-  function createGenerationArtifact({ provider, request, baseRequest = null, result, ir, id, createdAt } = {}) {
+  function createGenerationArtifact({ provider, request, baseRequest = null, result, ir, references = [], id, createdAt } = {}) {
     if (!request || typeof request !== 'object') throw new Error('Generation artifact requires the executed request');
     if (!result || typeof result !== 'object' || !result.src) throw new Error('Generation artifact requires a generation result');
+    if (!Array.isArray(references)) throw new Error('Generation artifact references must be an array');
     const timestamp = createdAt || new Date().toISOString();
     const randomId = root?.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
     return {
@@ -51,6 +52,7 @@
       request: clone(request),
       baseRequest: clone(baseRequest || request),
       result: clone(result),
+      references: clone(references),
       visualIR: clone(ir || null),
       visualIRVersion: ir?.metadata?.version || null,
       grammarId: valueOf(ir?.world?.grammarId, null),
