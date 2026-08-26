@@ -1,1 +1,0 @@
-remove temporary browser diagnostics before Task 9 final verification
