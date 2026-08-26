@@ -230,7 +230,7 @@
     try {
       const result = await generateViaProxy(request, { endpoint, proxyToken: token });
       const baseRequest = clone(context.baseRequest || request);
-      const artifact = createGenerationArtifact({ provider:AGNES_MODEL, request, baseRequest, result, ir:context.visualIR || currentIR() });
+      const artifact = createGenerationArtifact({ provider:AGNES_MODEL, request, baseRequest, result, ir:context.visualIR || currentIR(), references:state.references });
       artifact.iterationOf = context.iterationOf || null;
       artifact.parentArtifactId = context.iterationOf || null;
       artifact.iterationDelta = context.iterationDelta ? clone(context.iterationDelta) : null;
