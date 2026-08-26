@@ -79,6 +79,9 @@ jobs:
       - name: Run M5 project library suite
         run: node visual-direction-os/runtime/project-library-tests.js
 
+      - name: Diagnose browser boot boundary
+        run: node visual-direction-os/runtime/browser-boot-diagnostic-tests.js
+
       - name: Run M4 headless browser acceptance
         run: node visual-direction-os/runtime/browser-acceptance-tests-v2.js
 
@@ -103,6 +106,7 @@ jobs:
           node --check visual-direction-os/runtime/memory-engine.js
           node --check visual-direction-os/runtime/m4-controller.js
           node --check visual-direction-os/runtime/lineage-ui.js
+          node --check visual-direction-os/runtime/browser-boot-diagnostic-tests.js
           node --check visual-direction-os/runtime/browser-acceptance-tests-v2.js
           node --check visual-direction-os/app.js
           node --check cloudflare/agnes-proxy-worker.mjs
