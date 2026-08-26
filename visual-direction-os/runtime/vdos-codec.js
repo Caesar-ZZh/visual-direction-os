@@ -94,16 +94,19 @@
     return path;
   }
 
-  function resolveZipAdapter(explicit) {
-    if (explicit?.zipSync && explicit?.unzipSync) return explicit;
-    if (root?.fflate?.zipSync && root?.fflate?.unzipSync) return root.fflate;
+  function defaultZipAdapter() {
+    if (root?.fflate) return root.fflate;
     if (typeof require === 'function') {
-      try {
-        const vendor = require('../vendor/fflate.min.js');
-        if (vendor?.zipSync && vendor?.unzipSync) return vendor;
-      } catch (_) {}
+      try { return require('../vendor/fflate.min.js'); } catch (_) {}
     }
-    throw new Error('Pinned fflate ZIP adapter is unavailable');
+    return null;
+  }
+
+  function resolveZipAdapter(explicit, capability) {
+    if (explicit && typeof explicit[capability] === 'function') return explicit;
+    const vendor = defaultZipAdapter();
+    if (vendor && typeof vendor[capability] === 'function') return vendor;
+    throw new Error(`Pinned fflate ZIP adapter is unavailable for ${capability}`);
   }
 
   function normalizeDecodedEntries(raw) {
@@ -117,7 +120,7 @@
   }
 
   async function encodeVdos({ files = [], manifestBase = {}, zipAdapter } = {}) {
-    const zip = resolveZipAdapter(zipAdapter);
+    const zip = resolveZipAdapter(zipAdapter, 'zipSync');
     if (!Array.isArray(files)) throw new Error('VDOS files must be an array');
     const seen = new Set(['manifest.json']);
     const payload = {};
@@ -160,7 +163,7 @@
     if (!Number.isFinite(limits.maxArchiveBytes) || limits.maxArchiveBytes < 1) throw new Error('maxArchiveBytes must be positive');
     if (bytes.byteLength > limits.maxArchiveBytes) throw new Error('VDOS archive exceeds compressed byte limit');
 
-    const zip = resolveZipAdapter(options.zipAdapter);
+    const zip = resolveZipAdapter(options.zipAdapter, 'unzipSync');
     let raw;
     try {
       raw = zip.unzipSync(bytes);
