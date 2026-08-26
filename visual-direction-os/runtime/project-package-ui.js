@@ -39,5 +39,65 @@
     };
   }
 
-  return { commitStagedProject };
+  function createProjectPackageWorkspace({ memory, library, m4, packageRuntime = {} } = {}) {
+    if (!memory) throw new Error('Project package workspace requires Director Memory');
+    if (!library) throw new Error('Project package workspace requires Project Library');
+    if (!m4 || typeof m4.openProject !== 'function') throw new Error('Project package workspace requires M4 project switching');
+    for (const method of ['list','open','newProject','rename','delete','getActiveProjectId']) {
+      if (typeof library[method] !== 'function') throw new Error(`Project package workspace requires library.${method}()`);
+    }
+
+    async function list() {
+      return library.list();
+    }
+
+    async function open(projectId) {
+      const id = String(projectId || '').trim();
+      if (!id) throw new Error('Project ID is required');
+      await m4.openProject(id);
+      return library.open(id);
+    }
+
+    async function newProject(title) {
+      const project = await library.newProject(title);
+      await m4.openProject(project.id);
+      return project;
+    }
+
+    async function rename(projectId, title) {
+      const project = await library.rename(projectId, title);
+      if (library.getActiveProjectId() === project.id) await m4.openProject(project.id);
+      return project;
+    }
+
+    async function deleteProject(projectId) {
+      const id = String(projectId || '').trim();
+      const wasActive = library.getActiveProjectId() === id;
+      const result = await library.delete(id);
+      if (wasActive && result?.activeProject?.id) await m4.openProject(result.activeProject.id);
+      return result;
+    }
+
+    async function exportProject() {
+      if (typeof packageRuntime.exportProject === 'function') return packageRuntime.exportProject();
+      throw new Error('Project package export is not configured');
+    }
+
+    async function importProject() {
+      if (typeof packageRuntime.importProject === 'function') return packageRuntime.importProject();
+      throw new Error('Project package import is not configured');
+    }
+
+    return {
+      list,
+      open,
+      new:newProject,
+      rename,
+      delete:deleteProject,
+      export:exportProject,
+      import:importProject
+    };
+  }
+
+  return { commitStagedProject, createProjectPackageWorkspace };
 });
