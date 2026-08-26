@@ -116,7 +116,27 @@ async function waitReady(cdp, expectedArtifacts = null) {
     } catch (_) {}
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
-  throw new Error('M4 browser runtime did not become ready');
+  let diagnostic = null;
+  try {
+    diagnostic = await cdp.eval(`(() => ({
+      readyState:document.readyState,
+      href:location.href,
+      status:document.querySelector('.rail-status span:nth-child(2)')?.textContent || null,
+      m4:Boolean(globalThis.VisualDirectionOS?.m4),
+      projects:Boolean(globalThis.VisualDirectionOS?.projects),
+      runtimeKeys:Object.keys(globalThis.VisualDirectionRuntime || {}).sort(),
+      panel:Boolean(document.querySelector('#iteration-memory-console')),
+      panelHidden:document.querySelector('#iteration-memory-console')?.hidden ?? null,
+      projectPanel:Boolean(document.querySelector('.vdos-project-panel')),
+      scripts:[...document.scripts].map((script) => script.src.replace(location.origin + '/', '')),
+      resources:performance.getEntriesByType('resource')
+        .filter((entry) => /\\.(?:js|css)(?:$|\\?)/.test(entry.name))
+        .map((entry) => ({name:entry.name.replace(location.origin + '/', ''),duration:Math.round(entry.duration)}))
+    }))()`);
+  } catch (error) {
+    diagnostic = { diagnosticError:String(error?.message || error) };
+  }
+  throw new Error(`M4 browser runtime did not become ready: ${JSON.stringify(diagnostic)}`);
 }
 
 function fixture(origin, phase) {
