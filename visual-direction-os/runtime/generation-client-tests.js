@@ -54,6 +54,39 @@ const rootArtifact = createGenerationArtifact({
 });
 assert.deepEqual(rootArtifact.baseRequest, cleanBaseRequest, 'root artifact should default baseRequest to its executed request');
 assert.notEqual(rootArtifact.baseRequest, cleanBaseRequest);
+assert.deepEqual(rootArtifact.references, [], 'artifacts without reference inputs should expose an empty reference snapshot');
+
+const referenceInputs = [
+  {
+    id:'ref-1',
+    name:'hero.png',
+    source:'data:image/png;base64,AAAA',
+    role:'character',
+    preserve:['identity','silhouette']
+  },
+  {
+    id:'ref-2',
+    name:'palette.webp',
+    source:'data:image/webp;base64,BBBB',
+    role:'color',
+    preserve:['palette ownership']
+  }
+];
+const artifactWithReferences = createGenerationArtifact({
+  provider:'agnes-image-2.1-flash',
+  request:{ ...cleanBaseRequest, extra_body:{ response_format:'b64_json', image:referenceInputs.map((ref) => ref.source) } },
+  result:{ kind:'base64', src:'data:image/png;base64,CCCC' },
+  references:referenceInputs,
+  ir:{},
+  id:'gen-reference-test'
+});
+assert.deepEqual(artifactWithReferences.references, referenceInputs, 'artifact must preserve rich reference evidence');
+assert.notEqual(artifactWithReferences.references, referenceInputs, 'reference array must be snapshotted');
+assert.notEqual(artifactWithReferences.references[0], referenceInputs[0], 'reference records must be cloned');
+referenceInputs[0].role = 'world';
+referenceInputs[0].preserve.push('mutated-after-generation');
+assert.equal(artifactWithReferences.references[0].role, 'character');
+assert.deepEqual(artifactWithReferences.references[0].preserve, ['identity','silhouette']);
 
 const request = { model: 'agnes-image-2.1-flash', prompt: 'test', size: '1K', ratio: '1:1', extra_body: { response_format: 'url' } };
 
