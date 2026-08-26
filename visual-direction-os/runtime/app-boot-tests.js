@@ -36,6 +36,12 @@ for (let i = 1; i < m4Indices.length; i += 1) {
 assert.ok(packageIndices.at(-1) < m4Indices[0], 'M5 package prerequisites must be declared before M4 runtime modules');
 assert.ok(source.indexOf("'runtime/project-package-ui.js'") > source.indexOf("'runtime/lineage-ui.js'"), 'Project Package UI must load after M4 controller/UI dependencies');
 
+const coreLoadIndex = source.indexOf('for (const asset of runtimeAssets) await loadScript(asset);');
+const m4BootIndex = source.indexOf("const m4Boot = globalThis.VisualDirectionOS?.m4?.boot?.({ projectId:preferredProjectId });");
+const packageLoadIndex = source.indexOf('for (const asset of packageRuntimeAssets)');
+assert.ok(coreLoadIndex >= 0 && m4BootIndex > coreLoadIndex, 'M3/M4 runtime must load before M4 restore begins');
+assert.ok(packageLoadIndex > m4BootIndex, 'optional M5 package runtime must load after M4 is mounted so project tooling cannot delay the core director');
+
 assert.ok(source.includes("loadStylesheet('runtime/lineage.css')"), 'app.js must load lineage.css');
 assert.ok(source.includes("loadStylesheet('runtime/project-package.css')"), 'app.js must load project-package.css');
 assert.match(source, /localStorage\.getItem\(['"]vdos-active-project-id['"]\)/, 'hard reload must read explicit active project preference before M4 restore');
