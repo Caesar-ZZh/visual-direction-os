@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - m5-project-package-reproducibility
     paths:
       - "cloudflare/**"
       - "visual-direction-os/**"
