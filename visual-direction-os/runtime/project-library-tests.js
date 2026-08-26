@@ -1,5 +1,6 @@
 const assert = require('node:assert/strict');
 const { createProjectLibrary, ACTIVE_PROJECT_KEY } = require('./project-library.js');
+const { commitStagedProject } = require('./project-package-ui.js');
 
 function createPreferences(initial = {}) {
   const values = new Map(Object.entries(initial));
@@ -13,8 +14,10 @@ function createPreferences(initial = {}) {
 
 function createMemory(seed = []) {
   const projects = new Map(seed.map((project) => [project.id, structuredClone(project)]));
+  let commitError = null;
   return {
     projects,
+    setCommitError(error){ commitError = error || null; },
     async listProjects(){
       return [...projects.values()]
         .map((row) => structuredClone(row))
@@ -34,7 +37,12 @@ function createMemory(seed = []) {
       return structuredClone(project);
     },
     async putProject(project){ projects.set(project.id, structuredClone(project)); return structuredClone(project); },
-    async clearProject(id){ projects.delete(id); }
+    async clearProject(id){ projects.delete(id); },
+    async commitProjectBundle({ project, artifacts = [], comparisons = [] } = {}) {
+      if (commitError) throw commitError;
+      projects.set(project.id, structuredClone(project));
+      return { project:structuredClone(project), artifactCount:artifacts.length, comparisonCount:comparisons.length };
+    }
   };
 }
 
@@ -116,6 +124,41 @@ function createMemory(seed = []) {
   assert.equal(replacement.activeProject.title, 'Untitled Director Project');
   assert.notEqual(replacement.activeProject.id, 'project-empty');
   assert.equal(emptyPreferences.getItem(ACTIVE_PROJECT_KEY), replacement.activeProject.id);
+
+  // Import orchestration must not move active identity until the atomic bundle commit succeeds.
+  const importMemory = createMemory([
+    { id:'project-current', title:'Current', createdAt:'2026-08-26T00:00:00Z', updatedAt:'2026-08-26T00:00:00Z' }
+  ]);
+  const importPreferences = createPreferences({ [ACTIVE_PROJECT_KEY]:'project-current' });
+  const importLibrary = createProjectLibrary({
+    memory:importMemory,
+    preferences:importPreferences,
+    now:() => '2026-08-26T04:00:00Z',
+    makeId:() => 'project-generated'
+  });
+  await importLibrary.boot();
+  const opened = [];
+  const m4 = { async openProject(id){ opened.push(id); return { project:{id} }; } };
+  const staged = {
+    project:{ id:'project-imported', title:'Imported', createdAt:'2026-08-25T00:00:00Z', updatedAt:'2026-08-26T04:00:00Z' },
+    artifacts:[], comparisons:[]
+  };
+
+  importMemory.setCommitError(new Error('forced import commit failure'));
+  await assert.rejects(() => commitStagedProject({
+    memory:importMemory,
+    library:importLibrary,
+    m4,
+    staged,
+    mode:'copy'
+  }), /commit failure/i);
+  assert.equal(importPreferences.getItem(ACTIVE_PROJECT_KEY), 'project-current', 'failed import commit must preserve active project preference');
+  assert.deepEqual(opened, [], 'failed import commit must not switch M4 runtime');
+
+  importMemory.setCommitError(null);
+  await commitStagedProject({ memory:importMemory, library:importLibrary, m4, staged, mode:'copy' });
+  assert.equal(importPreferences.getItem(ACTIVE_PROJECT_KEY), 'project-imported', 'active project changes only after successful import commit');
+  assert.deepEqual(opened, ['project-imported']);
 
   console.log('project library tests passed');
 })().catch((error) => {
