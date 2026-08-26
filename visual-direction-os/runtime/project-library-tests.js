@@ -71,7 +71,6 @@ function createMemory(seed = []) {
   assert.equal(library.getActiveProjectId(), 'project-b');
   assert.equal(preferences.getItem(ACTIVE_PROJECT_KEY), 'project-b');
 
-  // Merely touching another project must not steal startup identity.
   await memory.putProject({ id:'project-c', title:'Touched', createdAt:'2026-08-25T00:00:00Z', updatedAt:'2099-01-01T00:00:00Z' });
   assert.equal((await library.boot()).activeProject.id, 'project-b');
 
@@ -95,17 +94,14 @@ function createMemory(seed = []) {
   assert.equal(afterDelete.activeProject.id, 'project-c', 'deleting active project should choose latest remaining project');
   assert.equal(preferences.getItem(ACTIVE_PROJECT_KEY), 'project-c');
 
-  // Deleting a non-active project must not move active identity.
   await library.delete('project-old');
   assert.equal(library.getActiveProjectId(), 'project-c');
 
-  // Stale stored active ID falls back to latest existing project and persists fallback.
   preferences.setItem(ACTIVE_PROJECT_KEY, 'stale-project');
   const staleBoot = await library.boot();
   assert.equal(staleBoot.activeProject.id, 'project-c');
   assert.equal(preferences.getItem(ACTIVE_PROJECT_KEY), 'project-c');
 
-  // Empty storage creates and activates one Untitled project.
   const emptyMemory = createMemory();
   const emptyPreferences = createPreferences();
   const emptyLibrary = createProjectLibrary({
@@ -119,13 +115,11 @@ function createMemory(seed = []) {
   assert.equal(emptyBoot.activeProject.title, 'Untitled Director Project');
   assert.equal(emptyPreferences.getItem(ACTIVE_PROJECT_KEY), 'project-empty');
 
-  // Deleting the sole active project creates a fresh Untitled replacement.
   const replacement = await emptyLibrary.delete('project-empty');
   assert.equal(replacement.activeProject.title, 'Untitled Director Project');
   assert.notEqual(replacement.activeProject.id, 'project-empty');
   assert.equal(emptyPreferences.getItem(ACTIVE_PROJECT_KEY), replacement.activeProject.id);
 
-  // Import orchestration must not move active identity until the atomic bundle commit succeeds.
   const importMemory = createMemory([
     { id:'project-current', title:'Current', createdAt:'2026-08-26T00:00:00Z', updatedAt:'2026-08-26T00:00:00Z' }
   ]);
@@ -160,7 +154,6 @@ function createMemory(seed = []) {
   assert.equal(importPreferences.getItem(ACTIVE_PROJECT_KEY), 'project-imported', 'active project changes only after successful import commit');
   assert.deepEqual(opened, ['project-imported']);
 
-  // Workspace API must expose one coherent local-project surface and keep M4 aligned with explicit project actions.
   const workspaceMemory = createMemory([
     { id:'workspace-a', title:'Workspace A', createdAt:'2026-08-26T00:00:00Z', updatedAt:'2026-08-26T00:00:00Z' }
   ]);
@@ -201,6 +194,97 @@ function createMemory(seed = []) {
   assert.equal(workspaceDeleted.activeProject.id, 'workspace-a');
   assert.equal(workspacePreferences.getItem(ACTIVE_PROJECT_KEY), 'workspace-a');
   assert.equal(workspaceOpened.at(-1), 'workspace-a', 'deleting active project must open the library fallback');
+
+  // Portable export/import orchestration: live runtime + persisted bytes -> preflight -> archive; import defaults to Copy.
+  const portableMemory = createMemory([
+    { id:'portable-a', title:'Portable / A', createdAt:'2026-08-26T00:00:00Z', updatedAt:'2026-08-26T05:00:00Z' }
+  ]);
+  portableMemory.loadProjectBundle = async (projectId) => ({
+    project:{id:projectId,title:'Portable / A'},
+    artifacts:[{id:'g1',projectId,imageBlob:new Blob(['persisted'],{type:'image/png'})}],
+    comparisons:[{id:'g1::g2',projectId,artifactAId:'g1',artifactBId:'g2'}]
+  });
+  const portablePreferences = createPreferences({ [ACTIVE_PROJECT_KEY]:'portable-a' });
+  const portableLibrary = createProjectLibrary({
+    memory:portableMemory,
+    preferences:portablePreferences,
+    now:() => '2026-08-26T06:00:00Z',
+    makeId:() => 'portable-copy'
+  });
+  await portableLibrary.boot();
+  const portableOpened = [];
+  const portableM4 = {
+    getExportSnapshot(){
+      return {
+        project:{id:'portable-a',title:'Portable / A'},
+        artifacts:[{id:'g1',projectId:'portable-a',persistenceStatus:'persisted'}],
+        comparisons:[{id:'g1::g2',projectId:'portable-a',artifactAId:'g1',artifactBId:'g2'}],
+        memorySnapshot:{pathHeadArtifactId:'g1',locked:[],active:[],watch:[]}
+      };
+    },
+    async openProject(id){ portableOpened.push(id); return {project:{id}}; }
+  };
+  const packageCalls = [];
+  let completeness = 'complete';
+  let encodedCount = 0;
+  const portablePackageRuntime = {
+    buildExportStage:async (input) => {
+      packageCalls.push(['buildExportStage', input]);
+      return {project:input.project,artifacts:input.runtimeArtifacts,comparisons:{comparisons:input.comparisons},memory:input.memorySnapshot,lineage:{roots:[],nodes:[]},imageAssets:[],referenceAssets:[],manifestBase:{format:'vdos-project'},packageCompleteness:completeness,missingAssets:completeness === 'partial' ? [{code:'meta_only'}] : []};
+    },
+    buildExportReport:(stage) => ({packageCompleteness:stage.packageCompleteness,missingAssets:stage.missingAssets}),
+    buildArchiveFiles:(stage) => { packageCalls.push(['buildArchiveFiles', stage]); return [{path:'project.json',role:'core',bytes:Uint8Array.of(1)}]; },
+    encodeVdos:async ({files,manifestBase}) => { encodedCount += 1; packageCalls.push(['encodeVdos',{files,manifestBase}]); return Uint8Array.of(86,68,79,83); },
+    decodeVdos:async (bytes) => { packageCalls.push(['decodeVdos',bytes]); return {manifest:{project:{id:'portable-a'}},entries:new Map()}; },
+    stageImport:async (options) => {
+      packageCalls.push(['stageImport',options]);
+      assert.equal(options.mode, 'copy', 'import conflict mode defaults to Copy');
+      assert.equal(options.existingProjectIds.has('portable-a'), true);
+      assert.equal(typeof options.makeProjectId, 'function');
+      assert.equal(typeof options.makeArtifactId, 'function');
+      assert.equal(typeof options.recomputeDerived, 'function');
+      return {
+        project:{id:'portable-copy',title:'Imported Copy',createdAt:'2026-08-26T00:00:00Z',updatedAt:'2026-08-26T06:00:00Z'},
+        artifacts:[],comparisons:[],lineage:{roots:[],nodes:[]},derived:{memoryReconciliation:'MEMORY VERIFIED'},importAudit:{packageCompleteness:'complete'},recoveryStatus:'complete'
+      };
+    },
+    buildImportReport:(stage) => ({projectId:stage.project.id,recoveryStatus:stage.recoveryStatus,memoryReconciliation:stage.derived.memoryReconciliation})
+  };
+  const portableWorkspace = createProjectPackageWorkspace({
+    memory:portableMemory,
+    library:portableLibrary,
+    m4:portableM4,
+    packageRuntime:portablePackageRuntime,
+    migrator:{assertSupported(){},migrate(model){return {model,steps:[]};}},
+    makeProjectId:() => 'portable-copy',
+    makeArtifactId:(id) => `copy-${id}`
+  });
+
+  const exported = await portableWorkspace.export();
+  assert.equal(exported.status, 'exported');
+  assert.deepEqual([...exported.bytes], [86,68,79,83]);
+  assert.match(exported.filename, /\.vdos$/);
+  assert.equal(encodedCount, 1);
+  const exportInput = packageCalls.find(([name]) => name === 'buildExportStage')[1];
+  assert.equal(exportInput.runtimeArtifacts[0].id, 'g1');
+  assert.equal(exportInput.persistedArtifacts[0].id, 'g1');
+  assert.equal(exportInput.memorySnapshot.pathHeadArtifactId, 'g1');
+
+  completeness = 'partial';
+  const preflight = await portableWorkspace.export();
+  assert.equal(preflight.status, 'preflight');
+  assert.equal(preflight.report.packageCompleteness, 'partial');
+  assert.equal(encodedCount, 1, 'partial export must not encode without explicit user override');
+  const incompleteExport = await portableWorkspace.export({allowIncomplete:true});
+  assert.equal(incompleteExport.status, 'exported');
+  assert.equal(encodedCount, 2, 'explicit incomplete export may encode');
+
+  const imported = await portableWorkspace.import(Uint8Array.of(1,2,3));
+  assert.equal(imported.status, 'imported');
+  assert.equal(imported.report.projectId, 'portable-copy');
+  assert.equal(portablePreferences.getItem(ACTIVE_PROJECT_KEY), 'portable-copy');
+  assert.equal(portableOpened.at(-1), 'portable-copy');
+  assert.equal(portableMemory.projects.has('portable-copy'), true, 'staged import must commit before activation');
 
   console.log('project library tests passed');
 })().catch((error) => {
