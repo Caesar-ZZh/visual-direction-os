@@ -1,0 +1,48 @@
+name: M5 Vendor fflate
+
+on:
+  push:
+    branches:
+      - m5-project-package-reproducibility
+    paths:
+      - ".github/workflows/m5-vendor-fflate.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: m5-project-package-reproducibility
+
+      - name: Fetch exact fflate 0.8.2 npm artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          tmp="$(mktemp -d)"
+          cd "$tmp"
+          npm pack fflate@0.8.2 --silent > tarball.txt
+          tarball="$(cat tarball.txt)"
+          tar -xzf "$tarball" package/umd/index.js package/LICENSE package/package.json
+          node -e "const p=require('$tmp/package/package.json'); if(p.version!=='0.8.2'||p.unpkg!=='./umd/index.js'||p.license!=='MIT') process.exit(1)"
+          mkdir -p "$GITHUB_WORKSPACE/visual-direction-os/vendor"
+          cp package/umd/index.js "$GITHUB_WORKSPACE/visual-direction-os/vendor/fflate.min.js"
+          test -s "$GITHUB_WORKSPACE/visual-direction-os/vendor/fflate.min.js"
+
+      - name: Commit vendored upstream file
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add visual-direction-os/vendor/fflate.min.js
+          if git diff --cached --quiet; then
+            echo "Pinned vendor file already present"
+            exit 0
+          fi
+          git commit -m "chore(m5): vendor fflate 0.8.2"
+          git push origin HEAD:m5-project-package-reproducibility
