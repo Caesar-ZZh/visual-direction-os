@@ -73,6 +73,9 @@ jobs:
       - name: Run M5 archive codec suite
         run: node visual-direction-os/runtime/vdos-codec-tests.js
 
+      - name: Run M5 project package suite
+        run: node visual-direction-os/runtime/project-package-tests.js
+
       - name: Run M5 project library suite
         run: node visual-direction-os/runtime/project-library-tests.js
 
