@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 const { createProjectLibrary, ACTIVE_PROJECT_KEY } = require('./project-library.js');
-const { commitStagedProject } = require('./project-package-ui.js');
+const { commitStagedProject, createProjectPackageWorkspace } = require('./project-package-ui.js');
 
 function createPreferences(initial = {}) {
   const values = new Map(Object.entries(initial));
@@ -159,6 +159,48 @@ function createMemory(seed = []) {
   await commitStagedProject({ memory:importMemory, library:importLibrary, m4, staged, mode:'copy' });
   assert.equal(importPreferences.getItem(ACTIVE_PROJECT_KEY), 'project-imported', 'active project changes only after successful import commit');
   assert.deepEqual(opened, ['project-imported']);
+
+  // Workspace API must expose one coherent local-project surface and keep M4 aligned with explicit project actions.
+  const workspaceMemory = createMemory([
+    { id:'workspace-a', title:'Workspace A', createdAt:'2026-08-26T00:00:00Z', updatedAt:'2026-08-26T00:00:00Z' }
+  ]);
+  const workspacePreferences = createPreferences({ [ACTIVE_PROJECT_KEY]:'workspace-a' });
+  let workspaceId = 0;
+  const workspaceLibrary = createProjectLibrary({
+    memory:workspaceMemory,
+    preferences:workspacePreferences,
+    now:() => '2026-08-26T05:00:00Z',
+    makeId:() => `workspace-new-${++workspaceId}`
+  });
+  await workspaceLibrary.boot();
+  const workspaceOpened = [];
+  const workspaceM4 = {
+    async openProject(id){ workspaceOpened.push(id); return {project:{id}}; },
+    getExportSnapshot(){ return {project:{id:workspaceLibrary.getActiveProjectId()},artifacts:[],comparisons:[],memorySnapshot:{locked:[],active:[],watch:[]}}; }
+  };
+  const workspace = createProjectPackageWorkspace({
+    memory:workspaceMemory,
+    library:workspaceLibrary,
+    m4:workspaceM4,
+    packageRuntime:{}
+  });
+  for (const method of ['list','open','new','rename','delete','export','import']) {
+    assert.equal(typeof workspace[method], 'function', `workspace must expose ${method}()`);
+  }
+  assert.deepEqual((await workspace.list()).map((row) => row.id), ['workspace-a']);
+  await workspace.open('workspace-a');
+  assert.equal(workspacePreferences.getItem(ACTIVE_PROJECT_KEY), 'workspace-a');
+  const workspaceCreated = await workspace.new('Workspace New');
+  assert.equal(workspaceCreated.id, 'workspace-new-1');
+  assert.equal(workspacePreferences.getItem(ACTIVE_PROJECT_KEY), 'workspace-new-1');
+  assert.deepEqual(workspaceOpened.slice(-2), ['workspace-a','workspace-new-1']);
+  const workspaceRenamed = await workspace.rename('workspace-new-1', 'Workspace Renamed');
+  assert.equal(workspaceRenamed.title, 'Workspace Renamed');
+  assert.equal(workspaceOpened.at(-1), 'workspace-new-1', 'renaming active project must refresh M4 project metadata');
+  const workspaceDeleted = await workspace.delete('workspace-new-1');
+  assert.equal(workspaceDeleted.activeProject.id, 'workspace-a');
+  assert.equal(workspacePreferences.getItem(ACTIVE_PROJECT_KEY), 'workspace-a');
+  assert.equal(workspaceOpened.at(-1), 'workspace-a', 'deleting active project must open the library fallback');
 
   console.log('project library tests passed');
 })().catch((error) => {
