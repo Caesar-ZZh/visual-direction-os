@@ -44,7 +44,9 @@ assert.deepEqual(detectAutoSourceChange({ shotId:'s2', beforeShots:shots, afterS
 });
 
 const outOfOrder = {...shots[2], order:1};
-assert.equal(deriveContinuityStatus({ shot:outOfOrder, shots:[outOfOrder,{...shots[0],order:2},{...shots[1],order:3}], artifactsById }), 'source_out_of_order');
+const outOfOrderSet = [outOfOrder,{...shots[0],order:2},{...shots[1],order:3}];
+assert.equal(deriveContinuityStatus({ shot:outOfOrder, shots:outOfOrderSet, artifactsById }), 'source_out_of_order');
+assert.ok(buildContinuityDependents(outOfOrderSet).get('s1').includes('s3'), 'out-of-order manual source remains a dependency');
 
 const reviewed = {...shots[1], continuityReview:{ status:'accepted', reviewedArtifactId:'h1', sourceArtifactId:'g1' }};
 const reviewedResolution = resolveContinuitySource({shot:reviewed,shots:[shots[0],reviewed,shots[2]],artifactsById});
