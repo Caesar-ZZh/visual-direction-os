@@ -1,5 +1,6 @@
 const assert = require('node:assert/strict');
 const { sha256Hex, encodeVdos, decodeVdos } = require('./vdos-codec.js');
+const { VDOS_SCHEMA_VERSION } = require('./runtime-fingerprint.js');
 const { createSchemaMigrator } = require('./schema-migrations.js');
 const {
   portableRequestV1,
@@ -288,7 +289,7 @@ async function bytesOf(blob) {
     manifestBase:completeExportStage.manifestBase
   });
   const decoded = await decodeVdos(completeArchive);
-  const migrator = createSchemaMigrator({currentVersion:1,migrations:{}});
+  const migrator = createSchemaMigrator({currentVersion:VDOS_SCHEMA_VERSION,migrations:{}});
 
   // Task 7 RED — public rehydration must restore generated Blob and ordered rich references.
   const portableG2 = decodeJson(decoded.entries.get('artifacts/g2.json'));
@@ -412,7 +413,7 @@ async function bytesOf(blob) {
 
   // Task 7 RED — forward schemas are rejected instead of guessed compatible.
   const forwardDecoded = cloneDecoded(decoded);
-  forwardDecoded.manifest.schemaVersion = 2;
+  forwardDecoded.manifest.schemaVersion = VDOS_SCHEMA_VERSION + 1;
   await assert.rejects(() => stageImport({
     decoded:forwardDecoded,migrator,existingProjectIds:new Set(),mode:'copy',
     makeProjectId:() => 'unused',makeArtifactId:(id) => id,
