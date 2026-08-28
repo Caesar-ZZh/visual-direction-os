@@ -183,13 +183,13 @@ function createFakeMemory() {
   assert.ok(memory.artifacts.has('g1'),'other Shot history must survive same-Shot subtree deletion');
 
   await controller.openProject('p1');
-  assert.equal(controller.getState().activeShotId,'s1','openProject compatibility must honor persisted active Shot');
-  assert.deepEqual(controller.getState().artifacts.map((x)=>x.id),['g1','g2']);
+  assert.equal(controller.getState().activeShotId,'s2','openProject compatibility must honor the persisted Active Shot');
+  assert.deepEqual(controller.getState().artifacts.map((x)=>x.id),['h1']);
 
   const snapshot=controller.getExportSnapshot();
-  assert.equal(snapshot.activeShotId,'s1');
+  assert.equal(snapshot.activeShotId,'s2');
   snapshot.artifacts[0].id='mutated';
-  assert.equal(controller.getState().artifacts[0].id,'g1');
+  assert.equal(controller.getState().artifacts[0].id,'h1');
 
   memory.seedProject({id:'p2',title:'Newer',createdAt:'2026-08-28T00:00:00.000Z',updatedAt:'2026-08-29T00:00:00.000Z',activeSequenceId:'q2',activeShotId:'s9'});
   memory.seedArtifact(persistedEvaluated({id:'z1',projectId:'p2',sequenceId:'q2',shotId:'s9',generationIndex:1}));
