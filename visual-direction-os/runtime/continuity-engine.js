@@ -125,7 +125,7 @@
     const map = new Map();
     for (const shot of shots) {
       const source = sourceShotFor(shot, shots);
-      if (!source || manualSourceOutOfOrder(shot, source, shots)) continue;
+      if (!source) continue;
       const dependents = map.get(source.id) || [];
       if (!dependents.includes(shot.id)) dependents.push(shot.id);
       map.set(source.id, dependents);
