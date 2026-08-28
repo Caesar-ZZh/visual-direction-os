@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - m5-project-package-reproducibility
+      - m6-sequence-director
     paths:
       - "cloudflare/**"
       - "visual-direction-os/**"
@@ -31,76 +32,61 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-
       - name: Use Node.js 24
         uses: actions/setup-node@v6
         with:
           node-version: 24
-
       - name: Run Visual IR regression suite
         run: node visual-direction-os/runtime/runtime-tests.js
-
       - name: Run Agnes adapter regression suite
         run: node visual-direction-os/runtime/agnes-adapter-tests.js
-
       - name: Run generation client regression suite
         run: node visual-direction-os/runtime/generation-client-tests.js
-
       - name: Run M3 image measurement suite
         run: node visual-direction-os/runtime/image-measurements-tests.js
-
       - name: Run M3 evaluation engine suite
         run: node visual-direction-os/runtime/evaluation-engine-tests.js
-
       - name: Run M3 iteration suite
         run: node visual-direction-os/runtime/iteration-tests.js
-
       - name: Run M3 redirect controller suite
         run: node visual-direction-os/runtime/iteration-controller-tests.js
-
       - name: Run M4 director memory suite
         run: node visual-direction-os/runtime/director-memory-tests.js
-
       - name: Run M4 comparison engine suite
         run: node visual-direction-os/runtime/comparison-engine-tests.js
-
       - name: Run M4 memory policy suite
         run: node visual-direction-os/runtime/memory-engine-tests.js
-
       - name: Run M4 orchestration controller suite
         run: node visual-direction-os/runtime/m4-controller-tests.js
-
-      - name: Run M4 app boot suite
+      - name: Run M6 sequence model suite
+        run: node visual-direction-os/runtime/sequence-model-tests.js
+      - name: Run M6 continuity engine suite
+        run: node visual-direction-os/runtime/continuity-engine-tests.js
+      - name: Run M6 controller suite
+        run: node visual-direction-os/runtime/m6-controller-tests.js
+      - name: Run app boot suite
         run: node visual-direction-os/runtime/app-boot-tests.js
-
-      - name: Run M5 runtime fingerprint suite
+      - name: Run portable runtime fingerprint suite
         run: node visual-direction-os/runtime/runtime-fingerprint-tests.js
-
-      - name: Run M5 schema migration suite
+      - name: Run schema migration suite
         run: node visual-direction-os/runtime/schema-migrations-tests.js
-
-      - name: Run M5 archive codec suite
+      - name: Run archive codec suite
         run: node visual-direction-os/runtime/vdos-codec-tests.js
-
-      - name: Run M5 project package suite
+      - name: Run M5 project package regression suite
         run: node visual-direction-os/runtime/project-package-tests.js
-
-      - name: Run M5 project library suite
+      - name: Run M6 project package suite
+        run: node visual-direction-os/runtime/m6-project-package-tests.js
+      - name: Run project library suite
         run: node visual-direction-os/runtime/project-library-tests.js
-
-      - name: Run M5 headless browser acceptance
-        run: node visual-direction-os/runtime/project-package-browser-acceptance-tests.js
-
       - name: Run M4 headless browser acceptance
         run: node visual-direction-os/runtime/browser-acceptance-tests-v2.js
-
+      - name: Run M6 headless browser acceptance
+        run: node visual-direction-os/runtime/m6-browser-acceptance-tests.js
       - name: Run Cloudflare secure proxy suite
         run: node cloudflare/agnes-proxy-worker-tests.mjs
-
       - name: Validate deployment configuration JSON
         run: |
           node -e "JSON.parse(require('fs').readFileSync('wrangler.jsonc','utf8')); JSON.parse(require('fs').readFileSync('package.json','utf8')); console.log('deployment config json passed')"
-
       - name: Syntax-check browser and proxy runtime
         run: |
           node --check visual-direction-os/runtime/agnes-adapter.js
@@ -110,23 +96,26 @@ jobs:
           node --check visual-direction-os/runtime/iteration-controller.js
           node --check visual-direction-os/runtime/generation-ui-m3.js
           node --check visual-direction-os/runtime/evaluation-ui.js
+          node --check visual-direction-os/runtime/sequence-model.js
+          node --check visual-direction-os/runtime/continuity-engine.js
           node --check visual-direction-os/runtime/director-memory.js
           node --check visual-direction-os/runtime/comparison-engine.js
           node --check visual-direction-os/runtime/memory-engine.js
           node --check visual-direction-os/runtime/m4-controller.js
+          node --check visual-direction-os/runtime/m6-controller.js
+          node --check visual-direction-os/runtime/m6-browser-controller.js
           node --check visual-direction-os/runtime/lineage-ui.js
+          node --check visual-direction-os/runtime/sequence-director-ui.js
+          node --check visual-direction-os/runtime/m6-approved-frame-ui.js
           node --check visual-direction-os/runtime/runtime-fingerprint.js
-          node --check visual-direction-os/runtime/runtime-fingerprint-tests.js
           node --check visual-direction-os/runtime/schema-migrations.js
-          node --check visual-direction-os/runtime/schema-migrations-tests.js
           node --check visual-direction-os/runtime/vdos-codec.js
-          node --check visual-direction-os/runtime/vdos-codec-tests.js
           node --check visual-direction-os/runtime/project-package.js
-          node --check visual-direction-os/runtime/project-package-tests.js
+          node --check visual-direction-os/runtime/m6-project-package.js
           node --check visual-direction-os/runtime/project-library.js
-          node --check visual-direction-os/runtime/project-library-tests.js
-          node --check visual-direction-os/runtime/project-package-ui.js
-          node --check visual-direction-os/runtime/project-package-browser-acceptance-tests.js
+          node --check visual-direction-os/runtime/m6-project-package-ui.js
+          node --check visual-direction-os/runtime/m6-project-package-tests.js
+          node --check visual-direction-os/runtime/m6-browser-acceptance-tests.js
           node --check visual-direction-os/runtime/browser-acceptance-tests-v2.js
           node --check visual-direction-os/app.js
           node --check cloudflare/agnes-proxy-worker.mjs
