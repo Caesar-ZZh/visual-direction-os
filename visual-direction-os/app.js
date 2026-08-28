@@ -35,7 +35,8 @@
     'runtime/m6-controller.js',
     'runtime/m6-browser-controller.js',
     'runtime/lineage-ui.js',
-    'runtime/sequence-director-ui.js'
+    'runtime/sequence-director-ui.js',
+    'runtime/m6-approved-frame-ui.js'
   ];
 
   function loadScript(src) {
