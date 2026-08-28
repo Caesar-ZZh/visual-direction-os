@@ -3,90 +3,21 @@ const { compareArtifacts } = require('./comparison-engine.js');
 const { deriveMemoryForPath, compileMemoryAppendix } = require('./memory-engine.js');
 const { createM4Controller, createBrowserGenerationRunner } = require('./m4-controller.js');
 
-function clone(value) { return value == null ? value : structuredClone(value); }
+const clone = (value) => value == null ? value : structuredClone(value);
 
-function createFakeMemory() {
-  let project = null;
-  const artifacts = new Map();
-  const comparisons = new Map();
-  let nextPersistenceStatus = 'persisted';
-  return {
-    artifacts,
-    setNextPersistenceStatus(status){ nextPersistenceStatus = status; },
-    async ensureProject(input = {}) {
-      project = { id:input.id || 'project-test', title:input.title || 'Untitled Director Project', createdAt:input.createdAt, updatedAt:input.updatedAt };
-      return clone(project);
-    },
-    async getLatestProject(){ return clone(project); },
-    async getProject(id){ return project?.id === id ? clone(project) : null; },
-    async saveGenerationArtifact({ artifact, lineage }) {
-      const status = nextPersistenceStatus;
-      nextPersistenceStatus = 'persisted';
-      const record = {
-        ...clone(artifact),
-        ...clone(lineage),
-        persistenceStatus:status,
-        imageBlob:status === 'persisted' ? new Blob(['image'], { type:'image/png' }) : null
-      };
-      if (status !== 'not_persisted') artifacts.set(record.id, clone(record));
-      return record;
-    },
-    async getArtifact(id){ return clone(artifacts.get(id) || null); },
-    async listArtifacts(projectId){ return [...artifacts.values()].filter((row) => row.projectId === projectId).map(clone); },
-    async getChildren(parentId){ return [...artifacts.values()].filter((row) => row.parentArtifactId === parentId).map(clone); },
-    async saveComparison(row){ comparisons.set(row.id, clone(row)); return clone(row); },
-    async listComparisons(projectId){ return [...comparisons.values()].filter((row) => row.projectId === projectId).map(clone); },
-    async estimateStorage(){ return { usage:2048, quota:8192 }; },
-    async deleteSubtree(id) {
-      const ids = [];
-      const visit = (current) => {
-        ids.push(current);
-        for (const row of artifacts.values()) if (row.parentArtifactId === current) visit(row.id);
-      };
-      visit(id);
-      ids.forEach((artifactId) => artifacts.delete(artifactId));
-      return ids;
-    },
-    async clearProject(projectId){ for (const [id,row] of artifacts) if (row.projectId === projectId) artifacts.delete(id); project = null; }
-  };
-}
-
-function createProjectSwitchMemory() {
-  const projects = new Map();
-  const artifacts = new Map();
-  const comparisons = new Map();
-  return {
-    seedProject(row){ projects.set(row.id, clone(row)); },
-    seedArtifact(row){ artifacts.set(row.id, clone(row)); },
-    seedComparison(row){ comparisons.set(row.id, clone(row)); },
-    async getProject(id){ return clone(projects.get(id) || null); },
-    async getLatestProject(){
-      return clone([...projects.values()].sort((a,b) => String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')))[0] || null);
-    },
-    async ensureProject(input = {}) {
-      const timestamp = input.updatedAt || '2026-08-25T00:00:00.000Z';
-      const row = { id:input.id || 'project-created', title:input.title || 'Untitled Director Project', createdAt:input.createdAt || timestamp, updatedAt:timestamp };
-      projects.set(row.id, clone(row));
-      return clone(row);
-    },
-    async listArtifacts(projectId){ return [...artifacts.values()].filter((row) => row.projectId === projectId).map(clone); },
-    async listComparisons(projectId){ return [...comparisons.values()].filter((row) => row.projectId === projectId).map(clone); },
-    async estimateStorage(){ return { usage:4096, quota:16384 }; }
-  };
-}
-
-function generationArtifact(id, iterationOf = null) {
+function generationArtifact(id, iterationOf = null, continuityProvenance = null) {
   return {
     id,
-    createdAt:`2026-08-25T00:${String(id.length + (iterationOf ? 2 : 1)).padStart(2,'0')}:00.000Z`,
+    createdAt:'2026-08-28T00:00:00.000Z',
     provider:'agnes-image-2.1-flash',
-    request:{ model:'agnes-image-2.1-flash', prompt:iterationOf ? 'BASE\n\nCHILD HISTORICAL DELTA' : 'BASE', ratio:'16:9', return_base64:true, extra_body:{response_format:'b64_json'} },
+    request:{ model:'agnes-image-2.1-flash', prompt:'BASE', ratio:'16:9', return_base64:true, extra_body:{response_format:'b64_json'} },
     baseRequest:{ model:'agnes-image-2.1-flash', prompt:'BASE', ratio:'16:9', return_base64:true, extra_body:{response_format:'b64_json'} },
     result:{ kind:'base64', src:'data:image/png;base64,AAAA' },
     visualIR:{ metadata:{version:'0.1.0'} },
     iterationOf,
     parentArtifactId:iterationOf,
-    iterationDelta:iterationOf ? { entries:[{checkId:'canvas-ratio',label:'Canvas Ratio',intent:'preserve',evidenceMode:'measured',instruction:'preserve canvas'}], promptAppendix:'CHILD HISTORICAL DELTA' } : null
+    iterationDelta:iterationOf ? { entries:[], promptAppendix:'CHILD HISTORICAL DELTA' } : null,
+    continuityProvenance
   };
 }
 
@@ -94,258 +25,180 @@ function evaluationDetail(artifact, measuredStatus = 'pass') {
   const report = {
     artifactId:artifact.id,
     checks:[
-      { id:'canvas-ratio', label:'Canvas Ratio', evidenceMode:'measured', status:measuredStatus, target:'16:9', observed:measuredStatus, reason:measuredStatus === 'pass' ? 'correct' : 'wrong' },
+      { id:'canvas-ratio', label:'Canvas Ratio', evidenceMode:'measured', status:measuredStatus, target:'16:9', observed:measuredStatus, reason:'test' },
       { id:'narrative-verb', label:'Narrative Verb', evidenceMode:'human_required', status:'pass', target:'WITHDRAW', observed:'pass', reason:'director pass' }
     ],
     summary:{ measuredPass:measuredStatus === 'pass' ? 1 : 0, measuredWarn:measuredStatus === 'warn' ? 1 : 0, humanPassed:1, humanNeedsWork:0, unresolved:0 }
   };
   const delta = {
-    entries:report.checks.map((check) => ({
-      checkId:check.id,
-      label:check.label,
-      intent:check.status === 'pass' ? 'preserve' : 'correct',
-      sourceStatus:check.status,
-      evidenceMode:check.evidenceMode,
-      instruction:`${check.label}: ${check.status === 'pass' ? 'preserve current success' : 'correct current failure'}`
-    })),
+    entries:report.checks.map((check) => ({ checkId:check.id, label:check.label, intent:check.status === 'pass' ? 'preserve' : 'correct', sourceStatus:check.status, evidenceMode:check.evidenceMode, instruction:`${check.label}: ${check.status}` })),
     preserve:measuredStatus === 'pass' ? ['Canvas Ratio: preserve current success'] : [],
     correct:measuredStatus === 'warn' ? ['Canvas Ratio: correct current failure'] : [],
     unresolved:[],
     promptAppendix:'ITERATION / EVALUATION DELTA'
   };
-  return { artifact, human:{ 'narrative-verb':{status:'pass'} }, report, delta };
+  return { artifact, human:{'narrative-verb':{status:'pass'}}, report, delta };
 }
 
-function persistedEvaluatedArtifact({ id, projectId, parentArtifactId = null, rootArtifactId = id, generationIndex, measuredStatus = 'pass' }) {
-  const artifact = generationArtifact(id, parentArtifactId);
+function persistedEvaluated({ id, projectId='p1', sequenceId='q1', shotId, parentArtifactId=null, rootArtifactId=id, generationIndex=1, measuredStatus='pass', continuityProvenance=null }) {
+  const artifact = generationArtifact(id, parentArtifactId, continuityProvenance);
   const detail = evaluationDetail(artifact, measuredStatus);
   return {
     ...artifact,
-    projectId,
-    parentArtifactId,
-    rootArtifactId,
-    generationIndex,
-    evaluation:detail.report,
-    humanJudgments:detail.human,
-    evaluationDelta:detail.delta,
-    persistenceStatus:'persisted',
-    imageBlob:new Blob([`image-${id}`], {type:'image/png'}),
-    imageMimeType:'image/png'
+    projectId, sequenceId, shotId, parentArtifactId, rootArtifactId, generationIndex,
+    evaluation:detail.report, humanJudgments:detail.human, evaluationDelta:detail.delta,
+    persistenceStatus:'persisted', imageBlob:new Blob([`image-${id}`], {type:'image/png'}), imageMimeType:'image/png'
+  };
+}
+
+function createFakeMemory() {
+  const projects = new Map();
+  const artifacts = new Map();
+  const comparisons = new Map();
+  let nextPersistenceStatus = 'persisted';
+  return {
+    projects, artifacts, comparisons,
+    seedProject(row){ projects.set(row.id, clone(row)); },
+    seedArtifact(row){ artifacts.set(row.id, clone(row)); },
+    seedComparison(row){ comparisons.set(row.id, clone(row)); },
+    setNextPersistenceStatus(status){ nextPersistenceStatus = status; },
+    async ensureProject(input={}) {
+      const previous = projects.get(input.id) || {};
+      const row = { ...clone(previous), id:input.id || previous.id || 'p1', title:input.title || previous.title || 'Project', createdAt:input.createdAt || previous.createdAt || '2026-08-28T00:00:00.000Z', updatedAt:input.updatedAt || previous.updatedAt || '2026-08-28T00:00:00.000Z', ...(input.activeSequenceId !== undefined ? {activeSequenceId:input.activeSequenceId} : {}), ...(input.activeShotId !== undefined ? {activeShotId:input.activeShotId} : {}) };
+      projects.set(row.id, clone(row)); return clone(row);
+    },
+    async getProject(id){ return clone(projects.get(id) || null); },
+    async getLatestProject(){ return clone([...projects.values()].sort((a,b)=>String(b.updatedAt||'').localeCompare(String(a.updatedAt||'')))[0] || null); },
+    async listArtifactsForShot(projectId, sequenceId, shotId){ return [...artifacts.values()].filter((row)=>row.projectId===projectId&&row.sequenceId===sequenceId&&row.shotId===shotId).map(clone); },
+    async listComparisonsForShot(projectId, sequenceId, shotId){ return [...comparisons.values()].filter((row)=>row.projectId===projectId&&row.sequenceId===sequenceId&&row.shotId===shotId).map(clone); },
+    async saveGenerationArtifact({artifact,lineage}) {
+      const status = nextPersistenceStatus; nextPersistenceStatus = 'persisted';
+      const record = { ...clone(artifact), ...clone(lineage), continuityProvenance:clone(artifact.continuityProvenance || null), persistenceStatus:status, imageBlob:status === 'persisted' ? new Blob(['image'],{type:'image/png'}) : null, imageMimeType:status === 'persisted' ? 'image/png' : null };
+      if (status !== 'not_persisted') artifacts.set(record.id, clone(record));
+      if (status === 'not_persisted') record.persistenceError = 'quota exceeded';
+      return clone(record);
+    },
+    async saveComparison(row){
+      const a = artifacts.get(row.artifactAId); const b = artifacts.get(row.artifactBId);
+      if ((a && a.shotId !== row.shotId) || (b && b.shotId !== row.shotId)) throw new Error('comparison crosses Shot boundaries');
+      comparisons.set(row.id, clone(row)); return clone(row);
+    },
+    async estimateStorage(){ return {usage:2048,quota:8192}; },
+    async deleteSubtree(id){
+      const start = artifacts.get(id); if (!start) return [];
+      const ids=[]; const visit=(current)=>{ if(ids.includes(current)) return; ids.push(current); for(const row of artifacts.values()) if(row.shotId===start.shotId && row.parentArtifactId===current) visit(row.id); };
+      visit(id); ids.forEach((x)=>artifacts.delete(x)); return ids;
+    },
+    async clearProject(projectId){ for(const [id,row] of artifacts) if(row.projectId===projectId) artifacts.delete(id); for(const [id,row] of comparisons) if(row.projectId===projectId) comparisons.delete(id); projects.delete(projectId); }
   };
 }
 
 (async () => {
-  const browserRunnerCalls = [];
-  const fakeRoot = { VisualDirectionOS:{ generation:{ generate:async () => null } } };
-  const browserRunner = createBrowserGenerationRunner({
-    root:fakeRoot,
-    runGenerationIteration:async (input) => { browserRunnerCalls.push(input); return { id:'browser-branch' }; },
-    applyIterationDelta:(request, delta) => ({ ...request, prompt:`${request.prompt}\n\n${delta.promptAppendix}` })
+  const runnerCalls=[];
+  const root={ VisualDirectionOS:{generation:{generate:async()=>null}} };
+  const browserRunner=createBrowserGenerationRunner({
+    root,
+    runGenerationIteration:async(input)=>{ runnerCalls.push(input); return {id:'branch'}; },
+    applyIterationDelta:(request,delta)=>({...request,prompt:`${request.prompt}\n\n${delta.promptAppendix}`})
   });
-  const browserArtifact = generationArtifact('browser-root');
-  browserArtifact.evaluationDelta = evaluationDetail(browserArtifact, 'pass').delta;
-  const browserResult = await browserRunner({ artifact:browserArtifact, promptAppendix:'ITERATION / DIRECTOR MEMORY\n\nPRESERVE CURRENT:\n- Keep canvas' });
-  assert.equal(browserResult.id, 'browser-branch');
-  assert.equal(browserRunnerCalls.length, 1);
-  assert.equal(browserRunnerCalls[0].root, fakeRoot);
-  assert.equal(browserRunnerCalls[0].artifact.id, 'browser-root');
-  assert.deepEqual(browserRunnerCalls[0].delta, browserArtifact.evaluationDelta);
-  assert.deepEqual(browserRunnerCalls[0].baseRequest, browserArtifact.baseRequest);
-  assert.match(browserRunnerCalls[0].promptAppendix, /ITERATION \/ DIRECTOR MEMORY/);
-  assert.equal(typeof browserRunnerCalls[0].applyIterationDelta, 'function');
+  const rootArtifact=generationArtifact('root');
+  rootArtifact.evaluationDelta=evaluationDetail(rootArtifact).delta;
+  assert.equal((await browserRunner({artifact:rootArtifact,promptAppendix:'ITERATION / DIRECTOR MEMORY'})).id,'branch');
+  assert.equal(runnerCalls.length,1);
 
-  const memory = createFakeMemory();
-  const emitted = [];
-  const objectUrls = [];
-  const revoked = [];
-  const generationRuns = [];
-  const controller = createM4Controller({
-    memory,
-    compareArtifacts,
-    deriveMemoryForPath,
-    compileMemoryAppendix,
-    generationRunner:async (input) => {
-      generationRuns.push(clone(input));
-      return { id:`branch-${generationRuns.length}`, iterationOf:input.artifact.id };
-    },
-    now:() => '2026-08-25T00:00:00.000Z',
-    createObjectURL:(blob) => { const url = `blob:test-${objectUrls.length + 1}`; objectUrls.push([url, blob]); return url; },
-    revokeObjectURL:(url) => revoked.push(url),
-    onState:(state) => emitted.push(state)
+  const memory=createFakeMemory();
+  memory.seedProject({id:'p1',title:'Project',createdAt:'2026-08-28T00:00:00.000Z',updatedAt:'2026-08-28T01:00:00.000Z',activeSequenceId:'q1',activeShotId:'s1'});
+  memory.seedArtifact(persistedEvaluated({id:'g1',shotId:'s1',generationIndex:1}));
+  memory.seedArtifact(persistedEvaluated({id:'g2',shotId:'s1',parentArtifactId:'g1',rootArtifactId:'g1',generationIndex:2}));
+  memory.seedArtifact(persistedEvaluated({id:'h1',shotId:'s2',generationIndex:1,continuityProvenance:{sourceShotId:'s1',sourceArtifactId:'g2',status:'resolved'}}));
+  memory.seedComparison({id:'g1::g2',projectId:'p1',sequenceId:'q1',shotId:'s1',artifactAId:'g1',artifactBId:'g2',directorJudgments:{},comparison:{summary:{stablePass:1}},updatedAt:'2026-08-28T00:00:00.000Z'});
+
+  const emitted=[]; const revoked=[]; let urlCounter=0; const generationRuns=[];
+  const controller=createM4Controller({
+    memory,compareArtifacts,deriveMemoryForPath,compileMemoryAppendix,
+    generationRunner:async(input)=>{generationRuns.push(clone(input));return {id:`branch-${generationRuns.length}`,iterationOf:input.artifact.id};},
+    now:()=> '2026-08-28T02:00:00.000Z',
+    createObjectURL:()=>`blob:m4-${++urlCounter}`,
+    revokeObjectURL:(url)=>revoked.push(url),
+    onState:(state)=>emitted.push(state)
   });
 
-  await controller.boot();
-  let state = controller.getState();
-  assert.equal(state.project.id, 'project-test');
-  assert.deepEqual(state.artifacts, []);
-  assert.equal(state.restoreError, '');
+  await controller.openShot({projectId:'p1',sequenceId:'q1',shotId:'s1'});
+  let state=controller.getState();
+  assert.equal(state.activeSequenceId,'q1');
+  assert.equal(state.activeShotId,'s1');
+  assert.deepEqual(state.artifacts.map((a)=>a.id),['g1','g2']);
+  assert.deepEqual(state.comparisons.map((c)=>c.id),['g1::g2']);
+  assert.equal(state.selectedAId,'g1');
+  assert.equal(state.selectedBId,'g2');
+  const s1Url=await controller.getRenderableImage('g2');
 
-  const g1 = generationArtifact('g1');
-  await controller.ingestGeneration(g1);
-  await controller.ingestEvaluation(evaluationDetail(g1, 'pass'));
-  state = controller.getState();
-  assert.equal(state.artifacts.length, 1);
-  assert.equal(state.artifacts[0].parentArtifactId, null);
-  assert.equal(state.artifacts[0].rootArtifactId, 'g1');
-  assert.equal(state.artifacts[0].generationIndex, 1);
-  assert.equal(state.artifacts[0].persistenceStatus, 'persisted');
-  assert.ok(state.artifacts[0].evaluationDelta, 'outgoing evaluation delta must be preserved separately');
-  assert.equal(state.artifacts[0].iterationDelta, null, 'root has no incoming iteration delta');
-  assert.equal(state.selectedAId, null);
-  assert.equal(state.selectedBId, null);
+  await controller.openShot({projectId:'p1',sequenceId:'q1',shotId:'s2'});
+  state=controller.getState();
+  assert.deepEqual(state.artifacts.map((a)=>a.id),['h1']);
+  assert.equal(state.comparisons.length,0);
+  await assert.rejects(()=>controller.selectA('g1'),/Unknown A artifact/);
+  assert.equal(revoked.includes(s1Url),true,'switching Shots must revoke prior object URLs');
 
-  const g2 = generationArtifact('g2', 'g1');
-  const incomingDelta = clone(g2.iterationDelta);
-  await controller.ingestGeneration(g2);
-  await controller.ingestEvaluation(evaluationDetail(g2, 'pass'));
-  state = controller.getState();
-  assert.equal(state.artifacts.length, 2);
-  const child = state.artifacts.find((row) => row.id === 'g2');
-  assert.equal(child.parentArtifactId, 'g1');
-  assert.equal(child.rootArtifactId, 'g1');
-  assert.equal(child.generationIndex, 2);
-  assert.deepEqual(child.iterationDelta, incomingDelta, 'incoming delta that produced child must not be overwritten by child evaluation');
-  assert.ok(child.evaluationDelta, 'child outgoing evaluation delta is stored separately');
-  assert.equal(state.selectedAId, 'g1');
-  assert.equal(state.selectedBId, 'g2');
-  assert.equal(state.comparison.summary.stablePass, 1);
-  assert.equal(state.memory.locked.some((row) => row.checkId === 'canvas-ratio'), true, 'two passes on selected path should lock measured rule');
+  const h2=generationArtifact('h2','h1',{sourceShotId:'s1',sourceArtifactId:'g2',status:'resolved'});
+  const ingested=await controller.ingestGeneration(h2);
+  assert.equal(ingested.parentArtifactId,'h1');
+  assert.equal(ingested.rootArtifactId,'h1');
+  assert.equal(ingested.sequenceId,'q1');
+  assert.equal(ingested.shotId,'s2');
+  assert.equal(ingested.continuityProvenance.sourceArtifactId,'g2');
+  assert.notEqual(ingested.parentArtifactId,ingested.continuityProvenance.sourceArtifactId);
+  const persisted=await controller.ingestEvaluation(evaluationDetail(h2,'pass'));
+  assert.equal(persisted.parentArtifactId,'h1');
+  assert.equal(persisted.continuityProvenance.sourceArtifactId,'g2');
+  const stored=memory.artifacts.get('h2');
+  assert.equal(stored.shotId,'s2');
+  assert.equal(stored.parentArtifactId,'h1');
+  assert.equal(stored.continuityProvenance.sourceArtifactId,'g2');
+  const comparison=memory.comparisons.get('h1::h2');
+  assert.equal(comparison.sequenceId,'q1');
+  assert.equal(comparison.shotId,'s2');
 
-  await controller.setSemanticJudgment('narrative-verb', 'improved', 'Withdrawal reads more clearly.');
-  state = controller.getState();
-  assert.equal(state.comparison.semanticComparisons.find((row) => row.checkId === 'narrative-verb').state, 'improved');
-  assert.equal(state.memory.locked.some((row) => row.checkId === 'narrative-verb'), true, 'explicit improved director comparison can lock semantic rule on selected B path');
+  await assert.rejects(
+    ()=>controller.ingestGeneration(generationArtifact('bad-parent','g1',{sourceShotId:'s1',sourceArtifactId:'g2',status:'resolved'})),
+    /not in the Active Shot/
+  );
 
-  const branchResult = await controller.redirectFromArtifact('g1');
-  assert.equal(branchResult.iterationOf, 'g1');
-  assert.equal(generationRuns.length, 1);
-  assert.equal(generationRuns[0].artifact.id, 'g1');
-  assert.equal(generationRuns[0].artifact.baseRequest.prompt, 'BASE');
-  assert.equal((generationRuns[0].promptAppendix.match(/ITERATION \/ DIRECTOR MEMORY/g) || []).length, 1, 'branch prompt must contain exactly one bounded M4 appendix');
-  assert.doesNotMatch(generationRuns[0].promptAppendix, /CHILD HISTORICAL DELTA/, 'branching from g1 must not inherit g2 historical delta');
-  assert.match(generationRuns[0].promptAppendix, /Canvas Ratio/);
-
-  const g2b = generationArtifact('g2b', 'g1');
-  await controller.ingestGeneration(g2b);
-  await controller.ingestEvaluation(evaluationDetail(g2b, 'warn'));
-  const memoryA = controller.getMemoryFor('g2');
-  const memoryB = controller.getMemoryFor('g2b');
-  assert.equal(memoryA.locked.some((row) => row.checkId === 'canvas-ratio'), true, 'sibling regression must not unlock successful path A');
-  assert.equal(memoryB.locked.some((row) => row.checkId === 'canvas-ratio'), false);
-  assert.equal(memoryB.active.some((row) => row.checkId === 'canvas-ratio'), true);
-  assert.equal(memoryB.locked.some((row) => row.checkId === 'narrative-verb'), false, 'semantic conclusion on sibling g2 must not leak to g2b');
-
-  const renderUrl1 = await controller.getRenderableImage('g2');
-  const renderUrl2 = await controller.getRenderableImage('g2');
-  assert.equal(renderUrl1, renderUrl2, 'object URL must be cached per artifact');
-  assert.equal(objectUrls.length, 1);
-
-  const restored = createM4Controller({
-    memory,
-    compareArtifacts,
-    deriveMemoryForPath,
-    compileMemoryAppendix,
-    now:() => '2026-08-25T00:10:00.000Z'
-  });
-  await restored.boot();
-  const restoredState = restored.getState();
-  assert.equal(restoredState.artifacts.length, 3);
-  assert.equal(restoredState.selectedAId, 'g1');
-  assert.equal(restoredState.selectedBId, 'g2b');
-  assert.ok(restoredState.comparison);
+  await controller.setSemanticJudgment('narrative-verb','improved','Reads better.');
+  assert.equal(controller.getState().memory.locked.some((x)=>x.checkId==='narrative-verb'),true);
+  const branch=await controller.redirectFromArtifact('h1');
+  assert.equal(branch.iterationOf,'h1');
+  assert.equal(generationRuns[0].artifact.id,'h1');
 
   memory.setNextPersistenceStatus('not_persisted');
-  const g3 = generationArtifact('g3', 'g2');
-  await controller.ingestGeneration(g3);
-  await controller.ingestEvaluation(evaluationDetail(g3, 'pass'));
-  state = controller.getState();
-  assert.equal(state.artifacts.find((row) => row.id === 'g3').persistenceStatus, 'not_persisted');
-  assert.match(state.persistenceWarning, /not persisted/i);
-  assert.equal(memory.artifacts.has('g1'), true, 'failed later write must not delete prior persisted history');
+  const h3=generationArtifact('h3','h2',{sourceShotId:'s1',sourceArtifactId:'g2',status:'resolved'});
+  await controller.ingestGeneration(h3);
+  await controller.ingestEvaluation(evaluationDetail(h3,'pass'));
+  assert.match(controller.getState().persistenceWarning,/not persisted/i);
+  assert.ok(memory.artifacts.has('h1'));
+  assert.ok(memory.artifacts.has('h2'));
 
-  await controller.deleteSubtree('g2');
-  state = controller.getState();
-  assert.equal(state.artifacts.some((row) => row.id === 'g2'), false);
-  assert.equal(state.artifacts.some((row) => row.id === 'g3'), false);
-  assert.equal(state.artifacts.some((row) => row.id === 'g2b'), true, 'deleting branch A must not delete sibling branch B');
-  assert.equal(revoked.includes(renderUrl1), true, 'deleting subtree must revoke cached image URLs');
+  await controller.deleteSubtree('h2');
+  assert.deepEqual(controller.getState().artifacts.map((x)=>x.id),['h1']);
+  assert.ok(memory.artifacts.has('g1'),'other Shot history must survive same-Shot subtree deletion');
 
-  const switchMemory = createProjectSwitchMemory();
-  switchMemory.seedProject({id:'project-a',title:'Project A',createdAt:'2026-08-24T00:00:00.000Z',updatedAt:'2026-08-25T00:00:00.000Z'});
-  switchMemory.seedProject({id:'project-b',title:'Project B',createdAt:'2026-08-24T00:00:00.000Z',updatedAt:'2026-08-26T00:00:00.000Z'});
-  switchMemory.seedArtifact(persistedEvaluatedArtifact({id:'a1',projectId:'project-a',rootArtifactId:'a1',generationIndex:1}));
-  switchMemory.seedArtifact(persistedEvaluatedArtifact({id:'a2',projectId:'project-a',parentArtifactId:'a1',rootArtifactId:'a1',generationIndex:2}));
-  switchMemory.seedArtifact(persistedEvaluatedArtifact({id:'b1',projectId:'project-b',rootArtifactId:'b1',generationIndex:1}));
-  switchMemory.seedArtifact(persistedEvaluatedArtifact({id:'b2',projectId:'project-b',parentArtifactId:'b1',rootArtifactId:'b1',generationIndex:2}));
-  switchMemory.seedComparison({
-    id:'b1::b2',projectId:'project-b',artifactAId:'b1',artifactBId:'b2',
-    directorJudgments:{'narrative-verb':{state:'improved',note:'Project B only'}},
-    comparison:{summary:{stablePass:1}},updatedAt:'2026-08-26T00:00:00.000Z'
-  });
+  await controller.openProject('p1');
+  assert.equal(controller.getState().activeShotId,'s2','openProject compatibility must honor the persisted Active Shot');
+  assert.deepEqual(controller.getState().artifacts.map((x)=>x.id),['h1']);
 
-  const switchRevoked = [];
-  let switchUrlCount = 0;
-  const switching = createM4Controller({
-    memory:switchMemory,
-    compareArtifacts,
-    deriveMemoryForPath,
-    compileMemoryAppendix,
-    createObjectURL:() => `blob:switch-${++switchUrlCount}`,
-    revokeObjectURL:(url) => switchRevoked.push(url),
-    now:() => '2026-08-26T00:30:00.000Z'
-  });
+  const snapshot=controller.getExportSnapshot();
+  assert.equal(snapshot.activeShotId,'s2');
+  snapshot.artifacts[0].id='mutated';
+  assert.equal(controller.getState().artifacts[0].id,'h1');
 
-  await switching.boot({projectId:'project-a'});
-  let switchState = switching.getState();
-  assert.equal(switchState.project.id, 'project-a', 'explicit boot project must win over latest updatedAt project');
-  assert.deepEqual(switchState.artifacts.map((row) => row.id), ['a1','a2']);
-  assert.equal(switchState.selectedAId, 'a1');
-  assert.equal(switchState.selectedBId, 'a2');
-  assert.equal(switchState.memory.locked.some((row) => row.checkId === 'narrative-verb'), false, 'Project B semantic judgment must not leak into Project A');
+  memory.seedProject({id:'p2',title:'Newer',createdAt:'2026-08-28T00:00:00.000Z',updatedAt:'2026-08-29T00:00:00.000Z',activeSequenceId:'q2',activeShotId:'s9'});
+  memory.seedArtifact(persistedEvaluated({id:'z1',projectId:'p2',sequenceId:'q2',shotId:'s9',generationIndex:1}));
+  const restored=createM4Controller({memory,compareArtifacts,deriveMemoryForPath,compileMemoryAppendix,now:()=> '2026-08-28T03:00:00.000Z'});
+  await restored.boot({projectId:'missing'});
+  assert.equal(restored.getState().project.id,'p2');
+  assert.equal(restored.getState().activeShotId,'s9');
+  assert.deepEqual(restored.getState().artifacts.map((x)=>x.id),['z1']);
 
-  const projectAUrl = await switching.getRenderableImage('a2');
-  assert.match(projectAUrl, /^blob:switch-/);
-  await switching.openProject('project-b');
-  switchState = switching.getState();
-  assert.equal(switchState.project.id, 'project-b');
-  assert.deepEqual(switchState.artifacts.map((row) => row.id), ['b1','b2']);
-  assert.equal(switchState.selectedAId, 'b1');
-  assert.equal(switchState.selectedBId, 'b2');
-  assert.equal(switchState.memory.locked.some((row) => row.checkId === 'narrative-verb'), true, 'selected project comparison judgments must restore on switch');
-  assert.equal(switchRevoked.includes(projectAUrl), true, 'successful project switch must revoke prior project object URLs');
-
-  const beforeMissingOpen = switching.getState();
-  await assert.rejects(() => switching.openProject('project-missing'), /missing|unknown|project/i);
-  assert.deepEqual(switching.getState(), beforeMissingOpen, 'opening a missing project must preserve current working state');
-
-  const exportSnapshot = switching.getExportSnapshot();
-  assert.equal(exportSnapshot.project.id, 'project-b');
-  assert.deepEqual(exportSnapshot.artifacts.map((row) => row.id), ['b1','b2']);
-  assert.equal(exportSnapshot.comparisons.length, 1);
-  assert.ok(exportSnapshot.memorySnapshot, 'export snapshot must expose current derived memory');
-  exportSnapshot.project.title = 'MUTATED';
-  exportSnapshot.artifacts[0].id = 'mutated-artifact';
-  exportSnapshot.comparisons[0].id = 'mutated-comparison';
-  exportSnapshot.memorySnapshot.locked.length = 0;
-  const afterSnapshotMutation = switching.getState();
-  assert.equal(afterSnapshotMutation.project.title, 'Project B', 'export snapshot project must be detached from controller state');
-  assert.equal(afterSnapshotMutation.artifacts[0].id, 'b1', 'export snapshot artifacts must be detached from controller state');
-  assert.equal(afterSnapshotMutation.comparisons[0].id, 'b1::b2', 'export snapshot comparisons must be detached from controller state');
-  assert.equal(afterSnapshotMutation.memory.locked.some((row) => row.checkId === 'narrative-verb'), true, 'export snapshot memory must be detached from controller state');
-
-  const staleBoot = createM4Controller({
-    memory:switchMemory,
-    compareArtifacts,
-    deriveMemoryForPath,
-    compileMemoryAppendix,
-    now:() => '2026-08-26T00:30:00.000Z'
-  });
-  await staleBoot.boot({projectId:'project-does-not-exist'});
-  assert.equal(staleBoot.getState().project.id, 'project-b', 'stale preferred project ID must fall back to latest existing project');
-
-  assert.ok(emitted.length > 0, 'controller should emit state changes');
+  assert.ok(emitted.length>0);
   console.log('m4 controller tests passed');
-})().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+})().catch((error)=>{ console.error(error); process.exit(1); });

@@ -8,6 +8,8 @@
   const ALLOWED_ROOT = new Set([
     'manifest.json',
     'project.json',
+    'sequences.json',
+    'shots.json',
     'lineage.json',
     'comparisons.json',
     'memory.json'
