@@ -6,7 +6,7 @@
   'use strict';
 
   const DB_NAME = 'visual-direction-os-m4';
-  const DB_VERSION = 1;
+  const DB_VERSION = 2;
   const PERSISTENCE_STATUSES = Object.freeze(['persisted', 'not_persisted', 'meta_only']);
 
   function clone(value) {
@@ -38,9 +38,17 @@
     return status;
   }
 
+  function requiredId(value, label) {
+    const id = String(value || '').trim();
+    if (!id) throw new Error(`${label} is required for persistence`);
+    return id;
+  }
+
   function shapeArtifactRecord({
     artifact,
     projectId,
+    sequenceId,
+    shotId,
     rootArtifactId,
     parentArtifactId = null,
     generationIndex,
@@ -48,7 +56,9 @@
     persistenceStatus = 'persisted'
   } = {}) {
     if (!artifact?.id) throw new Error('Artifact id is required for persistence');
-    if (!projectId) throw new Error('projectId is required for persistence');
+    projectId = requiredId(projectId, 'projectId');
+    sequenceId = requiredId(sequenceId, 'sequenceId');
+    shotId = requiredId(shotId, 'shotId');
     if (!rootArtifactId) throw new Error('rootArtifactId is required for persistence');
     if (!Number.isInteger(generationIndex) || generationIndex < 1) throw new Error('generationIndex must be a positive integer');
     assertPersistenceStatus(persistenceStatus);
@@ -57,25 +67,28 @@
     if (result && Object.prototype.hasOwnProperty.call(result, 'src')) delete result.src;
 
     return {
-      id: artifact.id,
+      id:artifact.id,
       projectId,
+      sequenceId,
+      shotId,
       rootArtifactId,
-      parentArtifactId: parentArtifactId ?? null,
+      parentArtifactId:parentArtifactId ?? null,
       generationIndex,
-      createdAt: artifact.createdAt || new Date().toISOString(),
-      provider: String(artifact.provider || artifact.request?.model || 'unknown'),
-      request: clone(artifact.request || null),
-      baseRequest: clone(artifact.baseRequest || artifact.request || null),
+      createdAt:artifact.createdAt || new Date().toISOString(),
+      provider:String(artifact.provider || artifact.request?.model || 'unknown'),
+      request:clone(artifact.request || null),
+      baseRequest:clone(artifact.baseRequest || artifact.request || null),
       result,
-      visualIR: clone(artifact.visualIR || null),
-      measurements: clone(artifact.measurements || null),
-      evaluation: clone(artifact.evaluation || null),
-      humanJudgments: clone(artifact.humanJudgments || {}),
-      iterationDelta: clone(artifact.iterationDelta || null),
-      evaluationDelta: clone(artifact.evaluationDelta || null),
-      comparison: clone(artifact.comparison || null),
+      visualIR:clone(artifact.visualIR || null),
+      measurements:clone(artifact.measurements || null),
+      evaluation:clone(artifact.evaluation || null),
+      humanJudgments:clone(artifact.humanJudgments || {}),
+      iterationDelta:clone(artifact.iterationDelta || null),
+      evaluationDelta:clone(artifact.evaluationDelta || null),
+      comparison:clone(artifact.comparison || null),
+      continuityProvenance:clone(artifact.continuityProvenance || null),
       imageBlob,
-      imageMimeType: imageBlob?.type || null,
+      imageMimeType:imageBlob?.type || artifact.imageMimeType || null,
       persistenceStatus
     };
   }
@@ -92,20 +105,13 @@
     if (!src) return null;
     if (src.startsWith('data:')) return dataUrlToBlob(src);
     if (result?.kind !== 'url' && !/^https?:\/\//i.test(src)) return null;
-
     if (typeof fetchImpl !== 'function') throw imageFetchError('Image fetch is unavailable for URL persistence');
     let response;
-    try {
-      response = await fetchImpl(src);
-    } catch (error) {
-      throw imageFetchError(error?.message || 'Generated image URL could not be fetched', error);
-    }
+    try { response = await fetchImpl(src); }
+    catch (error) { throw imageFetchError(error?.message || 'Generated image URL could not be fetched', error); }
     if (!response?.ok) throw imageFetchError(`Generated image URL returned HTTP ${response?.status || 'error'}`);
-    try {
-      return await response.blob();
-    } catch (error) {
-      throw imageFetchError('Generated image response could not be converted to a Blob', error);
-    }
+    try { return await response.blob(); }
+    catch (error) { throw imageFetchError('Generated image response could not be converted to a Blob', error); }
   }
 
   function requestToPromise(request) {
@@ -128,33 +134,64 @@
   }
 
   function sortProjects(rows = []) {
-    return [...rows].sort((a, b) => {
+    return [...rows].sort((a,b) => {
       const byTime = String(b?.updatedAt || '').localeCompare(String(a?.updatedAt || ''));
       return byTime || String(a?.id || '').localeCompare(String(b?.id || ''));
     });
   }
-
+  function sortOrdered(rows = []) {
+    return [...rows].sort((a,b) => (Number(a?.order) || 0) - (Number(b?.order) || 0) || String(a?.id || '').localeCompare(String(b?.id || '')));
+  }
   function sortArtifacts(rows = []) {
-    return [...rows].sort((a, b) => {
-      const byIndex = (Number(a?.generationIndex) || 0) - (Number(b?.generationIndex) || 0);
-      return byIndex || String(a?.id || '').localeCompare(String(b?.id || ''));
-    });
+    return [...rows].sort((a,b) => (Number(a?.generationIndex) || 0) - (Number(b?.generationIndex) || 0) || String(a?.id || '').localeCompare(String(b?.id || '')));
   }
 
-  function assertProjectBundle({ mode, project, artifacts = [], comparisons = [], replaceProjectId = null } = {}) {
-    if (!['copy', 'replace'].includes(mode)) throw new Error(`Unsupported project bundle mode: ${mode}`);
+  function assertProjectBundle({ mode, project, sequences = [], shots = [], artifacts = [], comparisons = [], replaceProjectId = null } = {}) {
+    if (!['copy','replace'].includes(mode)) throw new Error(`Unsupported project bundle mode: ${mode}`);
     if (!project?.id) throw new Error('Project bundle requires project.id');
-    if (!Array.isArray(artifacts) || !Array.isArray(comparisons)) throw new Error('Project bundle artifacts and comparisons must be arrays');
+    for (const rows of [sequences,shots,artifacts,comparisons]) if (!Array.isArray(rows)) throw new Error('Project bundle collections must be arrays');
     if (mode === 'replace' && !String(replaceProjectId || project.id).trim()) throw new Error('Replace bundle requires a target project id');
+
+    const projectId = String(project.id);
+    const sequenceIds = new Set();
+    const shotById = new Map();
+    const artifactById = new Map();
+    for (const row of sequences) {
+      if (!row?.id) throw new Error('Project bundle sequence id is required');
+      if (row.projectId !== projectId) throw new Error(`Sequence ${row.id} does not belong to project ${projectId}`);
+      if (sequenceIds.has(row.id)) throw new Error(`Duplicate sequence id: ${row.id}`);
+      sequenceIds.add(row.id);
+    }
+    for (const row of shots) {
+      if (!row?.id) throw new Error('Project bundle shot id is required');
+      if (row.projectId !== projectId) throw new Error(`Shot ${row.id} does not belong to project ${projectId}`);
+      if (!sequenceIds.has(row.sequenceId)) throw new Error(`Shot ${row.id} references unknown sequence ${row.sequenceId}`);
+      if (shotById.has(row.id)) throw new Error(`Duplicate shot id: ${row.id}`);
+      shotById.set(row.id, row);
+    }
+    const structured = sequences.length || shots.length;
     for (const row of artifacts) {
       if (!row?.id) throw new Error('Project bundle artifact id is required');
-      if (row.projectId !== project.id) throw new Error(`Artifact ${row.id} does not belong to project ${project.id}`);
+      if (row.projectId !== projectId) throw new Error(`Artifact ${row.id} does not belong to project ${projectId}`);
+      if (structured) {
+        const shot = shotById.get(row.shotId);
+        if (!shot || row.sequenceId !== shot.sequenceId) throw new Error(`Artifact ${row.id} does not belong to a valid Shot`);
+      }
+      if (artifactById.has(row.id)) throw new Error(`Duplicate artifact id: ${row.id}`);
+      artifactById.set(row.id, row);
     }
     for (const row of comparisons) {
       if (!row?.id) throw new Error('Project bundle comparison id is required');
-      if (row.projectId !== project.id) throw new Error(`Comparison ${row.id} does not belong to project ${project.id}`);
+      if (row.projectId !== projectId) throw new Error(`Comparison ${row.id} does not belong to project ${projectId}`);
+      if (structured) {
+        const shot = shotById.get(row.shotId);
+        if (!shot || row.sequenceId !== shot.sequenceId) throw new Error(`Comparison ${row.id} does not belong to a valid Shot`);
+        const a = artifactById.get(row.artifactAId);
+        const b = artifactById.get(row.artifactBId);
+        if ((a && a.shotId !== row.shotId) || (b && b.shotId !== row.shotId)) throw new Error(`Comparison ${row.id} crosses Shot boundaries`);
+      }
     }
-    return { mode, project, artifacts, comparisons, replaceProjectId:replaceProjectId || null };
+    return { mode, project, sequences, shots, artifacts, comparisons, replaceProjectId:replaceProjectId || null };
   }
 
   function createIndexedDbStore(runtimeRoot = root) {
@@ -164,350 +201,207 @@
 
     function open() {
       if (dbPromise) return dbPromise;
-      dbPromise = new Promise((resolve, reject) => {
+      dbPromise = new Promise((resolve,reject) => {
         const request = indexedDB.open(DB_NAME, DB_VERSION);
         request.onupgradeneeded = () => {
           const db = request.result;
-          const projectStore = db.objectStoreNames.contains('projects')
-            ? request.transaction.objectStore('projects')
-            : db.createObjectStore('projects', { keyPath:'id' });
-          ensureIndex(projectStore, 'updatedAt', 'updatedAt');
-
-          const artifactStore = db.objectStoreNames.contains('artifacts')
-            ? request.transaction.objectStore('artifacts')
-            : db.createObjectStore('artifacts', { keyPath:'id' });
-          ensureIndex(artifactStore, 'projectId', 'projectId');
-          ensureIndex(artifactStore, 'parentArtifactId', 'parentArtifactId');
-          ensureIndex(artifactStore, 'rootArtifactId', 'rootArtifactId');
-          ensureIndex(artifactStore, 'generationIndex', 'generationIndex');
-
-          const comparisonStore = db.objectStoreNames.contains('comparisons')
-            ? request.transaction.objectStore('comparisons')
-            : db.createObjectStore('comparisons', { keyPath:'id' });
-          ensureIndex(comparisonStore, 'projectId', 'projectId');
-          ensureIndex(comparisonStore, 'artifactAId', 'artifactAId');
-          ensureIndex(comparisonStore, 'artifactBId', 'artifactBId');
+          const tx = request.transaction;
+          const projectStore = db.objectStoreNames.contains('projects') ? tx.objectStore('projects') : db.createObjectStore('projects',{keyPath:'id'});
+          ensureIndex(projectStore,'updatedAt','updatedAt');
+          const sequenceStore = db.objectStoreNames.contains('sequences') ? tx.objectStore('sequences') : db.createObjectStore('sequences',{keyPath:'id'});
+          ensureIndex(sequenceStore,'projectId','projectId');
+          ensureIndex(sequenceStore,'order','order');
+          const shotStore = db.objectStoreNames.contains('shots') ? tx.objectStore('shots') : db.createObjectStore('shots',{keyPath:'id'});
+          ensureIndex(shotStore,'projectId','projectId');
+          ensureIndex(shotStore,'sequenceId','sequenceId');
+          ensureIndex(shotStore,'order','order');
+          const artifactStore = db.objectStoreNames.contains('artifacts') ? tx.objectStore('artifacts') : db.createObjectStore('artifacts',{keyPath:'id'});
+          ensureIndex(artifactStore,'projectId','projectId');
+          ensureIndex(artifactStore,'sequenceId','sequenceId');
+          ensureIndex(artifactStore,'shotId','shotId');
+          ensureIndex(artifactStore,'parentArtifactId','parentArtifactId');
+          ensureIndex(artifactStore,'rootArtifactId','rootArtifactId');
+          ensureIndex(artifactStore,'generationIndex','generationIndex');
+          const comparisonStore = db.objectStoreNames.contains('comparisons') ? tx.objectStore('comparisons') : db.createObjectStore('comparisons',{keyPath:'id'});
+          ensureIndex(comparisonStore,'projectId','projectId');
+          ensureIndex(comparisonStore,'sequenceId','sequenceId');
+          ensureIndex(comparisonStore,'shotId','shotId');
+          ensureIndex(comparisonStore,'artifactAId','artifactAId');
+          ensureIndex(comparisonStore,'artifactBId','artifactBId');
         };
         request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error || new Error('Unable to open M4 IndexedDB'));
-        request.onblocked = () => reject(new Error('M4 IndexedDB upgrade is blocked by another page'));
+        request.onerror = () => reject(request.error || new Error('Unable to open M6 IndexedDB'));
+        request.onblocked = () => reject(new Error('M6 IndexedDB upgrade is blocked by another page'));
       });
       return dbPromise;
     }
 
-    async function getAllByIndex(storeName, indexName, value) {
+    async function getAllByIndex(storeName,indexName,value) {
       const db = await open();
-      const tx = db.transaction(storeName, 'readonly');
+      const tx = db.transaction(storeName,'readonly');
       const done = transactionToPromise(tx);
       const rows = await requestToPromise(tx.objectStore(storeName).index(indexName).getAll(value));
       await done;
       return rows || [];
     }
-
-    function deleteByProject(tx, storeName, projectId) {
-      return new Promise((resolve, reject) => {
-        const index = tx.objectStore(storeName).index('projectId');
-        const request = index.openCursor(projectId);
-        request.onsuccess = () => {
-          const cursor = request.result;
-          if (!cursor) return resolve();
-          cursor.delete();
-          cursor.continue();
-        };
+    function deleteByProject(tx,storeName,projectId) {
+      return new Promise((resolve,reject) => {
+        const request = tx.objectStore(storeName).index('projectId').openCursor(projectId);
+        request.onsuccess = () => { const cursor = request.result; if (!cursor) return resolve(); cursor.delete(); cursor.continue(); };
         request.onerror = () => reject(request.error || new Error(`Unable to clear ${storeName}`));
       });
     }
+    async function deleteOne(storeName,id) {
+      const db = await open();
+      const tx = db.transaction(storeName,'readwrite');
+      const done = transactionToPromise(tx);
+      tx.objectStore(storeName).delete(id);
+      await done;
+    }
 
     return {
-      async putProject(project) {
-        const db = await open();
-        const tx = db.transaction('projects', 'readwrite');
-        const done = transactionToPromise(tx);
-        tx.objectStore('projects').put(clone(project));
-        await done;
-        return project;
-      },
-      async getProject(id) {
-        const db = await open();
-        const tx = db.transaction('projects', 'readonly');
-        const done = transactionToPromise(tx);
-        const result = await requestToPromise(tx.objectStore('projects').get(id));
-        await done;
-        return result ? clone(result) : null;
-      },
-      async listProjects() {
-        const db = await open();
-        const tx = db.transaction('projects', 'readonly');
-        const done = transactionToPromise(tx);
-        const rows = await requestToPromise(tx.objectStore('projects').getAll());
-        await done;
-        return sortProjects((rows || []).map((row) => clone(row)));
-      },
-      async getLatestProject() {
-        const db = await open();
-        const tx = db.transaction('projects', 'readonly');
-        const done = transactionToPromise(tx);
-        const index = tx.objectStore('projects').index('updatedAt');
-        const result = await new Promise((resolve, reject) => {
-          const request = index.openCursor(null, 'prev');
-          request.onsuccess = () => resolve(request.result?.value || null);
-          request.onerror = () => reject(request.error || new Error('Unable to read latest M4 project'));
-        });
-        await done;
-        return result ? clone(result) : null;
-      },
-      async putArtifact(row) {
-        const db = await open();
-        const tx = db.transaction('artifacts', 'readwrite');
-        const done = transactionToPromise(tx);
-        tx.objectStore('artifacts').put(row);
-        await done;
-        return row;
-      },
-      async getArtifact(id) {
-        const db = await open();
-        const tx = db.transaction('artifacts', 'readonly');
-        const done = transactionToPromise(tx);
-        const result = await requestToPromise(tx.objectStore('artifacts').get(id));
-        await done;
-        return result || null;
-      },
-      async listArtifacts(projectId) {
-        const rows = await getAllByIndex('artifacts', 'projectId', projectId);
-        return sortArtifacts(rows);
-      },
-      async getChildren(parentArtifactId) {
-        const rows = await getAllByIndex('artifacts', 'parentArtifactId', parentArtifactId);
-        return sortArtifacts(rows);
-      },
-      async deleteArtifacts(ids) {
-        const db = await open();
-        const tx = db.transaction('artifacts', 'readwrite');
-        const done = transactionToPromise(tx);
-        const store = tx.objectStore('artifacts');
-        for (const id of ids) store.delete(id);
-        await done;
-      },
+      async putProject(project) { const db=await open(); const tx=db.transaction('projects','readwrite'); const done=transactionToPromise(tx); tx.objectStore('projects').put(clone(project)); await done; return project; },
+      async getProject(id) { const db=await open(); const tx=db.transaction('projects','readonly'); const done=transactionToPromise(tx); const row=await requestToPromise(tx.objectStore('projects').get(id)); await done; return row ? clone(row) : null; },
+      async listProjects() { const db=await open(); const tx=db.transaction('projects','readonly'); const done=transactionToPromise(tx); const rows=await requestToPromise(tx.objectStore('projects').getAll()); await done; return sortProjects((rows||[]).map(clone)); },
+      async getLatestProject() { const db=await open(); const tx=db.transaction('projects','readonly'); const done=transactionToPromise(tx); const index=tx.objectStore('projects').index('updatedAt'); const row=await new Promise((resolve,reject)=>{const request=index.openCursor(null,'prev');request.onsuccess=()=>resolve(request.result?.value||null);request.onerror=()=>reject(request.error||new Error('Unable to read latest project'));}); await done; return row ? clone(row) : null; },
+
+      async putSequence(row) { const db=await open(); const tx=db.transaction('sequences','readwrite'); const done=transactionToPromise(tx); tx.objectStore('sequences').put(clone(row)); await done; return row; },
+      async getSequence(id) { const db=await open(); const tx=db.transaction('sequences','readonly'); const done=transactionToPromise(tx); const row=await requestToPromise(tx.objectStore('sequences').get(id)); await done; return row ? clone(row) : null; },
+      async listSequences(projectId) { return sortOrdered((await getAllByIndex('sequences','projectId',projectId)).map(clone)); },
+      async deleteSequence(id) { return deleteOne('sequences',id); },
+
+      async putShot(row) { const db=await open(); const tx=db.transaction('shots','readwrite'); const done=transactionToPromise(tx); tx.objectStore('shots').put(clone(row)); await done; return row; },
+      async getShot(id) { const db=await open(); const tx=db.transaction('shots','readonly'); const done=transactionToPromise(tx); const row=await requestToPromise(tx.objectStore('shots').get(id)); await done; return row ? clone(row) : null; },
+      async listShots(sequenceId) { return sortOrdered((await getAllByIndex('shots','sequenceId',sequenceId)).map(clone)); },
+      async deleteShot(id) { return deleteOne('shots',id); },
+
+      async putArtifact(row) { const db=await open(); const tx=db.transaction('artifacts','readwrite'); const done=transactionToPromise(tx); tx.objectStore('artifacts').put(clone(row)); await done; return row; },
+      async getArtifact(id) { const db=await open(); const tx=db.transaction('artifacts','readonly'); const done=transactionToPromise(tx); const row=await requestToPromise(tx.objectStore('artifacts').get(id)); await done; return row ? clone(row) : null; },
+      async listArtifacts(projectId) { return sortArtifacts((await getAllByIndex('artifacts','projectId',projectId)).map(clone)); },
+      async listArtifactsForShot(projectId,sequenceId,shotId) { return sortArtifacts((await getAllByIndex('artifacts','shotId',shotId)).filter((row)=>row.projectId===projectId&&row.sequenceId===sequenceId).map(clone)); },
+      async getChildren(parentArtifactId) { return sortArtifacts((await getAllByIndex('artifacts','parentArtifactId',parentArtifactId)).map(clone)); },
+      async deleteArtifacts(ids) { const db=await open(); const tx=db.transaction('artifacts','readwrite'); const done=transactionToPromise(tx); const store=tx.objectStore('artifacts'); for (const id of ids) store.delete(id); await done; },
+
+      async putComparison(row) { const db=await open(); const tx=db.transaction('comparisons','readwrite'); const done=transactionToPromise(tx); tx.objectStore('comparisons').put(clone(row)); await done; return row; },
+      async listComparisons(projectId) { return (await getAllByIndex('comparisons','projectId',projectId)).map(clone); },
+      async listComparisonsForShot(projectId,sequenceId,shotId) { return (await getAllByIndex('comparisons','shotId',shotId)).filter((row)=>row.projectId===projectId&&row.sequenceId===sequenceId).map(clone); },
+
       async clearProject(projectId) {
-        const db = await open();
-        const tx = db.transaction(['projects','artifacts','comparisons'], 'readwrite');
-        const done = transactionToPromise(tx);
+        const db=await open(); const tx=db.transaction(['projects','sequences','shots','artifacts','comparisons'],'readwrite'); const done=transactionToPromise(tx);
         tx.objectStore('projects').delete(projectId);
-        await Promise.all([
-          deleteByProject(tx, 'artifacts', projectId),
-          deleteByProject(tx, 'comparisons', projectId)
+        await Promise.all(['sequences','shots','artifacts','comparisons'].map((name)=>deleteByProject(tx,name,projectId)));
+        await done;
+      },
+
+      async loadProjectBundle(projectId) {
+        const db=await open(); const tx=db.transaction(['projects','sequences','shots','artifacts','comparisons'],'readonly'); const done=transactionToPromise(tx);
+        const [project,sequences,shots,artifacts,comparisons]=await Promise.all([
+          requestToPromise(tx.objectStore('projects').get(projectId)),
+          requestToPromise(tx.objectStore('sequences').index('projectId').getAll(projectId)),
+          requestToPromise(tx.objectStore('shots').index('projectId').getAll(projectId)),
+          requestToPromise(tx.objectStore('artifacts').index('projectId').getAll(projectId)),
+          requestToPromise(tx.objectStore('comparisons').index('projectId').getAll(projectId))
         ]);
         await done;
+        return { project:project?clone(project):null, sequences:sortOrdered((sequences||[]).map(clone)), shots:sortOrdered((shots||[]).map(clone)), artifacts:sortArtifacts((artifacts||[]).map(clone)), comparisons:(comparisons||[]).map(clone) };
       },
-      async putComparison(row) {
-        const db = await open();
-        const tx = db.transaction('comparisons', 'readwrite');
-        const done = transactionToPromise(tx);
-        tx.objectStore('comparisons').put(clone(row));
-        await done;
-        return row;
-      },
-      async listComparisons(projectId) {
-        return getAllByIndex('comparisons', 'projectId', projectId);
-      },
-      async loadProjectBundle(projectId) {
-        const db = await open();
-        const tx = db.transaction(['projects','artifacts','comparisons'], 'readonly');
-        const done = transactionToPromise(tx);
-        const projectRequest = requestToPromise(tx.objectStore('projects').get(projectId));
-        const artifactsRequest = requestToPromise(tx.objectStore('artifacts').index('projectId').getAll(projectId));
-        const comparisonsRequest = requestToPromise(tx.objectStore('comparisons').index('projectId').getAll(projectId));
-        const [project, artifacts, comparisons] = await Promise.all([projectRequest, artifactsRequest, comparisonsRequest]);
-        await done;
-        return {
-          project:project ? clone(project) : null,
-          artifacts:sortArtifacts((artifacts || []).map((row) => clone(row))),
-          comparisons:(comparisons || []).map((row) => clone(row))
-        };
-      },
-      async commitProjectBundle(input = {}) {
-        const bundle = assertProjectBundle(input);
-        const db = await open();
-        const tx = db.transaction(['projects','artifacts','comparisons'], 'readwrite');
-        const done = transactionToPromise(tx);
-        const projectStore = tx.objectStore('projects');
-        const artifactStore = tx.objectStore('artifacts');
-        const comparisonStore = tx.objectStore('comparisons');
 
+      async commitProjectBundle(input={}) {
+        const bundle=assertProjectBundle(input); const db=await open();
+        const tx=db.transaction(['projects','sequences','shots','artifacts','comparisons'],'readwrite'); const done=transactionToPromise(tx);
+        const stores={ projects:tx.objectStore('projects'), sequences:tx.objectStore('sequences'), shots:tx.objectStore('shots'), artifacts:tx.objectStore('artifacts'), comparisons:tx.objectStore('comparisons') };
         try {
-          if (bundle.mode === 'replace') {
-            const targetId = bundle.replaceProjectId || bundle.project.id;
-            projectStore.delete(targetId);
-            await Promise.all([
-              deleteByProject(tx, 'artifacts', targetId),
-              deleteByProject(tx, 'comparisons', targetId)
-            ]);
+          if (bundle.mode==='replace') {
+            const target=bundle.replaceProjectId||bundle.project.id;
+            stores.projects.delete(target);
+            await Promise.all(['sequences','shots','artifacts','comparisons'].map((name)=>deleteByProject(tx,name,target)));
           }
-
-          const addOrPutProject = bundle.mode === 'copy' ? projectStore.add.bind(projectStore) : projectStore.put.bind(projectStore);
-          addOrPutProject(clone(bundle.project));
-          for (const row of bundle.artifacts) artifactStore.add(clone(row));
-          for (const row of bundle.comparisons) comparisonStore.add(clone(row));
+          const writeProject=bundle.mode==='copy'?stores.projects.add.bind(stores.projects):stores.projects.put.bind(stores.projects);
+          writeProject(clone(bundle.project));
+          for (const row of bundle.sequences) stores.sequences.add(clone(row));
+          for (const row of bundle.shots) stores.shots.add(clone(row));
+          for (const row of bundle.artifacts) stores.artifacts.add(clone(row));
+          for (const row of bundle.comparisons) stores.comparisons.add(clone(row));
           await done;
         } catch (error) {
-          try { if (tx.readyState !== 'done') tx.abort(); } catch (_) {}
+          try { tx.abort(); } catch (_) {}
           try { await done; } catch (_) {}
           throw error;
         }
-
-        return {
-          project:clone(bundle.project),
-          artifactCount:bundle.artifacts.length,
-          comparisonCount:bundle.comparisons.length
-        };
+        return { project:clone(bundle.project), sequenceCount:bundle.sequences.length, shotCount:bundle.shots.length, artifactCount:bundle.artifacts.length, comparisonCount:bundle.comparisons.length };
       }
     };
   }
 
   function createDirectorMemory({ store, storageManager, fetchImpl } = {}) {
     if (!store) throw new Error('Director memory requires a persistence store');
-    const storage = storageManager || root?.navigator?.storage || null;
-    const fetchFn = fetchImpl || root?.fetch;
+    const storage=storageManager||root?.navigator?.storage||null;
+    const fetchFn=fetchImpl||root?.fetch;
 
-    async function ensureProject(input = {}) {
-      const now = input.updatedAt || new Date().toISOString();
-      const id = input.id || `project-${Date.now().toString(36)}`;
-      const project = {
+    async function ensureProject(input={}) {
+      const now=input.updatedAt||new Date().toISOString();
+      const id=input.id||`project-${Date.now().toString(36)}`;
+      const project={
         id,
-        createdAt: input.createdAt || now,
-        updatedAt: now,
-        title: input.title || 'Untitled Director Project',
-        ...(input.provenance ? { provenance:clone(input.provenance) } : {}),
-        ...(input.importAudit ? { importAudit:clone(input.importAudit) } : {})
+        createdAt:input.createdAt||now,
+        updatedAt:now,
+        title:input.title||'Untitled Director Project',
+        ...(input.activeSequenceId!==undefined?{activeSequenceId:input.activeSequenceId}:{}),
+        ...(input.activeShotId!==undefined?{activeShotId:input.activeShotId}:{}),
+        ...(input.provenance?{provenance:clone(input.provenance)}:{}),
+        ...(input.importAudit?{importAudit:clone(input.importAudit)}:{})
       };
-      await store.putProject(project);
-      return project;
+      await store.putProject(project); return project;
     }
 
-    async function saveArtifact(record) {
-      await store.putArtifact(record);
-      return record;
+    async function saveArtifact(record){ await store.putArtifact(record); return record; }
+    async function saveGenerationArtifact({artifact,lineage}={}) {
+      if (!artifact||!lineage) throw new Error('Artifact and lineage are required for persistence');
+      for (const key of ['projectId','sequenceId','shotId','rootArtifactId']) requiredId(lineage[key],key);
+      let imageBlob=null; let imageStatus='persisted';
+      try { imageBlob=await resolveImageBlob(artifact.result,fetchFn); if (!imageBlob) imageStatus='meta_only'; }
+      catch(error){ if(error?.code!=='IMAGE_FETCH_FAILED') throw error; imageStatus='meta_only'; }
+      const base={ artifact, projectId:lineage.projectId, sequenceId:lineage.sequenceId, shotId:lineage.shotId, rootArtifactId:lineage.rootArtifactId, parentArtifactId:lineage.parentArtifactId??null, generationIndex:lineage.generationIndex };
+      const record=shapeArtifactRecord({...base,imageBlob,persistenceStatus:imageStatus});
+      try { await store.putArtifact(record); return record; }
+      catch(error){ return {...shapeArtifactRecord({...base,imageBlob:null,persistenceStatus:'not_persisted'}),persistenceError:String(error?.message||error)}; }
     }
 
-    async function saveGenerationArtifact({ artifact, lineage } = {}) {
-      if (!artifact || !lineage) throw new Error('Artifact and lineage are required for persistence');
-      let imageBlob = null;
-      let imageStatus = 'persisted';
-      try {
-        imageBlob = await resolveImageBlob(artifact.result, fetchFn);
-        if (!imageBlob) imageStatus = 'meta_only';
-      } catch (error) {
-        if (error?.code !== 'IMAGE_FETCH_FAILED') throw error;
-        imageStatus = 'meta_only';
+    async function getArtifact(id){ return store.getArtifact(id); }
+    async function listArtifacts(projectId){ return store.listArtifacts(projectId); }
+    async function listArtifactsForShot(projectId,sequenceId,shotId){ return typeof store.listArtifactsForShot==='function' ? store.listArtifactsForShot(projectId,sequenceId,shotId) : (await listArtifacts(projectId)).filter((r)=>r.sequenceId===sequenceId&&r.shotId===shotId); }
+    async function getChildren(parentArtifactId){ return store.getChildren(parentArtifactId); }
+    async function getLatestProject(){ return store.getLatestProject(); }
+    async function getProject(id){ if(typeof store.getProject!=='function') throw new Error('Persistence store cannot read projects by id'); return store.getProject(id); }
+    async function listProjects(){ if(typeof store.listProjects!=='function') throw new Error('Persistence store cannot list projects'); return store.listProjects(); }
+    async function putSequence(row){ if(typeof store.putSequence!=='function') throw new Error('Persistence store cannot write sequences'); return store.putSequence(row); }
+    async function getSequence(id){ return typeof store.getSequence==='function'?store.getSequence(id):null; }
+    async function listSequences(projectId){ return typeof store.listSequences==='function'?store.listSequences(projectId):[]; }
+    async function deleteSequence(id){ if(typeof store.deleteSequence!=='function') throw new Error('Persistence store cannot delete sequences'); return store.deleteSequence(id); }
+    async function putShot(row){ if(typeof store.putShot!=='function') throw new Error('Persistence store cannot write shots'); return store.putShot(row); }
+    async function getShot(id){ return typeof store.getShot==='function'?store.getShot(id):null; }
+    async function listShots(sequenceId){ return typeof store.listShots==='function'?store.listShots(sequenceId):[]; }
+    async function deleteShot(id){ if(typeof store.deleteShot!=='function') throw new Error('Persistence store cannot delete shots'); return store.deleteShot(id); }
+    async function saveComparison(record){ if(typeof store.putComparison!=='function') return record; await store.putComparison(record); return record; }
+    async function listComparisons(projectId){ return typeof store.listComparisons==='function'?store.listComparisons(projectId):[]; }
+    async function listComparisonsForShot(projectId,sequenceId,shotId){ return typeof store.listComparisonsForShot==='function' ? store.listComparisonsForShot(projectId,sequenceId,shotId) : (await listComparisons(projectId)).filter((r)=>r.sequenceId===sequenceId&&r.shotId===shotId); }
+    async function loadProjectBundle(projectId){
+      if(typeof store.loadProjectBundle==='function') {
+        const bundle=await store.loadProjectBundle(projectId);
+        return { project:bundle?.project||null, sequences:bundle?.sequences||[], shots:bundle?.shots||[], artifacts:bundle?.artifacts||[], comparisons:bundle?.comparisons||[] };
       }
-
-      const record = shapeArtifactRecord({
-        artifact,
-        projectId:lineage.projectId,
-        rootArtifactId:lineage.rootArtifactId,
-        parentArtifactId:lineage.parentArtifactId ?? null,
-        generationIndex:lineage.generationIndex,
-        imageBlob,
-        persistenceStatus:imageStatus
-      });
-
-      try {
-        await store.putArtifact(record);
-        return record;
-      } catch (error) {
-        return {
-          ...shapeArtifactRecord({
-            artifact,
-            projectId:lineage.projectId,
-            rootArtifactId:lineage.rootArtifactId,
-            parentArtifactId:lineage.parentArtifactId ?? null,
-            generationIndex:lineage.generationIndex,
-            imageBlob:null,
-            persistenceStatus:'not_persisted'
-          }),
-          persistenceError:String(error?.message || error)
-        };
-      }
+      return { project:await getProject(projectId), sequences:await listSequences(projectId), shots:[], artifacts:await listArtifacts(projectId), comparisons:await listComparisons(projectId) };
     }
-
-    async function getArtifact(id) { return store.getArtifact(id); }
-    async function listArtifacts(projectId) { return store.listArtifacts(projectId); }
-    async function getChildren(parentArtifactId) { return store.getChildren(parentArtifactId); }
-    async function getLatestProject() { return store.getLatestProject(); }
-    async function getProject(id) {
-      if (typeof store.getProject !== 'function') throw new Error('Persistence store cannot read projects by id');
-      return store.getProject(id);
-    }
-    async function listProjects() {
-      if (typeof store.listProjects !== 'function') throw new Error('Persistence store cannot list projects');
-      return store.listProjects();
-    }
-    async function loadProjectBundle(projectId) {
-      if (typeof store.loadProjectBundle === 'function') return store.loadProjectBundle(projectId);
-      const project = await getProject(projectId);
-      return {
-        project,
-        artifacts:await listArtifacts(projectId),
-        comparisons:await listComparisons(projectId)
-      };
-    }
-    async function commitProjectBundle(bundle) {
-      if (typeof store.commitProjectBundle !== 'function') throw new Error('Persistence store cannot commit project bundles atomically');
-      return store.commitProjectBundle(bundle);
-    }
-    async function saveComparison(record) {
-      if (typeof store.putComparison !== 'function') return record;
-      await store.putComparison(record);
-      return record;
-    }
-    async function listComparisons(projectId) {
-      if (typeof store.listComparisons !== 'function') return [];
-      return store.listComparisons(projectId);
-    }
-
-    async function estimateStorage() {
-      if (!storage || typeof storage.estimate !== 'function') return null;
-      const estimate = await storage.estimate();
-      return { usage:estimate?.usage ?? null, quota:estimate?.quota ?? null };
-    }
-
-    async function collectSubtreeIds(id, ids = new Set()) {
-      if (ids.has(id)) return ids;
-      ids.add(id);
-      const children = await store.getChildren(id);
-      for (const child of children || []) await collectSubtreeIds(child.id, ids);
-      return ids;
-    }
-
-    async function deleteSubtree(id) {
-      const ids = [...await collectSubtreeIds(id)];
-      if (typeof store.deleteArtifacts !== 'function') throw new Error('Persistence store cannot delete artifact subtrees');
-      await store.deleteArtifacts(ids);
-      return ids;
-    }
-
-    async function clearProject(projectId) {
-      if (typeof store.clearProject !== 'function') throw new Error('Persistence store cannot clear projects');
-      await store.clearProject(projectId);
-    }
+    async function commitProjectBundle(bundle){ if(typeof store.commitProjectBundle!=='function') throw new Error('Persistence store cannot commit project bundles atomically'); return store.commitProjectBundle(bundle); }
+    async function estimateStorage(){ if(!storage||typeof storage.estimate!=='function') return null; const estimate=await storage.estimate(); return {usage:estimate?.usage??null,quota:estimate?.quota??null}; }
+    async function collectSubtreeIds(id,ids=new Set()){ if(ids.has(id)) return ids; ids.add(id); for(const child of await store.getChildren(id)||[]) await collectSubtreeIds(child.id,ids); return ids; }
+    async function deleteSubtree(id){ const ids=[...await collectSubtreeIds(id)]; if(typeof store.deleteArtifacts!=='function') throw new Error('Persistence store cannot delete artifact subtrees'); await store.deleteArtifacts(ids); return ids; }
+    async function clearProject(projectId){ if(typeof store.clearProject!=='function') throw new Error('Persistence store cannot clear projects'); await store.clearProject(projectId); }
 
     return {
-      ensureProject,
-      saveArtifact,
-      saveGenerationArtifact,
-      getArtifact,
-      listArtifacts,
-      getChildren,
-      getLatestProject,
-      getProject,
-      listProjects,
-      loadProjectBundle,
-      commitProjectBundle,
-      saveComparison,
-      listComparisons,
-      estimateStorage,
-      deleteSubtree,
-      clearProject
+      ensureProject,saveArtifact,saveGenerationArtifact,getArtifact,listArtifacts,listArtifactsForShot,getChildren,getLatestProject,getProject,listProjects,
+      putSequence,getSequence,listSequences,deleteSequence,putShot,getShot,listShots,deleteShot,
+      loadProjectBundle,commitProjectBundle,saveComparison,listComparisons,listComparisonsForShot,estimateStorage,deleteSubtree,clearProject
     };
   }
 
