@@ -1,0 +1,106 @@
+.release-space-switch {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas: "label arrow" "title arrow";
+  gap: 3px 12px;
+  align-items: center;
+  min-height: 52px;
+  margin: 0 0 18px;
+  padding: 10px 11px;
+  border: 1px solid var(--line, rgba(235,232,223,.16));
+  background: transparent;
+  color: var(--ink, #ebe8df);
+  text-decoration: none;
+  transition: border-color .2s ease, background .2s ease;
+}
+.release-space-switch > span:first-child {
+  grid-area: label;
+  color: var(--signal, var(--accent, #ef5b48));
+  font: 700 9px/1.2 var(--mono, ui-monospace, monospace);
+  letter-spacing: .18em;
+}
+.release-space-switch strong {
+  grid-area: title;
+  font: 600 12px/1.25 var(--serif, Georgia, serif);
+  letter-spacing: .015em;
+}
+.release-space-switch > i,
+.release-space-switch > span:last-child:not(:first-child) {
+  grid-area: arrow;
+  color: var(--ink-3, var(--muted, #7e7d75));
+  font-style: normal;
+}
+.release-space-switch:hover,
+.release-space-switch:focus-visible {
+  border-color: var(--line-strong, rgba(235,232,223,.3));
+  background: var(--paper-soft, var(--surface, rgba(255,255,255,.04)));
+}
+
+/* SYSTEM → STUDIO is an intentional move into the operational space. */
+.studio-entry {
+  box-shadow: inset 2px 0 0 var(--signal, var(--accent, #ef5b48));
+  background: var(--signal-soft, rgba(232,93,42,.045));
+}
+.studio-entry:hover,
+.studio-entry:focus-visible {
+  background: var(--signal-soft, rgba(232,93,42,.08));
+}
+
+/* STUDIO → SYSTEM is a quiet return path, not a competing primary action. */
+.release-system-home {
+  margin: 14px 0 20px;
+}
+.v2-rail .release-space-switch {
+  color: inherit;
+}
+.v2-rail .release-system-home {
+  min-height: 46px;
+  margin: 2px 0 8px;
+  padding-inline: 0;
+  border-left: 0;
+  border-right: 0;
+  background: transparent;
+}
+.v2-rail .release-system-home:hover,
+.v2-rail .release-system-home:focus-visible {
+  background: transparent;
+}
+
+.release-system-home-mobile {
+  display: none;
+}
+@media (max-width: 900px) {
+  .release-system-home-mobile {
+    position: fixed;
+    z-index: 1002;
+    top: calc(10px + env(safe-area-inset-top));
+    right: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 44px;
+    padding: 0 12px;
+    border: 1px solid var(--line, rgba(235,232,223,.16));
+    background: rgba(12,14,17,.9);
+    color: var(--text, #f1efea);
+    text-decoration: none;
+    font: 700 10px/1 var(--mono, ui-monospace, monospace);
+    letter-spacing: .12em;
+    backdrop-filter: blur(12px);
+  }
+  .release-system-home-mobile span {
+    color: var(--accent, #e85d2a);
+  }
+}
+@media (max-width: 820px) {
+  .system-rail {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .system-rail .release-space-switch {
+    min-height: 48px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .release-space-switch { transition: none; }
+}

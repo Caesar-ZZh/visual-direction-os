@@ -1,0 +1,463 @@
+:root{
+  --vr-atmosphere-a:rgba(102,76,63,.18);
+  --vr-atmosphere-b:rgba(52,58,65,.10);
+  --vr-focus-x:74%;
+  --vr-focus-y:26%;
+  --vr-focus-scale:1;
+  --vr-focus-radius-a:30%;
+  --vr-focus-radius-b:36%;
+  --vr-pressure:.2;
+  --vr-line-opacity:.12;
+  --vr-texture-opacity:.025;
+  --vr-texture-size:28px;
+  --vr-motion-duration:520ms;
+  --meta-font:var(--sans);
+  --meta-xs:.64rem;
+  --meta-sm:.7rem;
+  --meta-md:.76rem;
+  --meta-track:.08em;
+  --meta-track-wide:.12em;
+}
+
+body{isolation:isolate}
+.v2-shell{position:relative;z-index:1}
+
+body::before,
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+}
+
+body::before{
+  background:
+    radial-gradient(circle at var(--vr-focus-x) var(--vr-focus-y),var(--vr-atmosphere-a) 0,transparent var(--vr-focus-radius-a)),
+    radial-gradient(circle at calc(100% - var(--vr-focus-x)) calc(100% - var(--vr-focus-y)),var(--vr-atmosphere-b) 0,transparent var(--vr-focus-radius-b));
+  opacity:.9;
+  transition:opacity var(--vr-motion-duration) ease,filter var(--vr-motion-duration) ease;
+}
+
+body::after{
+  opacity:var(--vr-texture-opacity);
+  background-image:
+    linear-gradient(rgba(241,239,234,.14) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(241,239,234,.12) 1px,transparent 1px);
+  background-size:var(--vr-texture-size) var(--vr-texture-size);
+  transition:opacity var(--vr-motion-duration) ease,background-size var(--vr-motion-duration) ease;
+}
+
+html[data-vr-focus-distance="near"]{
+  --vr-focus-radius-a:23%;
+  --vr-focus-radius-b:29%;
+}
+
+html[data-vr-focus-distance="far"]{
+  --vr-focus-radius-a:38%;
+  --vr-focus-radius-b:44%;
+}
+
+html[data-vr-agency="contested"] body::before{
+  background:
+    radial-gradient(circle at 28% 30%,var(--vr-atmosphere-a) 0,transparent 30%),
+    radial-gradient(circle at 74% 64%,var(--vr-atmosphere-b) 0,transparent 32%);
+}
+
+.workspace,
+.ownership-lab{
+  transition:padding-block var(--vr-motion-duration) ease;
+}
+
+html[data-vr-pressure="medium"] .workspace,
+html[data-vr-pressure="medium"] .ownership-lab{
+  padding-block:clamp(32px,4.7vw,66px);
+}
+
+html[data-vr-pressure="high"] .workspace,
+html[data-vr-pressure="high"] .ownership-lab{
+  padding-block:clamp(28px,4.2vw,60px);
+}
+
+html[data-vr-line="active"] .hero-system-path,
+html[data-vr-line="active"] .ownership-grid{
+  opacity:calc(var(--vr-line-opacity) + .05);
+}
+
+html[data-vr-line="unstable"] .hero-system-path,
+html[data-vr-line="unstable"] .ownership-grid{
+  opacity:var(--vr-line-opacity);
+  transform:translate3d(1px,-1px,0);
+}
+
+.vr-live{
+  margin-top:14px;
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  padding:14px 0;
+}
+
+.vr-live-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:10px;
+}
+
+.vr-live-header span{
+  color:var(--accent);
+  font:650 var(--meta-sm)/1 var(--meta-font);
+  letter-spacing:var(--meta-track-wide);
+  text-transform:uppercase;
+}
+
+.vr-live-header small{
+  color:var(--muted);
+  font:600 var(--meta-xs)/1 var(--meta-font);
+  letter-spacing:var(--meta-track);
+  text-transform:uppercase;
+}
+
+.vr-live-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:1px;
+  background:var(--line);
+}
+
+.vr-live-grid span{
+  min-width:0;
+  background:var(--surface);
+  color:var(--text);
+  padding:12px;
+  font:600 var(--meta-sm)/1.35 var(--meta-font);
+  letter-spacing:.025em;
+}
+
+/* Site-wide metadata typography: editorial sans, not terminal mono. */
+.brand small,
+.mode-label,
+.hero-node i,
+.hero-node b,
+.eyebrow,
+.system-chain small,
+.ownership-summary>span,
+.ownership-track-head span,
+.ownership-track-head b,
+.ownership-axis small,
+.status-line,
+.state-summary span,
+.case-state-panel dt,
+.score-toolbar output,
+.score-track>span,
+.score-track>b,
+.ownership-markers button,
+.territory-visual b,
+.diagnostic-status,
+.diagnostic-list article header strong,
+.atlas-heading>span,
+.atlas-grid a>span,
+.palette-mode-head>span,
+.palette-readout dt,
+.temperature-axis span,
+.ownership-verdict span,
+.ownership-verdict strong,
+.conflict-field>div b,
+.conflict-field>i,
+.conflict-verdict strong{
+  font-family:var(--meta-font);
+  font-style:normal;
+  font-variant-numeric:tabular-nums;
+}
+
+.brand small{
+  font-size:var(--meta-sm);
+  font-weight:600;
+  line-height:1.35;
+  letter-spacing:.09em;
+}
+.mode-label{
+  font-size:var(--meta-sm);
+  font-weight:650;
+  line-height:1;
+  letter-spacing:var(--meta-track-wide);
+}
+.mode-btn strong{
+  font-family:var(--meta-font);
+  font-size:var(--meta-sm);
+  font-weight:700;
+  letter-spacing:.02em;
+}
+.hero-node i{
+  font-size:.58rem;
+  font-weight:650;
+  line-height:1;
+  letter-spacing:.08em;
+}
+.hero-node b{
+  font-size:.68rem;
+  font-weight:650;
+  line-height:1.05;
+  letter-spacing:.07em;
+}
+.eyebrow{
+  font-family:var(--meta-font);
+  font-size:.74rem;
+  font-weight:650;
+  line-height:1.1;
+  letter-spacing:var(--meta-track-wide);
+}
+.system-chain small{
+  font-size:var(--meta-sm);
+  font-weight:650;
+  line-height:1;
+  letter-spacing:.07em;
+}
+.ownership-summary>span{
+  font-size:var(--meta-sm);
+  font-weight:650;
+  line-height:1;
+  letter-spacing:.09em;
+}
+.ownership-track-head span{
+  font-size:var(--meta-sm);
+  font-weight:650;
+  line-height:1;
+  letter-spacing:.06em;
+}
+.ownership-track-head b{
+  font-size:var(--meta-sm);
+  font-weight:700;
+  line-height:1;
+  letter-spacing:.02em;
+}
+.ownership-axis small{
+  font-size:var(--meta-xs);
+  font-weight:600;
+  line-height:1;
+  letter-spacing:.04em;
+}
+.status-line{
+  font-family:var(--meta-font);
+  font-size:var(--meta-md);
+  font-weight:650;
+  line-height:1.35;
+  letter-spacing:.07em;
+}
+.state-summary span{
+  font-size:var(--meta-sm);
+  font-weight:650;
+  line-height:1;
+  letter-spacing:.06em;
+}
+.case-state-panel dt,
+.palette-readout dt{
+  font-size:var(--meta-sm);
+  font-weight:650;
+  line-height:1.15;
+  letter-spacing:.06em;
+}
+.score-toolbar output,
+.score-track>span,
+.score-track>b,
+.ownership-markers button,
+.territory-visual b,
+.diagnostic-status,
+.diagnostic-list article header strong{
+  font-size:var(--meta-sm);
+  font-weight:650;
+  letter-spacing:.045em;
+}
+.atlas-heading>span,
+.palette-mode-head>span{
+  font-size:var(--meta-sm);
+  font-weight:650;
+  letter-spacing:.09em;
+}
+.atlas-grid a>span{
+  font-size:var(--meta-md);
+  font-weight:700;
+  letter-spacing:.02em;
+}
+.temperature-axis span{
+  font-size:var(--meta-sm);
+  font-weight:650;
+  letter-spacing:.045em;
+}
+.ownership-verdict span,
+.ownership-verdict strong,
+.conflict-field>div b,
+.conflict-field>i,
+.conflict-verdict strong{
+  font-size:var(--meta-sm);
+  font-weight:650;
+  letter-spacing:.055em;
+}
+
+/* Functional tabs stay sans, but gain enough weight to feel intentional. */
+.case-tabs button,
+.color-view-tabs button,
+.diagnostic-toolbar button{
+  font-family:var(--meta-font);
+  font-size:.95rem;
+  font-weight:600;
+  letter-spacing:0;
+}
+
+/* Director decision switches stay editorial serif on every viewport. */
+.variable-options button{
+  font-family:var(--serif);
+  font-size:.92rem;
+  font-weight:600;
+  line-height:1;
+  letter-spacing:-.01em;
+  text-transform:none;
+}
+
+/* Desktop polish: viewport-pinned collapsed navigation rail, stable ownership composition, editorial control type. */
+@media(min-width:901px){
+  .v2-shell{grid-template-columns:64px minmax(0,1fr)}
+  .stage{grid-column:2}
+  .v2-rail{
+    position:fixed;
+    left:0;
+    top:0;
+    bottom:0;
+    height:100vh;
+    height:100dvh;
+    width:64px;
+    padding:22px 10px;
+    overflow:hidden;
+    z-index:1200;
+    box-shadow:none;
+    transition:width .22s ease,padding .22s ease,box-shadow .22s ease;
+  }
+  .v2-rail[data-expanded="true"],.v2-rail:focus-within{
+    width:264px;
+    padding:24px;
+    box-shadow:20px 0 48px rgba(0,0,0,.34);
+  }
+  .brand{
+    position:relative;
+    min-height:52px;
+    color:transparent;
+    white-space:nowrap;
+    transition:color .16s ease;
+  }
+  .brand::before{
+    content:"V";
+    position:absolute;
+    left:50%;
+    top:2px;
+    transform:translateX(-50%);
+    color:var(--text);
+    font:700 1.35rem/1 var(--serif);
+    transition:opacity .16s ease;
+  }
+  .brand small,.mode-label,.rail-note{
+    opacity:0;
+    visibility:hidden;
+    white-space:nowrap;
+    transition:opacity .14s ease,visibility .14s ease;
+  }
+  .v2-rail .mode-group{justify-items:center}
+  .v2-rail .mode-label{display:none}
+  .v2-rail .mode-btn{
+    width:44px;
+    height:44px;
+    min-height:44px;
+    padding:0;
+    display:grid;
+    place-items:center;
+    justify-self:center;
+    font-size:0;
+    line-height:1;
+    text-align:center;
+    white-space:nowrap;
+    overflow:hidden;
+    transition:background-color .16s ease,border-color .16s ease,color .16s ease,padding .16s ease;
+  }
+  .v2-rail .mode-btn strong{
+    display:block;
+    margin:0;
+    line-height:1;
+  }
+  .v2-rail .mode-btn[aria-current='page']{transform:none}
+  .v2-rail[data-expanded="true"] .brand,.v2-rail:focus-within .brand{color:var(--text)}
+  .v2-rail[data-expanded="true"] .brand::before,.v2-rail:focus-within .brand::before{opacity:0}
+  .v2-rail[data-expanded="true"] .brand small,.v2-rail:focus-within .brand small,
+  .v2-rail[data-expanded="true"] .mode-label,.v2-rail:focus-within .mode-label,
+  .v2-rail[data-expanded="true"] .rail-note,.v2-rail:focus-within .rail-note{
+    opacity:1;
+    visibility:visible;
+  }
+  .v2-rail[data-expanded="true"] .mode-group,.v2-rail:focus-within .mode-group{justify-items:stretch}
+  .v2-rail[data-expanded="true"] .mode-label,.v2-rail:focus-within .mode-label{display:block}
+  .v2-rail[data-expanded="true"] .mode-btn,.v2-rail:focus-within .mode-btn{
+    width:100%;
+    height:48px;
+    min-height:48px;
+    padding:0 12px;
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    justify-self:stretch;
+    font-size:.92rem;
+    text-align:left;
+  }
+  .v2-rail[data-expanded="true"] .mode-btn strong,.v2-rail:focus-within .mode-btn strong{margin-right:8px}
+
+  .ownership-board{
+    grid-template-columns:minmax(260px,.9fr) minmax(0,1.1fr);
+    gap:30px;
+  }
+  .ownership-summary{min-width:0;padding-right:22px}
+  .ownership-summary>strong{
+    max-width:100%;
+    margin:10px 0 16px;
+    font-size:clamp(2rem,2.6vw,2.85rem);
+    letter-spacing:-.055em;
+    white-space:nowrap;
+  }
+  .ownership-summary>p{max-width:23ch}
+  .ownership-tracks{min-width:0}
+}
+
+@media(min-width:901px) and (max-width:1120px){
+  .ownership-lab{grid-template-columns:1fr}
+  .ownership-stage{min-height:420px}
+  .ownership-copy{max-width:720px}
+}
+
+@media(max-width:760px){
+  .vr-live-grid{grid-template-columns:1fr 1fr}
+  html{scroll-behavior:auto}
+}
+
+@media(max-width:420px){
+  .vr-live-grid{grid-template-columns:1fr}
+  .vr-live-grid span{padding:11px 10px}
+  .eyebrow{font-size:.7rem;letter-spacing:.1em}
+  .case-tabs button,.color-view-tabs button,.diagnostic-toolbar button{font-size:.9rem}
+}
+
+@media(prefers-reduced-motion:reduce){
+  body::before,
+  body::after,
+  .workspace,
+  .ownership-lab,
+  .hero-system-path,
+  .ownership-grid,
+  .v2-rail,
+  .brand,
+  .brand::before,
+  .brand small,
+  .mode-label,
+  .rail-note,
+  .v2-rail .mode-btn{
+    transition:none!important;
+    animation:none!important;
+    transform:none!important;
+  }
+}

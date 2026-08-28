@@ -1,0 +1,173 @@
+name: Director Intelligence CI
+
+on:
+  push:
+    branches: ["phase2/**"]
+    paths:
+      - "visual-direction-os/**"
+      - "api/narrative/**"
+      - ".github/workflows/director-intelligence-ci.yml"
+  pull_request:
+    branches: [master, integration/director-workspace-v2-1]
+    paths:
+      - "visual-direction-os/**"
+      - "api/narrative/**"
+      - ".github/workflows/director-intelligence-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Run Director Intelligence contracts
+        run: |
+          node --test visual-direction-os/visual-grammar-registry.test.js
+          node --test visual-direction-os/visual-ir-bridge.test.js
+          node --test visual-direction-os/visual-ir-inspector.test.js
+          node --test visual-direction-os/visual-ir-integration.test.js
+          node --test visual-direction-os/visual-compiler.test.js
+          node --test visual-direction-os/visual-sequence-skeleton.test.js
+          node --test visual-direction-os/visual-sequence-completion.test.js
+          node --test visual-direction-os/visual-sequence-orchestration.test.js
+          node --test visual-direction-os/visual-sequence-origin.test.js
+          node --test visual-direction-os/visual-compiler-compare.test.js
+          node --test visual-direction-os/visual-compiler-inspector.test.js
+          node --test visual-direction-os/visual-compiler-integration.test.js
+          node --test visual-direction-os/visual-compiler-authority.test.js
+          node --test visual-direction-os/visual-authority-inspector.test.js
+          node --test visual-direction-os/visual-authority-apply.test.js
+          node visual-direction-os/narrative-contracts.test.js
+          node visual-direction-os/narrative-state.test.js
+          node visual-direction-os/narrative-api-client.test.js
+          node api/narrative/_contracts-grammar.test.js
+          node api/narrative/_contracts-project-constraints.test.js
+          node api/narrative/_contracts-sequence-completion.test.js
+          node api/narrative/_handler.test.js
+          node api/narrative/_prompts.test.js
+          node api/narrative/_openai-adapter.test.js
+          node visual-direction-os/project-contracts.test.js
+          node visual-direction-os/project-runtime.test.js
+          node visual-direction-os/project-arc.test.js
+          node visual-direction-os/project-continuity.test.js
+          node --test visual-direction-os/project-intelligence.test.js
+          node --test visual-direction-os/project-intelligence-aggregate.test.js
+          node --test visual-direction-os/project-intelligence-inspector.test.js
+          node --test visual-direction-os/project-intelligence-integration.test.js
+          node --test visual-direction-os/project-constraint-registry.test.js
+          node --test visual-direction-os/project-constraint-project-state.test.js
+          node --test visual-direction-os/project-constraint-candidates.test.js
+          node --test visual-direction-os/project-constraint-authority.test.js
+          node --test visual-direction-os/visual-sequence-project-constraints.test.js
+          node --test visual-direction-os/visual-sequence-project-provenance.test.js
+          node --test visual-direction-os/narrative-project-constraint-source.test.js
+          node --test visual-direction-os/project-constraint-inspector.test.js
+          node --test visual-direction-os/project-constraint-workspace.test.js
+          node --test visual-direction-os/generation-prompt-apply-evidence.test.js
+          node --test visual-direction-os/generation-prompt-narrative-state.test.js
+          node --test visual-direction-os/generation-prompt-ir.test.js
+          node --test visual-direction-os/generation-prompt-renderer.test.js
+          node --test visual-direction-os/generation-prompt-compiler.test.js
+          node --test visual-direction-os/generation-prompt-inspector.test.js
+          node --test visual-direction-os/generation-prompt-apply-integration.test.js
+          node --test visual-direction-os/generation-prompt-bootstrap.test.js
+          node visual-direction-os/build-pages-site.test.js
+      - name: Check changed runtime syntax
+        run: |
+          node --check visual-direction-os/director-v2-app.js
+          node --check visual-direction-os/visual-grammar-registry.js
+          node --check visual-direction-os/visual-ir-bridge.js
+          node --check visual-direction-os/visual-compiler.js
+          node --check visual-direction-os/visual-sequence-skeleton.js
+          node --check visual-direction-os/visual-sequence-completion.js
+          node --check visual-direction-os/visual-sequence-origin.js
+          node --check visual-direction-os/visual-sequence-project-constraints.js
+          node --check visual-direction-os/visual-compiler-compare.js
+          node --check visual-direction-os/visual-compiler-authority.js
+          node --check visual-direction-os/visual-compiler-inspector.js
+          node --check visual-direction-os/visual-authority-inspector.js
+          node --check visual-direction-os/visual-ir-inspector.js
+          node --check visual-direction-os/visual-ir-shadow.js
+          node --check visual-direction-os/narrative-state.js
+          node --check visual-direction-os/narrative-api-client.js
+          node --check visual-direction-os/narrative-workspace.js
+          node --check visual-direction-os/narrative-apply-ui.js
+          node --check visual-direction-os/narrative-contracts.js
+          node --check visual-direction-os/narrative-demo-fixtures.js
+          node --check visual-direction-os/project-intelligence.js
+          node --check visual-direction-os/project-intelligence-inspector.js
+          node --check visual-direction-os/project-constraint-registry.js
+          node --check visual-direction-os/project-constraint-candidates.js
+          node --check visual-direction-os/project-constraint-authority.js
+          node --check visual-direction-os/project-constraint-inspector.js
+          node --check visual-direction-os/project-workspace.js
+          node --check visual-direction-os/project-bootstrap.js
+          node --check visual-direction-os/generation-prompt-apply-evidence.js
+          node --check visual-direction-os/generation-prompt-ir.js
+          node --check visual-direction-os/prompt-language-registry.js
+          node --check visual-direction-os/generation-prompt-renderer.js
+          node --check visual-direction-os/generation-prompt-compiler.js
+          node --check visual-direction-os/generation-prompt-inspector.js
+          node --check api/narrative/_contracts.js
+          node --check api/narrative/_prompts.js
+      - name: Verify Pages assembly keeps Director Intelligence assets
+        run: |
+          node visual-direction-os/build-pages-site.js visual-direction-os /tmp/vdos-site
+          test -f /tmp/vdos-site/visual-grammar-registry.js
+          test -f /tmp/vdos-site/visual-ir-bridge.js
+          test -f /tmp/vdos-site/visual-compiler.js
+          test -f /tmp/vdos-site/visual-sequence-skeleton.js
+          test -f /tmp/vdos-site/visual-sequence-completion.js
+          test -f /tmp/vdos-site/visual-sequence-origin.js
+          test -f /tmp/vdos-site/visual-sequence-project-constraints.js
+          test -f /tmp/vdos-site/visual-compiler-compare.js
+          test -f /tmp/vdos-site/visual-compiler-authority.js
+          test -f /tmp/vdos-site/visual-compiler-inspector.js
+          test -f /tmp/vdos-site/visual-authority-inspector.js
+          test -f /tmp/vdos-site/visual-ir-inspector.js
+          test -f /tmp/vdos-site/visual-ir-inspector.css
+          test -f /tmp/vdos-site/visual-ir-shadow.js
+          test -f /tmp/vdos-site/narrative-apply-ui.js
+          test -f /tmp/vdos-site/project-intelligence.js
+          test -f /tmp/vdos-site/project-intelligence-inspector.js
+          test -f /tmp/vdos-site/project-intelligence.css
+          test -f /tmp/vdos-site/project-constraint-registry.js
+          test -f /tmp/vdos-site/project-constraint-candidates.js
+          test -f /tmp/vdos-site/project-constraint-authority.js
+          test -f /tmp/vdos-site/project-constraint-inspector.js
+          test -f /tmp/vdos-site/project-constraint.css
+          test -f /tmp/vdos-site/generation-prompt-apply-evidence.js
+          test -f /tmp/vdos-site/generation-prompt-ir.js
+          test -f /tmp/vdos-site/prompt-language-registry.js
+          test -f /tmp/vdos-site/generation-prompt-renderer.js
+          test -f /tmp/vdos-site/generation-prompt-compiler.js
+          test -f /tmp/vdos-site/generation-prompt-inspector.js
+          test -f /tmp/vdos-site/generation-prompt.css
+          grep -q 'visual-grammar-registry.js' /tmp/vdos-site/director-v2.html
+          grep -q 'visual-compiler.js' /tmp/vdos-site/director-v2.html
+          grep -q 'visual-sequence-skeleton.js' /tmp/vdos-site/director-v2.html
+          grep -q 'visual-sequence-completion.js' /tmp/vdos-site/director-v2.html
+          grep -q 'visual-sequence-origin.js' /tmp/vdos-site/director-v2.html
+          grep -q 'visual-compiler-compare.js' /tmp/vdos-site/director-v2.html
+          grep -q 'visual-compiler-authority.js' /tmp/vdos-site/director-v2.html
+          grep -q 'visual-compiler-inspector.js' /tmp/vdos-site/director-v2.html
+          grep -q 'visual-authority-inspector.js' /tmp/vdos-site/director-v2.html
+          grep -q 'visual-ir-shadow.js' /tmp/vdos-site/director-v2.html
+
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install browser test runtime
+        run: |
+          npm install --no-save @playwright/test@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Run Director Intelligence browser acceptance
+        run: |
+          python3 -m http.server 4173 --directory visual-direction-os >/tmp/vdos-intelligence-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          npx playwright test visual-direction-os/director-v2-rail-intent.spec.js visual-direction-os/visual-ir-shadow.spec.js visual-direction-os/visual-compiler-shadow.spec.js visual-direction-os/visual-authority-handoff.spec.js visual-direction-os/visual-sequence-compiler-first.spec.js visual-direction-os/narrative-workspace.spec.js visual-direction-os/project-workspace.spec.js visual-direction-os/project-intelligence-browser.spec.js visual-direction-os/project-constraint-browser.spec.js visual-direction-os/generation-prompt-browser.spec.js --reporter=line --workers=1

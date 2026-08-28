@@ -1,0 +1,49 @@
+@import url("auteur-polish.css?v=20260819-1129");
+@import url("auteur-polish-detail.css?v=20260819-1138");
+.project-scene-context-bar{position:sticky;top:0;z-index:30;border-top:1px solid #24272d;border-bottom:1px solid #34373e;background:rgba(10,11,14,.96);backdrop-filter:blur(14px)}
+.project-scene-context-bar[hidden]{display:none}
+.project-scene-context-inner{min-height:72px;padding:11px clamp(20px,4vw,56px);display:flex;align-items:center;justify-content:space-between;gap:24px}
+.project-scene-context-id{min-width:0;display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:14px;row-gap:5px;align-items:baseline}
+.project-scene-context-id>span{grid-column:1/-1;color:#81827e;font:600 .55rem/1 var(--mono);letter-spacing:.105em}
+.project-scene-context-id>strong{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font:700 .98rem/1 var(--serif);color:#ece9e2}
+.project-scene-context-id>small{white-space:nowrap;color:var(--accent);font:600 .54rem/1 var(--mono);letter-spacing:.06em}
+.project-scene-context-actions{display:flex;gap:6px;flex:0 0 auto}
+.project-scene-context-actions button{min-height:34px;border:1px solid #34373e;background:#101216;color:#c8c5be;padding:0 10px;font:650 .54rem/1 var(--mono);letter-spacing:.055em;cursor:pointer}
+.project-scene-context-actions button:first-child{border-color:rgba(232,93,42,.58)}
+.project-scene-context-actions button:hover:not(:disabled){border-color:#666a72;color:#fff}
+.project-scene-context-actions button:disabled{opacity:.28;cursor:not-allowed}
+.project-scene-context-actions button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.project-narrative-context{margin:0 0 22px;border:1px solid #2f3339;background:#0c0e11;display:grid;grid-template-columns:.75fr 1.7fr 1.25fr 1.25fr 1fr}
+.project-narrative-context>header{grid-column:1/-1;min-height:38px;padding:0 13px;border-bottom:1px solid #2f3339;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.project-narrative-context>header span{color:var(--accent);font:650 .55rem/1 var(--mono);letter-spacing:.09em}
+.project-narrative-context>header strong{color:#71736f;font:600 .54rem/1 var(--mono);letter-spacing:.045em}
+.project-narrative-context>div{min-height:88px;padding:13px;border-right:1px solid #2f3339;display:grid;align-content:start;gap:9px}
+.project-narrative-context>div:last-child{border-right:0}
+.project-narrative-context>div>span{color:#767873;font:600 .52rem/1 var(--mono);letter-spacing:.08em}
+.project-narrative-context>div>strong{font:600 .75rem/1.45 var(--sans);color:#c7c3bc}
+.project-narrative-context>div:first-of-type>strong,.project-narrative-context>div:last-child>strong{font-family:var(--mono);font-size:.61rem;letter-spacing:.045em;color:#e2dfd8}
+@media(max-width:900px){.project-scene-context-inner{align-items:flex-start;flex-direction:column;gap:10px}.project-scene-context-actions{width:100%;overflow-x:auto}.project-scene-context-actions button{flex:0 0 auto}.project-narrative-context{grid-template-columns:repeat(2,minmax(0,1fr))}.project-narrative-context>div{border-bottom:1px solid #2f3339}.project-narrative-context>div:nth-of-type(even){border-right:0}.project-narrative-context>div:last-child{grid-column:1/-1;border-bottom:0}}
+@media(max-width:520px){.project-scene-context-id{grid-template-columns:1fr}.project-scene-context-id>span{grid-column:auto}.project-scene-context-id>small{white-space:normal}.project-narrative-context{grid-template-columns:1fr}.project-narrative-context>div{border-right:0}.project-narrative-context>div:last-child{grid-column:auto}}
+@media(prefers-reduced-motion:reduce){.project-scene-context-bar{backdrop-filter:none}}
+
+/* PROJECT CONTEXT TYPOGRAPHY CONTRACT — same hierarchy as the rest of Director Workspace. */
+.project-scene-context-id>span,
+.project-scene-context-id>small,
+.project-narrative-context>header span,
+.project-narrative-context>header strong,
+.project-narrative-context>div>span{
+  font-family:var(--sans);
+}
+.project-scene-context-id>span{font-size:.66rem;line-height:1.15;font-weight:650;letter-spacing:.09em}
+.project-scene-context-id>small{font-size:.66rem;line-height:1.2;font-weight:650;letter-spacing:.045em}
+.project-scene-context-actions button{
+  font-family:var(--serif);
+  font-size:.76rem;
+  line-height:1;
+  font-weight:600;
+  letter-spacing:.015em;
+}
+.project-narrative-context>header span{font-size:.68rem;line-height:1.15;font-weight:650;letter-spacing:.08em}
+.project-narrative-context>header strong{font-size:.66rem;line-height:1.2;font-weight:600;letter-spacing:.03em}
+.project-narrative-context>div>span{font-size:.64rem;line-height:1.15;font-weight:650;letter-spacing:.065em}
+.project-narrative-context>div:first-of-type>strong,.project-narrative-context>div:last-child>strong{font-family:var(--sans);font-size:.72rem;font-weight:650;letter-spacing:.025em}

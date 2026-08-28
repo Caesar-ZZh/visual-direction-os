@@ -1,0 +1,395 @@
+/*
+ * AUTEUR SYSTEM POLISH
+ * Final visual/material layer for Director Workspace v2.1.
+ * Product architecture and canonical state are intentionally untouched.
+ */
+:root{
+  --surface-ink:#090a0c;
+  --surface-low:#0d0f12;
+  --surface-mid:#111419;
+  --surface-high:#16191e;
+  --hairline:rgba(241,239,234,.105);
+  --hairline-soft:rgba(241,239,234,.065);
+  --light-edge:rgba(255,248,239,.045);
+  --shadow-deep:rgba(0,0,0,.32);
+  --motion-press:130ms;
+  --motion-state:190ms;
+  --motion-surface:220ms;
+  --ease-out-quart:cubic-bezier(.23,1,.32,1);
+  --ease-in-out-quart:cubic-bezier(.77,0,.175,1);
+}
+
+/* Material first: one directional light field + a fixed 2–3% grain pass. */
+body{
+  background:
+    radial-gradient(1200px 760px at 78% -8%,rgba(117,55,33,.105),transparent 56%),
+    linear-gradient(132deg,#090a0c 0%,#0a0c0f 52%,#0b0b0d 100%);
+}
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:1500;
+  pointer-events:none;
+  opacity:.025;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='92' height='92' viewBox='0 0 92 92'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.48'/%3E%3C/svg%3E");
+  background-size:92px 92px;
+  mix-blend-mode:soft-light;
+}
+.stage{
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.012),transparent 16%),
+    linear-gradient(180deg,#090a0c 0%,#0a0c0f 48%,#090a0c 100%);
+}
+.v2-rail{
+  background:linear-gradient(180deg,#0e1013 0%,#0a0c0f 68%,#090a0c 100%);
+  border-right-color:var(--hairline);
+  box-shadow:inset -1px 0 0 rgba(255,255,255,.018),14px 0 42px rgba(0,0,0,.12);
+}
+
+/* Hero: depth from light direction and material response, not animated bloom. */
+.stage .hero{
+  background:#090a0c;
+  border-bottom-color:var(--hairline);
+}
+.stage .hero-visual{
+  background:
+    radial-gradient(760px 520px at 82% 17%,rgba(157,72,43,.16),transparent 61%),
+    radial-gradient(680px 520px at 34% 104%,rgba(53,67,78,.105),transparent 62%),
+    linear-gradient(118deg,#0b0d10 0%,#0b0b0d 49%,#120d0b 100%);
+}
+.stage .narrative-glow{
+  opacity:.065;
+  filter:blur(104px);
+  animation:none;
+}
+.stage .hero-focus-field{
+  border-color:rgba(241,239,234,.105);
+  box-shadow:
+    inset 24px -28px 70px rgba(0,0,0,.22),
+    inset -10px 12px 42px rgba(241,239,234,.018),
+    0 0 0 56px rgba(241,239,234,.011),
+    0 0 0 112px rgba(241,239,234,.006);
+  animation:none;
+}
+.stage .hero-node{
+  background:rgba(10,11,13,.88);
+  border-color:var(--hairline);
+  backdrop-filter:none;
+  box-shadow:inset 0 1px 0 var(--light-edge),0 10px 30px rgba(0,0,0,.13);
+}
+.stage .hero-node[data-active='true']{
+  background:linear-gradient(180deg,rgba(58,30,20,.68),rgba(26,18,15,.72));
+  animation:none;
+  box-shadow:inset 0 1px 0 rgba(255,221,204,.055),0 16px 42px rgba(0,0,0,.16);
+}
+
+/* The five-step chain is a real sequence, but it should read as one instrument, not five cards. */
+.stage .system-chain{
+  border:0;
+  border-top:1px solid var(--hairline);
+  border-bottom:1px solid var(--hairline-soft);
+  background:transparent;
+  box-shadow:none;
+}
+.stage .system-chain button{
+  position:relative;
+  border:0;
+  background:linear-gradient(180deg,rgba(255,255,255,.012),transparent 72%);
+  padding:18px 16px 20px;
+  transition:background-color var(--motion-state) ease,color var(--motion-state) ease,transform var(--motion-press) var(--ease-out-quart);
+}
+.stage .system-chain button+button::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:18px;
+  bottom:18px;
+  width:1px;
+  background:var(--hairline-soft);
+}
+
+/* Ownership surface: restrained instrument panel with one readable light direction. */
+.stage .ownership-stage{
+  border-color:var(--hairline);
+  background:
+    radial-gradient(620px 390px at 84% 8%,rgba(232,93,42,.075),transparent 58%),
+    linear-gradient(136deg,#12161b 0%,#0d1013 56%,#0b0d10 100%);
+  box-shadow:inset 0 1px 0 var(--light-edge),0 26px 74px rgba(0,0,0,.19);
+}
+.stage .ownership-grid{opacity:.19}
+.stage .ownership-summary{border-right-color:var(--hairline)}
+.stage .ownership-axis::before{opacity:.78}
+
+/* Workspace rhythm: sections should not all feel like the same slab. */
+.stage .workspace{
+  border-top-color:var(--hairline);
+}
+.stage #direct-panel{
+  background:
+    radial-gradient(780px 460px at 88% 12%,rgba(232,93,42,.035),transparent 62%),
+    linear-gradient(180deg,#0b0d10 0%,#090a0c 100%);
+}
+.stage .narrative-workspace{
+  background:
+    radial-gradient(760px 520px at 12% 0%,rgba(70,83,94,.045),transparent 60%),
+    linear-gradient(180deg,#0d0f12 0%,#090a0c 100%);
+}
+.stage .diagnose-workspace{
+  background:
+    radial-gradient(720px 460px at 84% 8%,rgba(217,164,65,.028),transparent 62%),
+    linear-gradient(180deg,#0a0c0f 0%,#090a0c 100%);
+}
+
+/* Director controls: one shared physical vocabulary. */
+.stage :where(button,a,input,textarea,select){
+  -webkit-tap-highlight-color:transparent;
+}
+.stage button{
+  transform-origin:center;
+}
+.stage button:active{
+  transform:scale(.98);
+  transition:transform var(--motion-press) var(--ease-out-quart);
+}
+.stage :where(.segmented button,.variable-options button,.narrative-primary,.narrative-clarification-options button,.narrative-apply-modes button,.narrative-apply-beats button,.project-header-actions button,.project-breakdown-actions button,.project-finding button,.project-proposal-scene footer button,.project-proposal-order button,.project-scene-context-actions button,.diagnostic-actions button,.diagnostic-actions a){
+  transition:border-color var(--motion-state) ease,background-color var(--motion-state) ease,color var(--motion-state) ease,opacity var(--motion-state) ease,transform var(--motion-press) var(--ease-out-quart);
+}
+.stage :where(textarea,input,select){
+  border-color:rgba(241,239,234,.135);
+  background:linear-gradient(180deg,rgba(7,9,11,.96),rgba(10,12,15,.96));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.022);
+  transition:border-color var(--motion-state) ease,background-color var(--motion-state) ease,box-shadow var(--motion-state) ease;
+}
+.stage :where(textarea,input,select):focus-visible{
+  border-color:rgba(232,93,42,.82);
+  box-shadow:0 0 0 2px rgba(232,93,42,.115),inset 0 1px 0 rgba(255,255,255,.028);
+  outline:0;
+}
+.stage :where(button,a):focus-visible{
+  outline:2px solid rgba(241,239,234,.86);
+  outline-offset:3px;
+}
+
+/* Direct controls feel inset and selected, never glowy. */
+.stage .variable-options button,
+.stage .segmented button{
+  border-color:rgba(241,239,234,.12);
+  background:linear-gradient(180deg,#12151a,#0e1115);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
+}
+.stage .variable-options button[aria-pressed='true'],
+.stage .segmented button[aria-pressed='true']{
+  border-color:rgba(232,93,42,.72);
+  background:linear-gradient(180deg,#221611,#17110e);
+  box-shadow:inset 0 -2px 0 rgba(232,93,42,.9),inset 0 1px 0 rgba(255,226,211,.035);
+}
+.stage .state-summary{
+  border:0;
+  border-top:1px solid var(--hairline);
+  border-bottom:1px solid var(--hairline-soft);
+  background:linear-gradient(180deg,rgba(255,255,255,.018),rgba(255,255,255,.004));
+  box-shadow:none;
+}
+
+/* Narrative: reduce identical-card repetition and semantic side stripes. */
+.stage .narrative-editor{
+  border-color:var(--hairline);
+  background:linear-gradient(145deg,#111419 0%,#0d1013 100%);
+  box-shadow:inset 0 1px 0 var(--light-edge),0 26px 72px rgba(0,0,0,.18);
+}
+.stage .narrative-stages{
+  border-color:var(--hairline);
+  background:rgba(13,15,18,.74);
+}
+.stage .narrative-stage{border-right-color:var(--hairline-soft)}
+.stage .narrative-stage[aria-current='step']{
+  background:linear-gradient(180deg,#181a1f,#13161a);
+  box-shadow:inset 0 -2px 0 rgba(232,93,42,.86),inset 0 1px 0 rgba(255,255,255,.025);
+}
+.stage :is(.narrative-reading-grid,.narrative-strategy-grid){
+  gap:0;
+  border-top:1px solid var(--hairline);
+  border-bottom:1px solid var(--hairline-soft);
+}
+.stage :is(.narrative-reading-card,.narrative-strategy-card){
+  border:0;
+  border-right:1px solid var(--hairline-soft);
+  background:linear-gradient(180deg,rgba(255,255,255,.016),rgba(255,255,255,.003));
+  box-shadow:none;
+}
+.stage :is(.narrative-reading-card,.narrative-strategy-card):last-child{border-right:0}
+.stage .narrative-strategy-card[aria-pressed='true']{
+  background:linear-gradient(180deg,rgba(232,93,42,.055),rgba(232,93,42,.012));
+  box-shadow:inset 0 -2px 0 rgba(232,93,42,.86);
+}
+.stage .narrative-grounded-field{
+  border-color:var(--hairline);
+  background:linear-gradient(180deg,#101317,#0d1013);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.02);
+}
+.stage .narrative-clarification,
+.stage .narrative-stage-error,
+.stage .narrative-apply-preview{
+  border:1px solid rgba(232,93,42,.28);
+  border-left-width:1px;
+  background:linear-gradient(110deg,rgba(232,93,42,.047),rgba(17,19,23,.86) 38%,rgba(17,19,23,.72));
+  box-shadow:inset 0 1px 0 rgba(255,226,211,.025);
+}
+.stage .narrative-stage-error{
+  border-color:rgba(217,164,65,.34);
+  background:linear-gradient(110deg,rgba(217,164,65,.052),rgba(18,16,15,.88) 38%,rgba(18,16,15,.74));
+}
+.stage .narrative-sequence-grid{
+  border-color:var(--hairline);
+  background:linear-gradient(180deg,#0e1114,#0b0d10);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.018);
+}
+
+/* Project: turn the proposal area into an editorial ledger, not a card wall. */
+.stage :is(.project-workspace-panel,.project-breakdown){
+  background:
+    radial-gradient(760px 460px at 92% 2%,rgba(232,93,42,.032),transparent 60%),
+    linear-gradient(180deg,#0e1013 0%,#090a0c 100%);
+}
+.stage .project-header,
+.stage .project-breakdown>header{border-bottom-color:var(--hairline)}
+.stage .project-progress{
+  border-color:var(--hairline);
+  padding-top:2px;
+  padding-bottom:2px;
+}
+.stage .project-section-head>span,
+.stage .project-breakdown>header>span{
+  display:inline-flex;
+  align-items:center;
+  min-height:30px;
+  padding:0 10px;
+  border:1px solid var(--hairline);
+  background:rgba(255,255,255,.018);
+}
+.stage .project-reading{
+  grid-template-columns:1.18fr 1.12fr 1fr 1fr .82fr;
+  border:0;
+  border-top:1px solid var(--hairline);
+  border-bottom:1px solid var(--hairline-soft);
+  background:transparent;
+}
+.stage .project-reading>div{
+  border-right-color:var(--hairline-soft);
+  background:linear-gradient(180deg,rgba(255,255,255,.013),rgba(255,255,255,.002));
+}
+.stage .project-proposal-scene{
+  border-color:var(--hairline);
+  background:linear-gradient(145deg,#111419 0%,#0d1013 100%);
+  box-shadow:inset 0 1px 0 var(--light-edge),0 18px 48px rgba(0,0,0,.12);
+  transition:border-color var(--motion-state) ease,background-color var(--motion-state) ease,box-shadow var(--motion-state) ease;
+}
+.stage .project-proposal-scene:focus-within{
+  border-color:rgba(241,239,234,.21);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035),0 22px 56px rgba(0,0,0,.15);
+}
+.stage .project-proposal-scene>header{border-bottom-color:var(--hairline-soft)}
+.stage .project-scene-node{
+  border-color:var(--hairline);
+  background:linear-gradient(180deg,#111419,#0e1114);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.018);
+  transition:border-color var(--motion-state) ease,background-color var(--motion-state) ease,transform var(--motion-press) var(--ease-out-quart);
+}
+.stage .project-scene-node[aria-current='true']{
+  border-color:rgba(232,93,42,.66);
+  background:linear-gradient(180deg,#1b1411,#13110f);
+  box-shadow:inset 0 -2px 0 rgba(232,93,42,.82),inset 0 1px 0 rgba(255,230,216,.025);
+}
+.stage .project-arc-scroll{
+  border-color:var(--hairline);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.015);
+}
+.stage .project-arc-matrix{background:linear-gradient(180deg,#0f1215,#0c0e11)}
+.stage .project-arc-head,
+.stage .project-arc-row{border-bottom-color:var(--hairline-soft)}
+.stage .project-arc-head>span,
+.stage .project-arc-row>strong,
+.stage .project-arc-scene-head,
+.stage .project-arc-row>button{border-right-color:var(--hairline-soft)}
+.stage .project-finding{
+  border:1px solid var(--hairline);
+  border-left-width:1px;
+  background:linear-gradient(145deg,#111419,#0e1013);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.018);
+}
+.stage .project-finding[data-status='WARN']{
+  border-color:rgba(217,164,65,.28);
+  background:linear-gradient(125deg,rgba(217,164,65,.045),#101215 44%);
+}
+.stage .project-finding[data-status='FAIL']{
+  border-color:rgba(201,90,84,.30);
+  background:linear-gradient(125deg,rgba(201,90,84,.045),#101215 44%);
+}
+.stage .project-finding[data-status='PASS']{
+  border-color:rgba(135,169,107,.27);
+  background:linear-gradient(125deg,rgba(135,169,107,.038),#101215 44%);
+}
+.stage .project-finding[data-status='UNRESOLVED']{
+  border-color:rgba(160,163,168,.19);
+}
+
+/* Project Context sticky chrome earns blur because content actually passes underneath it. */
+.stage .project-scene-context-bar{
+  border-color:var(--hairline);
+  background:rgba(9,11,13,.92);
+  box-shadow:0 12px 34px rgba(0,0,0,.18);
+}
+.stage .project-narrative-context{
+  border-color:var(--hairline);
+  background:linear-gradient(180deg,#0f1215,#0c0e11);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.018);
+}
+.stage .project-narrative-context>header,
+.stage .project-narrative-context>div{border-color:var(--hairline-soft)}
+
+/* Diagnose: semantic resolution uses a whole-surface tint, not a side-stripe convention. */
+.stage .diagnostic-direction{
+  background:var(--hairline-soft);
+  border-color:var(--hairline);
+}
+.stage .diagnostic-direction>div{background:linear-gradient(180deg,#111419,#0e1114)}
+.stage .diagnostic-route-resolution{
+  border-color:rgba(135,169,107,.28);
+  background:linear-gradient(115deg,rgba(135,169,107,.045),rgba(15,18,20,.9) 42%);
+  box-shadow:inset 0 1px 0 rgba(232,255,218,.018);
+}
+
+/* Hover is an enhancement, never a sticky-touch state. */
+@media (hover:hover){
+  .stage .system-chain button:hover{background:rgba(255,255,255,.026)}
+  .stage .variable-options button:hover,
+  .stage .segmented button:hover{border-color:rgba(241,239,234,.27);background:#15191e}
+  .stage :is(.narrative-reading-card,.narrative-strategy-card):hover{background:rgba(255,255,255,.026)}
+  .stage .project-scene-node:hover{border-color:rgba(241,239,234,.22);background:#14181c}
+  .stage .project-arc-row>button:hover,
+  .stage .project-arc-scene-head:hover{background:rgba(255,255,255,.026)}
+}
+@media (hover:none){
+  .stage .system-chain button:hover{background:linear-gradient(180deg,rgba(255,255,255,.012),transparent 72%)}
+  .stage :is(.narrative-reading-card,.narrative-strategy-card):hover{background:linear-gradient(180deg,rgba(255,255,255,.016),rgba(255,255,255,.003))}
+}
+
+@media(max-width:1100px){
+  .stage .project-reading{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:700px){
+  body::after{opacity:.02}
+  .stage .project-reading{grid-template-columns:1fr}
+  .stage .system-chain button+button::before{top:12px;bottom:12px}
+  .stage :is(.narrative-reading-grid,.narrative-strategy-grid){gap:8px;border:0}
+  .stage :is(.narrative-reading-card,.narrative-strategy-card){border:1px solid var(--hairline);background:linear-gradient(180deg,#111419,#0e1114)}
+}
+
+/* Reduced motion is gentler, not blank: preserve state/color feedback, remove positional motion. */
+@media (prefers-reduced-motion:reduce){
+  .stage .narrative-glow,.stage .hero-focus-field,.stage .hero-node[data-active='true']{animation:none!important}
+  .stage button:active{transform:none}
+  .stage :where(button,a,input,textarea,select){transition-duration:80ms!important}
+  .stage :where(.project-scene-node,.project-proposal-scene,.narrative-reading-card,.narrative-strategy-card){transform:none!important}
+}

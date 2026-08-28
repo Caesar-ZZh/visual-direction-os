@@ -1,0 +1,65 @@
+name: Sector 8 Release Gate
+
+on:
+  push:
+    branches:
+      - agent/director-workspace-v2-1
+    paths:
+      - "visual-direction-os/build-pages-site.js"
+      - "visual-direction-os/build-pages-site.test.js"
+      - "visual-direction-os/site-publish.test.js"
+      - "visual-direction-os/release-routing.css"
+      - "visual-direction-os/release-routing.test.js"
+      - "visual-direction-os/release-routing-visual.test.js"
+      - "visual-direction-os/release-routing.spec.js"
+      - "visual-direction-os/studio/**"
+      - ".github/workflows/sector-8-release-gate.yml"
+  pull_request:
+    branches:
+      - master
+    paths:
+      - "visual-direction-os/build-pages-site.js"
+      - "visual-direction-os/build-pages-site.test.js"
+      - "visual-direction-os/site-publish.test.js"
+      - "visual-direction-os/release-routing.css"
+      - "visual-direction-os/release-routing.test.js"
+      - "visual-direction-os/release-routing-visual.test.js"
+      - "visual-direction-os/release-routing.spec.js"
+      - "visual-direction-os/studio/**"
+      - ".github/workflows/sector-8-release-gate.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Run release contracts
+        run: |
+          node visual-direction-os/build-pages-site.test.js
+          node visual-direction-os/site-publish.test.js
+          node visual-direction-os/release-routing.test.js
+          node visual-direction-os/release-routing-visual.test.js
+
+      - name: Check release JavaScript syntax
+        run: |
+          node --check visual-direction-os/build-pages-site.js
+          node --check visual-direction-os/release-routing.test.js
+          node --check visual-direction-os/release-routing-visual.test.js
+          node --check visual-direction-os/release-routing.spec.js
+
+      - name: Assemble release site
+        run: node visual-direction-os/build-pages-site.js visual-direction-os /tmp/vdos-sector8-site
+
+      - name: Run assembled-site browser acceptance
+        run: |
+          npm install --no-save @playwright/test@1.55.0
+          npx playwright install --with-deps chromium
+          python3 -m http.server 4180 --directory /tmp/vdos-sector8-site >/tmp/vdos-sector8-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          npx playwright test visual-direction-os/release-routing.spec.js --reporter=line --workers=1
