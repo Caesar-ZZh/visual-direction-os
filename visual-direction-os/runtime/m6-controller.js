@@ -15,7 +15,10 @@
     sortShots,
     migrateLegacyBundleToM6,
     resolveContinuitySource,
-    deriveContinuityStatus
+    deriveContinuityStatus,
+    buildContinuityDependents,
+    collectContinuityDescendants,
+    detectAutoSourceChange
   } = dependencies;
 
   const clone = (value) => value == null ? value : (typeof structuredClone === 'function' ? structuredClone(value) : JSON.parse(JSON.stringify(value)));
@@ -35,7 +38,7 @@
   } = {}) {
     if (!memory || typeof memory.loadProjectBundle !== 'function') throw new Error('M6 controller requires Director Memory project bundles');
     if (!m4 || typeof m4.openShot !== 'function') throw new Error('M6 controller requires M4 openShot()');
-    for (const fn of [shapeSequence,shapeShot,sortSequences,sortShots,migrateLegacyBundleToM6,resolveContinuitySource,deriveContinuityStatus]) {
+    for (const fn of [shapeSequence,shapeShot,sortSequences,sortShots,migrateLegacyBundleToM6,resolveContinuitySource,deriveContinuityStatus,buildContinuityDependents,collectContinuityDescendants,detectAutoSourceChange]) {
       if (typeof fn !== 'function') throw new Error('M6 controller dependencies are unavailable');
     }
 
@@ -63,16 +66,71 @@
       return output;
     }
 
+    function effectiveResolutionForShot(shot, shots = state.shots) {
+      if (shot?.continuityInvalidation?.directSourceDeleted) {
+        return {
+          status:'missing',
+          sourceShotId:shot.continuityInvalidation.previousSourceShotId || shot.continuityInvalidation.causedByShotId || null,
+          sourceArtifactId:shot.continuityInvalidation.previousArtifactId || null,
+          sourceArtifact:null,
+          reason:'source_shot_deleted'
+        };
+      }
+      return resolveContinuitySource({ shot, shots, artifactsById });
+    }
+
+    function statusFromResolution(shot, resolution) {
+      if (resolution.status === 'not_applicable') return 'not_applicable';
+      if (resolution.status === 'out_of_order') return 'source_out_of_order';
+      if (resolution.status === 'missing') return 'source_missing';
+      if (resolution.status === 'unavailable') return 'source_unavailable';
+      return deriveContinuityStatus({ shot, shots:state.shots, artifactsById });
+    }
+
     function refreshDerived() {
       const next = {};
-      for (const shot of state.shots) next[shot.id] = deriveContinuityStatus({ shot, shots:state.shots, artifactsById });
+      for (const shot of state.shots) next[shot.id] = statusFromResolution(shot, effectiveResolutionForShot(shot));
       state.continuityByShotId = next;
     }
 
     function resolveContinuity(shotId) {
       const shot = shotById(shotId);
       if (!shot) throw new Error(`Unknown Shot: ${shotId}`);
-      return clone(resolveContinuitySource({ shot, shots:state.shots, artifactsById }));
+      return clone(effectiveResolutionForShot(shot));
+    }
+
+    async function refreshArtifacts() {
+      if (!state.project?.id) return;
+      const bundle = await memory.loadProjectBundle(state.project.id);
+      artifactsById = new Map((bundle.artifacts || []).map((artifact) => [artifact.id, clone(artifact)]));
+      refreshDerived();
+    }
+
+    function invalidationRecord({ reason, causedByShotId, previousArtifactId = null, currentArtifactId = null, previousSourceShotId = null, currentSourceShotId = null, directSourceDeleted = false } = {}) {
+      return {
+        reason, causedByShotId, previousArtifactId, currentArtifactId, previousSourceShotId, currentSourceShotId,
+        directSourceDeleted:Boolean(directSourceDeleted), invalidatedAt:now()
+      };
+    }
+
+    async function commitShotRecords(nextShots) {
+      const current = await memory.loadProjectBundle(state.project.id);
+      const next = {
+        project:{ ...current.project, activeSequenceId:state.activeSequenceId, activeShotId:state.activeShotId },
+        sequences:clone(current.sequences || state.sequences),
+        shots:orderedShots(state.sequences, clone(nextShots)),
+        artifacts:clone(current.artifacts || []),
+        comparisons:clone(current.comparisons || [])
+      };
+      await memory.commitProjectBundle({ mode:'replace', replaceProjectId:state.project.id, ...next });
+      await applyBundle(next, { openM4:false });
+      return next;
+    }
+
+    function applyInvalidationToDescendants(shots, sourceShotId, record, { includeSource = false } = {}) {
+      const affected = new Set(collectContinuityDescendants(sourceShotId, shots));
+      if (includeSource) affected.add(sourceShotId);
+      return shots.map((shot) => affected.has(shot.id) ? { ...shot, continuityInvalidation:clone(record), updatedAt:now() } : shot);
     }
 
     function shouldMigrateLegacy(bundle) {
@@ -228,14 +286,30 @@
       if (orderedShotIds.length !== siblings.length || orderedShotIds.some((id)=>!expected.has(id)) || new Set(orderedShotIds).size !== orderedShotIds.length) {
         throw new Error('Shot reorder must include every Shot in the Sequence exactly once');
       }
+      const beforeShots = clone(state.shots);
       const timestamp = now();
-      const updated = orderedShotIds.map((id,index)=>shapeShot({ ...shotById(id), order:index+1, updatedAt:timestamp }));
-      for (const shot of updated) await memory.putShot(shot);
-      const updatedMap = new Map(updated.map((shot)=>[shot.id,shot]));
-      state.shots = orderedShots(state.sequences,state.shots.map((shot)=>updatedMap.get(shot.id)||shot));
-      refreshDerived();
+      const reordered = orderedShotIds.map((id,index)=>shapeShot({ ...shotById(id), order:index+1, updatedAt:timestamp }));
+      const reorderedMap = new Map(reordered.map((shot)=>[shot.id,shot]));
+      let nextShots = state.shots.map((shot)=>reorderedMap.get(shot.id)||shot);
+      nextShots = orderedShots(state.sequences,nextShots);
+
+      for (const shot of nextShots.filter((row)=>row.sequenceId===sequenceId && row.continuityMode==='auto')) {
+        const change = detectAutoSourceChange({ shotId:shot.id, beforeShots, afterShots:nextShots });
+        if (!change || !shot.approvedArtifactId) continue;
+        const beforeShot = beforeShots.find((row)=>row.id===shot.id);
+        const beforeResolution = resolveContinuitySource({ shot:beforeShot, shots:beforeShots, artifactsById });
+        const afterResolution = resolveContinuitySource({ shot, shots:nextShots, artifactsById });
+        const record = invalidationRecord({
+          reason:'auto_source_changed_after_reorder', causedByShotId:shot.id,
+          previousArtifactId:beforeResolution.sourceArtifactId || null, currentArtifactId:afterResolution.sourceArtifactId || null,
+          previousSourceShotId:change.previousSourceShotId, currentSourceShotId:change.currentSourceShotId
+        });
+        nextShots = nextShots.map((row)=>row.id===shot.id ? { ...row, continuityInvalidation:record, updatedAt:now() } : row);
+        nextShots = applyInvalidationToDescendants(nextShots, shot.id, record);
+      }
+      await commitShotRecords(nextShots);
       emit();
-      return clone(updated);
+      return clone(sortShots(state.shots.filter((shot)=>shot.sequenceId===sequenceId)));
     }
 
     async function setActiveShot(shotId) {
@@ -267,7 +341,34 @@
     async function deleteShot(shotId) {
       const existing = shotById(shotId);
       if (!existing) return false;
-      const next = await replaceWithFilteredBundle({ removeShotId:shotId });
+      const current = await memory.loadProjectBundle(state.project.id);
+      const beforeShots = clone(state.shots);
+      const dependents = buildContinuityDependents(beforeShots);
+      const direct = new Set(dependents.get(shotId) || []);
+      const descendants = new Set(collectContinuityDescendants(shotId, beforeShots));
+      const previousArtifactId = existing.approvedArtifactId || null;
+      let nextShots = (current.shots || []).filter((row)=>row.id!==shotId);
+      nextShots = nextShots.map((shot) => {
+        if (direct.has(shot.id)) return {
+          ...shot,
+          continuityInvalidation:invalidationRecord({ reason:'source_deleted', causedByShotId:shotId, previousArtifactId, previousSourceShotId:shotId, directSourceDeleted:true }),
+          updatedAt:now()
+        };
+        if (descendants.has(shot.id)) return {
+          ...shot,
+          continuityInvalidation:invalidationRecord({ reason:'dependency_source_deleted', causedByShotId:shotId, previousArtifactId, previousSourceShotId:shotId }),
+          updatedAt:now()
+        };
+        return shot;
+      });
+      const next = {
+        project:{...current.project},
+        sequences:clone(current.sequences||[]),
+        shots:nextShots,
+        artifacts:(current.artifacts||[]).filter((row)=>row.shotId!==shotId),
+        comparisons:(current.comparisons||[]).filter((row)=>row.shotId!==shotId)
+      };
+      await memory.commitProjectBundle({mode:'replace',replaceProjectId:state.project.id,...next});
       await applyBundle(next);
       emit();
       return true;
@@ -281,6 +382,134 @@
       return true;
     }
 
+    async function setApprovedFrame(shotId, artifactId) {
+      await refreshArtifacts();
+      const shot = shotById(shotId);
+      if (!shot) throw new Error(`Unknown Shot: ${shotId}`);
+      const artifact = artifactsById.get(artifactId);
+      if (!artifact || artifact.shotId !== shot.id) throw new Error('Approved Frame must belong to the same Shot');
+      const previousArtifactId = shot.approvedArtifactId || null;
+      if (previousArtifactId === artifactId) return clone(shot);
+      const incoming = effectiveResolutionForShot(shot);
+      let updatedSource = { ...shot, approvedArtifactId:artifactId, updatedAt:now() };
+      const provenance = artifact.continuityProvenance || null;
+      if (updatedSource.continuityInvalidation) {
+        const repaired = incoming.status === 'not_applicable'
+          ? provenance?.status === 'not_applicable'
+          : incoming.status === 'resolved' && provenance?.status === 'resolved' && provenance.sourceArtifactId === incoming.sourceArtifactId;
+        if (repaired) updatedSource = { ...updatedSource, continuityInvalidation:null, continuityReview:null };
+      }
+      const record = invalidationRecord({ reason:'approved_frame_changed', causedByShotId:shot.id, previousArtifactId, currentArtifactId:artifactId });
+      let nextShots = state.shots.map((row)=>row.id===shot.id ? updatedSource : row);
+      nextShots = applyInvalidationToDescendants(nextShots, shot.id, record);
+      await commitShotRecords(nextShots);
+      emit();
+      return clone(shotById(shot.id));
+    }
+
+    async function clearApprovedFrame(shotId) {
+      const shot = shotById(shotId);
+      if (!shot) throw new Error(`Unknown Shot: ${shotId}`);
+      if (!shot.approvedArtifactId) return clone(shot);
+      const previousArtifactId = shot.approvedArtifactId;
+      const record = invalidationRecord({ reason:'approved_frame_cleared', causedByShotId:shot.id, previousArtifactId, currentArtifactId:null });
+      let nextShots = state.shots.map((row)=>row.id===shot.id ? { ...row, approvedArtifactId:null, updatedAt:now() } : row);
+      nextShots = applyInvalidationToDescendants(nextShots, shot.id, record);
+      await commitShotRecords(nextShots);
+      emit();
+      return clone(shotById(shot.id));
+    }
+
+    function sourceChangeRecord(shot, previousResolution, currentResolution, reason) {
+      return invalidationRecord({
+        reason, causedByShotId:shot.id,
+        previousArtifactId:previousResolution?.sourceArtifactId || null, currentArtifactId:currentResolution?.sourceArtifactId || null,
+        previousSourceShotId:previousResolution?.sourceShotId || null, currentSourceShotId:currentResolution?.sourceShotId || null
+      });
+    }
+
+    async function changeContinuityMode(shotId, nextMode, sourceShotId = null) {
+      const shot = shotById(shotId);
+      if (!shot) throw new Error(`Unknown Shot: ${shotId}`);
+      await refreshArtifacts();
+      const previousResolution = effectiveResolutionForShot(shot);
+      let nextShot;
+      if (nextMode === 'manual') {
+        const source = shotById(sourceShotId);
+        if (!source || source.sequenceId !== shot.sequenceId) throw new Error('Manual continuity source must be in the same Sequence');
+        const siblings = sortShots(state.shots.filter((row)=>row.sequenceId===shot.sequenceId));
+        if (siblings.findIndex((row)=>row.id===source.id) >= siblings.findIndex((row)=>row.id===shot.id)) throw new Error('Manual continuity source must be an earlier Shot');
+        nextShot = { ...shot, continuityMode:'manual', continuitySourceShotId:source.id, updatedAt:now() };
+      } else {
+        nextShot = { ...shot, continuityMode:'auto', continuitySourceShotId:null, updatedAt:now() };
+        if (nextShot.continuityInvalidation?.directSourceDeleted) nextShot.continuityInvalidation = null;
+      }
+      const hypothetical = state.shots.map((row)=>row.id===shot.id ? nextShot : row);
+      const currentResolution = resolveContinuitySource({ shot:nextShot, shots:hypothetical, artifactsById });
+      let nextShots = hypothetical;
+      const changed = previousResolution.sourceShotId !== currentResolution.sourceShotId || previousResolution.sourceArtifactId !== currentResolution.sourceArtifactId || previousResolution.status !== currentResolution.status;
+      if (changed && shot.approvedArtifactId) {
+        const record = sourceChangeRecord(shot, previousResolution, currentResolution, nextMode === 'auto' ? 'continuity_reset_to_auto' : 'continuity_source_changed');
+        nextShots = nextShots.map((row)=>row.id===shot.id ? { ...row, continuityInvalidation:record, updatedAt:now() } : row);
+        nextShots = applyInvalidationToDescendants(nextShots, shot.id, record);
+      }
+      await commitShotRecords(nextShots);
+      emit();
+      return clone(shotById(shot.id));
+    }
+
+    async function setContinuityManual(shotId, sourceShotId) { return changeContinuityMode(shotId,'manual',sourceShotId); }
+    async function setContinuityAuto(shotId) { return changeContinuityMode(shotId,'auto',null); }
+
+    async function acceptCurrentContinuity(shotId, note = '') {
+      await refreshArtifacts();
+      const shot = shotById(shotId);
+      if (!shot?.approvedArtifactId) throw new Error('Accept Current Continuity requires an Approved Frame');
+      const resolution = effectiveResolutionForShot(shot);
+      if (resolution.status !== 'resolved') throw new Error('Accept Current Continuity requires a resolved continuity source');
+      const updated = {
+        ...shot,
+        continuityReview:{ status:'accepted', reviewedArtifactId:shot.approvedArtifactId, sourceArtifactId:resolution.sourceArtifactId, reviewedAt:now(), note:String(note || '') },
+        continuityInvalidation:null, updatedAt:now()
+      };
+      await commitShotRecords(state.shots.map((row)=>row.id===shot.id ? updated : row));
+      emit();
+      return clone(shotById(shot.id));
+    }
+
+    function getContinuityImpact(shotId) {
+      if (!shotById(shotId)) throw new Error(`Unknown Shot: ${shotId}`);
+      const map = buildContinuityDependents(state.shots);
+      const direct = clone(map.get(shotId) || []);
+      const descendants = collectContinuityDescendants(shotId,state.shots);
+      return { directDependents:direct, descendants:clone(descendants) };
+    }
+
+    async function prepareGeneration({ ordinaryReferences = [] } = {}) {
+      if (!state.activeShotId) throw new Error('No Active Shot is available for generation');
+      await refreshArtifacts();
+      const shot = shotById(state.activeShotId);
+      const sequence = sequenceById(shot.sequenceId);
+      const resolution = effectiveResolutionForShot(shot);
+      const usable = (resolution.status === 'resolved' || resolution.status === 'out_of_order') && resolution.sourceArtifact;
+      const continuityReference = usable ? {
+        role:'continuity', sourceShotId:resolution.sourceShotId, sourceArtifactId:resolution.sourceArtifactId,
+        imageBlob:resolution.sourceArtifact.imageBlob || null, source:resolution.sourceArtifact.result?.src || null, preserve:[]
+      } : null;
+      let provenance;
+      if (resolution.status === 'not_applicable') provenance = {sourceShotId:null,sourceArtifactId:null,status:'not_applicable'};
+      else if (usable) provenance = {sourceShotId:resolution.sourceShotId,sourceArtifactId:resolution.sourceArtifactId,status:'resolved'};
+      else if (resolution.status === 'unavailable') provenance = {sourceShotId:resolution.sourceShotId,sourceArtifactId:resolution.sourceArtifactId||null,status:'unavailable_at_generation'};
+      else provenance = {sourceShotId:resolution.sourceShotId||null,sourceArtifactId:null,status:'missing_at_generation'};
+      return {
+        projectId:state.project.id, sequenceId:sequence.id, shotId:shot.id,
+        sequenceIntent:sequence.intent || '', shotIntent:shot.intent || '',
+        continuity:{...clone(resolution),reference:clone(continuityReference)},
+        continuityProvenance:provenance,
+        ordinaryReferences:clone(ordinaryReferences)
+      };
+    }
+
     return {
       boot,
       openProject,
@@ -292,6 +521,14 @@
       reorderShots,
       deleteShot,
       setActiveShot,
+      setApprovedFrame,
+      clearApprovedFrame,
+      setContinuityAuto,
+      setContinuityManual,
+      acceptCurrentContinuity,
+      getContinuityImpact,
+      prepareGeneration,
+      refreshArtifacts,
       getState,
       resolveContinuity
     };
