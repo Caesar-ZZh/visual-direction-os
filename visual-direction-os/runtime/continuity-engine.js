@@ -61,15 +61,14 @@
       return { status:'not_applicable', sourceShotId:null, sourceArtifactId:null, sourceArtifact:null, reason:'first_shot' };
     }
 
+    let isOutOfOrder = false;
     if (shot.continuityMode === 'manual') {
       const requestedId = String(shot.continuitySourceShotId || '').trim();
       const requested = requestedId ? shots.find((row) => row?.id === requestedId) : null;
       if (requested && requested.sequenceId !== shot.sequenceId) {
         return { status:'missing', sourceShotId:requestedId, sourceArtifactId:null, sourceArtifact:null, reason:'cross_sequence_source' };
       }
-      if (manualSourceOutOfOrder(shot, sourceShot, shots)) {
-        return { status:'out_of_order', sourceShotId:sourceShot.id, sourceArtifactId:sourceShot.approvedArtifactId || null, sourceArtifact:null, reason:'manual_source_not_earlier' };
-      }
+      isOutOfOrder = manualSourceOutOfOrder(shot, sourceShot, shots);
     }
 
     if (!sourceShot) {
@@ -91,12 +90,21 @@
       ? artifactsById.get(sourceArtifactId)
       : artifactsById?.[sourceArtifactId];
     if (!sourceArtifact || sourceArtifact.shotId !== sourceShot.id) {
+      if (isOutOfOrder) {
+        return { status:'out_of_order', sourceShotId:sourceShot.id, sourceArtifactId, sourceArtifact:null, reason:'manual_source_not_earlier' };
+      }
       return { status:'missing', sourceShotId:sourceShot.id, sourceArtifactId, sourceArtifact:null, reason:'approved_artifact_missing_or_wrong_shot' };
     }
     if (!hasUsableAsset(sourceArtifact)) {
+      if (isOutOfOrder) {
+        return { status:'out_of_order', sourceShotId:sourceShot.id, sourceArtifactId, sourceArtifact, reason:'manual_source_not_earlier' };
+      }
       return { status:'unavailable', sourceShotId:sourceShot.id, sourceArtifactId, sourceArtifact, reason:'approved_asset_unavailable' };
     }
 
+    if (isOutOfOrder) {
+      return { status:'out_of_order', sourceShotId:sourceShot.id, sourceArtifactId, sourceArtifact, reason:'manual_source_not_earlier' };
+    }
     return { status:'resolved', sourceShotId:sourceShot.id, sourceArtifactId, sourceArtifact, reason:null };
   }
 
