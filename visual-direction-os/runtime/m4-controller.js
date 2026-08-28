@@ -15,8 +15,8 @@
       getLatestProject:fail,
       getProject:fail,
       ensureProject:fail,
-      listArtifacts:fail,
-      listComparisons:async () => [],
+      listArtifactsForShot:fail,
+      listComparisonsForShot:async () => [],
       saveGenerationArtifact:fail,
       saveComparison:async (row) => row,
       estimateStorage:async () => null,
@@ -109,6 +109,8 @@
     const semanticLocksByHead = new Map();
     const state = {
       project:null,
+      activeSequenceId:null,
+      activeShotId:null,
       artifacts:[],
       comparisons:[],
       selectedAId:null,
@@ -120,7 +122,7 @@
       persistenceWarning:''
     };
 
-    const sorted = (rows = state.artifacts) => [...rows].sort((a,b) => (a.generationIndex || 0) - (b.generationIndex || 0));
+    const sorted = (rows = state.artifacts) => [...rows].sort((a,b) => (a.generationIndex || 0) - (b.generationIndex || 0) || String(a.id || '').localeCompare(String(b.id || '')));
     const localArtifact = (id) => state.artifacts.find((row) => row.id === id) || null;
     const nextIndex = () => state.artifacts.reduce((max,row) => Math.max(max, Number(row.generationIndex) || 0), 0) + 1;
     const snapshot = () => clone(state);
@@ -167,23 +169,23 @@
         : null;
       const head = b || sorted().filter((row) => row.evaluation).at(-1) || null;
       state.memory = head
-        ? deriveMemoryForPath({
-            artifacts:state.artifacts,
-            comparisons:state.comparisons,
-            pathHeadId:head.id,
-            semanticLocks:semanticLocksByHead.get(head.id) || {}
-          })
+        ? deriveMemoryForPath({ artifacts:state.artifacts, comparisons:state.comparisons, pathHeadId:head.id, semanticLocks:semanticLocksByHead.get(head.id) || {} })
         : emptyMemory();
     }
 
     async function persistCurrentComparison() {
-      if (!state.project || !state.comparison || typeof memory.saveComparison !== 'function') return;
-      const key = pairKey(state.selectedAId, state.selectedBId);
+      if (!state.project || !state.activeSequenceId || !state.activeShotId || !state.comparison || typeof memory.saveComparison !== 'function') return;
+      const a = localArtifact(state.selectedAId);
+      const b = localArtifact(state.selectedBId);
+      if (!a || !b || a.shotId !== state.activeShotId || b.shotId !== state.activeShotId) throw new Error('M4 comparison must stay within the Active Shot');
+      const key = pairKey(a.id, b.id);
       const record = {
         id:key,
         projectId:state.project.id,
-        artifactAId:state.selectedAId,
-        artifactBId:state.selectedBId,
+        sequenceId:state.activeSequenceId,
+        shotId:state.activeShotId,
+        artifactAId:a.id,
+        artifactBId:b.id,
         directorJudgments:clone(judgmentsByPair.get(key) || {}),
         comparison:clone(state.comparison),
         updatedAt:now()
@@ -196,36 +198,30 @@
       }
     }
 
-    async function readProjectState(project) {
-      if (!project?.id) throw new Error('M4 project loading requires a project');
+    async function readShotState({ projectId, sequenceId, shotId }) {
+      if (!projectId || !sequenceId || !shotId) throw new Error('M4 shot loading requires projectId, sequenceId, and shotId');
+      if (typeof memory.listArtifactsForShot !== 'function') throw new Error('Director memory does not support Shot-scoped artifacts');
       const [artifacts, comparisons] = await Promise.all([
-        memory.listArtifacts(project.id),
-        typeof memory.listComparisons === 'function' ? memory.listComparisons(project.id) : Promise.resolve([])
+        memory.listArtifactsForShot(projectId, sequenceId, shotId),
+        typeof memory.listComparisonsForShot === 'function' ? memory.listComparisonsForShot(projectId, sequenceId, shotId) : Promise.resolve([])
       ]);
-      return {
-        project:clone(project),
-        artifacts:sorted(artifacts || []),
-        comparisons:clone(comparisons || [])
-      };
+      return { artifacts:sorted(artifacts || []), comparisons:clone(comparisons || []) };
     }
 
-    function cloneMap(source) {
-      return new Map([...source.entries()].map(([key, value]) => [key, clone(value)]));
-    }
+    function cloneMap(source) { return new Map([...source.entries()].map(([key, value]) => [key, clone(value)])); }
+    function restoreMap(target, source) { target.clear(); for (const [key, value] of source) target.set(key, clone(value)); }
 
-    function restoreMap(target, source) {
-      target.clear();
-      for (const [key, value] of source) target.set(key, clone(value));
-    }
-
-    async function loadProjectState(loaded) {
+    async function loadShotState({ project, sequenceId, shotId, artifacts, comparisons }) {
       const previousState = snapshot();
       const previousJudgments = cloneMap(judgmentsByPair);
       const previousLocks = cloneMap(semanticLocksByHead);
+      const previousUrls = new Set(objectUrls.keys());
       try {
-        state.project = clone(loaded.project);
-        state.artifacts = sorted(loaded.artifacts || []);
-        state.comparisons = clone(loaded.comparisons || []);
+        state.project = clone(project);
+        state.activeSequenceId = sequenceId;
+        state.activeShotId = shotId;
+        state.artifacts = sorted(artifacts || []);
+        state.comparisons = clone(comparisons || []);
         state.selectedAId = null;
         state.selectedBId = null;
         state.comparison = null;
@@ -242,7 +238,27 @@
         restoreMap(semanticLocksByHead, previousLocks);
         throw error;
       }
-      revokeIds(new Set(objectUrls.keys()));
+      revokeIds(previousUrls);
+      return snapshot();
+    }
+
+    async function openShot({ projectId, sequenceId, shotId } = {}) {
+      const p = String(projectId || '').trim();
+      const q = String(sequenceId || '').trim();
+      const s = String(shotId || '').trim();
+      if (!p || !q || !s) throw new Error('openShot requires projectId, sequenceId, and shotId');
+      if (typeof memory.getProject !== 'function') throw new Error('Director memory cannot open projects by ID');
+      const project = await memory.getProject(p);
+      if (!project) throw new Error(`Unknown project: ${p}`);
+      const loaded = await readShotState({ projectId:p, sequenceId:q, shotId:s });
+      for (const artifact of loaded.artifacts) {
+        if (artifact.projectId !== p || artifact.sequenceId !== q || artifact.shotId !== s) throw new Error(`Artifact ${artifact.id} crosses the Active Shot boundary`);
+      }
+      for (const comparison of loaded.comparisons) {
+        if (comparison.projectId !== p || comparison.sequenceId !== q || comparison.shotId !== s) throw new Error(`Comparison ${comparison.id} crosses the Active Shot boundary`);
+      }
+      await loadShotState({ project, sequenceId:q, shotId:s, ...loaded });
+      emit();
       return snapshot();
     }
 
@@ -253,16 +269,30 @@
         let project = null;
         const requestedId = String(projectId || '').trim();
         if (requestedId && typeof memory.getProject === 'function') project = await memory.getProject(requestedId);
-        if (!project) project = await memory.getLatestProject();
+        if (!project && typeof memory.getLatestProject === 'function') project = await memory.getLatestProject();
         if (!project) {
           const timestamp = now();
           project = await memory.ensureProject({ createdAt:timestamp, updatedAt:timestamp });
         }
-        const loaded = await readProjectState(project);
-        await loadProjectState(loaded);
+        if (project?.activeSequenceId && project?.activeShotId) {
+          await openShot({ projectId:project.id, sequenceId:project.activeSequenceId, shotId:project.activeShotId });
+          return snapshot();
+        }
+        state.project = clone(project);
+        state.activeSequenceId = null;
+        state.activeShotId = null;
+        state.artifacts = [];
+        state.comparisons = [];
+        state.selectedAId = null;
+        state.selectedBId = null;
+        state.comparison = null;
+        state.memory = emptyMemory();
+        await refreshStorage();
       } catch (error) {
         state.restoreError = String(error?.message || error);
         state.project = null;
+        state.activeSequenceId = null;
+        state.activeShotId = null;
         state.artifacts = [];
         state.comparisons = [];
         state.selectedAId = null;
@@ -282,8 +312,20 @@
       if (typeof memory.getProject !== 'function') throw new Error('Director memory cannot open projects by ID');
       const project = await memory.getProject(id);
       if (!project) throw new Error(`Unknown project: ${id}`);
-      const loaded = await readProjectState(project);
-      await loadProjectState(loaded);
+      if (project.activeSequenceId && project.activeShotId) return openShot({ projectId:id, sequenceId:project.activeSequenceId, shotId:project.activeShotId });
+      revokeIds(new Set(objectUrls.keys()));
+      state.project = clone(project);
+      state.activeSequenceId = null;
+      state.activeShotId = null;
+      state.artifacts = [];
+      state.comparisons = [];
+      state.selectedAId = null;
+      state.selectedBId = null;
+      state.comparison = null;
+      state.memory = emptyMemory();
+      judgmentsByPair.clear();
+      semanticLocksByHead.clear();
+      await refreshStorage();
       emit();
       return snapshot();
     }
@@ -292,36 +334,38 @@
       const head = localArtifact(state.selectedBId) || sorted().filter((row) => row.evaluation).at(-1) || null;
       return clone({
         project:state.project,
+        activeSequenceId:state.activeSequenceId,
+        activeShotId:state.activeShotId,
         artifacts:state.artifacts,
         comparisons:state.comparisons,
-        memorySnapshot:{
-          ...state.memory,
-          computedAt:now(),
-          pathHeadArtifactId:head?.id || null
-        }
+        memorySnapshot:{ ...state.memory, computedAt:now(), pathHeadArtifactId:head?.id || null }
       });
     }
 
-    async function ensureProject() {
-      if (state.project) return state.project;
-      const timestamp = now();
-      state.project = await memory.ensureProject({ createdAt:timestamp, updatedAt:timestamp });
-      return state.project;
+    function assertActiveShot() {
+      if (!state.project?.id || !state.activeSequenceId || !state.activeShotId) throw new Error('M4 generation ingest requires an Active Shot');
     }
 
     async function ingestGeneration(artifact) {
       if (!artifact?.id) throw new Error('M4 generation ingest requires an artifact');
-      await ensureProject();
+      assertActiveShot();
+      if (artifact.projectId && artifact.projectId !== state.project.id) throw new Error('Generation artifact belongs to a different Project');
+      if (artifact.sequenceId && artifact.sequenceId !== state.activeSequenceId) throw new Error('Generation artifact belongs to a different Sequence');
+      if (artifact.shotId && artifact.shotId !== state.activeShotId) throw new Error('Generation artifact belongs to a different Shot');
       const existing = localArtifact(artifact.id);
       const parentArtifactId = artifact.iterationOf || artifact.parentArtifactId || existing?.parentArtifactId || null;
       const parent = parentArtifactId ? localArtifact(parentArtifactId) : null;
+      if (parentArtifactId && !parent) throw new Error(`M4 parent artifact ${parentArtifactId} is not in the Active Shot`);
       const enriched = {
         ...(existing ? clone(existing) : {}),
         ...clone(artifact),
         projectId:state.project.id,
+        sequenceId:state.activeSequenceId,
+        shotId:state.activeShotId,
         parentArtifactId,
         rootArtifactId:parent ? (parent.rootArtifactId || parent.id) : (existing?.rootArtifactId || artifact.id),
         generationIndex:existing?.generationIndex || nextIndex(),
+        continuityProvenance:clone(artifact.continuityProvenance ?? existing?.continuityProvenance ?? null),
         persistenceStatus:existing?.persistenceStatus || null
       };
       state.artifacts = sorted(state.artifacts.filter((row) => row.id !== artifact.id).concat(enriched));
@@ -338,9 +382,12 @@
         ...clone(current),
         ...clone(artifact),
         projectId:current.projectId,
+        sequenceId:current.sequenceId,
+        shotId:current.shotId,
         rootArtifactId:current.rootArtifactId,
         parentArtifactId:current.parentArtifactId,
         generationIndex:current.generationIndex,
+        continuityProvenance:clone(current.continuityProvenance ?? artifact.continuityProvenance ?? null),
         measurements:clone(artifact.measurements || report.measurements || null),
         evaluation:clone(report),
         humanJudgments:clone(human),
@@ -352,6 +399,8 @@
         artifact:enriched,
         lineage:{
           projectId:enriched.projectId,
+          sequenceId:enriched.sequenceId,
+          shotId:enriched.shotId,
           rootArtifactId:enriched.rootArtifactId,
           parentArtifactId:enriched.parentArtifactId,
           generationIndex:enriched.generationIndex
@@ -370,7 +419,7 @@
       else if (persisted.persistenceStatus === 'meta_only') state.persistenceWarning = `Generation ${merged.id}: image not persisted; metadata is saved.`;
       else state.persistenceWarning = '';
 
-      try { state.project = await memory.ensureProject({ ...state.project, updatedAt:now() }); } catch (_) {}
+      try { state.project = await memory.ensureProject({ ...state.project, activeSequenceId:state.activeSequenceId, activeShotId:state.activeShotId, updatedAt:now() }); } catch (_) {}
       chooseDefaultSelection();
       recomputeDerived();
       await persistCurrentComparison();
@@ -402,14 +451,12 @@
       const judgments = clone(judgmentsByPair.get(key) || {});
       judgments[checkId] = { state:semanticState, note:String(note || '').trim() };
       judgmentsByPair.set(key, judgments);
-
       const b = localArtifact(state.selectedBId);
       const semanticCheck = b?.evaluation?.checks?.find((check) => check.id === checkId && check.evidenceMode === 'human_required');
       const locks = { ...(semanticLocksByHead.get(state.selectedBId) || {}) };
       if (semanticState === 'improved' && semanticCheck?.status === 'pass') locks[checkId] = true;
       else delete locks[checkId];
       semanticLocksByHead.set(state.selectedBId, locks);
-
       recomputeDerived();
       await persistCurrentComparison();
       emit();
@@ -422,10 +469,7 @@
       if (objectUrls.has(id)) return objectUrls.get(id);
       if (artifact.imageBlob && typeof createObjectURL === 'function') {
         const url = createObjectURL(artifact.imageBlob);
-        if (url) {
-          objectUrls.set(id, url);
-          return url;
-        }
+        if (url) { objectUrls.set(id, url); return url; }
       }
       return artifact.result?.src || null;
     }
@@ -454,7 +498,9 @@
       if (!localArtifact(id)) return [];
       const ids = stateSubtreeIds(id);
       try {
-        for (const persistedId of await memory.deleteSubtree(id) || []) ids.add(persistedId);
+        for (const persistedId of await memory.deleteSubtree(id) || []) {
+          if (localArtifact(persistedId)) ids.add(persistedId);
+        }
       } catch (_) {}
       revokeIds(ids);
       state.artifacts = state.artifacts.filter((row) => !ids.has(row.id));
@@ -475,6 +521,8 @@
       if (state.project?.id) await memory.clearProject(state.project.id);
       revokeIds(new Set(state.artifacts.map((row) => row.id)));
       state.project = null;
+      state.activeSequenceId = null;
+      state.activeShotId = null;
       state.artifacts = [];
       state.comparisons = [];
       state.selectedAId = null;
@@ -491,12 +539,7 @@
 
     function getMemoryFor(id) {
       if (!localArtifact(id)) return emptyMemory();
-      return clone(deriveMemoryForPath({
-        artifacts:state.artifacts,
-        comparisons:state.comparisons,
-        pathHeadId:id,
-        semanticLocks:semanticLocksByHead.get(id) || {}
-      }));
+      return clone(deriveMemoryForPath({ artifacts:state.artifacts, comparisons:state.comparisons, pathHeadId:id, semanticLocks:semanticLocksByHead.get(id) || {} }));
     }
 
     function getCurrentMemoryAppendix() {
@@ -510,11 +553,7 @@
       const artifact = localArtifact(id);
       if (!artifact) throw new Error(`Unknown generation artifact: ${id}`);
       const branchMemory = getMemoryFor(id);
-      return generationRunner({
-        artifact:clone(artifact),
-        memory:branchMemory,
-        promptAppendix:compileMemoryAppendix({ currentDelta:artifact.evaluationDelta || null, memory:branchMemory })
-      });
+      return generationRunner({ artifact:clone(artifact), memory:branchMemory, promptAppendix:compileMemoryAppendix({ currentDelta:artifact.evaluationDelta || null, memory:branchMemory }) });
     }
 
     function dispose() { revokeIds(new Set(objectUrls.keys())); }
@@ -522,6 +561,7 @@
     return {
       boot,
       openProject,
+      openShot,
       getState,
       getExportSnapshot,
       ingestGeneration,
