@@ -11,6 +11,20 @@ function artifact({id,shotId,parentArtifactId=null,rootArtifactId=id,generationI
     imageBlob:new Blob([`image-${id}`],{type:'image/webp'}),imageMimeType:'image/webp',persistenceStatus:'persisted'
   };
 }
+function decodeJson(bytes){return JSON.parse(new TextDecoder().decode(bytes));}
+function legacyCoreFile(file){
+  if(file.role!=='core'||!file.path.endsWith('.json')) return file;
+  const value=decodeJson(file.bytes);
+  if(file.path==='project.json'){
+    value.schemaVersion=1;delete value.activeSequenceId;delete value.activeShotId;
+    if(value.stats){delete value.stats.sequenceCount;delete value.stats.shotCount;}
+  }else if(file.path.startsWith('artifacts/')){
+    value.schemaVersion=1;delete value.sequenceId;delete value.shotId;delete value.continuityProvenance;
+  }else if(file.path==='comparisons.json'){
+    value.schemaVersion=1;value.comparisons=(value.comparisons||[]).map((row)=>{const next={...row};delete next.sequenceId;delete next.shotId;return next;});
+  }else value.schemaVersion=1;
+  return {...file,bytes:codec.stableJsonBytes(value)};
+}
 
 (async()=>{
   const project={id:'p1',title:'Sequence Project',createdAt:'2026-08-28T00:00:00.000Z',updatedAt:'2026-08-28T01:00:00.000Z',activeSequenceId:'q1',activeShotId:'s2'};
@@ -55,10 +69,7 @@ function artifact({id,shotId,parentArtifactId=null,rootArtifactId=id,generationI
 
   const copied=await pkg.stageImport({
     decoded,migrator,existingProjectIds:new Set(['p1']),mode:'copy',recomputeDerived,
-    makeProjectId:()=> 'p-copy',
-    makeSequenceId:(id)=>`copy-${id}`,
-    makeShotId:(id)=>`copy-${id}`,
-    makeArtifactId:(id)=>`copy-${id}`
+    makeProjectId:()=> 'p-copy',makeSequenceId:(id)=>`copy-${id}`,makeShotId:(id)=>`copy-${id}`,makeArtifactId:(id)=>`copy-${id}`
   });
   assert.equal(copied.project.id,'p-copy');
   assert.equal(copied.project.activeSequenceId,'copy-q1');
@@ -70,6 +81,24 @@ function artifact({id,shotId,parentArtifactId=null,rootArtifactId=id,generationI
   assert.equal(copiedDangling.sourceArtifactId,'copy-deleted-artifact');
   assert.equal(copied.shots.find((s)=>s.id==='copy-s2').continuityReview.reviewedArtifactId,'copy-h2');
   assert.equal(copied.shots.find((s)=>s.id==='copy-s2').continuityReview.sourceArtifactId,'copy-g1');
+
+  // A real schema-v1 archive has no Sequence/Shot core files and no M6 fields.
+  const legacyFiles=files.filter((file)=>file.path!=='sequences.json'&&file.path!=='shots.json').map(legacyCoreFile);
+  const legacyManifest={...stage.manifestBase,schemaVersion:1,createdWith:{...(stage.manifestBase.createdWith||{}),appVersion:'2.0-m5'},project:{id:'p1',title:'Sequence Project'}};
+  const legacyBytes=await codec.encodeVdos({files:legacyFiles,manifestBase:legacyManifest});
+  const legacyDecoded=await codec.decodeVdos(legacyBytes);
+  const legacyImported=await pkg.stageImport({decoded:legacyDecoded,migrator,existingProjectIds:new Set(),mode:'replace',recomputeDerived});
+  const expectedLegacySequence=migrations.legacySequenceId('p1');
+  const expectedLegacyShot=migrations.legacyShotId('p1');
+  assert.equal(legacyImported.importAudit.migrations.includes('1→2'),true);
+  assert.deepEqual(legacyImported.sequences.map((row)=>row.id),[expectedLegacySequence]);
+  assert.deepEqual(legacyImported.shots.map((row)=>row.id),[expectedLegacyShot]);
+  assert.equal(legacyImported.shots[0].approvedArtifactId,null,'legacy migration must never auto-approve');
+  assert.equal(legacyImported.project.activeSequenceId,expectedLegacySequence);
+  assert.equal(legacyImported.project.activeShotId,expectedLegacyShot);
+  assert.equal(legacyImported.artifacts.every((row)=>row.sequenceId===expectedLegacySequence&&row.shotId===expectedLegacyShot),true);
+  assert.equal(legacyImported.artifacts.every((row)=>row.continuityProvenance==null),true);
+  assert.equal(legacyImported.artifacts.find((row)=>row.id==='h2').parentArtifactId,'h1','legacy generation lineage must remain unchanged');
 
   const degraded=await codec.decodeVdos(bytes);
   const g1Image=degraded.manifest.files.find((row)=>row.role==='asset'&&row.path.startsWith('images/g1.'));
