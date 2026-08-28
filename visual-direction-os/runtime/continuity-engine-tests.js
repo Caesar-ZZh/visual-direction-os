@@ -44,15 +44,18 @@ assert.deepEqual(detectAutoSourceChange({ shotId:'s2', beforeShots:shots, afterS
 });
 
 const outOfOrder = {...shots[2], order:1};
-const outOfOrderSet = [outOfOrder,{...shots[0],order:2},{...shots[1],order:3}];
-assert.equal(deriveContinuityStatus({ shot:outOfOrder, shots:outOfOrderSet, artifactsById }), 'source_out_of_order');
-assert.ok(buildContinuityDependents(outOfOrderSet).get('s1').includes('s3'), 'out-of-order manual source remains a dependency');
+const outOfOrderShots = [outOfOrder,{...shots[0],order:2},{...shots[1],order:3}];
+assert.equal(deriveContinuityStatus({ shot:outOfOrder, shots:outOfOrderShots, artifactsById }), 'source_out_of_order');
+assert.ok(buildContinuityDependents(outOfOrderShots).get('s1').includes('s3'), 'out-of-order manual source remains a dependency');
+const outOfOrderResolution = resolveContinuitySource({ shot:outOfOrder, shots:outOfOrderShots, artifactsById });
+assert.equal(outOfOrderResolution.sourceArtifactId, 'g1');
+assert.ok(outOfOrderResolution.sourceArtifact?.imageBlob instanceof Blob, 'out-of-order manual source remains usable when explicitly kept');
 
 const reviewed = {...shots[1], continuityReview:{ status:'accepted', reviewedArtifactId:'h1', sourceArtifactId:'g1' }};
 const reviewedResolution = resolveContinuitySource({shot:reviewed,shots:[shots[0],reviewed,shots[2]],artifactsById});
 assert.equal(isContinuityReviewCurrent({ shot:reviewed, resolution:reviewedResolution }), true);
 assert.equal(isContinuityReviewCurrent({ shot:{...reviewed,continuityReview:{...reviewed.continuityReview,sourceArtifactId:'old'}}, resolution:reviewedResolution }), false);
-assert.equal(deriveContinuityStatus({ shot:{...reviewed, continuityInvalidation:{causedByShotId:'s1'}}, shots:[shots[0],reviewed,shots[2]], artifactsById }), 'current');
+assert.equal(deriveContinuityStatus({ shot:{...reviewed, continuityInvalidation:{causedByShotId:'s1'}}, shots:[shots[0],reviewed,shots[2]], artifactsById }), 'current', 'current accepted review clears stale invalidation at derived-state level');
 assert.equal(deriveContinuityStatus({ shot:{...shots[1], continuityInvalidation:{causedByShotId:'s1'}}, shots, artifactsById }), 'review_required');
 
 const crossSequence = {...shots[2], sequenceId:'q2', continuitySourceShotId:'s1'};
