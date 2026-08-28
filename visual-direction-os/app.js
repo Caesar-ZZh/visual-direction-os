@@ -7,6 +7,7 @@
     'runtime/schema-migrations.js',
     'runtime/vdos-codec.js',
     'runtime/project-package.js',
+    'runtime/m6-project-package.js',
     'runtime/project-library.js'
   ];
 
@@ -25,11 +26,16 @@
     'runtime/director-ui.js',
     'runtime/generation-ui-m3.js',
     'runtime/evaluation-ui.js',
+    'runtime/sequence-model.js',
+    'runtime/continuity-engine.js',
     'runtime/director-memory.js',
     'runtime/comparison-engine.js',
     'runtime/memory-engine.js',
     'runtime/m4-controller.js',
-    'runtime/lineage-ui.js'
+    'runtime/m6-controller.js',
+    'runtime/m6-browser-controller.js',
+    'runtime/lineage-ui.js',
+    'runtime/sequence-director-ui.js'
   ];
 
   function loadScript(src) {
@@ -56,49 +62,43 @@
     loadStylesheet('runtime/evaluation.css');
     loadStylesheet('runtime/evaluation-metrics.css');
     loadStylesheet('runtime/lineage.css');
+    loadStylesheet('runtime/sequence-director.css');
     loadStylesheet('runtime/project-package.css');
 
-    // M3/M4 are the critical director path. Project-package tooling is optional
-    // and must never delay DIRECT / GENERATE / EVALUATE or persistent M4 restore.
     for (const asset of runtimeAssets) await loadScript(asset);
 
     const status = document.querySelector('.rail-status span:nth-child(2)');
-    if (status) status.textContent = 'Director + generation + evaluation online · memory restoring';
+    if (status) status.textContent = 'Director + generation + evaluation online · sequence memory restoring';
 
     let preferredProjectId = null;
     try { preferredProjectId = localStorage.getItem('vdos-active-project-id'); } catch (_) {}
-    const m4Boot = globalThis.VisualDirectionOS?.m4?.boot?.({ projectId:preferredProjectId });
-    Promise.resolve(m4Boot).then((m4State) => {
+    const m6Boot = globalThis.VisualDirectionOS?.m6?.boot?.({ projectId:preferredProjectId });
+    Promise.resolve(m6Boot).then((m6State) => {
       if (!status) return;
-      status.textContent = m4State?.restoreError
-        ? 'Director + generation + evaluation online · memory unavailable'
-        : 'Director + generation + evaluation + memory online';
+      status.textContent = m6State?.restoreError
+        ? 'Director + generation + evaluation online · sequence memory unavailable'
+        : 'Director + generation + evaluation + sequence memory online';
     }).catch((error) => {
-      console.error('[Visual Direction OS M4] Persistent memory boot failed:', error);
-      if (status) status.textContent = 'Director + generation + evaluation online · memory unavailable';
+      console.error('[Visual Direction OS M6] Persistent sequence boot failed:', error);
+      if (status) status.textContent = 'Director + generation + evaluation online · sequence memory unavailable';
     });
 
-    // Load the portable-project stack after M4 has mounted. This IIFE is
-    // deliberately not awaited so package failures/latency cannot take down M3/M4.
     (async () => {
       let packageRuntimeReady = true;
       for (const asset of packageRuntimeAssets) {
-        try {
-          await loadScript(asset);
-        } catch (error) {
+        try { await loadScript(asset); }
+        catch (error) {
           packageRuntimeReady = false;
-          console.error('[Visual Direction OS M5] Optional package runtime unavailable:', error);
+          console.error('[Visual Direction OS M6] Optional portable-project runtime unavailable:', error);
           break;
         }
       }
       if (packageRuntimeReady) {
-        loadScript('runtime/project-package-ui.js').catch((error) => {
-          console.error('[Visual Direction OS M5] Project workspace unavailable:', error);
+        loadScript('runtime/m6-project-package-ui.js').catch((error) => {
+          console.error('[Visual Direction OS M6] Project workspace unavailable:', error);
         });
       }
-    })().catch((error) => {
-      console.error('[Visual Direction OS M5] Project package boot failed:', error);
-    });
+    })().catch((error) => console.error('[Visual Direction OS M6] Project package boot failed:', error));
   }
 
   bootVisualDirectionOS().catch((error) => {
